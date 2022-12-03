@@ -1,0 +1,14 @@
+name: Core
+version: '${project.version}'
+main: net.trustgames.core.Core
+api-version: 1.19
+authors: [ Wega ]
+description: Core for TrustGames.net
+commands:
+  setspawn:
+    description: Sets the spawnpoint for all players
+    usage: /setspawn
+    permission: core.admin
+  spawn:
+    description: Teleports to the spawn
+    usage: /spawn
