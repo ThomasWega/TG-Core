@@ -24,9 +24,8 @@ public final class Core extends JavaPlugin {
         - chat system
         - economy system
         - hotbar items
-        - adminsystem (vanish, staffchat, ...)
+        - adminsystem (vanish, menus, ...)
         - report system
-        - set gamerules (different for core lobby settings)
         - level system
         - cosmetics (spawn particles, spawn sounds, balloons)
         - nick and skin changer

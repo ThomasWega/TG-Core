@@ -3,6 +3,7 @@ package net.trustgames.core.managers;
 import net.trustgames.core.Core;
 import net.trustgames.core.debug.DebugColors;
 import org.bukkit.Bukkit;
+import org.bukkit.Difficulty;
 import org.bukkit.GameRule;
 import org.bukkit.World;
 
@@ -22,6 +23,10 @@ public class GameruleManager {
         if (world != null) {
 // lobby settings
             if (Objects.requireNonNull(core.getConfig().getString("settings.server-type")).equalsIgnoreCase("LOBBY")) {
+
+                world.setDifficulty(Difficulty.PEACEFUL);
+
+                // Gamerules
                 world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
                 world.setGameRule(GameRule.COMMAND_BLOCK_OUTPUT, false);
                 world.setGameRule(GameRule.DISABLE_ELYTRA_MOVEMENT_CHECK, true);
