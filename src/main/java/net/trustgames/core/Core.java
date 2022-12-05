@@ -1,11 +1,8 @@
 package net.trustgames.core;
 
 import net.trustgames.core.announcer.ChatAnnouncer;
-import net.trustgames.core.managers.ConfigManager;
-import net.trustgames.core.managers.FolderManager;
+import net.trustgames.core.managers.*;
 import net.trustgames.core.database.MariaDB;
-import net.trustgames.core.managers.CommandManager;
-import net.trustgames.core.managers.EventsManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Core extends JavaPlugin {
@@ -15,6 +12,8 @@ public final class Core extends JavaPlugin {
     ChatAnnouncer chatAnnouncer = new ChatAnnouncer(this);
     EventsManager eventsManager = new EventsManager(this);
     CommandManager commandManager = new CommandManager(this);
+
+    GameruleManager gameruleManager = new GameruleManager(this);
     private MariaDB mariaDB;
 
     @Override
@@ -29,7 +28,7 @@ public final class Core extends JavaPlugin {
         - report system
         - set gamerules (different for core lobby settings)
         - level system
-        - cosmetics
+        - cosmetics (spawn particles, spawn sounds, balloons)
         - nick and skin changer
         - holo system
         - image maps
@@ -46,6 +45,9 @@ public final class Core extends JavaPlugin {
 
         // create defaults for configs (including the default config.yml)
         configManager.createConfigsDefaults();
+
+        // set gamerules
+        gameruleManager.setGamerules();
 
         // connect to MariaDB database
         this.mariaDB = new MariaDB(this);

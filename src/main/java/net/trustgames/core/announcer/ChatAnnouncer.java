@@ -28,7 +28,6 @@ public record ChatAnnouncer(Core core) {
             */
             @Override
             public void run() {
-
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', String.join("\n", config.getStringList("announcer.messages.message" + i))));
                 }

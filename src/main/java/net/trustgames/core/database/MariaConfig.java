@@ -11,7 +11,8 @@ public record MariaConfig(Core core) {
     // adds the defaults to the mariadb.yml file
     public void mariaDefaults() {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(getMariaFile());
-        
+
+        config.addDefault("mariadb.enable", false);
         config.addDefault("mariadb.user", "user");
         config.addDefault("mariadb.password", "passwd");
         config.addDefault("mariadb.ip", "127.0.0.1");

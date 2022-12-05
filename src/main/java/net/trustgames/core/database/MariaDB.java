@@ -23,8 +23,6 @@ public class MariaDB {
             return connection;
         }
 
-        core.getLogger().info(DebugColors.CYAN + "Trying to connect to the database using HikariCP...");
-
         // get the mariadb config credentials
         MariaConfig mariaConfig = new MariaConfig(core);
         YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
@@ -36,16 +34,23 @@ public class MariaDB {
         String url = "jdbc:mariadb://" + ip + ":" + port + "/" + database + "?user=" + user + "&password=" + password;
 
         // tries to connect to the database
-        try {
-            HikariDataSource hikari = getHikari();
-            hikari.setDataSourceClassName("org.mariadb.jdbc.MariaDbDataSource");
-            hikari.addDataSourceProperty("url", url);
-            connection = hikari.getConnection();
-            core.getLogger().info(DebugColors.BLUE + "Successfully connected to the database using HikariCP");
-            return connection;
-        } catch (SQLException e) {
-            core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Error when connecting to the database using HikariCP");
-            throw new RuntimeException(e);
+        if (isMySQLEnabled()){
+            try {
+                core.getLogger().info(DebugColors.CYAN + "Trying to connect to the database using HikariCP...");
+                HikariDataSource hikari = getHikari();
+                hikari.setDataSourceClassName("org.mariadb.jdbc.MariaDbDataSource");
+                hikari.addDataSourceProperty("url", url);
+                connection = hikari.getConnection();
+                core.getLogger().info(DebugColors.BLUE + "Successfully connected to the database using HikariCP");
+                return connection;
+            } catch (SQLException e) {
+                core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Error when connecting to the database using HikariCP");
+                throw new RuntimeException(e);
+            }
+        }
+        else{
+            core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "MySQL is turned off. Not connecting");
+            return null;
         }
     }
 
@@ -136,12 +141,20 @@ public class MariaDB {
         return tExists;
     }
 
+    public boolean isMySQLEnabled(){
+        MariaConfig mariaConfig = new MariaConfig(core);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
+        return Boolean.parseBoolean(config.getString("mariadb.enable"));
+    }
+
     public void closeHikari(){
-        HikariDataSource hikari = getHikari();
-        if (hikari != null){
-            core.getLogger().info(DebugColors.CYAN + "Closing the HikariCP connection...");
-            hikari.close();
-            core.getLogger().info(DebugColors.BLUE + "Successfully closed the HikariCP connection");
+        if (isMySQLEnabled()){
+            HikariDataSource hikari = getHikari();
+            if (hikari != null) {
+                core.getLogger().info(DebugColors.CYAN + "Closing the HikariCP connection...");
+                hikari.close();
+                core.getLogger().info(DebugColors.BLUE + "Successfully closed the HikariCP connection");
+            }
         }
     }
 
