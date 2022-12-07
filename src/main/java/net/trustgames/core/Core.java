@@ -60,6 +60,8 @@ public final class Core extends JavaPlugin {
 
         // run ChatAnnouncer
         chatAnnouncer.announceMessages();
+
+        // TODO custom head textures for items
     }
 
     @Override

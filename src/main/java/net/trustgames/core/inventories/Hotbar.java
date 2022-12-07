@@ -25,19 +25,16 @@ public class Hotbar implements Listener {
         hotbarItems.addFromItemList(player);
 
         // hide players
-        hotbarItems.updateHideItem(getOnlinePlayers());
+        hotbarItems.updateHideItem(Bukkit.getOnlinePlayers().size() - 1);
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
 
+        // get methods
         HotbarItems hotbarItems = new HotbarItems(core);
 
         // hide players
-        hotbarItems.updateHideItem(getOnlinePlayers() - 1);
-    }
-
-    public Integer getOnlinePlayers() {
-        return Bukkit.getOnlinePlayers().size();
+        hotbarItems.updateHideItem(Bukkit.getOnlinePlayers().size() - 1);
     }
 }

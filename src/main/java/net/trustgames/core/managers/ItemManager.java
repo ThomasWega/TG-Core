@@ -5,7 +5,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class ItemManager {
 
-    // creates the itemStack
+    // create the itemStack
     public ItemStack createItemStack(Material material, int count){
         return new ItemStack(material, count);
     }
