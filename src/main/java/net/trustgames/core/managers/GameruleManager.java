@@ -21,7 +21,7 @@ public class GameruleManager {
         World world = Bukkit.getWorld("world");
 
         if (world != null) {
-// lobby settings
+            // lobby settings
             if (Objects.requireNonNull(core.getConfig().getString("settings.server-type")).equalsIgnoreCase("LOBBY")) {
 
                 world.setDifficulty(Difficulty.PEACEFUL);

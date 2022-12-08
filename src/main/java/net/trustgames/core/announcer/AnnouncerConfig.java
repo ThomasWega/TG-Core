@@ -12,7 +12,7 @@ public record AnnouncerConfig(Core core) {
 
     // create the config defaults for announcer.yml
     public void announcerDefaults() {
-        
+
         YamlConfiguration config = YamlConfiguration.loadConfiguration(getAnnouncerFile());
 
         config.addDefault("announcer.time", 120);

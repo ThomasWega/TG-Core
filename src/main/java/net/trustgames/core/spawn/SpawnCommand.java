@@ -25,8 +25,7 @@ public record SpawnCommand(Core core) implements CommandExecutor {
             } else {
                 player.sendMessage(ChatColor.RED + "Spawn location isn't set!");
             }
-        }
-        else{
+        } else {
             sender.sendMessage(ChatColor.RED + "This command can be used by players only!");
         }
         return true;

@@ -12,6 +12,7 @@ public record MariaConfig(Core core) {
     public void mariaDefaults() {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(getMariaFile());
 
+        // config defaults
         config.addDefault("mariadb.enable", false);
         config.addDefault("mariadb.user", "user");
         config.addDefault("mariadb.password", "passwd");

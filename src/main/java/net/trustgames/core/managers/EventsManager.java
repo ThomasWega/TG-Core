@@ -3,9 +3,9 @@ package net.trustgames.core.managers;
 import net.trustgames.core.Core;
 import net.trustgames.core.inventories.Hotbar;
 import net.trustgames.core.spawn.Spawn;
-import net.trustgames.core.stats.StatsListeners;
+import net.trustgames.core.database.listeners.StatsListeners;
 
-public class EventsManager{
+public class EventsManager {
 
     private final Core core;
 
@@ -13,7 +13,7 @@ public class EventsManager{
         this.core = core;
     }
 
-    public final void registerEvents(){
+    public final void registerEvents() {
 
         // used to register all events
         core.getServer().getPluginManager().registerEvents(new Spawn(core), core);

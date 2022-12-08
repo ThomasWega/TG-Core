@@ -25,7 +25,7 @@ public class HotbarItems {
     }
 
     // list of hotbar items to add
-    public void addFromItemList(Player player){
+    public void addFromItemList(Player player) {
 
         // get the functions
         ItemManager itemManager = new ItemManager();
@@ -50,7 +50,7 @@ public class HotbarItems {
     }
 
     // update the hide item in hotbar
-    public void updateHideItem(int count){
+    public void updateHideItem(int count) {
 
         // get the methods
         ItemManager itemManager = new ItemManager();
@@ -64,17 +64,16 @@ public class HotbarItems {
         // lore
         List<Component> hideLore = new ArrayList<>();
         hideLore.add(Component.text(""));
-        hideLore.add(Component.text(ChatColor.DARK_GRAY + "Hide " + (Bukkit.getOnlinePlayers().size() -1) + " players by"));
+        hideLore.add(Component.text(ChatColor.DARK_GRAY + "Hide " + (Bukkit.getOnlinePlayers().size() - 1) + " players by"));
         hideLore.add(Component.text(ChatColor.DARK_GRAY + "clicking with this item"));
         hideMeta.lore(hideLore);
-
 
         // set the item meta
         hideStack.setItemMeta(hideMeta);
 
         // loop through the online player and set for each one the new amount
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            if(hideStack.getAmount() <= 64){
+            if (hideStack.getAmount() <= 64) {
                 hideStack.setAmount(count);
                 hotbarManager.addItemToInventory(onlinePlayer, 7, hideStack);
             }
@@ -82,7 +81,7 @@ public class HotbarItems {
     }
 
     // update the player profile item in hotbar
-    public void updateProfileItem(int count){
+    public void updateProfileItem(int count) {
         // TODO finish
     }
 }

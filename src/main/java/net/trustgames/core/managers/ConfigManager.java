@@ -28,10 +28,9 @@ public class ConfigManager {
     // creates a specified file (config)
     private void createConfig(String filePath, String fileName) {
         File file;
-        if (filePath.isEmpty()){
+        if (filePath.isEmpty()) {
             file = new File(core.getDataFolder(), fileName);
-        }
-        else{
+        } else {
             file = new File(core.getDataFolder() + File.separator + filePath, fileName);
         }
         boolean isFileCreated = file.exists();
@@ -52,7 +51,7 @@ public class ConfigManager {
     }
 
     // creates the defaults for every config
-    public void createConfigsDefaults(){
+    public void createConfigsDefaults() {
 
         defaultConfig();
 
@@ -64,7 +63,7 @@ public class ConfigManager {
     }
 
     // creates the configs files
-    public void createAllConfigFiles(){
+    public void createAllConfigFiles() {
         core.saveDefaultConfig();
         createConfig("", "spawn.yml");
         createConfig("", "announcer.yml");

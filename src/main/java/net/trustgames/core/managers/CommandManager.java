@@ -16,12 +16,12 @@ public class CommandManager {
     }
 
     // used to register all commands
-    public void registerCommand(String commandName, CommandExecutor commandExecutor){
+    public void registerCommand(String commandName, CommandExecutor commandExecutor) {
         Objects.requireNonNull(core.getCommand(commandName)).setExecutor(commandExecutor);
     }
 
     // register all commands
-    public void registerAllCommands(){
+    public void registerAllCommands() {
         registerCommand("spawn", new SpawnCommand(core));
         registerCommand("setspawn", new SetSpawnCommand(core));
     }

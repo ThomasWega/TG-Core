@@ -1,8 +1,8 @@
 package net.trustgames.core;
 
 import net.trustgames.core.announcer.ChatAnnouncer;
-import net.trustgames.core.managers.*;
 import net.trustgames.core.database.MariaDB;
+import net.trustgames.core.managers.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Core extends JavaPlugin {

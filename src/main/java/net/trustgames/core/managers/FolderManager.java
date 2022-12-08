@@ -46,7 +46,7 @@ public record FolderManager(Core core) {
     }
 
     // create the specific folders
-    public void createAllFolders(){
+    public void createAllFolders() {
         createFolder("data");
     }
 }
