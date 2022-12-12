@@ -36,7 +36,7 @@ public class ActivityListener implements Listener {
 
                 if (playerActivity == null) {
                     core.getLogger().info(DebugColors.RED_BACKGROUND + "HERE 1");
-                    playerActivity = new PlayerActivity(1, player.getUniqueId().toString(), null, new Timestamp(Instant.now().toEpochMilli()));
+                    playerActivity = new PlayerActivity(player.getUniqueId().toString(), null, new Timestamp(Instant.now().toEpochMilli()));
                     try {
                         core.getLogger().info(DebugColors.YELLOW_BACKGROUND);
                         playerActivityDB.createPlayerActivity(playerActivity);
