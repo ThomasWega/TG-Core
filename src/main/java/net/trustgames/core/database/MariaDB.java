@@ -19,6 +19,8 @@ public class MariaDB {
         this.core = core;
     }
 
+    HikariDataSource hikariDataSource;
+
     // method to check if table exists
     public static boolean tableExist(Connection connection, String tableName) throws SQLException {
         boolean tExists = false;
@@ -27,7 +29,6 @@ public class MariaDB {
                 String tName = rs.getString("TABLE_NAME");
                 if (tName != null && tName.equals(tableName)) {
                     tExists = true;
-                    rs.close();
                     break;
                 }
             }
@@ -38,26 +39,49 @@ public class MariaDB {
     public Connection getConnection() {
 
         if (connection != null) {
+            core.getLogger().info(DebugColors.PURPLE_BACKGROUND + "IF");
             return connection;
         }
+        else{
+            core.getLogger().info(DebugColors.PURPLE_BACKGROUND + "ELSE");
 
-        // get the mariadb config credentials
-        MariaConfig mariaConfig = new MariaConfig(core);
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
-        String user = config.getString("mariadb.user");
-        String password = config.getString("mariadb.password");
-        String ip = config.getString("mariadb.ip");
-        String port = config.getString("mariadb.port");
-        String database = config.getString("mariadb.database");
-        String url = "jdbc:mariadb://" + ip + ":" + port + "/" + database + "?user=" + user + "&password=" + password;
+            // get the mariadb config credentials
+            MariaConfig mariaConfig = new MariaConfig(core);
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
+            String user = config.getString("mariadb.user");
+            String password = config.getString("mariadb.password");
+            String ip = config.getString("mariadb.ip");
+            String port = config.getString("mariadb.port");
+            String database = config.getString("mariadb.database");
+            String url = "jdbc:mariadb://" + ip + ":" + port + "/" + database + "?user=" + user + "&password=" + password;
 
-        // tries to connect to the database
+            // tries to connect to the database
             try {
                 core.getLogger().info(DebugColors.CYAN + "Trying to connect to the database using HikariCP...");
-                HikariDataSource hikari = getHikari();
-                hikari.setDataSourceClassName("org.mariadb.jdbc.MariaDbDataSource");
-                hikari.addDataSourceProperty("url", url);
-                connection = hikari.getConnection();
+
+
+                hikariDataSource = new HikariDataSource();
+                HikariDataSource ds = hikariDataSource;
+                ds.setMaximumPoolSize(3);
+                ds.setDriverClassName("org.mariadb.jdbc.Driver");
+                ds.setJdbcUrl("jdbc:mariadb://localhost:3306/Core");
+                ds.addDataSourceProperty("user", user);
+                ds.addDataSourceProperty("password", password);
+                // ds.setAutoCommit(false);
+
+
+/*
+            HikariDataSource hikari = hikariDataSource;
+            hikari.setDataSourceClassName("org.mariadb.jdbc.MariaDbDataSource");
+            hikari.addDataSourceProperty("url", url);
+            hikari.setPoolName("HikariCore");
+            hikari.setMaximumPoolSize(20);
+            hikari.setMinimumIdle(10);
+
+ */
+
+
+                connection = ds.getConnection();
                 core.getLogger().info(DebugColors.BLUE + "Successfully connected to the database using HikariCP");
                 return connection;
             } catch (SQLException e) {
@@ -65,19 +89,21 @@ public class MariaDB {
                 throw new RuntimeException(e);
             }
         }
+    }
 
     // checks if the table exists, if it doesn't, it creates one
     public void initializeDatabase(String tableName, String stringStatement) {
-        if (isMySQLEnabled()){
+        if (isMySQLEnabled()) {
             try {
                 if (getConnection() != null) {
-                    if (!tableExist(connection, tableName)) {
+                    if (!tableExist(getConnection(), tableName)) {
                         core.getLogger().info(DebugColors.CYAN + "Database table " + tableName + " doesn't exist, creating...");
-                        PreparedStatement statement = getConnection().prepareStatement(stringStatement);
-                        statement.executeUpdate();
-                        statement.close();
-                        if (tableExist(connection, tableName)) {
-                            core.getLogger().info(DebugColors.BLUE + "Successfully created the table " + tableName);
+                        try(PreparedStatement statement = getConnection().prepareStatement(stringStatement)){
+                            statement.executeUpdate();
+                            statement.close();
+                            if (tableExist(getConnection(), tableName)) {
+                                core.getLogger().info(DebugColors.BLUE + "Successfully created the table " + tableName);
+                            }
                         }
                     }
                 }
@@ -85,9 +111,8 @@ public class MariaDB {
                 core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Unable to create " + tableName + " table in the database!");
                 throw new RuntimeException(e);
             }
-        }
-        else{
-            core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "MySQL is turned off. Not connecting");
+        } else {
+            core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "MySQL is turned off. Not initializing table" + tableName);
         }
     }
 
@@ -101,17 +126,13 @@ public class MariaDB {
     // close the hikari connection
     public void closeHikari() {
         if (isMySQLEnabled()) {
-            HikariDataSource hikari = getHikari();
-            if (hikari != null) {
-                core.getLogger().info(DebugColors.CYAN + "Closing the HikariCP connection...");
-                hikari.close();
-                core.getLogger().info(DebugColors.BLUE + "Successfully closed the HikariCP connection");
-            }
+            core.getLogger().info(DebugColors.CYAN + "Closing the HikariCP connection...");
+            hikariDataSource.close();
+            core.getLogger().info(DebugColors.BLUE + "Successfully closed the HikariCP connection");
         }
     }
 
-    // retrieve hikari
-    public HikariDataSource getHikari() {
-        return new HikariDataSource();
+    public HikariDataSource getHikariDataSource() {
+        return hikariDataSource;
     }
 }

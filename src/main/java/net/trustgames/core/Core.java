@@ -15,11 +15,10 @@ public final class Core extends JavaPlugin {
     EventsManager eventsManager = new EventsManager(this);
     CommandManager commandManager = new CommandManager(this);
     GameruleManager gameruleManager = new GameruleManager(this);
-     private MariaDB mariaDB;
-
     // test
     PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
     PlayerStatsDB playerStatsDB = new PlayerStatsDB(this);
+    private MariaDB mariaDB;
 
     @Override
     public void onEnable() {
@@ -67,8 +66,13 @@ public final class Core extends JavaPlugin {
         chatAnnouncer.announceMessages();
 
         // test db
+        /* TODO
+        - fix closing connections
+         */
         playerActivityDB.initializePlayerActivityTable();
-        playerStatsDB.initializePlayerStatsTable();
+
+        this.mariaDB = new MariaDB(this);
+        // FIXME  playerStatsDB.initializePlayerStatsTable();
 
 
         // TODO custom head textures for items

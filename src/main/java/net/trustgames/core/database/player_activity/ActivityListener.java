@@ -24,33 +24,24 @@ public class ActivityListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        MariaDB mariaDB = new MariaDB(core);
-        PlayerActivityDB playerActivityDB = new PlayerActivityDB(core);
 
+        MariaDB mariaDB = new MariaDB(core);
+
+        // check if mysql is enabled in the mariadb.yml
         if (mariaDB.isMySQLEnabled()) {
             Player player = event.getPlayer();
-            // adds +1 to the killed player death stats
             PlayerActivity playerActivity;
             try {
                 playerActivity = getPlayerActivityFromDatabase(player);
+                if (playerActivity != null) {
+                    PlayerActivityDB playerActivityDB = new PlayerActivityDB(core);
 
-                if (playerActivity == null) {
-                    core.getLogger().info(DebugColors.RED_BACKGROUND + "HERE 1");
-                    playerActivity = new PlayerActivity(player.getUniqueId().toString(), null, new Timestamp(Instant.now().toEpochMilli()));
-                    try {
-                        core.getLogger().info(DebugColors.YELLOW_BACKGROUND);
-                        playerActivityDB.createPlayerActivity(playerActivity);
-                    } catch (SQLException e) {
-                        core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Error when creating the Player Statistics in the database");
-                        throw new RuntimeException(e);
-                    }
-                }
-                else{
+
+                    // set the action and time
                     playerActivity.setTime(new Timestamp(Instant.now().toEpochMilli()));
                     playerActivity.setAction("JOIN PORT " + Bukkit.getServer().getPort());
-                    // updates the stats
-                    core.getLogger().info(DebugColors.RED_BACKGROUND + "HERE 2");
-                //    playerActivityDB.updatePlayerActivity(playerActivity);
+
+                    // create new stat
                     playerActivityDB.createPlayerActivity(playerActivity);
                 }
             } catch (SQLException e) {
@@ -67,12 +58,24 @@ public class ActivityListener implements Listener {
     // gets the player stats from the database
     private PlayerActivity getPlayerActivityFromDatabase(Player player) throws SQLException {
 
+        // TODO move the null check here
+
         PlayerActivityDB playerActivityDB = new PlayerActivityDB(core);
 
         // find the playerStats for the player using method findPlayerStatsByUUID in MariaDB class
         PlayerActivity playerActivity = playerActivityDB.findPlayerActivityByUUID(player.getUniqueId().toString());
 
-        // try to create the stats for the player
-        return playerActivity;
-     }
+        if (playerActivity == null) {
+            try {
+                playerActivity = new PlayerActivity(player.getUniqueId().toString(), "FIRST JOIN", new Timestamp(Instant.now().toEpochMilli()));
+                playerActivityDB.createPlayerActivity(playerActivity);
+            } catch (SQLException e) {
+                core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Error when creating info in player_activity table");
+                throw new RuntimeException(e);
+            }
+            return null;
+        } else {
+            return playerActivity;
+        }
+    }
 }

@@ -8,22 +8,18 @@ public class PlayerActivity {
     This class is just used as getters and setters for the database player_activity
      */
 
+    private final String uuid;
+    private String action;
+    private Timestamp time;
+
     public PlayerActivity(String uuid, String action, Timestamp time) {
         this.uuid = uuid;
         this.action = action;
         this.time = time;
     }
 
-    private String uuid;
-    private int id;
-    private String action;
-
     public String getUuid() {
         return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
     }
 
     public String getAction() {
@@ -41,6 +37,4 @@ public class PlayerActivity {
     public void setTime(Timestamp time) {
         this.time = time;
     }
-
-    private Timestamp time;
 }
