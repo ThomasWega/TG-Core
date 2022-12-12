@@ -1,4 +1,4 @@
-package net.trustgames.core.database.models;
+package net.trustgames.core.database.player_stats;
 
 import java.sql.Timestamp;
 

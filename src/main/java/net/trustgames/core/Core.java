@@ -2,6 +2,8 @@ package net.trustgames.core;
 
 import net.trustgames.core.announcer.ChatAnnouncer;
 import net.trustgames.core.database.MariaDB;
+import net.trustgames.core.database.player_activity.PlayerActivityDB;
+import net.trustgames.core.database.player_stats.PlayerStatsDB;
 import net.trustgames.core.managers.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -12,9 +14,12 @@ public final class Core extends JavaPlugin {
     ChatAnnouncer chatAnnouncer = new ChatAnnouncer(this);
     EventsManager eventsManager = new EventsManager(this);
     CommandManager commandManager = new CommandManager(this);
-
     GameruleManager gameruleManager = new GameruleManager(this);
-    private MariaDB mariaDB;
+     private MariaDB mariaDB;
+
+    // test
+    PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
+    PlayerStatsDB playerStatsDB = new PlayerStatsDB(this);
 
     @Override
     public void onEnable() {
@@ -49,8 +54,8 @@ public final class Core extends JavaPlugin {
         gameruleManager.setGamerules();
 
         // connect to MariaDB database
-        this.mariaDB = new MariaDB(this);
-        mariaDB.initializeDatabase();
+//        this.mariaDB = new MariaDB(this);
+
 
         // register events
         eventsManager.registerEvents();
@@ -61,7 +66,14 @@ public final class Core extends JavaPlugin {
         // run ChatAnnouncer
         chatAnnouncer.announceMessages();
 
+        // test db
+        playerActivityDB.initializePlayerActivityTable();
+        playerStatsDB.initializePlayerStatsTable();
+
+
         // TODO custom head textures for items
+
+        // FIXME too much mysql connections - close them!!!
     }
 
     @Override
@@ -69,11 +81,7 @@ public final class Core extends JavaPlugin {
         // Plugin shutdown logic
 
         // close the HikariCP connection
+        this.mariaDB = new MariaDB(this);
         mariaDB.closeHikari();
-    }
-
-    // returns the MariaDB Database
-    public MariaDB getMariaDB() {
-        return mariaDB;
     }
 }

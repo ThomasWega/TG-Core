@@ -3,10 +3,12 @@ package net.trustgames.core.database;
 import com.zaxxer.hikari.HikariDataSource;
 import net.trustgames.core.Core;
 import net.trustgames.core.debug.DebugColors;
-import net.trustgames.core.database.models.PlayerStats;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class MariaDB {
 
@@ -64,91 +66,28 @@ public class MariaDB {
             }
         }
 
-    // checks if the player_stats table exists, if it doesn't, it creates one
-    public void initializeDatabase() {
+    // checks if the table exists, if it doesn't, it creates one
+    public void initializeDatabase(String tableName, String stringStatement) {
         if (isMySQLEnabled()){
             try {
                 if (getConnection() != null) {
-                    if (!tableExist(connection, "player_stats")) {
-                        core.getLogger().info(DebugColors.CYAN + "Database table player_stats doesn't exist, creating...");
-                        PreparedStatement statement = getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS player_stats(uuid varchar(36) primary key, kills INT, deaths INT, games_played INT, playtime INT, level_exp DOUBLE, golds DOUBLE, rubies DOUBLE, last_join DATETIME)");
+                    if (!tableExist(connection, tableName)) {
+                        core.getLogger().info(DebugColors.CYAN + "Database table " + tableName + " doesn't exist, creating...");
+                        PreparedStatement statement = getConnection().prepareStatement(stringStatement);
                         statement.executeUpdate();
                         statement.close();
-                        if (tableExist(connection, "player_stats")) {
-                            core.getLogger().info(DebugColors.BLUE + "Successfully created the table player_stats");
+                        if (tableExist(connection, tableName)) {
+                            core.getLogger().info(DebugColors.BLUE + "Successfully created the table " + tableName);
                         }
                     }
                 }
             } catch (SQLException e) {
-                core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Unable to create player_stats table in the database!");
+                core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Unable to create " + tableName + " table in the database!");
                 throw new RuntimeException(e);
             }
         }
         else{
             core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "MySQL is turned off. Not connecting");
-        }
-    }
-
-    // find the correct players stats by his uuid
-    public PlayerStats findPlayerStatsByUUID(String uuid) {
-            try {
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM player_stats WHERE uuid = ?");
-                statement.setString(1, uuid);
-                ResultSet results = statement.executeQuery();
-                statement.close();
-
-                if (results.next()) {
-
-                    int kills = results.getInt("kills");
-                    int deaths = results.getInt("deaths");
-                    int games_played = results.getInt("games_played");
-                    int playtime = results.getInt("playtime");
-                    double level_exp = results.getDouble("level_exp");
-                    double golds = results.getDouble("golds");
-                    double rubies = results.getDouble("rubies");
-                    Timestamp last_join = results.getTimestamp("last_join");
-
-                    return new PlayerStats(uuid, kills, deaths, games_played, playtime, level_exp, golds, rubies, last_join);
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        return null;
-    }
-
-    // method that creates the player stats
-    public void createPlayerStats(PlayerStats playerStats) throws SQLException {
-            // try to create PreparedStatement
-            try (PreparedStatement statement = getConnection().prepareStatement("INSERT INTO player_stats(uuid, kills, deaths, games_played, playtime, level_exp, golds, rubies, last_join) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-                statement.setString(1, playerStats.getUuid());
-                statement.setInt(2, playerStats.getKills());
-                statement.setInt(3, playerStats.getDeaths());
-                statement.setInt(4, playerStats.getGames_played());
-                statement.setInt(5, playerStats.getPlaytime());
-                statement.setDouble(6, playerStats.getLevel_exp());
-                statement.setDouble(7, playerStats.getGolds());
-                statement.setDouble(8, playerStats.getRubies());
-                statement.setTimestamp(9, playerStats.getLast_join());
-
-                statement.executeUpdate();
-        }
-    }
-
-    // method to update the player stats
-    public void updatePlayerStats(PlayerStats playerStats) throws SQLException {
-            // try to create PreparedStatement
-            try (PreparedStatement statement = getConnection().prepareStatement("UPDATE player_stats SET kills = ?, deaths = ?, games_played = ?, playtime = ?, level_exp = ?, golds = ?, rubies = ?, last_join = ? WHERE uuid = ?")) {
-                statement.setInt(1, playerStats.getKills());
-                statement.setInt(2, playerStats.getDeaths());
-                statement.setInt(3, playerStats.getGames_played());
-                statement.setDouble(4, playerStats.getPlaytime());
-                statement.setDouble(5, playerStats.getLevel_exp());
-                statement.setDouble(6, playerStats.getGolds());
-                statement.setDouble(7, playerStats.getRubies());
-                statement.setTimestamp(8, playerStats.getLast_join());
-                statement.setString(9, playerStats.getUuid());
-
-                statement.executeUpdate();
         }
     }
 
