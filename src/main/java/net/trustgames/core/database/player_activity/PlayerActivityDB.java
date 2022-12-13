@@ -2,9 +2,11 @@ package net.trustgames.core.database.player_activity;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.database.MariaDB;
-import net.trustgames.core.debug.DebugColors;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 
 public class PlayerActivityDB {
 
@@ -26,26 +28,18 @@ public class PlayerActivityDB {
         MariaDB mariaDB = new MariaDB(core);
 
         try {
-            core.getLogger().info(DebugColors.PURPLE_BACKGROUND + getMaxID());
-            System.out.println(uuid);
-            PreparedStatement statement = mariaDB.getConnection().prepareStatement("SELECT * FROM player_activity WHERE uuid = ? ORDER BY id DESC LIMIT 1");
-            statement.setString(1, uuid);
-            ResultSet results = statement.executeQuery();
+            try(PreparedStatement statement = mariaDB.getConnection().prepareStatement("SELECT * FROM player_activity WHERE uuid = ? ORDER BY id DESC LIMIT 1")){
+                statement.setString(1, uuid);
+                try(ResultSet results = statement.executeQuery()){
+                    if (results.next()) {
 
-            if (results.next()) {
+                        String action = results.getString("action");
+                        Timestamp time = results.getTimestamp("time");
 
-                //FIXME
-                System.out.println(results.getString("id"));
-
-                String action = results.getString("action");
-                Timestamp time = results.getTimestamp("time");
-
-                return new PlayerActivity(uuid, action, time);
+                        return new PlayerActivity(uuid, action, time);
+                    }
+                }
             }
-            else{
-                System.out.println("HEHEHE");
-            }
-            statement.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -74,10 +68,10 @@ public class PlayerActivityDB {
         int maxID = 0;
 
         try (PreparedStatement stmt = mariaDB.getConnection().prepareStatement("SELECT MAX(id) FROM player_activity")){
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                maxID = rs.getInt(1);
+            try(ResultSet rs = stmt.executeQuery()){
+                while (rs.next()) {
+                    maxID = rs.getInt(1);
+                }
             }
         }
         catch (SQLException e){

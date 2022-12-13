@@ -13,13 +13,13 @@ import java.sql.SQLException;
 public class MariaDB {
 
     private final Core core;
-    private Connection connection;
+    public Connection connection;
 
     public MariaDB(Core core) {
         this.core = core;
     }
 
-    HikariDataSource hikariDataSource;
+    public HikariDataSource hikariDataSource;
 
     // method to check if table exists
     public static boolean tableExist(Connection connection, String tableName) throws SQLException {
@@ -53,8 +53,6 @@ public class MariaDB {
             String ip = config.getString("mariadb.ip");
             String port = config.getString("mariadb.port");
             String database = config.getString("mariadb.database");
-            String url = "jdbc:mariadb://" + ip + ":" + port + "/" + database + "?user=" + user + "&password=" + password;
-
             // tries to connect to the database
             try {
                 core.getLogger().info(DebugColors.CYAN + "Trying to connect to the database using HikariCP...");
@@ -67,19 +65,8 @@ public class MariaDB {
                 ds.setJdbcUrl("jdbc:mariadb://localhost:3306/Core");
                 ds.addDataSourceProperty("user", user);
                 ds.addDataSourceProperty("password", password);
-                // ds.setAutoCommit(false);
-
-
-/*
-            HikariDataSource hikari = hikariDataSource;
-            hikari.setDataSourceClassName("org.mariadb.jdbc.MariaDbDataSource");
-            hikari.addDataSourceProperty("url", url);
-            hikari.setPoolName("HikariCore");
-            hikari.setMaximumPoolSize(20);
-            hikari.setMinimumIdle(10);
-
- */
-
+                ds.setMaximumPoolSize(3);
+                // ds.setAutoCommit(false); -- this option breaks it. If i turn it on, it won't save the player join to database
 
                 connection = ds.getConnection();
                 core.getLogger().info(DebugColors.BLUE + "Successfully connected to the database using HikariCP");
@@ -100,7 +87,6 @@ public class MariaDB {
                         core.getLogger().info(DebugColors.CYAN + "Database table " + tableName + " doesn't exist, creating...");
                         try(PreparedStatement statement = getConnection().prepareStatement(stringStatement)){
                             statement.executeUpdate();
-                            statement.close();
                             if (tableExist(getConnection(), tableName)) {
                                 core.getLogger().info(DebugColors.BLUE + "Successfully created the table " + tableName);
                             }
@@ -130,9 +116,5 @@ public class MariaDB {
             hikariDataSource.close();
             core.getLogger().info(DebugColors.BLUE + "Successfully closed the HikariCP connection");
         }
-    }
-
-    public HikariDataSource getHikariDataSource() {
-        return hikariDataSource;
     }
 }
