@@ -46,11 +46,11 @@ public class PlayerActivityDB {
 
         try {
             // gets all columns of all rows that include player's uuid. It orders them by largest id and limits the results to only one row
-            try(PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("SELECT * FROM player_activity WHERE uuid = ? ORDER BY id DESC LIMIT 1")){
+            try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("SELECT * FROM player_activity WHERE uuid = ? ORDER BY id DESC LIMIT 1")) {
                 // sets the '?' to given uuid
                 statement.setString(1, uuid);
                 // gets the results, which in this case should be only one result
-                try(ResultSet results = statement.executeQuery()){
+                try (ResultSet results = statement.executeQuery()) {
                     if (results.next()) {
 
                         // saves the results as variables
@@ -88,8 +88,7 @@ public class PlayerActivityDB {
                     statement.setTimestamp(4, playerActivity.getTime());
 
                     statement.executeUpdate();
-                }
-                catch (SQLException e){
+                } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
             }

@@ -18,7 +18,7 @@ public class ConfigManager {
     }
 
     // the default config.yml
-    public void defaultConfig() {
+    private void defaultConfig() {
         FileConfiguration defaultConfig = core.getConfig();
         defaultConfig.addDefault("settings.server-type", "HUB");
         core.getConfig().options().copyDefaults(true);

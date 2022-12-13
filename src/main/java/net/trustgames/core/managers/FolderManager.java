@@ -8,7 +8,7 @@ import java.io.File;
 public record FolderManager(Core core) {
 
     // Data folder = /plugins/Core folder
-    public void createDataFolder() {
+    private void createDataFolder() {
         // check if the folder exists, in case it doesn't, create it.
         try {
             if (!core.getDataFolder().exists()) {
@@ -26,7 +26,7 @@ public record FolderManager(Core core) {
     }
 
     // creates the specified folder
-    public void createFolder(String folderName) {
+    private void createFolder(String folderName) {
 
         File file = new File(core.getDataFolder() + File.separator + folderName);
 

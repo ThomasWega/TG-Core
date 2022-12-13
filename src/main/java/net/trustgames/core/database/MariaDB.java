@@ -14,16 +14,15 @@ import java.sql.SQLException;
 public class MariaDB {
 
     private final Core core;
-    public Connection connection;
+    public HikariDataSource hikariDataSource;
+    private Connection connection;
 
     public MariaDB(Core core) {
         this.core = core;
     }
 
-    public HikariDataSource hikariDataSource;
-
     // method to check if table exists
-    public static boolean tableExist(Connection connection, String tableName) throws SQLException {
+    private static boolean tableExist(Connection connection, String tableName) throws SQLException {
         boolean tExists = false;
         try (ResultSet rs = connection.getMetaData().getTables(null, null, tableName, null)) {
             while (rs.next()) {

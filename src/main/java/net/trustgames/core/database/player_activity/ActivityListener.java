@@ -53,7 +53,7 @@ public class ActivityListener implements Listener {
 
         if (playerActivity == null) {
             try {
-                playerActivity = new PlayerActivity(player.getUniqueId().toString(), Objects.requireNonNull(player.getAddress()).getHostString(),"FIRST JOIN PORT " + Bukkit.getServer().getPort(), new Timestamp(Instant.now().toEpochMilli()));
+                playerActivity = new PlayerActivity(player.getUniqueId().toString(), Objects.requireNonNull(player.getAddress()).getHostString(), "FIRST JOIN PORT " + Bukkit.getServer().getPort(), new Timestamp(Instant.now().toEpochMilli()));
                 playerActivityDB.createPlayerActivity(playerActivity);
             } catch (SQLException e) {
                 core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Error when creating info in player_activity table");
@@ -65,7 +65,7 @@ public class ActivityListener implements Listener {
         }
     }
 
-    private void writeActivity(Player player, String action){
+    private void writeActivity(Player player, String action) {
         // check if mysql is enabled in the mariadb.yml
         if (core.getMariaDB().isMySQLEnabled()) {
             PlayerActivity playerActivity;

@@ -16,7 +16,7 @@ public class CommandManager {
     }
 
     // used to register all commands
-    public void registerCommand(String commandName, CommandExecutor commandExecutor) {
+    private void registerCommand(String commandName, CommandExecutor commandExecutor) {
         Objects.requireNonNull(core.getCommand(commandName)).setExecutor(commandExecutor);
     }
 

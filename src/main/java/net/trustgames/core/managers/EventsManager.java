@@ -13,14 +13,17 @@ public class EventsManager {
         this.core = core;
     }
 
+    // used to register all events
     public final void registerEvents() {
 
-
-        // used to register all events
+        // spawn
         core.getServer().getPluginManager().registerEvents(new Spawn(core), core);
+
+        // hotbar
         core.getServer().getPluginManager().registerEvents(new Hotbar(core), core);
         core.getServer().getPluginManager().registerEvents(new HotbarManager(core), core);
-   // FIXME     core.getServer().getPluginManager().registerEvents(new StatsListeners(core), core);
+
+        // database
         core.getServer().getPluginManager().registerEvents(new ActivityListener(core), core);
     }
 }

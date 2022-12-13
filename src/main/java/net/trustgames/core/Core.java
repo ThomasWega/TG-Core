@@ -3,12 +3,12 @@ package net.trustgames.core;
 import net.trustgames.core.announcer.ChatAnnouncer;
 import net.trustgames.core.database.MariaDB;
 import net.trustgames.core.database.player_activity.PlayerActivityDB;
-import net.trustgames.core.database.player_stats.PlayerStatsDB;
 import net.trustgames.core.managers.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Core extends JavaPlugin {
 
+    public MariaDB mariaDB = new MariaDB(this);
     FolderManager folderManager = new FolderManager(this);
     ConfigManager configManager = new ConfigManager(this);
     ChatAnnouncer chatAnnouncer = new ChatAnnouncer(this);
@@ -17,14 +17,11 @@ public final class Core extends JavaPlugin {
     GameruleManager gameruleManager = new GameruleManager(this);
     // test
     PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
-    PlayerStatsDB playerStatsDB = new PlayerStatsDB(this);
-
-    public MariaDB mariaDB = new MariaDB(this);
 
     @Override
     public void onEnable() {
 
-        /* TODO
+        /* ADD
         - Command completer (tab complete)
         - chat system
         - economy system
@@ -84,7 +81,9 @@ public final class Core extends JavaPlugin {
         mariaDB.closeHikari();
     }
 
-    public MariaDB getMariaDB(){
+
+    // get the class MariaDB
+    public MariaDB getMariaDB() {
         return mariaDB;
     }
 }
