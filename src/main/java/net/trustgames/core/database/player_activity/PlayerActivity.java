@@ -9,17 +9,27 @@ public class PlayerActivity {
      */
 
     private final String uuid;
+    private String ip;
     private String action;
     private Timestamp time;
 
-    public PlayerActivity(String uuid, String action, Timestamp time) {
+    public PlayerActivity(String uuid, String ip, String action, Timestamp time) {
         this.uuid = uuid;
+        this.ip = ip;
         this.action = action;
         this.time = time;
     }
 
     public String getUuid() {
         return uuid;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 
     public String getAction() {

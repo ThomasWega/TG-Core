@@ -18,7 +18,8 @@ public final class Core extends JavaPlugin {
     // test
     PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
     PlayerStatsDB playerStatsDB = new PlayerStatsDB(this);
-    private MariaDB mariaDB;
+
+    public MariaDB mariaDB = new MariaDB(this);
 
     @Override
     public void onEnable() {
@@ -65,13 +66,8 @@ public final class Core extends JavaPlugin {
         // run ChatAnnouncer
         chatAnnouncer.announceMessages();
 
-        // test db
-        /* TODO
-        - fix closing connections
-         */
+        // mariadb database
         playerActivityDB.initializePlayerActivityTable();
-
-        this.mariaDB = new MariaDB(this);
         // FIXME  playerStatsDB.initializePlayerStatsTable();
 
 
@@ -85,7 +81,10 @@ public final class Core extends JavaPlugin {
         // Plugin shutdown logic
 
         // close the HikariCP connection
-        this.mariaDB = new MariaDB(this);
         mariaDB.closeHikari();
+    }
+
+    public MariaDB getMariaDB(){
+        return mariaDB;
     }
 }
