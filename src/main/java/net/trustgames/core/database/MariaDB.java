@@ -6,10 +6,7 @@ import net.trustgames.core.debug.DebugColors;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class MariaDB {
 
@@ -36,14 +33,44 @@ public class MariaDB {
         return tExists;
     }
 
+    // create the specified database if it doesn't exist yet
+    private void createDatabaseIfNotExists() {
+
+        // get the mariadb config credentials
+        MariaConfig mariaConfig = new MariaConfig(core);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
+        String user = config.getString("mariadb.user");
+        String password = config.getString("mariadb.password");
+        String ip = config.getString("mariadb.ip");
+        String port = config.getString("mariadb.port");
+        String database = config.getString("mariadb.database");
+
+        try {
+            // try to create a connection and prepared statement with sql statement
+            Class.forName("org.mariadb.jdbc.Driver");
+            try (Connection connection = DriverManager.getConnection("jdbc:mariadb://" + ip + ":" + port + "/", user, password); PreparedStatement statement = connection.prepareStatement("CREATE DATABASE IF NOT EXISTS " + database)) {
+                statement.executeUpdate();
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Unable to create " + database + " database!");
+            throw new RuntimeException(e);
+        }
+
+    }
+
     /*
-     gets the connection. Checks if the connection isnt null. If it isn't, it will return connection
+     gets the connection. Checks if the connection isn't null. If it isn't, it will return connection
      if the connection is null, meaning it probably doesn't exist, it will create a new connection and return it
     */
     public Connection getConnection() {
 
+        // create the database if it doesn't exist
+        createDatabaseIfNotExists();
+
+        // if the connection isn't null, it returns the connection
         if (connection != null) {
             return connection;
+            // create new pool with new connection
         } else {
 
             // get the mariadb config credentials
@@ -57,6 +84,7 @@ public class MariaDB {
 
             // tries to connect to the database
             try {
+                // set the basic stuff
                 hikariDataSource = new HikariDataSource();
                 HikariDataSource ds = hikariDataSource;
                 ds.setDriverClassName("org.mariadb.jdbc.Driver");
@@ -79,7 +107,7 @@ public class MariaDB {
      checks if the table exists, if it doesn't, it creates one using the given SQL statement
      (is run async)
     */
-    public void initializeDatabase(String tableName, String stringStatement) {
+    public void initializeTable(String tableName, String stringStatement) {
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -101,7 +129,7 @@ public class MariaDB {
                         throw new RuntimeException(e);
                     }
                 } else {
-                    core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "MySQL is turned off. Not initializing table" + tableName);
+                    core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "MySQL is turned off. Not initializing table " + tableName);
                 }
             }
         }.runTaskAsynchronously(core);

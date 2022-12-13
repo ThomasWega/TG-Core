@@ -30,7 +30,7 @@ public class PlayerActivityDB {
             @Override
             public void run() {
                 String preparedStatement = "CREATE TABLE IF NOT EXISTS player_activity(id INT primary key AUTO_INCREMENT, uuid varchar(36), ip varchar(15), action TINYTEXT, time DATETIME)";
-                core.getMariaDB().initializeDatabase("player_activity", preparedStatement);
+                core.getMariaDB().initializeTable("player_activity", preparedStatement);
             }
 
         }.runTaskAsynchronously(core);
