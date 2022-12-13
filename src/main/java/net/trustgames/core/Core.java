@@ -15,7 +15,6 @@ public final class Core extends JavaPlugin {
     EventsManager eventsManager = new EventsManager(this);
     CommandManager commandManager = new CommandManager(this);
     GameruleManager gameruleManager = new GameruleManager(this);
-    // test
     PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
 
     @Override
@@ -50,10 +49,6 @@ public final class Core extends JavaPlugin {
         // set gamerules
         gameruleManager.setGamerules();
 
-        // connect to MariaDB database
-//        this.mariaDB = new MariaDB(this);
-
-
         // register events
         eventsManager.registerEvents();
 
@@ -65,17 +60,18 @@ public final class Core extends JavaPlugin {
 
         // mariadb database
         playerActivityDB.initializePlayerActivityTable();
-        // FIXME  playerStatsDB.initializePlayerStatsTable();
 
-
-        // TODO custom head textures for items
-
-        // FIXME too much mysql connections - close them!!!
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+
+/* TODO
+    Save data on database on server shutdown
+    because on server shutdown, the plugin is first disabled and after that the player is kicked
+    meaning the onPlayerQuit method won't save the player's quit
+     */
 
         // close the HikariCP connection
         mariaDB.closeHikari();

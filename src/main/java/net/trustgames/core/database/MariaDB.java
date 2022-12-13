@@ -33,29 +33,35 @@ public class MariaDB {
         return tExists;
     }
 
-    // create the specified database if it doesn't exist yet
+    /*
+     create the specified database if it doesn't exist yet
+     (is run async)
+    */
     private void createDatabaseIfNotExists() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                // get the mariadb config credentials
+                MariaConfig mariaConfig = new MariaConfig(core);
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
+                String user = config.getString("mariadb.user");
+                String password = config.getString("mariadb.password");
+                String ip = config.getString("mariadb.ip");
+                String port = config.getString("mariadb.port");
+                String database = config.getString("mariadb.database");
 
-        // get the mariadb config credentials
-        MariaConfig mariaConfig = new MariaConfig(core);
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
-        String user = config.getString("mariadb.user");
-        String password = config.getString("mariadb.password");
-        String ip = config.getString("mariadb.ip");
-        String port = config.getString("mariadb.port");
-        String database = config.getString("mariadb.database");
-
-        try {
-            // try to create a connection and prepared statement with sql statement
-            Class.forName("org.mariadb.jdbc.Driver");
-            try (Connection connection = DriverManager.getConnection("jdbc:mariadb://" + ip + ":" + port + "/", user, password); PreparedStatement statement = connection.prepareStatement("CREATE DATABASE IF NOT EXISTS " + database)) {
-                statement.executeUpdate();
+                try {
+                    // try to create a connection and prepared statement with sql statement
+                    Class.forName("org.mariadb.jdbc.Driver");
+                    try (Connection connection = DriverManager.getConnection("jdbc:mariadb://" + ip + ":" + port + "/", user, password); PreparedStatement statement = connection.prepareStatement("CREATE DATABASE IF NOT EXISTS " + database)) {
+                        statement.executeUpdate();
+                    }
+                } catch (SQLException | ClassNotFoundException e) {
+                    core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Unable to create " + database + " database!");
+                    throw new RuntimeException(e);
+                }
             }
-        } catch (SQLException | ClassNotFoundException e) {
-            core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Unable to create " + database + " database!");
-            throw new RuntimeException(e);
-        }
-
+        }.runTaskAsynchronously(core);
     }
 
     /*
