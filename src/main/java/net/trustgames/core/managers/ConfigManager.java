@@ -2,9 +2,9 @@ package net.trustgames.core.managers;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.announcer.AnnouncerConfig;
+import net.trustgames.core.config.DefaultConfig;
 import net.trustgames.core.database.MariaConfig;
 import net.trustgames.core.debug.DebugColors;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,14 +15,6 @@ public class ConfigManager {
 
     public ConfigManager(Core core) {
         this.core = core;
-    }
-
-    // the default config.yml
-    private void defaultConfig() {
-        FileConfiguration defaultConfig = core.getConfig();
-        defaultConfig.addDefault("settings.server-type", "HUB");
-        core.getConfig().options().copyDefaults(true);
-        core.saveConfig();
     }
 
     // creates a specified file (config)
@@ -53,7 +45,8 @@ public class ConfigManager {
     // creates the defaults for every config
     public void createConfigsDefaults() {
 
-        defaultConfig();
+        DefaultConfig defaultConfig = new DefaultConfig(core);
+        defaultConfig.create();
 
         MariaConfig mariaConfig = new MariaConfig(core);
         mariaConfig.mariaDefaults();

@@ -16,6 +16,7 @@ public final class Core extends JavaPlugin {
     CommandManager commandManager = new CommandManager(this);
     GameruleManager gameruleManager = new GameruleManager(this);
     PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
+    ServerShutdownManager serverShutdownManager = new ServerShutdownManager(this);
 
     @Override
     public void onEnable() {
@@ -72,6 +73,9 @@ public final class Core extends JavaPlugin {
     because on server shutdown, the plugin is first disabled and after that the player is kicked
     meaning the onPlayerQuit method won't save the player's quit
      */
+
+        // run the server shutdown manager (kick players, ...)
+        serverShutdownManager.kickPlayers();
 
         // close the HikariCP connection
         mariaDB.closeHikari();
