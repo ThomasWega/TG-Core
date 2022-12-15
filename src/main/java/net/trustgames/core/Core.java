@@ -8,12 +8,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Core extends JavaPlugin {
 
-    public MariaDB mariaDB = new MariaDB(this);
-    public FolderManager folderManager = new FolderManager(this);
-    public ConfigManager configManager = new ConfigManager(this);
+    MariaDB mariaDB = new MariaDB(this);
+    FolderManager folderManager = new FolderManager(this);
+    ConfigManager configManager = new ConfigManager(this);
     ChatAnnouncer chatAnnouncer = new ChatAnnouncer(this);
     EventsManager eventsManager = new EventsManager(this);
-    public CommandManager commandManager = new CommandManager(this);
+    CommandManager commandManager = new CommandManager(this);
     PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
     ServerShutdownManager serverShutdownManager = new ServerShutdownManager(this);
     GameruleManager gameruleManager = new GameruleManager(this);
@@ -62,7 +62,7 @@ public final class Core extends JavaPlugin {
 
         // set the gamerules
         gameruleManager.setGamerules("world");
-        
+
         // API TEST
     }
 
