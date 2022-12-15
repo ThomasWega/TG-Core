@@ -1,7 +1,6 @@
 package net.trustgames.core.inventories;
 
 import net.kyori.adventure.text.Component;
-import net.trustgames.core.Core;
 import net.trustgames.core.managers.HotbarManager;
 import net.trustgames.core.managers.ItemManager;
 import net.trustgames.core.managers.SkullManager;
@@ -18,19 +17,12 @@ import java.util.List;
 
 public class HotbarItems {
 
-    private final Core core;
-
-    public HotbarItems(Core core) {
-        this.core = core;
-    }
+    ItemManager itemManager = new ItemManager();
+    HotbarManager hotbarManager = new HotbarManager();
+    SkullManager skullManager = new SkullManager();
 
     // list of hotbar items to add
     public void addFromItemList(Player player) {
-
-        // get the functions
-        ItemManager itemManager = new ItemManager();
-        HotbarManager hotbarManager = new HotbarManager(core);
-        SkullManager skullManager = new SkullManager();
 
         // server selector
         ItemStack selectorStack = skullManager.getSkull("http://textures.minecraft.net/texture/7a4b8832afc3cea83224b14410b662e707e8e79c61f466e362a30e82c7de9");
@@ -51,10 +43,6 @@ public class HotbarItems {
 
     // update the hide item in hotbar
     public void updateHideItem(int count) {
-
-        // get the methods
-        ItemManager itemManager = new ItemManager();
-        HotbarManager hotbarManager = new HotbarManager(core);
 
         // hide players item
         ItemStack hideStack = itemManager.createItemStack(Material.FEATHER, 1);

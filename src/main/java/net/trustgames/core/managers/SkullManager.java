@@ -1,14 +1,13 @@
 package net.trustgames.core.managers;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
 import org.apache.commons.codec.binary.Base64;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
-import java.lang.reflect.Field;
-import java.util.Objects;
 import java.util.UUID;
 
 public class SkullManager {
@@ -16,11 +15,25 @@ public class SkullManager {
 
     /*
      gets the player skull by his url. Use mineskin.org for url
-     communicates with mojang servers
-     https://www.spigotmc.org/threads/tutorial-skulls.135083/#post-1432132
+     Using advanced paper api method for this. (will not work on spigot)
     */
     public ItemStack getSkull(String skinURL) {
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
+        SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+        PlayerProfile playerProfile = Bukkit.createProfile(UUID.randomUUID(), null);
+        byte[] encodedData = Base64.encodeBase64(String.format("{textures:{SKIN:{url:\"%s\"}}}", skinURL).getBytes());
+        playerProfile.getProperties().add(new ProfileProperty("textures", new String(encodedData)));
+        skullMeta.setPlayerProfile(playerProfile);
+        skull.setItemMeta(skullMeta);
+
+        return skull;
+    }
+}
+
+/*      OLD METHOD (spigot way)
+https://www.spigotmc.org/threads/tutorial-skulls.135083/#post-1432132
+
+     ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
 
         // check if the skinurl is null or empty, in case it is, it return skull (null)
         if (skinURL == null || skinURL.isEmpty())
@@ -50,6 +63,4 @@ public class SkullManager {
 
         skull.setItemMeta(skullMeta);
 
-        return skull;
-    }
-}
+    */

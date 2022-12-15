@@ -2,7 +2,7 @@ package net.trustgames.core.managers;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.database.player_activity.ActivityListener;
-import net.trustgames.core.inventories.Hotbar;
+import net.trustgames.core.inventories.HotbarListeners;
 import net.trustgames.core.spawn.Spawn;
 
 public class EventsManager {
@@ -20,8 +20,7 @@ public class EventsManager {
         core.getServer().getPluginManager().registerEvents(new Spawn(core), core);
 
         // hotbar
-        core.getServer().getPluginManager().registerEvents(new Hotbar(core), core);
-        core.getServer().getPluginManager().registerEvents(new HotbarManager(core), core);
+        core.getServer().getPluginManager().registerEvents(new HotbarListeners(core), core);
 
         // database
         core.getServer().getPluginManager().registerEvents(new ActivityListener(core), core);
