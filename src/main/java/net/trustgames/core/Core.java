@@ -68,13 +68,8 @@ public final class Core extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
 
-/* TODO
-    Save data on database on server shutdown
-    because on server shutdown, the plugin is first disabled and after that the player is kicked
-    meaning the onPlayerQuit method won't save the player's quit
-     */
 
-        // run the server shutdown manager (kick players, ...)
+        // run the server shutdown manager (kick players, write activity, ...)
         serverShutdownManager.kickPlayers();
 
         // close the HikariCP connection

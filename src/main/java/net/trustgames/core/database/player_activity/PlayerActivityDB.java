@@ -29,7 +29,7 @@ public class PlayerActivityDB {
         new BukkitRunnable() {
             @Override
             public void run() {
-                String preparedStatement = "CREATE TABLE IF NOT EXISTS player_activity(id BIGINT primary key AUTO_INCREMENT, uuid varchar(36), ip varchar(15), action TINYTEXT, time DATETIME)";
+                String preparedStatement = "CREATE TABLE IF NOT EXISTS player_activity(id BIGINT unsigned primary key AUTO_INCREMENT, uuid varchar(36), ip varchar(15), action TINYTEXT, time DATETIME)";
                 core.getMariaDB().initializeTable("player_activity", preparedStatement);
             }
 
