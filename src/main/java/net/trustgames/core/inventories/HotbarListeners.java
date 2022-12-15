@@ -25,6 +25,9 @@ public class HotbarListeners implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+
+        hotbarItems = new HotbarItems();
+
         Player player = event.getPlayer();
 
         // get the other methods

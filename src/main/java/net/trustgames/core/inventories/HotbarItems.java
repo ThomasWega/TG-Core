@@ -24,6 +24,11 @@ public class HotbarItems {
     // list of hotbar items to add
     public void addFromItemList(Player player) {
 
+        // utilize the managers
+        itemManager = new ItemManager();
+        hotbarManager = new HotbarManager();
+        skullManager = new SkullManager();
+
         // server selector
         ItemStack selectorStack = skullManager.getSkull("http://textures.minecraft.net/texture/7a4b8832afc3cea83224b14410b662e707e8e79c61f466e362a30e82c7de9");
         ItemMeta selectorMeta = hotbarManager.createItemMeta(selectorStack, ChatColor.GOLD + "Server Selector");

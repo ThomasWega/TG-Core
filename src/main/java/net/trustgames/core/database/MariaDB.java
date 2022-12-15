@@ -140,6 +140,7 @@ public class MariaDB {
 
     // check if mysql is enabled in the config
     public boolean isMySQLEnabled() {
+        mariaConfig = new MariaConfig(core);
         YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
         return Boolean.parseBoolean(config.getString("mariadb.enable"));
     }

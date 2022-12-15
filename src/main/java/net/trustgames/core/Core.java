@@ -8,15 +8,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Core extends JavaPlugin {
 
-    public MariaDB mariaDB = new MariaDB(this);
+    MariaDB mariaDB = new MariaDB(this);
     FolderManager folderManager = new FolderManager(this);
     ConfigManager configManager = new ConfigManager(this);
     ChatAnnouncer chatAnnouncer = new ChatAnnouncer(this);
     EventsManager eventsManager = new EventsManager(this);
     CommandManager commandManager = new CommandManager(this);
-    GameruleManager gameruleManager = new GameruleManager(this);
     PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
     ServerShutdownManager serverShutdownManager = new ServerShutdownManager(this);
+    GameruleManager gameruleManager = new GameruleManager(this);
 
     @Override
     public void onEnable() {
@@ -38,6 +38,7 @@ public final class Core extends JavaPlugin {
         - npc system
         */
 
+
         // create folders
         folderManager.createAllFolders();
 
@@ -46,9 +47,6 @@ public final class Core extends JavaPlugin {
 
         // create defaults for configs (including the default config.yml)
         configManager.createConfigsDefaults();
-
-        // set gamerules
-        gameruleManager.setGamerules();
 
         // register events
         eventsManager.registerEvents();
@@ -62,6 +60,8 @@ public final class Core extends JavaPlugin {
         // mariadb database
         playerActivityDB.initializePlayerActivityTable();
 
+        // set the gamerules
+        gameruleManager.setGamerules("world");
     }
 
     @Override

@@ -1,6 +1,7 @@
 package net.trustgames.core.announcer;
 
 import net.trustgames.core.Core;
+import net.trustgames.core.database.MariaConfig;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;

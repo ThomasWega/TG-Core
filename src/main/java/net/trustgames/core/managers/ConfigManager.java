@@ -17,10 +17,6 @@ public class ConfigManager {
         this.core = core;
     }
 
-    DefaultConfig defaultConfig;
-    MariaConfig mariaConfig;
-    AnnouncerConfig announcerConfig;
-
     // creates a specified file (config)
     private void createConfig(String filePath, String fileName) {
         File file;
@@ -50,10 +46,13 @@ public class ConfigManager {
     public void createConfigsDefaults() {
 
         // default config.yml
+        DefaultConfig defaultConfig = new DefaultConfig(core);
         defaultConfig.create();
 
         // other configs
+        MariaConfig mariaConfig = new MariaConfig(core);
         mariaConfig.mariaDefaults();
+        AnnouncerConfig announcerConfig = new AnnouncerConfig(core);
         announcerConfig.announcerDefaults();
     }
 
