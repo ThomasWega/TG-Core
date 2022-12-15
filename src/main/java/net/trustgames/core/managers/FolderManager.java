@@ -26,9 +26,9 @@ public record FolderManager(Core core) {
     }
 
     // creates the specified folder
-    private void createFolder(String folderName) {
+    private void createFolder(String path) {
 
-        File file = new File(core.getDataFolder() + File.separator + folderName);
+        File file = new File(path);
 
         // check if the /plugins/Core exists, if not it runs the method createDataFolder to create it
         if (!core.getDataFolder().exists()) {
@@ -47,7 +47,7 @@ public record FolderManager(Core core) {
 
     // create the specific folders
     public void createAllFolders() {
-        createFolder("data");
+      //  createFolder("core.getDataFolder() + File.separator");
     }
 }
 
