@@ -95,7 +95,6 @@ public class PlayerActivityDB {
                 }
             }.runTaskAsynchronously(core);
         } else {
-
             // inserts new player's activity to table
             try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("INSERT INTO player_activity(uuid, action, ip, time) VALUES (?, ?, ?, ?)")) {
                 // replaces the '?' with variables

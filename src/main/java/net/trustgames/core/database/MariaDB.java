@@ -113,42 +113,43 @@ public class MariaDB {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (isMySQLEnabled()) {
-                    try {
-                        createDatabaseIfNotExists();
-                        if (getConnection() != null) {
-                            if (!tableExist(getConnection(), tableName)) {
-                                core.getLogger().info(DebugColors.CYAN + "Database table " + tableName + " doesn't exist, creating...");
-                                try (PreparedStatement statement = getConnection().prepareStatement(stringStatement)) {
-                                    statement.executeUpdate();
-                                    if (tableExist(getConnection(), tableName)) {
-                                        core.getLogger().info(DebugColors.BLUE + "Successfully created the table " + tableName);
-                                    }
-                                }
-                            }
-                        }
-                    } catch (SQLException e) {
-                        core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Unable to create " + tableName + " table in the database!");
-                        throw new RuntimeException(e);
-                    }
-                } else {
+                if (isMySQLDisabled()) {
                     core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "MySQL is turned off. Not initializing table " + tableName);
+                    return;
+                }
+                try {
+                    // if the connection is null, return. if the table already exists, return.
+                    if (getConnection() == null) return;
+                    if (tableExist(getConnection(), tableName)) return;
+
+                    createDatabaseIfNotExists();
+
+                    // if the table doesn't yet exist
+                    core.getLogger().info(DebugColors.CYAN + "Database table " + tableName + " doesn't exist, creating...");
+                    try (PreparedStatement statement = getConnection().prepareStatement(stringStatement)) {
+                        statement.executeUpdate();
+                        if (tableExist(getConnection(), tableName)) {
+                            core.getLogger().info(DebugColors.BLUE + "Successfully created the table " + tableName);
+                        }
+                    }
+                } catch (SQLException e) {
+                    core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Unable to create " + tableName + " table in the database!");
+                    throw new RuntimeException(e);
                 }
             }
         }.runTaskAsynchronously(core);
     }
 
     // check if mysql is enabled in the config
-    public boolean isMySQLEnabled() {
+    public boolean isMySQLDisabled() {
         mariaConfig = new MariaConfig(core);
         YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
-        return Boolean.parseBoolean(config.getString("mariadb.enable"));
+        return !Boolean.parseBoolean(config.getString("mariadb.enable"));
     }
 
     // close the hikari connection
     public void closeHikari() {
-        if (isMySQLEnabled()) {
-            hikariDataSource.close();
-        }
+        if (isMySQLDisabled()) return;
+        hikariDataSource.close();
     }
 }

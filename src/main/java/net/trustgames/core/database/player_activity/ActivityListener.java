@@ -76,25 +76,25 @@ public class ActivityListener implements Listener {
      */
     private void writeActivity(Player player, String action, boolean runAsync) {
         // check if mysql is enabled in the mariadb.yml
-        if (core.getMariaDB().isMySQLEnabled()) {
-            PlayerActivity playerActivity;
-            try {
-                playerActivity = getPlayerActivityFromDatabase(player, runAsync);
-                if (playerActivity != null) {
-                    PlayerActivityDB playerActivityDB = new PlayerActivityDB(core);
+        if (core.getMariaDB().isMySQLDisabled()) return;
+
+        PlayerActivity playerActivity;
+        try {
+            playerActivity = getPlayerActivityFromDatabase(player, runAsync);
+            if (playerActivity != null) {
+                PlayerActivityDB playerActivityDB = new PlayerActivityDB(core);
 
 
-                    // set the action and time
-                    playerActivity.setIp(Objects.requireNonNull(player.getAddress()).getHostString());
-                    playerActivity.setAction(action);
-                    playerActivity.setTime(new Timestamp(Instant.now().toEpochMilli()));
+                // set the action and time
+                playerActivity.setIp(Objects.requireNonNull(player.getAddress()).getHostString());
+                playerActivity.setAction(action);
+                playerActivity.setTime(new Timestamp(Instant.now().toEpochMilli()));
 
-                    // create new stat
-                    playerActivityDB.createPlayerActivity(playerActivity, runAsync);
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+                // create new stat
+                playerActivityDB.createPlayerActivity(playerActivity, runAsync);
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 }
