@@ -29,14 +29,18 @@ public class ActivityListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
 
         Player player = event.getPlayer();
-        writeActivity(player, "JOIN PORT " + Bukkit.getServer().getPort());
+        writeActivity(player, "JOIN PORT " + Bukkit.getServer().getPort(), true);
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         // check if mysql is enabled in the mariadb.yml
         Player player = event.getPlayer();
-        writeActivity(player, "QUIT PORT " + Bukkit.getServer().getPort());
+        writeActivity(player, "QUIT PORT " + Bukkit.getServer().getPort(), true);
+    }
+
+    public void onServerShutdown(Player player) {
+        writeActivity(player, "QUIT PORT " + Bukkit.getServer().getPort() + " SHUTDOWN", false);
     }
 
     /*
@@ -44,7 +48,7 @@ public class ActivityListener implements Listener {
     to find player's last activity by his uuid. If the activity is null, meaning the player
     probably doesn't have any activities saved in the table yet, it creates one with specified values
      */
-    private PlayerActivity getPlayerActivityFromDatabase(Player player) throws SQLException {
+    private PlayerActivity getPlayerActivityFromDatabase(Player player, boolean runAsync) throws SQLException {
 
         PlayerActivityDB playerActivityDB = new PlayerActivityDB(core);
 
@@ -54,7 +58,7 @@ public class ActivityListener implements Listener {
         if (playerActivity == null) {
             try {
                 playerActivity = new PlayerActivity(player.getUniqueId().toString(), Objects.requireNonNull(player.getAddress()).getHostString(), "FIRST JOIN PORT " + Bukkit.getServer().getPort(), new Timestamp(Instant.now().toEpochMilli()));
-                playerActivityDB.createPlayerActivity(playerActivity);
+                playerActivityDB.createPlayerActivity(playerActivity, runAsync);
             } catch (SQLException e) {
                 core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Error when creating info in player_activity table");
                 throw new RuntimeException(e);
@@ -65,12 +69,17 @@ public class ActivityListener implements Listener {
         }
     }
 
-    private void writeActivity(Player player, String action) {
+    /*
+    writes the values for the newly created player activity to the table.
+    Assigns a new player activity by getting the player's activity from
+    the database and setting the values accordingly. Then it creates the full row.
+     */
+    private void writeActivity(Player player, String action, boolean runAsync) {
         // check if mysql is enabled in the mariadb.yml
         if (core.getMariaDB().isMySQLEnabled()) {
             PlayerActivity playerActivity;
             try {
-                playerActivity = getPlayerActivityFromDatabase(player);
+                playerActivity = getPlayerActivityFromDatabase(player, runAsync);
                 if (playerActivity != null) {
                     PlayerActivityDB playerActivityDB = new PlayerActivityDB(core);
 
@@ -81,7 +90,7 @@ public class ActivityListener implements Listener {
                     playerActivity.setTime(new Timestamp(Instant.now().toEpochMilli()));
 
                     // create new stat
-                    playerActivityDB.createPlayerActivity(playerActivity);
+                    playerActivityDB.createPlayerActivity(playerActivity, runAsync);
                 }
             } catch (SQLException e) {
                 throw new RuntimeException(e);

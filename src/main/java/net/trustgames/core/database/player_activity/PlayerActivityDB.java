@@ -74,24 +74,40 @@ public class PlayerActivityDB {
     values from playerActivity are set for each index
     (is run async)
      */
-    public void createPlayerActivity(PlayerActivity playerActivity) throws SQLException {
+    public void createPlayerActivity(PlayerActivity playerActivity, boolean runAsync) throws SQLException {
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                // inserts new player's activity to table
-                try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("INSERT INTO player_activity(uuid, action, ip, time) VALUES (?, ?, ?, ?)")) {
-                    // replaces the '?' with variables
-                    statement.setString(1, playerActivity.getUuid());
-                    statement.setString(2, playerActivity.getAction());
-                    statement.setString(3, playerActivity.getIp());
-                    statement.setTimestamp(4, playerActivity.getTime());
+        if (runAsync) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    // inserts new player's activity to table
+                    try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("INSERT INTO player_activity(uuid, action, ip, time) VALUES (?, ?, ?, ?)")) {
+                        // replaces the '?' with variables
+                        statement.setString(1, playerActivity.getUuid());
+                        statement.setString(2, playerActivity.getAction());
+                        statement.setString(3, playerActivity.getIp());
+                        statement.setTimestamp(4, playerActivity.getTime());
 
-                    statement.executeUpdate();
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
+                        statement.executeUpdate();
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
+            }.runTaskAsynchronously(core);
+        } else {
+
+            // inserts new player's activity to table
+            try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("INSERT INTO player_activity(uuid, action, ip, time) VALUES (?, ?, ?, ?)")) {
+                // replaces the '?' with variables
+                statement.setString(1, playerActivity.getUuid());
+                statement.setString(2, playerActivity.getAction());
+                statement.setString(3, playerActivity.getIp());
+                statement.setTimestamp(4, playerActivity.getTime());
+
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-        }.runTaskAsynchronously(core);
+        }
     }
 }

@@ -70,9 +70,6 @@ public class MariaDB {
     */
     public Connection getConnection() {
 
-        // create the database if it doesn't exist
-        createDatabaseIfNotExists();
-
         // if the connection isn't null, it returns the connection
         if (connection != null) {
             return connection;
@@ -119,6 +116,7 @@ public class MariaDB {
             public void run() {
                 if (isMySQLEnabled()) {
                     try {
+                        createDatabaseIfNotExists();
                         if (getConnection() != null) {
                             if (!tableExist(getConnection(), tableName)) {
                                 core.getLogger().info(DebugColors.CYAN + "Database table " + tableName + " doesn't exist, creating...");
