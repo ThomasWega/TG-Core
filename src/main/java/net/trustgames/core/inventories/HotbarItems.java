@@ -17,9 +17,9 @@ import java.util.List;
 
 public class HotbarItems {
 
-    ItemManager itemManager = new ItemManager();
-    HotbarManager hotbarManager = new HotbarManager();
-    SkullManager skullManager = new SkullManager();
+    ItemManager itemManager;
+    HotbarManager hotbarManager;
+    SkullManager skullManager;
 
     // list of hotbar items to add
     public void addFromItemList(Player player) {

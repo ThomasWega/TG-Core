@@ -9,11 +9,18 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.Objects;
 
-public record ChatAnnouncer(Core core) {
+public class ChatAnnouncer {
+
+    private final Core core;
+
+    public ChatAnnouncer(Core core) {
+        this.core = core;
+    }
+
+    AnnouncerConfig announcerConfig;
 
     public void announceMessages() {
 
-        AnnouncerConfig announcerConfig = new AnnouncerConfig(core);
         YamlConfiguration config = YamlConfiguration.loadConfiguration(announcerConfig.getAnnouncerFile());
 
         BukkitScheduler scheduler = core.getServer().getScheduler();

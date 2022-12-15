@@ -15,8 +15,9 @@ public class ServerShutdownManager {
         this.core = core;
     }
 
+    ActivityListener activityListener;
+
     public void kickPlayers() {
-        ActivityListener activityListener = new ActivityListener(core);
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.kick(Component.text(ChatColor.translateAlternateColorCodes('&', String.join("\n", core.getConfig().getString("settings.messages.server-restart")))));
             activityListener.onServerShutdown(player);

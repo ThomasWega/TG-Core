@@ -21,12 +21,13 @@ public class HotbarListeners implements Listener {
         this.core = core;
     }
 
+    HotbarItems hotbarItems;
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
         // get the other methods
-        HotbarItems hotbarItems = new HotbarItems();
         hotbarItems.addFromItemList(player);
 
         // hide players
@@ -35,9 +36,6 @@ public class HotbarListeners implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-
-        // get methods
-        HotbarItems hotbarItems = new HotbarItems();
 
         // hide players
         hotbarItems.updateHideItem(Bukkit.getOnlinePlayers().size() - 1);

@@ -66,8 +66,6 @@ public final class Core extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
-
 
         // run the server shutdown manager (kick players, write activity, ...)
         serverShutdownManager.kickPlayers();
