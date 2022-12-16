@@ -11,11 +11,12 @@
 
     <name>Core</name>
 
-    <description>Core for TrustGames.net</description>
+    <description>Core plugin for TrustGames.net</description>
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <url>www.trustgames.net</url>
 
     <build>
         <plugins>
@@ -93,12 +94,6 @@
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
             <version>3.0.6</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.mojang</groupId>
-            <artifactId>authlib</artifactId>
-            <version>1.5.21</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

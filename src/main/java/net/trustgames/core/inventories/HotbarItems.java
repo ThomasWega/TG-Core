@@ -17,40 +17,31 @@ import java.util.List;
 
 public class HotbarItems {
 
-    ItemManager itemManager;
-    HotbarManager hotbarManager;
-    SkullManager skullManager;
-
     // list of hotbar items to add
-    public void addFromItemList(Player player) {
-
-        // utilize the managers
-        itemManager = new ItemManager();
-        hotbarManager = new HotbarManager();
-        skullManager = new SkullManager();
+    public static void addFromItemList(Player player) {
 
         // server selector
-        ItemStack selectorStack = skullManager.getSkull("http://textures.minecraft.net/texture/7a4b8832afc3cea83224b14410b662e707e8e79c61f466e362a30e82c7de9");
-        ItemMeta selectorMeta = hotbarManager.createItemMeta(selectorStack, ChatColor.GOLD + "Server Selector");
+        ItemStack selectorStack = SkullManager.getSkull("eyJ0aW1lc3RhbXAiOjE1MTgxODUxNjg4OTEsInByb2ZpbGVJZCI6IjIzZjFhNTlmNDY5YjQzZGRiZGI1MzdiZmVjMTA0NzFmIiwicHJvZmlsZU5hbWUiOiIyODA3Iiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS83YTRiODgzMmFmYzNjZWE4MzIyNGIxNDQxMGI2NjJlNzA3ZThlNzljNjFmNDY2ZTM2MmEzMGU4MmM3ZGU5In19fQ==", "WsGW3iUx8g+xH1NraTlpxgnsp8ClAE40oerBpV+MnPNmBAbZ/WnZwVEI5w9pziuCG75oxuckrO/kyFFHzxivr+OXKoXYwi8jw+8ZRL7v5gappa5nvdbf5kkClNxmxkjDzbN0U01tM91OWIimKwLo5Lel+Zf02vtYw7CF9sM8rowLKAjQzo1Nydb0Hpo2WFsIe4Aa17vyXsHsv4OTDx4Mj1zUvXtFkgTzNCjBuBAfOBaGXp+m6Zo23XJAu010Rf6by0y8OuEm0XHKMY0SXlpE2AepIQDbaMQA2tlViVsDJLAIJJQh0SBILRxC6+8aGdQmC1AG1L7RmtDrIShx6pwF0gGK5BBG0BTtbJ++NtR0sIBk2oNFvm+TtsG/VmIHL6cDiJ7sxvbNJXrr5lp8YJ9Wsgn6P+iJ/qtdSGOfoEQkBmneRZvelbWeUYcpZi8xinoOmgQCDzIWnKZ96T73ArbBZBbeL+6+XGi7lnqv4DMqqfeyzG3YC6SmCzkiBABz5PDxKG0BthnT7Xw0rocBsxHhjWmWC5okskKHZql+Pk1PZnCXWuaC30HxScH11QHy0li4y3J5mclhqISd5/ZbGx/wuOcETQrFKh9M90qObf5VGNxAJovwdIfs3Zh+YCBdYWzsx8UCbLKmewfGWxpat1VgrHmSumE2uojdk81W8lCmyOs=");
+        ItemMeta selectorMeta = HotbarManager.createItemMeta(selectorStack, ChatColor.GOLD + "Server Selector");
         selectorStack.setItemMeta(selectorMeta);
 
         // player profile
-        ItemStack profileStack = itemManager.createItemStack(Material.PLAYER_HEAD, 1);
-        ItemMeta profileMeta = hotbarManager.createItemMeta(profileStack, ChatColor.GREEN + "My Profile");
+        ItemStack profileStack = ItemManager.createItemStack(Material.PLAYER_HEAD, 1);
+        ItemMeta profileMeta = HotbarManager.createItemMeta(profileStack, ChatColor.GREEN + "My Profile");
         SkullMeta skullProfileMeta = (SkullMeta) profileMeta;
         skullProfileMeta.setOwningPlayer(player);
 
         // add the items to the inventory
-        hotbarManager.addItemToInventory(player, 0, selectorStack);
-        hotbarManager.addItemToInventory(player, 5, selectorStack);
+        HotbarManager.addItemToInventory(player, 0, selectorStack);
+        HotbarManager.addItemToInventory(player, 5, profileStack);
 
     }
 
     // update the hide item in hotbar
-    public void updateHideItem(int count) {
+    public static void updateHideItem(int count) {
 
         // hide players item
-        ItemStack hideStack = itemManager.createItemStack(Material.FEATHER, 1);
+        ItemStack hideStack = ItemManager.createItemStack(Material.FEATHER, 1);
         ItemMeta hideMeta = hideStack.getItemMeta();
         hideMeta.displayName(Component.text(ChatColor.WHITE + "Hide Players" + ChatColor.GRAY + " (Use)"));
 
@@ -68,13 +59,13 @@ public class HotbarItems {
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             if (hideStack.getAmount() <= 64) {
                 hideStack.setAmount(count);
-                hotbarManager.addItemToInventory(onlinePlayer, 7, hideStack);
+                HotbarManager.addItemToInventory(onlinePlayer, 7, hideStack);
             }
         }
     }
 
     // update the player profile item in hotbar
-    public void updateProfileItem(int count) {
+    public static void updateProfileItem(int count) {
         // TODO finish
     }
 }

@@ -1,15 +1,15 @@
 package net.trustgames.core.database;
 
-import net.trustgames.core.Core;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
 
-public record MariaConfig(Core core) {
+public class MariaConfig {
 
     // adds the defaults to the mariadb.yml file
-    public void mariaDefaults() {
+    public static void createDefaults() {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(getMariaFile());
 
         // config defaults
@@ -29,7 +29,7 @@ public record MariaConfig(Core core) {
 
 
     // used to retrieve the mariadb.yml file
-    public File getMariaFile() {
-        return new File(core.getDataFolder(), "mariadb.yml");
+    public static File getMariaFile() {
+        return new File(Bukkit.getPluginsFolder() + File.separator + "Core", "mariadb.yml");
     }
 }

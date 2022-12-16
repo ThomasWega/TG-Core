@@ -13,7 +13,6 @@ public class MariaDB {
     private final Core core;
     public HikariDataSource hikariDataSource;
     private Connection connection;
-    MariaConfig mariaConfig;
 
     public MariaDB(Core core) {
         this.core = core;
@@ -43,7 +42,7 @@ public class MariaDB {
             @Override
             public void run() {
                 // get the mariadb config credentials
-                YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(MariaConfig.getMariaFile());
                 String user = config.getString("mariadb.user");
                 String password = config.getString("mariadb.password");
                 String ip = config.getString("mariadb.ip");
@@ -77,7 +76,7 @@ public class MariaDB {
         } else {
 
             // get the mariadb config credentials
-            YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(MariaConfig.getMariaFile());
             String user = config.getString("mariadb.user");
             String password = config.getString("mariadb.password");
             String ip = config.getString("mariadb.ip");
@@ -142,8 +141,7 @@ public class MariaDB {
 
     // check if mysql is enabled in the config
     public boolean isMySQLDisabled() {
-        mariaConfig = new MariaConfig(core);
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(MariaConfig.getMariaFile());
         return !Boolean.parseBoolean(config.getString("mariadb.enable"));
     }
 

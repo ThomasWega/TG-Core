@@ -2,7 +2,6 @@ package net.trustgames.core.managers;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
-import org.apache.commons.codec.binary.Base64;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -17,12 +16,11 @@ public class SkullManager {
      gets the player skull by his url. Use mineskin.org for url
      Using advanced paper api method for this. (will not work on spigot)
     */
-    public ItemStack getSkull(String skinURL) {
+    public static ItemStack getSkull(String textureValue, String textureSignature) {
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
         SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
         PlayerProfile playerProfile = Bukkit.createProfile(UUID.randomUUID(), null);
-        byte[] encodedData = Base64.encodeBase64(String.format("{textures:{SKIN:{url:\"%s\"}}}", skinURL).getBytes());
-        playerProfile.getProperties().add(new ProfileProperty("textures", new String(encodedData)));
+        playerProfile.getProperties().add(new ProfileProperty("textures", textureValue, textureSignature));
         skullMeta.setPlayerProfile(playerProfile);
         skull.setItemMeta(skullMeta);
 

@@ -1,7 +1,6 @@
 package net.trustgames.core.announcer;
 
-import net.trustgames.core.Core;
-import net.trustgames.core.database.MariaConfig;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -9,10 +8,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public record AnnouncerConfig(Core core) {
+public class AnnouncerConfig {
 
     // create the config defaults for announcer.yml
-    public void announcerDefaults() {
+    public static void createDefaults() {
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(getAnnouncerFile());
 
@@ -42,7 +41,7 @@ public record AnnouncerConfig(Core core) {
     }
 
     // used to retrieve the announcer.yml file
-    public File getAnnouncerFile() {
-        return new File(core.getDataFolder(), "announcer.yml");
+    public static File getAnnouncerFile() {
+        return new File(Bukkit.getPluginsFolder() + File.separator + "Core", "announcer.yml");
     }
 }

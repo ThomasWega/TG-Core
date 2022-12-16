@@ -18,10 +18,9 @@ public class ChatAnnouncer {
     }
 
     public void announceMessages() {
-        AnnouncerConfig announcerConfig = new AnnouncerConfig(core);
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(announcerConfig.getAnnouncerFile());
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(AnnouncerConfig.getAnnouncerFile());
 
-        BukkitScheduler scheduler = core.getServer().getScheduler();
+        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
         scheduler.scheduleSyncRepeatingTask(core, new Runnable() {
             int i = 1;
 

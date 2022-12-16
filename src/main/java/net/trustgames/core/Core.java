@@ -1,19 +1,25 @@
 package net.trustgames.core;
 
+import net.trustgames.core.announcer.AnnouncerConfig;
 import net.trustgames.core.announcer.ChatAnnouncer;
+import net.trustgames.core.config.DefaultConfig;
+import net.trustgames.core.database.MariaConfig;
 import net.trustgames.core.database.MariaDB;
+import net.trustgames.core.database.player_activity.ActivityListener;
 import net.trustgames.core.database.player_activity.PlayerActivityDB;
+import net.trustgames.core.inventories.HotbarListeners;
 import net.trustgames.core.managers.*;
+import net.trustgames.core.spawn.SetSpawnCommand;
+import net.trustgames.core.spawn.Spawn;
+import net.trustgames.core.spawn.SpawnCommand;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
 
 public final class Core extends JavaPlugin {
 
     MariaDB mariaDB = new MariaDB(this);
-    FolderManager folderManager = new FolderManager(this);
-    ConfigManager configManager = new ConfigManager(this);
     ChatAnnouncer chatAnnouncer = new ChatAnnouncer(this);
-    EventsManager eventsManager = new EventsManager(this);
-    CommandManager commandManager = new CommandManager(this);
     PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
     ServerShutdownManager serverShutdownManager = new ServerShutdownManager(this);
     GameruleManager gameruleManager = new GameruleManager(this);
@@ -38,21 +44,28 @@ public final class Core extends JavaPlugin {
         - npc system
         */
 
+        // register commands
+        CommandManager.registerCommand("spawn", new SpawnCommand(this));
+        CommandManager.registerCommand("setspawn", new SetSpawnCommand(this));
 
-        // create folders
-        folderManager.createAllFolders();
+        // create config files
+        ConfigManager.createConfig(new File(getDataFolder(), "spawn.yml"));
+        ConfigManager.createConfig(new File(getDataFolder(), "announcer.yml"));
+        ConfigManager.createConfig(new File(getDataFolder(), "mariadb.yml"));
 
-        // create configs
-        configManager.createAllConfigFiles();
+        // create config defaults
+        DefaultConfig.create(getConfig()); getConfig().options().copyDefaults(true); saveConfig();
+        MariaConfig.createDefaults();
+        AnnouncerConfig.createDefaults();
 
-        // create defaults for configs (including the default config.yml)
-        configManager.createConfigsDefaults();
+        // create a folder
+        FolderManager.createDataFolder(getDataFolder());
+      //  FolderManager.createFolder(new File(getDataFolder() + File.separator + "data"));
 
         // register events
-        eventsManager.registerEvents();
-
-        // register commands
-        commandManager.registerAllCommands();
+        EventsManager.registerEvent(new Spawn(this), this);
+        EventsManager.registerEvent(new ActivityListener(this), this);
+        EventsManager.registerEvent(new HotbarListeners(), this);
 
         // run ChatAnnouncer
         chatAnnouncer.announceMessages();
@@ -75,7 +88,6 @@ public final class Core extends JavaPlugin {
         // close the HikariCP connection
         mariaDB.closeHikari();
     }
-
 
     // get the class MariaDB
     public MariaDB getMariaDB() {

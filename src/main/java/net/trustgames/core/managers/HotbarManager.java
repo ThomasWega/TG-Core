@@ -11,19 +11,19 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class HotbarManager implements Listener {
 
     // add multiple items to the inventory with ItemStack array
-    public void addItemsToInventory(Player player, ItemStack[] itemStacks) {
+    public static void addItemsToInventory(Player player, ItemStack[] itemStacks) {
         Inventory inventory = player.getInventory();
         inventory.setContents(itemStacks);
     }
 
     // add only one item to the inventory
-    public void addItemToInventory(Player player, int index, ItemStack itemStack) {
+    public static void addItemToInventory(Player player, int index, ItemStack itemStack) {
         Inventory inventory = player.getInventory();
         inventory.setItem(index, itemStack);
     }
 
     // creates the itemMeta
-    public ItemMeta createItemMeta(ItemStack itemStack, String name) {
+    public static ItemMeta createItemMeta(ItemStack itemStack, String name) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.displayName(Component.text(name));
         itemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
