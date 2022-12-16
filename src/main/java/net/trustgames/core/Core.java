@@ -29,6 +29,7 @@ public final class Core extends JavaPlugin {
 
         /* ADD
         - Command completer (tab complete)
+        - configurable extandable .yml text info commands (/discord, /store, /help)
         - chat system
         - economy system
         - hotbar items
