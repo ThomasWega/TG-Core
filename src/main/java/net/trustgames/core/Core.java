@@ -24,6 +24,8 @@ public final class Core extends JavaPlugin {
     ServerShutdownManager serverShutdownManager = new ServerShutdownManager(this);
     GameruleManager gameruleManager = new GameruleManager(this);
 
+    public ActivityListener activityListener = new ActivityListener(this);
+
     @Override
     public void onEnable() {
 
