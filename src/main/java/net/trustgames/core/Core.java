@@ -7,11 +7,7 @@ import net.trustgames.core.database.MariaConfig;
 import net.trustgames.core.database.MariaDB;
 import net.trustgames.core.database.player_activity.ActivityListener;
 import net.trustgames.core.database.player_activity.PlayerActivityDB;
-import net.trustgames.core.inventories.HotbarListeners;
 import net.trustgames.core.managers.*;
-import net.trustgames.core.spawn.SetSpawnCommand;
-import net.trustgames.core.spawn.Spawn;
-import net.trustgames.core.spawn.SpawnCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -29,6 +25,7 @@ public final class Core extends JavaPlugin {
 
         /* ADD
         - Command completer (tab complete)
+        - command cooldown
         - configurable extandable .yml text info commands (/discord, /store, /help)
         - chat system
         - economy system
@@ -46,11 +43,13 @@ public final class Core extends JavaPlugin {
         */
 
         // register commands
-        CommandManager.registerCommand("spawn", new SpawnCommand(this));
-        CommandManager.registerCommand("setspawn", new SetSpawnCommand(this));
+    //    CommandManager.registerCommand("command", new SpawnCommand(this));
+
+        // create a folder
+        FolderManager.createDataFolder(getDataFolder());
+        //  FolderManager.createFolder(new File(getDataFolder() + File.separator + "data"));
 
         // create config files
-        ConfigManager.createConfig(new File(getDataFolder(), "spawn.yml"));
         ConfigManager.createConfig(new File(getDataFolder(), "announcer.yml"));
         ConfigManager.createConfig(new File(getDataFolder(), "mariadb.yml"));
 
@@ -61,14 +60,8 @@ public final class Core extends JavaPlugin {
         AnnouncerConfig announcerConfig = new AnnouncerConfig(this);
         announcerConfig.createDefaults();
 
-        // create a folder
-        FolderManager.createDataFolder(getDataFolder());
-      //  FolderManager.createFolder(new File(getDataFolder() + File.separator + "data"));
-
         // register events
-        EventsManager.registerEvent(new Spawn(this), this);
-        EventsManager.registerEvent(new ActivityListener(this), this);
-        EventsManager.registerEvent(new HotbarListeners(), this);
+        EventManager.registerEvent(new ActivityListener(this), this);
 
         // run ChatAnnouncer
         chatAnnouncer.announceMessages();
