@@ -24,8 +24,6 @@ public final class Core extends JavaPlugin {
     ServerShutdownManager serverShutdownManager = new ServerShutdownManager(this);
     GameruleManager gameruleManager = new GameruleManager(this);
 
-    public ActivityListener activityListener = new ActivityListener(this);
-
     @Override
     public void onEnable() {
 
@@ -58,8 +56,10 @@ public final class Core extends JavaPlugin {
 
         // create config defaults
         DefaultConfig.create(getConfig()); getConfig().options().copyDefaults(true); saveConfig();
-        MariaConfig.createDefaults();
-        AnnouncerConfig.createDefaults();
+        MariaConfig mariaConfig = new MariaConfig(this);
+        mariaConfig.createDefaults();
+        AnnouncerConfig announcerConfig = new AnnouncerConfig(this);
+        announcerConfig.createDefaults();
 
         // create a folder
         FolderManager.createDataFolder(getDataFolder());

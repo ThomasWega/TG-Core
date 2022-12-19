@@ -1,6 +1,6 @@
 package net.trustgames.core.announcer;
 
-import org.bukkit.Bukkit;
+import net.trustgames.core.Core;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -10,8 +10,14 @@ import java.util.List;
 
 public class AnnouncerConfig {
 
+    private final Core core;
+
+    public AnnouncerConfig(Core core) {
+        this.core = core;
+    }
+
     // create the config defaults for announcer.yml
-    public static void createDefaults() {
+    public void createDefaults() {
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(getAnnouncerFile());
 
@@ -41,7 +47,7 @@ public class AnnouncerConfig {
     }
 
     // used to retrieve the announcer.yml file
-    public static File getAnnouncerFile() {
-        return new File(Bukkit.getPluginsFolder() + File.separator + "Core", "announcer.yml");
+    public File getAnnouncerFile() {
+        return new File(core.getDataFolder(), "announcer.yml");
     }
 }

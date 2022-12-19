@@ -18,6 +18,8 @@ public class MariaDB {
         this.core = core;
     }
 
+    private MariaConfig mariaConfig;
+
     // method to check if table exists
     private static boolean tableExist(Connection connection, String tableName) throws SQLException {
         boolean tExists = false;
@@ -42,7 +44,7 @@ public class MariaDB {
             @Override
             public void run() {
                 // get the mariadb config credentials
-                YamlConfiguration config = YamlConfiguration.loadConfiguration(MariaConfig.getMariaFile());
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
                 String user = config.getString("mariadb.user");
                 String password = config.getString("mariadb.password");
                 String ip = config.getString("mariadb.ip");
@@ -76,7 +78,7 @@ public class MariaDB {
         } else {
 
             // get the mariadb config credentials
-            YamlConfiguration config = YamlConfiguration.loadConfiguration(MariaConfig.getMariaFile());
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
             String user = config.getString("mariadb.user");
             String password = config.getString("mariadb.password");
             String ip = config.getString("mariadb.ip");
@@ -141,7 +143,8 @@ public class MariaDB {
 
     // check if mysql is enabled in the config
     public boolean isMySQLDisabled() {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(MariaConfig.getMariaFile());
+        mariaConfig = new MariaConfig(core);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
         return !Boolean.parseBoolean(config.getString("mariadb.enable"));
     }
 
