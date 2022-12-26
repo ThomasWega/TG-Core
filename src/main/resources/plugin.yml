@@ -6,10 +6,18 @@ authors: [ Wega ]
 description: Core plugin for TrustGames.net
 website: www.trustgames.net
 commands:
-  setspawn:
-    description: Sets the spawnpoint for all players
-    usage: /setspawn
-    permission: core.admin
-  spawn:
-    description: Teleports to the spawn
-    usage: /spawn
+  discord:
+    description: Get the discord server url
+    aliases:
+      - dsc
+  website:
+    description: Get the website url
+    aliases:
+      - web
+  store:
+    description: Get the store url
+    aliases:
+      - vip
+      - benefits
+      - buy
+      - shop

@@ -2,6 +2,9 @@ package net.trustgames.core;
 
 import net.trustgames.core.announcer.AnnouncerConfig;
 import net.trustgames.core.announcer.ChatAnnouncer;
+import net.trustgames.core.chat.MessageLimiter;
+import net.trustgames.core.commands.MessagesCommand;
+import net.trustgames.core.commands.MessagesConfig;
 import net.trustgames.core.config.DefaultConfig;
 import net.trustgames.core.database.MariaConfig;
 import net.trustgames.core.database.MariaDB;
@@ -25,7 +28,6 @@ public final class Core extends JavaPlugin {
 
         /* ADD
         - Command completer (tab complete)
-        - command cooldown
         - configurable extandable .yml text info commands (/discord, /store, /help)
         - chat system
         - economy system
@@ -42,9 +44,6 @@ public final class Core extends JavaPlugin {
         - npc system
         */
 
-        // register commands
-    //    CommandManager.registerCommand("command", new SpawnCommand(this));
-
         // create a folder
         FolderManager.createDataFolder(getDataFolder());
         //  FolderManager.createFolder(new File(getDataFolder() + File.separator + "data"));
@@ -52,6 +51,7 @@ public final class Core extends JavaPlugin {
         // create config files
         ConfigManager.createConfig(new File(getDataFolder(), "announcer.yml"));
         ConfigManager.createConfig(new File(getDataFolder(), "mariadb.yml"));
+        ConfigManager.createConfig(new File(getDataFolder(), "messages.yml"));
 
         // create config defaults
         DefaultConfig.create(getConfig()); getConfig().options().copyDefaults(true); saveConfig();
@@ -59,12 +59,18 @@ public final class Core extends JavaPlugin {
         mariaConfig.createDefaults();
         AnnouncerConfig announcerConfig = new AnnouncerConfig(this);
         announcerConfig.createDefaults();
+        MessagesConfig messagesConfig = new MessagesConfig(this);
+        messagesConfig.createDefaults();
 
         // register events
         EventManager.registerEvent(new ActivityListener(this), this);
+        EventManager.registerEvent(new CommandManager(this), this);
+        EventManager.registerEvent(new MessageLimiter(this), this);
 
-        // run ChatAnnouncer
-        chatAnnouncer.announceMessages();
+        // register commands
+        CommandManager.registerCommand("discord", new MessagesCommand(this));
+        CommandManager.registerCommand("website", new MessagesCommand(this));
+        CommandManager.registerCommand("store", new MessagesCommand(this));
 
         // mariadb database
         playerActivityDB.initializePlayerActivityTable();
@@ -72,7 +78,8 @@ public final class Core extends JavaPlugin {
         // set the gamerules
         gameruleManager.setGamerules("world");
 
-        // API TEST
+        // run ChatAnnouncer
+        chatAnnouncer.announceMessages();
     }
 
     @Override
