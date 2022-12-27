@@ -32,8 +32,8 @@ public class DefaultConfig {
         defaultConfig.addDefault("permissions.vip", "core.vip");
 
         // settings
-        defaultConfig.addDefault("settings.max-commands-in-second", 10d);
-        defaultConfig.addDefault("settings.spam-time-in-seconds", 0.25d);
+        defaultConfig.addDefault("settings.max-commands-per-second", 10d);
+        defaultConfig.addDefault("settings.chat-cooldown-max-warn-messages-per-second", 0.25d);
         defaultConfig.addDefault("settings.chat-limit-in-seconds.default", 15d);
         defaultConfig.addDefault("settings.chat-limit-in-seconds.vip", 10d);
         defaultConfig.addDefault("settings.chat-limit-in-seconds.vip+", 5d);

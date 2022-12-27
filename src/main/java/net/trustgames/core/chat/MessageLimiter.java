@@ -231,7 +231,7 @@ public class MessageLimiter implements Listener {
          current time - the last time of wait message is larger than the min value in config
         */
         if (lastWaitMessage.containsKey(player.getUniqueId())) {
-            return config.getDouble("settings.spam-time-in-seconds") > (System.currentTimeMillis() - lastWaitMessage.get(player.getUniqueId())) / 1000d;
+            return config.getDouble("settings.chat-cooldown-max-warn-messages-per-second") > (System.currentTimeMillis() - lastWaitMessage.get(player.getUniqueId())) / 1000d;
         // if the last message doesn't contain the player (meaning he probably didn't receive any wait messages, put him in the map and return false
         } else {
             lastWaitMessage.put(player.getUniqueId(), System.currentTimeMillis());

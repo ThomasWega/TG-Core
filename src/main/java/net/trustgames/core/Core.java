@@ -28,11 +28,11 @@ public final class Core extends JavaPlugin {
 
         /* ADD
         - Command completer (tab complete)
-        - configurable extandable .yml text info commands (/discord, /store, /help)
+        - configurable extendable .yml text info commands (/discord, /store, /help)
         - chat system
         - economy system
         - hotbar items
-        - adminsystem (vanish, menus, ...)
+        - admin system (vanish, menus, ...)
         - report system
         - level system
         - cosmetics (spawn particles, spawn sounds, balloons)
@@ -42,6 +42,9 @@ public final class Core extends JavaPlugin {
         - party and friends system
         - rotating heads
         - npc system
+        - disallow some default command (/?, /version, /plugins, etc.)
+        - change some default messages (unknown command, etc.)
+        - suppress join messages (that should be handled by mini-games core and lobby plugin)
         */
 
         // create a folder
