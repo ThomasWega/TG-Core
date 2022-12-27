@@ -23,6 +23,8 @@ public final class Core extends JavaPlugin {
     ServerShutdownManager serverShutdownManager = new ServerShutdownManager(this);
     GameruleManager gameruleManager = new GameruleManager(this);
 
+    public CooldownManager cooldownManager = new CooldownManager(this);
+
     @Override
     public void onEnable() {
 
@@ -69,6 +71,7 @@ public final class Core extends JavaPlugin {
         EventManager.registerEvent(new ActivityListener(this), this);
         EventManager.registerEvent(new CommandManager(this), this);
         EventManager.registerEvent(new MessageLimiter(this), this);
+        EventManager.registerEvent(new CooldownManager(this), this);
 
         // register commands
         CommandManager.registerCommand("discord", new MessagesCommand(this));

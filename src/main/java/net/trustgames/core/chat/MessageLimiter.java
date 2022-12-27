@@ -61,7 +61,7 @@ public class MessageLimiter implements Listener {
     }
 
     // run the checks and the methods
-    public void doChecks(Player player, AsyncChatEvent event, String playerMessage) {
+    private void doChecks(Player player, AsyncChatEvent event, String playerMessage) {
         // gets the highest rank player has permission to
         String rank = getPermission(player);
 
@@ -107,7 +107,7 @@ public class MessageLimiter implements Listener {
     and they all need to have different values, otherwise this code won't work properly and will show the highest
     available rank to purchase a better rank!
      */
-    public String getPermission(Player player) {
+    private String getPermission(Player player) {
         FileConfiguration config = core.getConfig();
 
         // default rank's cooldown time is named default in the config
@@ -135,7 +135,7 @@ public class MessageLimiter implements Listener {
      checks if the player has a cooldown. If he does have a cooldown, it returns true.
      If he doesn't have a cooldown, it returns false
      */
-    public boolean isOnCooldown(Player player, String rank, boolean sameMessage) {
+    private boolean isOnCooldown(Player player, String rank, boolean sameMessage) {
 
         /*
         Check if the message is same as the last time. In case it is, it will use a completely different
@@ -163,7 +163,7 @@ public class MessageLimiter implements Listener {
     with the one from the hashmap. If they are the same, it returns true,
     otherwise if they are different, it returns false.
      */
-    public boolean isSameMessage(Player player, String playerMessage){
+    private boolean isSameMessage(Player player, String playerMessage){
         if (playerMessage.replaceAll("[^\\p{Alnum}]", "").equalsIgnoreCase(lastPlayerMessage.get(player.getUniqueId()).replaceAll("[^\\p{Alnum}]", ""))){
             return true;
         }
@@ -174,7 +174,7 @@ public class MessageLimiter implements Listener {
     }
 
     // sends the wait message to the player
-    public void sendMessage(Player player, String rank, boolean sameMessage) {
+    private void sendMessage(Player player, String rank, boolean sameMessage) {
         FileConfiguration config = core.getConfig();
 
         /*
@@ -221,12 +221,12 @@ public class MessageLimiter implements Listener {
     }
 
     // get the time player needs to wait until using the chat again
-    public double getWaitTime(Player player, double time) {
+    private double getWaitTime(Player player, double time) {
         return (time - ((System.currentTimeMillis() - cooldownTime.get(player.getUniqueId())) / 1000d));
     }
 
     // check if the wait message isn't being sent too often to avoid it being too spammy
-    public boolean isSpam(Player player) {
+    private boolean isSpam(Player player) {
         FileConfiguration config = core.getConfig();
 
         /*
