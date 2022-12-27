@@ -50,12 +50,12 @@ public class MessageLimiter implements Listener {
          */
 
         // cooldown for normal messages
-        for (String rankCooldown : Objects.requireNonNull(config.getConfigurationSection("settings.chat-limit-in-seconds")).getKeys(false)) {
-            ranksChatCooldown.put(rankCooldown, config.getDouble("settings.chat-limit-in-seconds." + rankCooldown));
+        for (String rankCooldown : Objects.requireNonNull(config.getConfigurationSection("settings.cooldowns.chat-limit-in-seconds")).getKeys(false)) {
+            ranksChatCooldown.put(rankCooldown, config.getDouble("settings.cooldowns.chat-limit-in-seconds." + rankCooldown));
         }
         // cooldown if the message is same as the last one
-        for (String rankSameCooldown : Objects.requireNonNull(config.getConfigurationSection("settings.same-message-limit-in-seconds")).getKeys(false)) {
-            ranksSameChatCooldown.put(rankSameCooldown, config.getDouble("settings.same-message-limit-in-seconds." + rankSameCooldown));
+        for (String rankSameCooldown : Objects.requireNonNull(config.getConfigurationSection("settings.cooldowns.same-message-limit-in-seconds")).getKeys(false)) {
+            ranksSameChatCooldown.put(rankSameCooldown, config.getDouble("settings.cooldowns.same-message-limit-in-seconds." + rankSameCooldown));
         }
         doChecks(player, event, playerMessage);
     }
@@ -234,7 +234,7 @@ public class MessageLimiter implements Listener {
          current time - the last time of wait message is larger than the min value in config
         */
         if (lastWaitMessage.containsKey(player.getUniqueId())) {
-            return config.getDouble("settings.chat-cooldown-max-warn-messages-per-second") > (System.currentTimeMillis() - lastWaitMessage.get(player.getUniqueId())) / 1000d;
+            return config.getDouble("settings.cooldowns.cooldown-warn-messages-limit-in-seconds") > (System.currentTimeMillis() - lastWaitMessage.get(player.getUniqueId())) / 1000d;
         // if the last message doesn't contain the player (meaning he probably didn't receive any wait messages, put him in the map and return false
         } else {
             lastWaitMessage.put(player.getUniqueId(), System.currentTimeMillis());

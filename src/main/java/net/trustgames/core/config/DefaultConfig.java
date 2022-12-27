@@ -32,17 +32,17 @@ public class DefaultConfig {
         defaultConfig.addDefault("permissions.vip", "core.vip");
 
         // settings
-        defaultConfig.addDefault("settings.max-commands-per-second", 10d);
-        defaultConfig.addDefault("settings.chat-cooldown-max-warn-messages-per-second", 0.25d);
-        defaultConfig.addDefault("settings.chat-limit-in-seconds.default", 15d);
-        defaultConfig.addDefault("settings.chat-limit-in-seconds.vip", 10d);
-        defaultConfig.addDefault("settings.chat-limit-in-seconds.vip+", 5d);
-        defaultConfig.addDefault("settings.chat-limit-in-seconds.trust", 3d);
-        defaultConfig.addDefault("settings.chat-limit-in-seconds.trust+", 2d);
-        defaultConfig.addDefault("settings.same-message-limit-in-seconds.default", 120d);
-        defaultConfig.addDefault("settings.same-message-limit-in-seconds.vip", 60d);
-        defaultConfig.addDefault("settings.same-message-limit-in-seconds.vip+", 45d);
-        defaultConfig.addDefault("settings.same-message-limit-in-seconds.trust", 25d);
-        defaultConfig.addDefault("settings.same-message-limit-in-seconds.trust+", 10d);
+        defaultConfig.addDefault("settings.cooldowns.max-commands-per-second", 5d);
+        defaultConfig.addDefault("settings.cooldowns.cooldown-warn-messages-limit-in-seconds", 0.5d);
+        defaultConfig.addDefault("settings.cooldowns.chat-limit-in-seconds.default", 15d);
+        defaultConfig.addDefault("settings.cooldowns.chat-limit-in-seconds.vip", 10d);
+        defaultConfig.addDefault("settings.cooldowns.chat-limit-in-seconds.vip+", 5d);
+        defaultConfig.addDefault("settings.cooldowns.chat-limit-in-seconds.trust", 3d);
+        defaultConfig.addDefault("settings.cooldowns.chat-limit-in-seconds.trust+", 2d);
+        defaultConfig.addDefault("settings.cooldowns.same-message-limit-in-seconds.default", 120d);
+        defaultConfig.addDefault("settings.cooldowns.same-message-limit-in-seconds.vip", 60d);
+        defaultConfig.addDefault("settings.cooldowns.same-message-limit-in-seconds.vip+", 45d);
+        defaultConfig.addDefault("settings.cooldowns.same-message-limit-in-seconds.trust", 25d);
+        defaultConfig.addDefault("settings.cooldowns.same-message-limit-in-seconds.trust+", 10d);
     }
 }

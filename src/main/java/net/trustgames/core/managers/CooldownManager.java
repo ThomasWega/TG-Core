@@ -26,7 +26,7 @@ public class CooldownManager implements Listener {
     /*
     This method can be called from anywhere and ensures, that the command is not being spammed too much. I already
     have one of this check in the CommandManager, but that allows certain number of commands per second. This
-    method allows only one execution of the command per given time. It also ensures that the don't spam message
+    method allows only one execution of the command per given time. It also ensures that the "don't spam" message
     is not being sent too often to the player.
      */
 
@@ -59,7 +59,7 @@ public class CooldownManager implements Listener {
          current time - the last time of wait message is larger than the min value in config
         */
         if (cooldownMessageTime.containsKey(player.getUniqueId())) {
-            return !(config.getDouble("settings.chat-cooldown-max-warn-messages-per-second") <= (System.currentTimeMillis() - cooldownMessageTime.get(player.getUniqueId())) / 1000d);
+            return !(config.getDouble("settings.cooldowns.cooldown-warn-messages-limit-in-seconds") <= (System.currentTimeMillis() - cooldownMessageTime.get(player.getUniqueId())) / 1000d);
             // if the last message doesn't contain the player (meaning he probably didn't receive any wait messages, put him in the map and return false
         } else {
             cooldownMessageTime.put(player.getUniqueId(), System.currentTimeMillis());
