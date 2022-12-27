@@ -11,6 +11,13 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.*;
 
+/*
+NOTE: this class is coded so badly, that it shouldn't even exist. If anyone needs to go through this
+at anytime, I am deeply sorry, as you will probably want to grab a huge gun, put it right in your
+ass and press it to end this sacrifice. At least I tried to comment it good. Still shitty to understand tho.
+- by Wega
+ */
+
 public class MessageLimiter implements Listener {
 
     private final Core core;
