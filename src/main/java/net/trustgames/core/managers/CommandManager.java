@@ -23,7 +23,7 @@ public class CommandManager implements Listener {
         this.core = core;
     }
 
-    HashMap<UUID, Long> commandCooldown = new HashMap<>();
+    private final HashMap<UUID, Long> commandCooldown = new HashMap<>();
 
     // used to register all commands
     public static void registerCommand(String commandName, CommandExecutor commandExecutor) {
