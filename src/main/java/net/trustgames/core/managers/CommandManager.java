@@ -40,9 +40,7 @@ public class CommandManager implements Listener {
     public void onPlayerPreCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         FileConfiguration config = core.getConfig();
-        System.out.println("1");
         if (player.hasPermission(Objects.requireNonNull(config.getString("permissions.staff")))) return;
-        System.out.println("2");
         if (!commandCooldown.containsKey(player.getUniqueId()) || System.currentTimeMillis() - commandCooldown.get(player.getUniqueId()) > (config.getDouble("settings.max-commands-in-second") * 1000)) {
             commandCooldown.put(player.getUniqueId(), System.currentTimeMillis());
         } else {
@@ -51,6 +49,7 @@ public class CommandManager implements Listener {
         }
     }
 
+    // on player quit, remove him from the hashmap
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event){
         Player player = event.getPlayer();
