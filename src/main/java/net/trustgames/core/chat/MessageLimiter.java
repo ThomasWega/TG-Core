@@ -41,6 +41,7 @@ public class MessageLimiter implements Listener {
         Player player = event.getPlayer();
         String playerMessage = event.message().toString();
         FileConfiguration config = core.getConfig();
+        if (player.hasPermission(Objects.requireNonNull(config.getString("permissions.staff")))) return;
 
         /*
         These for loops will loop through all the keys in the config (the normal cooldown
