@@ -103,7 +103,9 @@ public class MessageLimiter implements Listener {
     Then return that permission
 
     IMPORTANT NOTE: in the config.yml. There always needs to be the trust+ rank the highest and
-    at the same time, in spam or normal message cooldown times there needs to be the same ranks specified!
+    at the same time, in spam or normal message cooldown times there needs to be the same ranks specified,
+    and they all need to have different values, otherwise this code won't work properly and will show the highest
+    available rank to purchase a better rank!
      */
     public String getPermission(Player player) {
         FileConfiguration config = core.getConfig();
@@ -158,7 +160,7 @@ public class MessageLimiter implements Listener {
     This will check if his current messages matches the last message
     in the hashmap. It will remove all non-alphanumeric characters
     from the message (using regex) and compare the current one
-    with the one from the hashmap. If they are the same, it return true,
+    with the one from the hashmap. If they are the same, it returns true,
     otherwise if they are different, it returns false.
      */
     public boolean isSameMessage(Player player, String playerMessage){

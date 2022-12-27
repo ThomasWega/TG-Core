@@ -38,7 +38,7 @@ public class DefaultConfig {
         defaultConfig.addDefault("settings.chat-limit-in-seconds.vip", 10d);
         defaultConfig.addDefault("settings.chat-limit-in-seconds.vip+", 5d);
         defaultConfig.addDefault("settings.chat-limit-in-seconds.trust", 3d);
-        defaultConfig.addDefault("settings.chat-limit-in-seconds.trust+", 3d);
+        defaultConfig.addDefault("settings.chat-limit-in-seconds.trust+", 2d);
         defaultConfig.addDefault("settings.same-message-limit-in-seconds.default", 120d);
         defaultConfig.addDefault("settings.same-message-limit-in-seconds.vip", 60d);
         defaultConfig.addDefault("settings.same-message-limit-in-seconds.vip+", 45d);
