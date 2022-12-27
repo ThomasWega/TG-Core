@@ -8,6 +8,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.Objects;
+
 public class ServerShutdownManager {
 
     private final Core core;
@@ -26,7 +28,7 @@ public class ServerShutdownManager {
             Bukkit.getLogger().info(DebugColors.BLUE + "Trying to log players activities...");
         }
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.kick(Component.text(ChatColor.translateAlternateColorCodes('&', String.join("\n", core.getConfig().getString("messages.server-restart")))));
+            player.kick(Component.text(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(core.getConfig().getString("messages.server-restart")))));
             if (!core.getMariaDB().isMySQLDisabled()){
                 activityListener.onServerShutdown(player);
             }

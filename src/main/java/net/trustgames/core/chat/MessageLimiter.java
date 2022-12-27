@@ -193,11 +193,11 @@ public class MessageLimiter implements Listener {
         if (sameMessage){
             switch (rank) {
                 case "default" ->
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', String.join("\n","\n" + String.format(Objects.requireNonNull(config.getString("messages.same-chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank)))) + "\n" + config.getString("messages.buy.rank") + "\n&r")));
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.same-chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank)))) + "\n" + config.getString("messages.buy.rank") + "\n&r"));
                 case "trust+" ->
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', String.join("\n","\n" + String.format(Objects.requireNonNull(config.getString("messages.same-chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank)))) + "\n&r")));
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.same-chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank)))) + "\n&r"));
                 default ->
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', String.join("\n","\n" + String.format(Objects.requireNonNull(config.getString("messages.same-chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank)))) + "\n" + config.getString("messages.buy.higher-rank") + "\n&r")));
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.same-chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank)))) + "\n" + config.getString("messages.buy.higher-rank") + "\n&r"));
             }
         }
         else{
@@ -209,11 +209,11 @@ public class MessageLimiter implements Listener {
          */
             switch (rank) {
                 case "default" ->
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', String.join("\n","\n" + String.format(Objects.requireNonNull(config.getString("messages.chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank)))) + "\n" + config.getString("messages.buy.rank") + "\n&r")));
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank)))) + "\n" + config.getString("messages.buy.rank") + "\n&r"));
                 case "trust+" ->
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', String.join("\n","\n" + String.format(Objects.requireNonNull(config.getString("messages.chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank)))) + "\n&r")));
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank)))) + "\n&r"));
                 default ->
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', String.join("\n","\n" + String.format(Objects.requireNonNull(config.getString("messages.chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank)))) + "\n" + config.getString("messages.buy.higher-rank") + "\n&r")));
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank)))) + "\n" + config.getString("messages.buy.higher-rank") + "\n&r"));
             }
         }
         // log the last time player got the wait message (used in the anti-spam method)
