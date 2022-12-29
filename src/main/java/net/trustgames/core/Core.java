@@ -33,7 +33,6 @@ public final class Core extends JavaPlugin {
         - configurable extendable .yml text info commands (/discord, /store, /help)
         - chat system
         - economy system
-        - hotbar items
         - admin system (vanish, menus, ...)
         - report system
         - level system

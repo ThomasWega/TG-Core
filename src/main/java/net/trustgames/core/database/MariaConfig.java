@@ -25,6 +25,7 @@ public class MariaConfig {
         config.addDefault("mariadb.ip", "127.0.0.1");
         config.addDefault("mariadb.port", "3306");
         config.addDefault("mariadb.database", "database");
+        config.addDefault("delay.database-table-creation", 60L);
         try {
             config.options().copyDefaults(true);
             config.save(getMariaFile());

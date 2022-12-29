@@ -54,12 +54,12 @@ public class PlayerActivityDB {
                     if (results.next()) {
 
                         // saves the results as variables
-                        String action = results.getString("action");
                         String ip = results.getString("ip");
+                        String action = results.getString("action");
                         Timestamp time = results.getTimestamp("time");
 
                         // passes the variables to new PlayerActivity
-                        return new PlayerActivity(uuid, action, ip, time);
+                        return new PlayerActivity(uuid, ip, action, time);
                     }
                 }
             }
@@ -81,11 +81,11 @@ public class PlayerActivityDB {
                 @Override
                 public void run() {
                     // inserts new player's activity to table
-                    try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("INSERT INTO player_activity(uuid, action, ip, time) VALUES (?, ?, ?, ?)")) {
+                    try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("INSERT INTO player_activity(uuid, ip, action, time) VALUES (?, ?, ?, ?)")) {
                         // replaces the '?' with variables
                         statement.setString(1, playerActivity.getUuid());
-                        statement.setString(2, playerActivity.getAction());
-                        statement.setString(3, playerActivity.getIp());
+                        statement.setString(2, playerActivity.getIp());
+                        statement.setString(3, playerActivity.getAction());
                         statement.setTimestamp(4, playerActivity.getTime());
 
                         statement.executeUpdate();
@@ -96,11 +96,11 @@ public class PlayerActivityDB {
             }.runTaskAsynchronously(core);
         } else {
             // inserts new player's activity to table
-            try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("INSERT INTO player_activity(uuid, action, ip, time) VALUES (?, ?, ?, ?)")) {
+            try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("INSERT INTO player_activity(uuid, ip, action, time) VALUES (?, ?, ?, ?)")) {
                 // replaces the '?' with variables
                 statement.setString(1, playerActivity.getUuid());
-                statement.setString(2, playerActivity.getAction());
-                statement.setString(3, playerActivity.getIp());
+                statement.setString(2, playerActivity.getIp());
+                statement.setString(3, playerActivity.getAction());
                 statement.setTimestamp(4, playerActivity.getTime());
 
                 statement.executeUpdate();

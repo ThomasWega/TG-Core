@@ -18,9 +18,9 @@ public class ServerShutdownManager {
         this.core = core;
     }
 
-    ActivityListener activityListener;
-
     public void kickPlayers() {
+        ActivityListener activityListener = new ActivityListener(core);
+
         if (core.getMariaDB().isMySQLDisabled()){
             Bukkit.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Not logging player activities. MariaDB is turned OFF!");
         }
