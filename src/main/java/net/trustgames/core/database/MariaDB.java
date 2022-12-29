@@ -55,7 +55,6 @@ public class MariaDB {
                     // try to create a connection and prepared statement with sql statement
                     Class.forName("org.mariadb.jdbc.Driver");
                     try (Connection connection = DriverManager.getConnection("jdbc:mariadb://" + ip + ":" + port + "/", user, password); PreparedStatement statement = connection.prepareStatement("CREATE DATABASE IF NOT EXISTS " + database)) {
-                        System.out.println("EXECUTE");
                         statement.executeUpdate();
                     }
                 } catch (SQLException | ClassNotFoundException e) {
@@ -98,7 +97,6 @@ public class MariaDB {
                 ds.setMaximumPoolSize(5);
                 ds.setPoolName("HikariCP-Core");
 
-                System.out.println("HIKARI?");
                 connection = ds.getConnection();
                 return connection;
             } catch (SQLException e) {
