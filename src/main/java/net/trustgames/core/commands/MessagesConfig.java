@@ -49,6 +49,6 @@ public class MessagesConfig {
 
     // used to retrieve the announcer.yml file
     public File getMessagesFile() {
-        return new File(core.getDataFolder(), "messages.yml");
+        return new File(core.getDataFolder(), "commands.yml");
     }
 }
