@@ -1,5 +1,5 @@
-softdepend:
-  - PlaceholderAPI
+depend:
+  - LuckPerms
 
 name: Core
 version: '${project.version}'

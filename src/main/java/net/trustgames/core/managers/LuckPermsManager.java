@@ -1,10 +1,13 @@
 package net.trustgames.core.managers;
 
 import net.luckperms.api.LuckPerms;
+import net.luckperms.api.model.group.GroupManager;
+import net.luckperms.api.model.user.User;
 import net.trustgames.core.Core;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
+import java.util.Objects;
 
 public class LuckPermsManager {
 
@@ -23,7 +26,19 @@ public class LuckPermsManager {
         return null;
     }
 
-    public static String getPlayerGroup(Player player){
-        return luckPerms.getUserManager().getUser(player.getUniqueId()).getPrimaryGroup();
+    public static String getPlayerPrimaryGroup(Player player){
+        return Objects.requireNonNull(luckPerms.getUserManager().getUser(player.getUniqueId())).getPrimaryGroup();
+    }
+
+    public static boolean hasPermission(User user, String permission) {
+        return user.getCachedData().getPermissionData().checkPermission(permission).asBoolean();
+    }
+
+    public static GroupManager getGroupManager(){
+        return luckPerms.getGroupManager();
+    }
+
+    public static User getUser(Player player){
+        return luckPerms.getUserManager().getUser(player.getUniqueId());
     }
 }

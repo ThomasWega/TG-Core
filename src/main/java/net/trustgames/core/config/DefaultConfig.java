@@ -23,26 +23,25 @@ public class DefaultConfig {
         defaultConfig.addDefault("messages.buy.rank", "&fBuy VIP on &e" + defaultConfig.getString("placeholders.store") + " &ffor a better experience.");
         defaultConfig.addDefault("messages.buy.higher-rank", "&fBuy a higher rank on &e" + defaultConfig.getString("placeholders.store") + " &ffor a better experience.");
 
-        // permissions
-        defaultConfig.addDefault("permissions.admin", "core.admin");
-        defaultConfig.addDefault("permissions.staff", "core.staff");
-        defaultConfig.addDefault("permissions.trust+", "core.trust+");
-        defaultConfig.addDefault("permissions.trust", "core.trust");
-        defaultConfig.addDefault("permissions.vip+", "core.vip+");
-        defaultConfig.addDefault("permissions.vip", "core.vip");
-
-        // settings
-        defaultConfig.addDefault("settings.cooldowns.max-commands-per-second", 5d);
-        defaultConfig.addDefault("settings.cooldowns.cooldown-warn-messages-limit-in-seconds", 0.5d);
-        defaultConfig.addDefault("settings.cooldowns.chat-limit-in-seconds.default", 15d);
-        defaultConfig.addDefault("settings.cooldowns.chat-limit-in-seconds.vip", 10d);
-        defaultConfig.addDefault("settings.cooldowns.chat-limit-in-seconds.vip+", 5d);
-        defaultConfig.addDefault("settings.cooldowns.chat-limit-in-seconds.trust", 3d);
-        defaultConfig.addDefault("settings.cooldowns.chat-limit-in-seconds.trust+", 2d);
-        defaultConfig.addDefault("settings.cooldowns.same-message-limit-in-seconds.default", 120d);
-        defaultConfig.addDefault("settings.cooldowns.same-message-limit-in-seconds.vip", 60d);
-        defaultConfig.addDefault("settings.cooldowns.same-message-limit-in-seconds.vip+", 45d);
-        defaultConfig.addDefault("settings.cooldowns.same-message-limit-in-seconds.trust", 25d);
-        defaultConfig.addDefault("settings.cooldowns.same-message-limit-in-seconds.trust+", 10d);
+        // cooldowns
+        defaultConfig.addDefault("cooldowns.max-commands-per-second", 5d);
+        defaultConfig.addDefault("cooldowns.cooldown-warn-messages-limit-in-seconds", 0.5d);
+        defaultConfig.addDefault("cooldowns.chat-limit-in-seconds.default", 15d);
+        defaultConfig.addDefault("cooldowns.chat-limit-in-seconds.vip", 10d);
+        defaultConfig.addDefault("cooldowns.chat-limit-in-seconds.vip+", 5d);
+        defaultConfig.addDefault("cooldowns.chat-limit-in-seconds.trust", 3d);
+        defaultConfig.addDefault("cooldowns.chat-limit-in-seconds.trust+", 2d);
+        defaultConfig.addDefault("cooldowns.same-message-limit-in-seconds.default", 120d);
+        defaultConfig.addDefault("cooldowns.same-message-limit-in-seconds.vip", 60d);
+        defaultConfig.addDefault("cooldowns.same-message-limit-in-seconds.vip+", 45d);
+        defaultConfig.addDefault("cooldowns.same-message-limit-in-seconds.trust", 25d);
+        defaultConfig.addDefault("cooldowns.same-message-limit-in-seconds.trust+", 10d);
+        
+        // tablist
+        defaultConfig.addDefault("tablist.name-color.trust+", "&e");
+        defaultConfig.addDefault("tablist.name-color.trust", "&f");
+        defaultConfig.addDefault("tablist.name-color.vip", "&f");
+        defaultConfig.addDefault("tablist.name-color.vip+", "&f");
+        defaultConfig.addDefault("tablist.name-color.default", "&7");
     }
 }

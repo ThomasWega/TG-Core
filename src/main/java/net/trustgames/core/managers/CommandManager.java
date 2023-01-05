@@ -58,7 +58,7 @@ public class CommandManager implements Listener {
              if "i" is more than the config value number.
              Meaning the player typed a command in the last second more than the allowed count.
             */
-            if (i >= config.getDouble("settings.cooldowns.max-commands-per-second")) {
+            if (i >= config.getDouble("cooldowns.max-commands-per-second")) {
                 // send him the not spam message
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("messages.command-spam"))));
                 event.setCancelled(true);

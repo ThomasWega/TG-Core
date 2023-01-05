@@ -41,7 +41,7 @@ public class MessageLimiter implements Listener {
         Player player = event.getPlayer();
         String playerMessage = event.message().toString();
         FileConfiguration config = core.getConfig();
-        if (player.hasPermission(Objects.requireNonNull(config.getString("permissions.staff")))) return;
+        if (player.hasPermission("core.staff")) return;
 
         /*
         These for loops will loop through all the keys in the config (the normal cooldown
@@ -50,12 +50,12 @@ public class MessageLimiter implements Listener {
          */
 
         // cooldown for normal messages
-        for (String rankCooldown : Objects.requireNonNull(config.getConfigurationSection("settings.cooldowns.chat-limit-in-seconds")).getKeys(false)) {
-            ranksChatCooldown.put(rankCooldown, config.getDouble("settings.cooldowns.chat-limit-in-seconds." + rankCooldown));
+        for (String rankCooldown : Objects.requireNonNull(config.getConfigurationSection("cooldowns.chat-limit-in-seconds")).getKeys(false)) {
+            ranksChatCooldown.put(rankCooldown, config.getDouble("cooldowns.chat-limit-in-seconds." + rankCooldown));
         }
         // cooldown if the message is same as the last one
-        for (String rankSameCooldown : Objects.requireNonNull(config.getConfigurationSection("settings.cooldowns.same-message-limit-in-seconds")).getKeys(false)) {
-            ranksSameChatCooldown.put(rankSameCooldown, config.getDouble("settings.cooldowns.same-message-limit-in-seconds." + rankSameCooldown));
+        for (String rankSameCooldown : Objects.requireNonNull(config.getConfigurationSection("cooldowns.same-message-limit-in-seconds")).getKeys(false)) {
+            ranksSameChatCooldown.put(rankSameCooldown, config.getDouble("cooldowns.same-message-limit-in-seconds." + rankSameCooldown));
         }
         doChecks(player, event, playerMessage);
     }
@@ -122,7 +122,7 @@ public class MessageLimiter implements Listener {
          */
         for (String x : ranksChatCooldown.entrySet().stream().sorted(Map.Entry.comparingByValue()).map(Map.Entry::getKey).toList()) {
             if (x.equalsIgnoreCase("default")) break;
-            if (player.hasPermission(Objects.requireNonNull(config.getString("permissions." + x)))) {
+            if (player.hasPermission("core." + x)) {
                 rank = x;
                 break;
             }
@@ -186,18 +186,38 @@ public class MessageLimiter implements Listener {
 
 
         /*
+        Get the rank name with the lowest cooldown time from the hashmap. The rank
+        with the lowest cooldown time always needs to be a some form of vip purchasable
+        rank, as otherwise, players with the highest purchasable rank will get a message
+        to buy a better vip.
+         */
+        Map.Entry<String, Double> minEntry = null;
+
+        for (Map.Entry<String, Double> entry : ranksChatCooldown.entrySet())
+        {
+            if (minEntry == null || entry.getValue().compareTo(minEntry.getValue()) < 0)
+            {
+                minEntry = entry;
+            }
+        }
+        String minKey = Objects.requireNonNull(minEntry).getKey();
+
+        /*
         Check if the message is the same as the last time. It is given earlier by the boolean in the method.
-        THE HIGHEST RANK IN THE CONFIG.YML NEEDS TO BE TRUST+ FOR THIS TO WORK. As with the highest or lowest ranks,
-        different wait messages are being sent.
+        THE HIGHEST RANK IN THE CONFIG.YML NEEDS TO BE THE HIGHEST PURCHASABLE RANK FOR THIS TO WORK.
+        As with the highest or lowest ranks, different wait messages are being sent.
          */
         if (sameMessage){
-            switch (rank) {
-                case "default" ->
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.same-chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank)))) + "\n" + config.getString("messages.buy.rank") + "\n&r"));
-                case "trust+" ->
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.same-chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank)))) + "\n&r"));
-                default ->
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.same-chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank)))) + "\n" + config.getString("messages.buy.higher-rank") + "\n&r"));
+            // default
+            if (rank.equalsIgnoreCase("default")) {
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.same-chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank)))) + "\n" + config.getString("messages.buy.rank") + "\n&r"));
+            }
+            // highest vip
+            else if (rank.equalsIgnoreCase(minKey)) {
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.same-chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank)))) + "\n&r"));
+            // everything else
+            } else {
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.same-chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank)))) + "\n" + config.getString("messages.buy.higher-rank") + "\n&r"));
             }
         }
         else{
@@ -207,13 +227,15 @@ public class MessageLimiter implements Listener {
           If the rank is any other (there is a rank with lower cooldown, but the player already has bought a rank)
           send the wait message and buy a better rank message
          */
-            switch (rank) {
-                case "default" ->
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank)))) + "\n" + config.getString("messages.buy.rank") + "\n&r"));
-                case "trust+" ->
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank)))) + "\n&r"));
-                default ->
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank)))) + "\n" + config.getString("messages.buy.higher-rank") + "\n&r"));
+            if (rank.equalsIgnoreCase("default")) {
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank)))) + "\n" + config.getString("messages.buy.rank") + "\n&r"));
+            }
+            // highest vip
+            else if (rank.equalsIgnoreCase(minKey)) {
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank)))) + "\n&r"));
+            // everything else
+            } else {
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank)))) + "\n" + config.getString("messages.buy.higher-rank") + "\n&r"));
             }
         }
         // log the last time player got the wait message (used in the anti-spam method)
@@ -234,7 +256,7 @@ public class MessageLimiter implements Listener {
          current time - the last time of wait message is larger than the min value in config
         */
         if (lastWaitMessage.containsKey(player.getUniqueId())) {
-            return config.getDouble("settings.cooldowns.cooldown-warn-messages-limit-in-seconds") > (System.currentTimeMillis() - lastWaitMessage.get(player.getUniqueId())) / 1000d;
+            return config.getDouble("cooldowns.cooldown-warn-messages-limit-in-seconds") > (System.currentTimeMillis() - lastWaitMessage.get(player.getUniqueId())) / 1000d;
         // if the last message doesn't contain the player (meaning he probably didn't receive any wait messages, put him in the map and return false
         } else {
             lastWaitMessage.put(player.getUniqueId(), System.currentTimeMillis());
