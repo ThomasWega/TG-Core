@@ -102,13 +102,11 @@ public class MessageLimiter implements Listener {
     check which is the highest permission (group) the player has access to.
     Then return that permission
 
-    IMPORTANT NOTE: in the config.yml. There always needs to be the trust+ rank the highest and
-    at the same time, in spam or normal message cooldown times there needs to be the same ranks specified,
+    IMPORTANT NOTE: in the config.yml. In spam or normal message cooldown times there needs to be the same ranks specified,
     and they all need to have different values, otherwise this code won't work properly and will show the highest
     available rank to purchase a better rank!
      */
     private String getPermission(Player player) {
-        FileConfiguration config = core.getConfig();
 
         // default rank's cooldown time is named default in the config
         String rank = "default";

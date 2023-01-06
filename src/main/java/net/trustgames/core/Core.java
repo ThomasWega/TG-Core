@@ -49,8 +49,6 @@ public final class Core extends JavaPlugin {
         - suppress join messages (that should be handled by mini-games core and lobby plugin)
         */
 
-        // TODO shade plugins
-
         // create a folder
         FolderManager.createDataFolder(getDataFolder());
         //  FolderManager.createFolder(new File(getDataFolder() + File.separator + "data"));
@@ -71,6 +69,7 @@ public final class Core extends JavaPlugin {
         EventManager.registerEvent(new CommandManager(this), this);
         EventManager.registerEvent(new MessageLimiter(this), this);
         EventManager.registerEvent(new CooldownManager(this), this);
+        EventManager.registerEvent(new PrefixManager(this), this);
 
         // register commands
         CommandManager.registerCommand("discord", new MessagesCommand(this));
