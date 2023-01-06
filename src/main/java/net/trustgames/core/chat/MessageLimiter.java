@@ -182,59 +182,13 @@ public class MessageLimiter implements Listener {
          */
         if (isSpam(player)) return;
 
-
-        /*
-        Get the rank name with the lowest cooldown time from the hashmap. The rank
-        with the lowest cooldown time always needs to be a some form of vip purchasable
-        rank, as otherwise, players with the highest purchasable rank will get a message
-        to buy a better vip.
-         */
-        Map.Entry<String, Double> minEntry = null;
-
-        for (Map.Entry<String, Double> entry : ranksChatCooldown.entrySet())
-        {
-            if (minEntry == null || entry.getValue().compareTo(minEntry.getValue()) < 0)
-            {
-                minEntry = entry;
-            }
-        }
-        String minKey = Objects.requireNonNull(minEntry).getKey();
-
-        /*
-        Check if the message is the same as the last time. It is given earlier by the boolean in the method.
-        THE HIGHEST RANK IN THE CONFIG.YML NEEDS TO BE THE HIGHEST PURCHASABLE RANK FOR THIS TO WORK.
-        As with the highest or lowest ranks, different wait messages are being sent.
-         */
+        //Check if the message is the same as the last time. It is given earlier by the boolean in the method.
         if (sameMessage){
-            // default
-            if (rank.equalsIgnoreCase("default")) {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.same-chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank)))) + "\n" + config.getString("messages.buy.rank") + "\n&r"));
-            }
-            // highest vip
-            else if (rank.equalsIgnoreCase(minKey)) {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.same-chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank)))) + "\n&r"));
-            // everything else
-            } else {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.same-chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank)))) + "\n" + config.getString("messages.buy.higher-rank") + "\n&r"));
-            }
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(Objects.requireNonNull(config.getString("messages.same-chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank))))));
         }
         else{
-         /*
-          If the rank is default, send the player a wait message and message to buy a vip
-          If the rank is trust (the lowest possible cooldown) send player only the wait message
-          If the rank is any other (there is a rank with lower cooldown, but the player already has bought a rank)
-          send the wait message and buy a better rank message
-         */
-            if (rank.equalsIgnoreCase("default")) {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank)))) + "\n" + config.getString("messages.buy.rank") + "\n&r"));
-            }
-            // highest vip
-            else if (rank.equalsIgnoreCase(minKey)) {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank)))) + "\n&r"));
-            // everything else
-            } else {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "\n" + String.format(Objects.requireNonNull(config.getString("messages.chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank)))) + "\n" + config.getString("messages.buy.higher-rank") + "\n&r"));
-            }
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(Objects.requireNonNull(config.getString("messages.chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank))))));
+
         }
         // log the last time player got the wait message (used in the anti-spam method)
         lastWaitMessage.put(player.getUniqueId(), System.currentTimeMillis());

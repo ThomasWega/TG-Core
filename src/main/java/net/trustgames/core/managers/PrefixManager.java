@@ -15,10 +15,7 @@ import java.util.Objects;
 
 public class PrefixManager implements Listener {
 
-    private final Core core;
-
     public PrefixManager(Core core) {
-        this.core = core;
         // register the user data change event
         EventBus eventBus = Core.getLuckPerms().getEventBus();
         eventBus.subscribe(core, UserDataRecalculateEvent.class, this::onUserDataRecalculate);
@@ -44,7 +41,7 @@ public class PrefixManager implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler @Deprecated
     private void chatPrefix(AsyncPlayerChatEvent event){
         Player player = event.getPlayer();
 

@@ -12,16 +12,19 @@ public class DefaultConfig {
         defaultConfig.addDefault("placeholders.discord", "discord.trustgames.net");
         defaultConfig.addDefault("placeholders.website", "www.trustgames.net");
         defaultConfig.addDefault("placeholders.store", "store.trustgames.net");
+        defaultConfig.addDefault("placeholders.prefix.chat", "&9Chat> ");
+
+        String prefix_chat = defaultConfig.getString("placeholders.prefix.chat");
 
         // messages
         defaultConfig.addDefault("messages.server-restart", "&eServer is restarting...");
-        defaultConfig.addDefault("messages.command-spam", "&cPlease don't spam the command!");
-        defaultConfig.addDefault("messages.no-permission", "&cYou don't have permission to perform this command!");
-        defaultConfig.addDefault("messages.chat-cooldown", "&cYou need to wait for another %s seconds before using the chat again!");
-        defaultConfig.addDefault("messages.same-chat-cooldown", "&cYou can't write the same message for another %s seconds!");
-        defaultConfig.addDefault("messages.only-in-game-command", "&cThis command can be executed by in-game players only!");
-        defaultConfig.addDefault("messages.buy.rank", "&fBuy rank on &e" + defaultConfig.getString("placeholders.store") + " &ffor a better experience.");
-        defaultConfig.addDefault("messages.buy.higher-rank", "&fBuy a higher rank on &e" + defaultConfig.getString("placeholders.store") + " &ffor a better experience.");
+        defaultConfig.addDefault("messages.command-spam", prefix_chat + "&8Please don't spam the command!");
+        defaultConfig.addDefault("messages.no-permission", prefix_chat + "&8You don't have permission to perform this command!");
+        defaultConfig.addDefault("messages.chat-cooldown", prefix_chat + "&8Wait another %s seconds before using chat again!");
+        defaultConfig.addDefault("messages.same-chat-cooldown", prefix_chat + "&8Don't write the same message! (wait %s seconds)");
+        defaultConfig.addDefault("messages.only-in-game-command", prefix_chat + "&8This command can be executed by in-game players only!");
+        defaultConfig.addDefault("messages.buy.rank", "&fBuy a rank for better experience.");
+        defaultConfig.addDefault("messages.buy.higher-rank", "&fBuy a higher rank for even better experience.");
 
         // cooldowns
         defaultConfig.addDefault("cooldowns.max-commands-per-second", 5d);
