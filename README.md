@@ -12,7 +12,9 @@ Core for TrustGames.net
 
 ###### Benefits:
 __- PRIME:__  
-prefix  
+chat prefix
+tablist prefix
+name prefix
 10s chat limit  
 60s same chat limit  
 
