@@ -19,6 +19,8 @@ public class PlayerListListener implements Listener {
         this.core = core;
     }
 
+    PlayerListTeams playerListTeams;
+
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event){
@@ -30,9 +32,10 @@ public class PlayerListListener implements Listener {
         player.sendPlayerListFooter(Component.text(ChatColor.translateAlternateColorCodes('&', String.join("\n", config.getStringList("tablist.footer")))));
 
         // adds the player to the correct team and sets the scoreboard
-        Scoreboard tabScoreboard = core.getPlayerListScoreboard();
-        PlayerListTeams.addToTeam(player);
-        player.setScoreboard(tabScoreboard);
+        Scoreboard playerListScoreboard = core.getPlayerListScoreboard();
+        playerListTeams = new PlayerListTeams(core);
+        playerListTeams.addToTeam(player);
+        player.setScoreboard(playerListScoreboard);
     }
 
     @EventHandler
@@ -40,6 +43,7 @@ public class PlayerListListener implements Listener {
         Player player = event.getPlayer();
 
         // remove the player from playerlist team
+        playerListTeams = new PlayerListTeams(core);
         PlayerListTeams.removeFromTeam(player);
     }
 }

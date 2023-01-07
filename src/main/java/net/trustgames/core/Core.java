@@ -82,7 +82,9 @@ public final class Core extends JavaPlugin {
         messagesConfig.createDefaults();
 
         // tablist
-        PlayerListTeams.createTeams();
+        PlayerListTeams playerListTeams = new PlayerListTeams(this);
+        playerListScoreboard = getServer().getScoreboardManager().getNewScoreboard();
+        playerListTeams.createTeams();
 
         // register events
         EventManager.registerEvent(new ActivityListener(this), this);

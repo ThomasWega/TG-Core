@@ -18,19 +18,22 @@ import java.util.TreeMap;
 
 public class PlayerListTeams {
 
-    public static Scoreboard tabScoreboard;
-
+    private final Core core;
     public PlayerListTeams(Core core) {
-        tabScoreboard = core.getPlayerListScoreboard();
+        this.core = core;
     }
 
     static TreeMap<String, Integer> groupOrder = new TreeMap<>();
+    Scoreboard playerListScoreboard;
+
 
     /* create all the teams by getting all groups from LuckPerms and putting each group in map
     with its corresponding weight. Then register new team with the first parameter weight, and second
     parameter the name of the group. Example: "20vip"
      */
-    public static void createTeams() {
+    public void createTeams() {
+
+        playerListScoreboard = core.getPlayerListScoreboard();
 
         int i = 0;
 
@@ -55,8 +58,7 @@ public class PlayerListTeams {
         */
         for (String x : groupWeight.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).map(Map.Entry::getKey).toList()){
             groupOrder.put(x, i);
-            tabScoreboard.registerNewTeam(i + "" + Objects.requireNonNull(LuckPermsManager.getGroupManager().getGroup(x)).getName());
-            System.out.println(i + "" + Objects.requireNonNull(LuckPermsManager.getGroupManager().getGroup(x)).getName());
+            playerListScoreboard.registerNewTeam(i + "" + Objects.requireNonNull(LuckPermsManager.getGroupManager().getGroup(x)).getName());
             i++;
         }
     }
@@ -64,17 +66,20 @@ public class PlayerListTeams {
     /* add player to the corresponding team by getting his primary group and its group's weight.
     set the prefix to team with luckperms cached data.
      */
-    public static void addToTeam(Player player) {
+    public void addToTeam(Player player) {
         if (player == null) return;
+
+        playerListScoreboard = core.getPlayerListScoreboard();
+
         String team = groupOrder.get(LuckPermsManager.getPlayerPrimaryGroup(player)) + LuckPermsManager.getPlayerPrimaryGroup(player);
 
-        Objects.requireNonNull(tabScoreboard.getTeam(team)).addPlayer(player);
+        Objects.requireNonNull(playerListScoreboard.getTeam(team)).addPlayer(player);
 
         if (!team.contains("default")) {
-            Objects.requireNonNull(tabScoreboard.getTeam(team)).prefix(Component.text(ChatColor.translateAlternateColorCodes('&', LuckPermsManager.getUser(player).getCachedData().getMetaData().getPrefix() + " ")));
+            Objects.requireNonNull(playerListScoreboard.getTeam(team)).prefix(Component.text(ChatColor.translateAlternateColorCodes('&', LuckPermsManager.getUser(player).getCachedData().getMetaData().getPrefix() + " ")));
         }
 
-        player.setScoreboard(tabScoreboard);
+        player.setScoreboard(playerListScoreboard);
     }
 
     // remove the player from the team

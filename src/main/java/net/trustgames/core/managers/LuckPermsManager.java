@@ -73,7 +73,8 @@ public class LuckPermsManager {
             User user = event.getUser();
 
             // add player to playerlist team to sort correctly
-            PlayerListTeams.addToTeam(Bukkit.getPlayer(user.getUniqueId()));
+            PlayerListTeams playerListTeams = new PlayerListTeams(core);
+            playerListTeams.addToTeam(Bukkit.getPlayer(user.getUniqueId()));
         });
     }
 }

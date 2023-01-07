@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import net.trustgames.core.Core;
 import net.trustgames.core.debug.DebugColors;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.sql.*;
 
@@ -115,27 +114,24 @@ public class MariaDB {
             }
             createDatabaseIfNotExists();
 
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    // if the connection is null, return. if the table already exists, return.
-                    try {
-                        if (getConnection() == null) return;
-                        if (tableExist(getConnection(), tableName)) return;
-                        // if the table doesn't yet exist
-                        core.getLogger().info(DebugColors.CYAN + "Database table " + tableName + " doesn't exist, creating...");
-                        try (PreparedStatement statement = getConnection().prepareStatement(stringStatement)) {
-                            statement.executeUpdate();
-                            if (tableExist(getConnection(), tableName)) {
-                                core.getLogger().info(DebugColors.BLUE + "Successfully created the table " + tableName);
-                            }
+            core.getServer().getScheduler().runTaskLaterAsynchronously(core, () -> {
+                // if the connection is null, return. if the table already exists, return.
+                try {
+                    if (getConnection() == null) return;
+                    if (tableExist(getConnection(), tableName)) return;
+                    // if the table doesn't yet exist
+                    core.getLogger().info(DebugColors.CYAN + "Database table " + tableName + " doesn't exist, creating...");
+                    try (PreparedStatement statement = getConnection().prepareStatement(stringStatement)) {
+                        statement.executeUpdate();
+                        if (tableExist(getConnection(), tableName)) {
+                            core.getLogger().info(DebugColors.BLUE + "Successfully created the table " + tableName);
                         }
-                    } catch (SQLException e) {
-                        core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Unable to create " + tableName + " table in the database!");
-                        throw new RuntimeException(e);
                     }
+                } catch (SQLException e) {
+                    core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Unable to create " + tableName + " table in the database!");
+                    throw new RuntimeException(e);
                 }
-            }.runTaskLaterAsynchronously(core, YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile()).getLong("delay.database-table-creation"));
+            }, YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile()).getLong("delay.database-table-creation"));
         });
     }
 
