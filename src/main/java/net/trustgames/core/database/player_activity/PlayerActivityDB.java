@@ -1,7 +1,6 @@
 package net.trustgames.core.database.player_activity;
 
 import net.trustgames.core.Core;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,14 +25,10 @@ public class PlayerActivityDB {
      (is run async)
     */
     public void initializePlayerActivityTable() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                String preparedStatement = "CREATE TABLE IF NOT EXISTS player_activity(id BIGINT unsigned primary key AUTO_INCREMENT, uuid varchar(36), ip varchar(15), action TINYTEXT, time DATETIME)";
-                core.getMariaDB().initializeTable("player_activity", preparedStatement);
-            }
-
-        }.runTaskAsynchronously(core);
+        core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
+            String preparedStatement = "CREATE TABLE IF NOT EXISTS player_activity(id BIGINT unsigned primary key AUTO_INCREMENT, uuid varchar(36), ip varchar(15), action TINYTEXT, time DATETIME)";
+            core.getMariaDB().initializeTable("player_activity", preparedStatement);
+        });
     }
 
     /*
@@ -77,23 +72,20 @@ public class PlayerActivityDB {
     public void createPlayerActivity(PlayerActivity playerActivity, boolean runAsync) throws SQLException {
 
         if (runAsync) {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    // inserts new player's activity to table
-                    try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("INSERT INTO player_activity(uuid, ip, action, time) VALUES (?, ?, ?, ?)")) {
-                        // replaces the '?' with variables
-                        statement.setString(1, playerActivity.getUuid());
-                        statement.setString(2, playerActivity.getIp());
-                        statement.setString(3, playerActivity.getAction());
-                        statement.setTimestamp(4, playerActivity.getTime());
+            core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
+                // inserts new player's activity to table
+                try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("INSERT INTO player_activity(uuid, ip, action, time) VALUES (?, ?, ?, ?)")) {
+                    // replaces the '?' with variables
+                    statement.setString(1, playerActivity.getUuid());
+                    statement.setString(2, playerActivity.getIp());
+                    statement.setString(3, playerActivity.getAction());
+                    statement.setTimestamp(4, playerActivity.getTime());
 
-                        statement.executeUpdate();
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
+                    statement.executeUpdate();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
                 }
-            }.runTaskAsynchronously(core);
+            });
         } else {
             // inserts new player's activity to table
             try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("INSERT INTO player_activity(uuid, ip, action, time) VALUES (?, ?, ?, ?)")) {

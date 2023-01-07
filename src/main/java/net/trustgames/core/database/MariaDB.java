@@ -40,29 +40,26 @@ public class MariaDB {
      (is run async)
     */
     private void createDatabaseIfNotExists() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                // get the mariadb config credentials
-                YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
-                String user = config.getString("mariadb.user");
-                String password = config.getString("mariadb.password");
-                String ip = config.getString("mariadb.ip");
-                String port = config.getString("mariadb.port");
-                String database = config.getString("mariadb.database");
+        core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
+            // get the mariadb config credentials
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
+            String user = config.getString("mariadb.user");
+            String password = config.getString("mariadb.password");
+            String ip = config.getString("mariadb.ip");
+            String port = config.getString("mariadb.port");
+            String database = config.getString("mariadb.database");
 
-                try {
-                    // try to create a connection and prepared statement with sql statement
-                    Class.forName("org.mariadb.jdbc.Driver");
-                    try (Connection connection = DriverManager.getConnection("jdbc:mariadb://" + ip + ":" + port + "/", user, password); PreparedStatement statement = connection.prepareStatement("CREATE DATABASE IF NOT EXISTS " + database)) {
-                        statement.executeUpdate();
-                    }
-                } catch (SQLException | ClassNotFoundException e) {
-                    core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Unable to create " + database + " database!");
-                    throw new RuntimeException(e);
+            try {
+                // try to create a connection and prepared statement with sql statement
+                Class.forName("org.mariadb.jdbc.Driver");
+                try (Connection connection = DriverManager.getConnection("jdbc:mariadb://" + ip + ":" + port + "/", user, password); PreparedStatement statement = connection.prepareStatement("CREATE DATABASE IF NOT EXISTS " + database)) {
+                    statement.executeUpdate();
                 }
+            } catch (SQLException | ClassNotFoundException e) {
+                core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Unable to create " + database + " database!");
+                throw new RuntimeException(e);
             }
-        }.runTaskAsynchronously(core);
+        });
     }
 
     /*
@@ -111,38 +108,35 @@ public class MariaDB {
      (is run async)
     */
     public void initializeTable(String tableName, String stringStatement) {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (isMySQLDisabled()) {
-                    core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "MySQL is turned off. Not initializing table " + tableName);
-                    return;
-                }
-                createDatabaseIfNotExists();
-
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        // if the connection is null, return. if the table already exists, return.
-                        try {
-                            if (getConnection() == null) return;
-                            if (tableExist(getConnection(), tableName)) return;
-                            // if the table doesn't yet exist
-                            core.getLogger().info(DebugColors.CYAN + "Database table " + tableName + " doesn't exist, creating...");
-                            try (PreparedStatement statement = getConnection().prepareStatement(stringStatement)) {
-                                statement.executeUpdate();
-                                if (tableExist(getConnection(), tableName)) {
-                                    core.getLogger().info(DebugColors.BLUE + "Successfully created the table " + tableName);
-                                }
-                            }
-                        } catch (SQLException e) {
-                            core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Unable to create " + tableName + " table in the database!");
-                            throw new RuntimeException(e);
-                        }
-                    }
-                }.runTaskLater(core, YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile()).getLong("delay.database-table-creation"));
+        core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
+            if (isMySQLDisabled()) {
+                core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "MySQL is turned off. Not initializing table " + tableName);
+                return;
             }
-        }.runTaskAsynchronously(core);
+            createDatabaseIfNotExists();
+
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    // if the connection is null, return. if the table already exists, return.
+                    try {
+                        if (getConnection() == null) return;
+                        if (tableExist(getConnection(), tableName)) return;
+                        // if the table doesn't yet exist
+                        core.getLogger().info(DebugColors.CYAN + "Database table " + tableName + " doesn't exist, creating...");
+                        try (PreparedStatement statement = getConnection().prepareStatement(stringStatement)) {
+                            statement.executeUpdate();
+                            if (tableExist(getConnection(), tableName)) {
+                                core.getLogger().info(DebugColors.BLUE + "Successfully created the table " + tableName);
+                            }
+                        }
+                    } catch (SQLException e) {
+                        core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Unable to create " + tableName + " table in the database!");
+                        throw new RuntimeException(e);
+                    }
+                }
+            }.runTaskLaterAsynchronously(core, YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile()).getLong("delay.database-table-creation"));
+        });
     }
 
     // check if mysql is enabled in the config

@@ -4,6 +4,7 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.trustgames.core.announcer.AnnouncerConfig;
 import net.trustgames.core.announcer.ChatAnnouncer;
+import net.trustgames.core.chat.ChatPrefix;
 import net.trustgames.core.chat.MessageLimiter;
 import net.trustgames.core.commands.MessagesCommand;
 import net.trustgames.core.commands.MessagesConfig;
@@ -13,7 +14,10 @@ import net.trustgames.core.database.MariaDB;
 import net.trustgames.core.database.player_activity.ActivityListener;
 import net.trustgames.core.database.player_activity.PlayerActivityDB;
 import net.trustgames.core.managers.*;
+import net.trustgames.core.playerlist.PlayerListListener;
+import net.trustgames.core.playerlist.PlayerListTeams;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.Scoreboard;
 
 import java.io.File;
 
@@ -23,8 +27,11 @@ public final class Core extends JavaPlugin {
     PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
     ServerShutdownManager serverShutdownManager = new ServerShutdownManager(this);
     GameruleManager gameruleManager = new GameruleManager(this);
-
     public CooldownManager cooldownManager = new CooldownManager(this);
+    Scoreboard playerListScoreboard;
+    public LuckPermsManager luckPermsManager;
+
+
 
     @Override
     public void onEnable() {
@@ -47,7 +54,12 @@ public final class Core extends JavaPlugin {
         - disallow some default command (/?, /version, /plugins, etc.)
         - change some default messages (unknown command, etc.)
         - suppress join messages (that should be handled by mini-games core and lobby plugin)
+        - chat mention
         */
+
+        // luckperms
+        luckPermsManager = new LuckPermsManager(this);
+        luckPermsManager.registerListeners();
 
         // create a folder
         FolderManager.createDataFolder(getDataFolder());
@@ -59,17 +71,26 @@ public final class Core extends JavaPlugin {
         ConfigManager.createConfig(new File(getDataFolder(), "commands.yml"));
 
         // create config defaults
-        DefaultConfig.create(getConfig()); getConfig().options().copyDefaults(true); saveConfig();
-        MariaConfig mariaConfig = new MariaConfig(this); mariaConfig.createDefaults();
-        AnnouncerConfig announcerConfig = new AnnouncerConfig(this); announcerConfig.createDefaults();
-        MessagesConfig messagesConfig = new MessagesConfig(this); messagesConfig.createDefaults();
+        DefaultConfig.create(getConfig());
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+        MariaConfig mariaConfig = new MariaConfig(this);
+        mariaConfig.createDefaults();
+        AnnouncerConfig announcerConfig = new AnnouncerConfig(this);
+        announcerConfig.createDefaults();
+        MessagesConfig messagesConfig = new MessagesConfig(this);
+        messagesConfig.createDefaults();
+
+        // tablist
+        PlayerListTeams.createTeams();
 
         // register events
         EventManager.registerEvent(new ActivityListener(this), this);
         EventManager.registerEvent(new CommandManager(this), this);
         EventManager.registerEvent(new MessageLimiter(this), this);
         EventManager.registerEvent(new CooldownManager(this), this);
-        EventManager.registerEvent(new PrefixManager(this), this);
+        EventManager.registerEvent(new ChatPrefix(this), this);
+        EventManager.registerEvent(new PlayerListListener(this), this);
 
         // register commands
         CommandManager.registerCommand("discord", new MessagesCommand(this));
@@ -102,7 +123,11 @@ public final class Core extends JavaPlugin {
     }
 
     // obtain luckperms api instance
-    public static LuckPerms getLuckPerms(){
+    public static LuckPerms getLuckPerms() {
         return LuckPermsProvider.get();
+    }
+
+    public Scoreboard getPlayerListScoreboard() {
+        return playerListScoreboard;
     }
 }

@@ -21,7 +21,8 @@ name prefix
 __- KNIGHT:__  
 can use colors in chat  
 5s chat limit  
-45s same chat limit  
+45s same chat limit
+can use color in chat
 
 __- LORD:__  
 3s chat limit  
