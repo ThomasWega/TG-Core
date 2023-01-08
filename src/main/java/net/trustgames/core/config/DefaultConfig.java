@@ -1,5 +1,6 @@
 package net.trustgames.core.config;
 
+import net.trustgames.core.debug.DebugColors;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,9 +25,10 @@ public class DefaultConfig {
         defaultConfig.addDefault("messages.no-permission", prefix_chat + "&8You don't have permission to perform this command!");
         defaultConfig.addDefault("messages.chat-cooldown", prefix_chat + "&8Wait another %s seconds before using chat again!");
         defaultConfig.addDefault("messages.same-chat-cooldown", prefix_chat + "&8Don't write the same message! (wait %s seconds)");
-        defaultConfig.addDefault("messages.only-in-game-command", prefix_chat + "&8This command can be executed by in-game players only!");
+        defaultConfig.addDefault("messages.only-in-game-command", DebugColors.RED + "This command can be executed by in-game players only!");
         defaultConfig.addDefault("messages.buy.rank", "&fBuy a rank for better experience.");
         defaultConfig.addDefault("messages.buy.higher-rank", "&fBuy a higher rank for even better experience.");
+        defaultConfig.addDefault("messages.command-no-argument", prefix_chat + "&8You need to specify a valid argument!");
 
         // cooldowns
         defaultConfig.addDefault("cooldowns.max-commands-per-second", 5d);

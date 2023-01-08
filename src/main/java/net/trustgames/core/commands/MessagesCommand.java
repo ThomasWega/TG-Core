@@ -37,7 +37,7 @@ public class MessagesCommand implements CommandExecutor {
 
         }
         else{
-            Bukkit.getLogger().info(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(core.getConfig().getString("messages.only-in-game-command"))));
+            Bukkit.getLogger().info(Objects.requireNonNull(core.getConfig().getString("messages.only-in-game-command")));
         }
 
         return true;

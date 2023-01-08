@@ -29,18 +29,18 @@ public class ActivityListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
 
         Player player = event.getPlayer();
-        writeActivity(player, "JOIN PORT " + Bukkit.getServer().getPort(), true);
+        writeActivity(player, "JOIN SERVER " + Bukkit.getServer().getName() + " (" + Bukkit.getServer().getPort() + ")", true);
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         // check if mysql is enabled in the mariadb.yml
         Player player = event.getPlayer();
-        writeActivity(player, "QUIT PORT " + Bukkit.getServer().getPort(), true);
+        writeActivity(player, "QUIT SERVER " + Bukkit.getServer().getName() + " (" + Bukkit.getServer().getPort() + ")", true);
     }
 
     public void onServerShutdown(Player player) {
-        writeActivity(player, "QUIT PORT " + Bukkit.getServer().getPort() + " SHUTDOWN", false);
+        writeActivity(player, "QUIT SERVER " + Bukkit.getServer().getName() + " (" + Bukkit.getServer().getPort() + ") SHUTDOWN", false);
     }
 
     /*

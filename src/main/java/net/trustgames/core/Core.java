@@ -14,6 +14,7 @@ import net.trustgames.core.database.MariaDB;
 import net.trustgames.core.database.player_activity.ActivityListener;
 import net.trustgames.core.database.player_activity.PlayerActivityDB;
 import net.trustgames.core.managers.*;
+import net.trustgames.core.player_activity.ActivityCommand;
 import net.trustgames.core.playerlist.PlayerListListener;
 import net.trustgames.core.playerlist.PlayerListTeams;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -93,11 +94,13 @@ public final class Core extends JavaPlugin {
         EventManager.registerEvent(new CooldownManager(this), this);
         EventManager.registerEvent(new ChatPrefix(this), this);
         EventManager.registerEvent(new PlayerListListener(this), this);
+        EventManager.registerEvent(new ActivityCommand(this), this);
 
         // register commands
         CommandManager.registerCommand("discord", new MessagesCommand(this));
         CommandManager.registerCommand("website", new MessagesCommand(this));
         CommandManager.registerCommand("store", new MessagesCommand(this));
+        CommandManager.registerCommand("activity", new ActivityCommand(this));
 
         // mariadb database
         playerActivityDB.initializePlayerActivityTable();

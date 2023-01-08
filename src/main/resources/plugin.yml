@@ -26,3 +26,9 @@ commands:
       - benefits
       - buy
       - shop
+  activity:
+    usage: /activity <player>
+    description: Gets the player's activity from database
+    aliases:
+       - activ
+       - act
