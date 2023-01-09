@@ -2,7 +2,7 @@ package net.trustgames.core.playerlist;
 
 import net.kyori.adventure.text.Component;
 import net.luckperms.api.model.group.Group;
-import net.luckperms.api.node.types.WeightNode;
+import net.luckperms.api.node.Node;
 import net.trustgames.core.Core;
 import net.trustgames.core.debug.DebugColors;
 import net.trustgames.core.managers.LuckPermsManager;
@@ -46,7 +46,8 @@ public class PlayerListTeams {
             }
             else{
                 Bukkit.getLogger().info(DebugColors.PURPLE + DebugColors.WHITE_BACKGROUND + "LuckPerms group " + y.getName() + " doesn't have any weight! Settings the weight to 1...");
-                LuckPermsManager.getGroupManager().modifyGroup(y.getName(), group -> group.data().add(WeightNode.builder(1).build()));
+                Objects.requireNonNull(LuckPermsManager.getGroupManager().getGroup(y.getName())).data().add(Node.builder("weight.1").build());
+                LuckPermsManager.getGroupManager().saveGroup(y);
                 groupWeight.put(y.getName(), y.getWeight().getAsInt());
             }
         }

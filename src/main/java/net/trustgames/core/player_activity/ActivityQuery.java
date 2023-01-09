@@ -16,7 +16,7 @@ public class ActivityQuery {
     }
 
     public ResultSet getActivity(String uuid) {
-        try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("SELECT * FROM player_activity WHERE uuid = ? ORDER BY id DESC LIMIT 10")) {
+        try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("SELECT * FROM player_activity WHERE uuid = ? ORDER BY id DESC")) {
             statement.setString(1, uuid);
             try (ResultSet results = statement.executeQuery()) {
                 return results;
@@ -26,11 +26,11 @@ public class ActivityQuery {
         }
     }
 
-    public String encodeId(String id){
+    public String encodeId(String id) {
         return Base64.getEncoder().encodeToString(id.getBytes());
     }
 
-    public String decodeID(String encodedid){
+    public String decodeID(String encodedid) {
         return new String(Base64.getDecoder().decode(encodedid));
     }
 }

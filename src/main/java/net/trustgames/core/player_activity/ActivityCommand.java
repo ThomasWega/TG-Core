@@ -19,6 +19,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
@@ -47,12 +48,12 @@ public class ActivityCommand implements CommandExecutor, Listener {
 
         if (sender instanceof Player player) {
             if (player.hasPermission("core.staff")) {
-                if (args[0].isEmpty()){
-                    player.sendMessage(ChatColor.translateAlternateColorCodes( '&', config.getString("messages.command-no-argument") + "&8 Use/activity <Player>"));
+                if (args.length == 0) {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', config.getString("messages.command-no-argument") + "&8 Use /activity <player>"));
                     return true;
                 }
                 String target = args[0];
-                ItemStack targetHead = ItemManager.createItemStack(Material.PLAYER_HEAD, 1);
+                ItemStack targetHead = ItemManager.createItemStack(Material.BOOKSHELF, 1);
                 Inventory inventory = InventoryManager.getInventory(player, 6, target + "'s activity");
 
                 ActivityQuery activityQuery = new ActivityQuery(core);
@@ -60,7 +61,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 try {
                     while (resultSet.next()) {
                         String id = resultSet.getString("id");
-                   //     String uuid = resultSet.getString("uuid");
+                        //     String uuid = resultSet.getString("uuid");
                         String ip = resultSet.getString("ip");
                         String action = resultSet.getString("action");
                         Timestamp time = resultSet.getTimestamp("time");
@@ -85,9 +86,26 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
+
+                // TODO add check for next page
+
+                ItemStack arrow = ItemManager.createItemStack(Material.ARROW, 1);
+                arrow.setItemMeta(ItemManager.createItemMeta(arrow, ChatColor.YELLOW + "Next page", new ItemFlag[]{ItemFlag.HIDE_UNBREAKABLE}));
+                
+                ItemStack glass = ItemManager.createItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE, 1);
+                glass.setItemMeta(ItemManager.createItemMeta(glass, "", new ItemFlag[]{}));
+                
+                inventory.setItem(45, glass);
+                inventory.setItem(46, glass);
+                inventory.setItem(47, glass);
+                inventory.setItem(48, glass);
+                inventory.setItem(49, glass);
+                inventory.setItem(50, glass);
+                inventory.setItem(51, glass);
+                inventory.setItem(52, glass);
+                inventory.setItem(53, arrow);
                 player.openInventory(inventory);
-            }
-            else{
+            } else {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("messages.no-permission"))));
             }
         } else {
@@ -103,13 +121,20 @@ public class ActivityCommand implements CommandExecutor, Listener {
         Inventory inventory = event.getClickedInventory();
         String title = PlainTextComponentSerializer.plainText().serialize(event.getView().title());
 
-        if (title.equals(humanEntity.getName() + "'s activity")){
+        if (title.equals(humanEntity.getName() + "'s activity")) {
             ItemStack itemStack = event.getCurrentItem();
 
-            String id = Objects.requireNonNull(Objects.requireNonNull(Objects.requireNonNull(itemStack).lore()).get(5).clickEvent()).value();
-            humanEntity.sendMessage(Component.text(ChatColor.YELLOW + "Click here to copy ID").clickEvent(ClickEvent.copyToClipboard(id)));
+            try {
+                if (itemStack != null && itemStack.lore() != null && PlainTextComponentSerializer.plainText().serialize(Objects.requireNonNull(itemStack.lore()).get(5)).contains("ID")) {
+                    String id = Objects.requireNonNull(Objects.requireNonNull(Objects.requireNonNull(itemStack).lore()).get(5).clickEvent()).value();
+                    humanEntity.sendMessage(Component.text(ChatColor.YELLOW + "Click here to copy ID").clickEvent(ClickEvent.copyToClipboard(id)));
 
-            Objects.requireNonNull(inventory).close();
+                    Objects.requireNonNull(inventory).close();
+                }
+            }
+            catch (IndexOutOfBoundsException e){
+                e.printStackTrace();
+            }
         }
     }
 }

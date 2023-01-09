@@ -29,6 +29,7 @@ commands:
   activity:
     usage: /activity <player>
     description: Gets the player's activity from database
+    permission: core.staff
     aliases:
        - activ
        - act
