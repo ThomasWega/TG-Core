@@ -45,8 +45,8 @@ public class DefaultConfig {
         defaultConfig.addDefault("cooldowns.same-message-limit-in-seconds.titan", 10d);
 
         // tablist
-        defaultConfig.addDefault("tablist.header", List.of("&f&lTRUSTGAMES &f- &7Chillin' on the hub"));
-        defaultConfig.addDefault("tablist.footer", List.of("&fCheck out &astore.trustgames.net&f for Ranks and Benefits"));
+        defaultConfig.addDefault("tablist.header", List.of("&e&lTRUSTGAMES &f- &7Chillin' on the hub"));
+        defaultConfig.addDefault("tablist.footer", List.of("&astore.trustgames.net"));
 
         // chat
         defaultConfig.addDefault("chat.allow-colors-permission", "core.knight");

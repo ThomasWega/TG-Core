@@ -17,7 +17,11 @@ public class ItemManager {
     public static ItemMeta createItemMeta(ItemStack itemStack, String name, ItemFlag[] itemFlags) {
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.displayName(Component.text(name));
-        itemMeta.addItemFlags(itemFlags);
+
+        if (!(itemFlags == null)){
+            itemMeta.addItemFlags(itemFlags);
+        }
+
         itemStack.setItemMeta(itemMeta);
         return itemMeta;
     }

@@ -19,7 +19,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
@@ -42,6 +41,12 @@ public class ActivityCommand implements CommandExecutor, Listener {
         this.core = core;
     }
 
+    private static final List<ItemStack> records = new ArrayList<>();
+    private static final List<Inventory> inventoryList = new ArrayList<>();
+
+    ItemStack nextPage = ItemManager.createItemStack(Material.ARROW, 1);
+    ItemStack previousPage = ItemManager.createItemStack(Material.ARROW, 1);
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         FileConfiguration config = core.getConfig();
@@ -52,9 +57,12 @@ public class ActivityCommand implements CommandExecutor, Listener {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', config.getString("messages.command-no-argument") + "&8 Use /activity <player>"));
                     return true;
                 }
+
+                records.clear();
+                inventoryList.clear();
+
                 String target = args[0];
-                ItemStack targetHead = ItemManager.createItemStack(Material.BOOKSHELF, 1);
-                Inventory inventory = InventoryManager.getInventory(player, 6, target + "'s activity");
+                ItemStack targetHead = ItemManager.createItemStack(Material.PAINTING, 1);
 
                 ActivityQuery activityQuery = new ActivityQuery(core);
                 ResultSet resultSet = activityQuery.getActivity(player.getUniqueId().toString());
@@ -81,30 +89,16 @@ public class ActivityCommand implements CommandExecutor, Listener {
 
                         targetHead.setItemMeta(targetHeadMeta);
 
+                        records.add(targetHead.clone());
+
+                        Inventory inventory = InventoryManager.getInventory(player, 6, target + "'s activity" + " (1/" + ((int) Math.ceil(records.size() / 44d)) + ")");
                         inventory.addItem(targetHead);
                     }
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
-
-                // TODO add check for next page
-
-                ItemStack arrow = ItemManager.createItemStack(Material.ARROW, 1);
-                arrow.setItemMeta(ItemManager.createItemMeta(arrow, ChatColor.YELLOW + "Next page", new ItemFlag[]{ItemFlag.HIDE_UNBREAKABLE}));
-                
-                ItemStack glass = ItemManager.createItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE, 1);
-                glass.setItemMeta(ItemManager.createItemMeta(glass, "", new ItemFlag[]{}));
-                
-                inventory.setItem(45, glass);
-                inventory.setItem(46, glass);
-                inventory.setItem(47, glass);
-                inventory.setItem(48, glass);
-                inventory.setItem(49, glass);
-                inventory.setItem(50, glass);
-                inventory.setItem(51, glass);
-                inventory.setItem(52, glass);
-                inventory.setItem(53, arrow);
-                player.openInventory(inventory);
+                createPages(player);
+                player.openInventory(inventoryList.get(0));
             } else {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("messages.no-permission"))));
             }
@@ -121,7 +115,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
         Inventory inventory = event.getClickedInventory();
         String title = PlainTextComponentSerializer.plainText().serialize(event.getView().title());
 
-        if (title.equals(humanEntity.getName() + "'s activity")) {
+        if (title.contains(humanEntity.getName() + "'s activity")) {
             ItemStack itemStack = event.getCurrentItem();
 
             try {
@@ -136,5 +130,60 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void createPages(Player player){
+
+        for (int i = 1; i <= Math.ceil(records.size() / 44d); i++) {
+            inventoryList.add(InventoryManager.getInventory(player, 6, player.getName()  + "'s activity" + " (" + i + "/" + ((int) Math.ceil(records.size() / 44d)) + ")"));
+        }
+
+        int invCount = 0;
+        int slot = 0;
+        int max = 44;
+
+        Inventory inv = inventoryList.get(invCount);
+        for (ItemStack item : records){
+            if (slot > max){
+                invCount++;
+                nextPage.setAmount(invCount);
+                nextPage.setItemMeta(ItemManager.createItemMeta(nextPage, ChatColor.YELLOW + "Next page", null));
+                inv.setItem(50, nextPage);
+                inv = inventoryList.get(invCount);
+                max = max + 44;
+            }
+            inv.addItem(item.clone());
+            slot++;
+        }
+
+        nextPage(player);
+    }
+
+    @EventHandler
+    public void onArrowClick(InventoryClickEvent event){
+        Player player = (Player) event.getWhoClicked();
+        ItemStack item = event.getCurrentItem();
+        String itemName = PlainTextComponentSerializer.plainText().serialize(Objects.requireNonNull(item).displayName());
+        String title = PlainTextComponentSerializer.plainText().serialize(event.getView().title());
+
+        if (title.contains(player.getName() + "'s activity")) {
+            if (item.getType() == Material.ARROW) {
+                if (itemName.contains("Next page")) {
+                    System.out.println("NEXT PAGE EVENT");
+                    nextPage(player);
+                } else if (itemName.contains("Previous page")) {
+                    // TODO previousPage(player);
+                }
+            }
+        }
+    }
+
+    public void nextPage(Player player){
+        int nextPageCount = nextPage.getAmount();
+
+        player.closeInventory();
+        System.out.println("CLOSED INV");
+
+        player.openInventory(inventoryList.get(nextPageCount));
     }
 }

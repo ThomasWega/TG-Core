@@ -56,7 +56,10 @@ public final class Core extends JavaPlugin {
         - change some default messages (unknown command, etc.)
         - suppress join messages (that should be handled by mini-games core and lobby plugin)
         - chat mention
+        - maintenance
         */
+
+        // FIXME MariaDB delay is in milliseconds but in config should be in seconds
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
