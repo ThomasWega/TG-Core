@@ -40,7 +40,7 @@ public class ActivityListener implements Listener {
     }
 
     public void onServerShutdown(Player player) {
-        writeActivity(player, "QUIT SERVER " + Bukkit.getServer().getName() + " (" + Bukkit.getServer().getPort() + ") SHUTDOWN", false);
+        writeActivity(player, "QUIT SHUTDOWN SERVER " + Bukkit.getServer().getName() + " (" + Bukkit.getServer().getPort() + ")", false);
     }
 
     /*

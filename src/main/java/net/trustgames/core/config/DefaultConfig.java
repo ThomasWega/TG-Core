@@ -29,6 +29,8 @@ public class DefaultConfig {
         defaultConfig.addDefault("messages.buy.rank", "&fBuy a rank for better experience.");
         defaultConfig.addDefault("messages.buy.higher-rank", "&fBuy a higher rank for even better experience.");
         defaultConfig.addDefault("messages.command-no-argument", prefix_chat + "&8You need to specify a valid argument!");
+        defaultConfig.addDefault("messages.command-invalid-player", prefix_chat + "&8The player %s doesn't exist!");
+
 
         // cooldowns
         defaultConfig.addDefault("cooldowns.max-commands-per-second", 5d);

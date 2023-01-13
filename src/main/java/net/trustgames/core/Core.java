@@ -60,6 +60,7 @@ public final class Core extends JavaPlugin {
         */
 
         // FIXME MariaDB delay is in milliseconds but in config should be in seconds
+        // TODO Fix deprecated methods (use new methods)
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
