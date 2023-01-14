@@ -7,6 +7,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.sql.*;
 
+/**
+ * This class handles the basic MariaDB and HikariCP methods such as getting connection,
+ * creating the database, table (if not exists) and closing the hikari connection.
+ */
 public class MariaDB {
 
     private final Core core;
@@ -19,7 +23,14 @@ public class MariaDB {
 
     private MariaConfig mariaConfig;
 
-    // method to check if table exists
+    /**
+     * Check if table exists
+     *
+     * @param connection HikariCP connection
+     * @param tableName The name of the table
+     * @return if the table already exists
+     * @throws SQLException if it can't get the ResultSet
+     */
     private static boolean tableExist(Connection connection, String tableName) throws SQLException {
         boolean tExists = false;
         try (ResultSet rs = connection.getMetaData().getTables(null, null, tableName, null)) {
@@ -34,7 +45,7 @@ public class MariaDB {
         return tExists;
     }
 
-    /*
+    /**
      create the specified database if it doesn't exist yet
      (is run async)
     */
@@ -61,7 +72,7 @@ public class MariaDB {
         });
     }
 
-    /*
+    /**
      gets the connection. Checks if the connection isn't null. If it isn't, it will return connection
      if the connection is null, meaning it probably doesn't exist, it will create a new connection and return it
     */
@@ -96,15 +107,17 @@ public class MariaDB {
                 connection = ds.getConnection();
                 return connection;
             } catch (SQLException e) {
-                core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "ERROW: Connecting to the database using HikariCP");
+                core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "ERROR: Connecting to the database using HikariCP");
                 throw new RuntimeException(e);
             }
         }
     }
 
-    /*
+    /**
      checks if the table exists, if it doesn't, it creates one using the given SQL statement
      (is run async)
+     * @param tableName The name of the table
+     * @param stringStatement The SQL statement in String
     */
     public void initializeTable(String tableName, String stringStatement) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
@@ -135,14 +148,20 @@ public class MariaDB {
         });
     }
 
-    // check if mysql is enabled in the config
+    /**
+     * check if mysql is enabled in the config¨
+     *
+     * @return if mysql is disabled
+     */
     public boolean isMySQLDisabled() {
         mariaConfig = new MariaConfig(core);
         YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
         return !Boolean.parseBoolean(config.getString("mariadb.enable"));
     }
 
-    // close the hikari connection
+    /**
+     * close the hikari connection
+     */
     public void closeHikari() {
         if (isMySQLDisabled()) return;
         hikariDataSource.close();

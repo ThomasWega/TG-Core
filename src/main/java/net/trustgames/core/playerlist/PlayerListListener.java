@@ -11,6 +11,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scoreboard.Scoreboard;
 
+/**
+ * Handles the player-list creation
+ */
 public class PlayerListListener implements Listener {
 
     private final Core core;
@@ -22,6 +25,11 @@ public class PlayerListListener implements Listener {
     PlayerListTeams playerListTeams;
 
 
+    /**
+     * Set the player-list header and footer for the player
+     *
+     * @param event PlayerJoin
+     */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event){
         Player player = event.getPlayer();
@@ -38,6 +46,11 @@ public class PlayerListListener implements Listener {
         player.setScoreboard(playerListScoreboard);
     }
 
+    /**
+     * Remove the player from the scoreboard team
+     *
+     * @param event PlayerQuit
+     */
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event){
         Player player = event.getPlayer();

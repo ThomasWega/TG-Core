@@ -9,12 +9,18 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.UUID;
 
+/**
+ * Handles the Skull ItemStack creation and texture
+ */
 public class SkullManager {
 
 
-    /*
+    /**
      gets the player skull by his url. Use mineskin.org for url
      Using advanced paper api method for this. (will not work on spigot)
+     * @param textureValue Value of the Texture of the Skull
+     * @param textureSignature Signature of the texture of the Skull
+     * @return ItemStack with the Skull texture
     */
     public static ItemStack getSkull(String textureValue, String textureSignature) {
         ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);

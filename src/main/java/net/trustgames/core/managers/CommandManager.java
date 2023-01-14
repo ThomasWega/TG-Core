@@ -25,14 +25,19 @@ public class CommandManager implements Listener {
 
     private final HashMap<UUID, Long> commandCooldown = new HashMap<>();
 
-    // used to register all commands
+    /**
+     * Register the given command
+     *
+     * @param commandName The name of the command
+     * @param commandExecutor The executor of the command
+     */
     public static void registerCommand(String commandName, CommandExecutor commandExecutor) {
         Objects.requireNonNull(Bukkit.getServer().getPluginCommand(commandName)).setExecutor(commandExecutor);
     }
 
     int i = 1;
 
-    /* limit the number of commands player can send, to avoid spamming.
+    /** limit the number of commands player can send, to avoid spamming.
     it checks, if the player is already in the hashmap, in case he is not,
     it puts him there. If he is already in the hashmap, it checks if the
     current time - the time in hashmap is less than a second. If it's less
@@ -42,6 +47,7 @@ public class CommandManager implements Listener {
     in the config.yml, it just adds +1 to "i". If neither of these checks are valid, meaning
     the player is in the hashmap, but more than a second has passed till last command, he is
     put again in the hashmap with a new time and the "i" is reset to 0
+     * @param event Command preprocess event
      */
     @EventHandler
     public void onPlayerPreCommand(PlayerCommandPreprocessEvent event) {
@@ -75,7 +81,11 @@ public class CommandManager implements Listener {
         }
     }
 
-    // on player quit, remove him from the hashmap
+    /**
+     * on player quit, remove him from the hashmap
+     *
+     * @param event PlayerQuit
+     */
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event){
         Player player = event.getPlayer();

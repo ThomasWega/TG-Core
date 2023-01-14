@@ -1,4 +1,4 @@
-package net.trustgames.core.messages_commands;
+package net.trustgames.core.commands.messages_commands;
 
 import net.trustgames.core.Core;
 import org.bukkit.Bukkit;
@@ -12,6 +12,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+/**
+ * Just string or list of strings from a config
+ * sent to the player on a given command
+ */
 public class MessagesCommand implements CommandExecutor {
 
     private final Core core;

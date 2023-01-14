@@ -10,6 +10,10 @@ import org.bukkit.entity.Player;
 
 import java.util.Objects;
 
+/**
+ * Handles what should happen when the server shutdowns.
+ * This method DOESN'T move players to the next online server!
+ */
 public class ServerShutdownManager {
 
     private final Core core;
@@ -18,6 +22,9 @@ public class ServerShutdownManager {
         this.core = core;
     }
 
+    /**
+     * Kick all the online players and log their activity
+     */
     public void kickPlayers() {
         ActivityListener activityListener = new ActivityListener(core);
 

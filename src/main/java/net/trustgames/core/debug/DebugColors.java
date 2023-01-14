@@ -1,15 +1,15 @@
 package net.trustgames.core.debug;
 
+/**
+ This class is only for colors used in console logging and debugging
+ Source: <a href="https://stackoverflow.com/a/45444716">StackOverflow</a>
+ */
 @SuppressWarnings("unused")
 public class DebugColors {
 
-    /*
-     This class is only for colors used in console logging and debugging
-     Source: https://stackoverflow.com/a/45444716
-    */
-
     // Reset
     public static final String RESET = "\033[0m";  // Text Reset
+
 
     // Regular Colors
     public static final String BLACK = "\033[0;30m";   // BLACK

@@ -1,4 +1,4 @@
-package net.trustgames.core.activity_command;
+package net.trustgames.core.commands.activity_command;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;

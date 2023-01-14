@@ -6,6 +6,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Sets the config defaults for MariaDB (mariadb.yml)
+ */
 public class MariaConfig {
 
     private final Core core;
@@ -14,7 +17,9 @@ public class MariaConfig {
         this.core = core;
     }
 
-    // adds the defaults to the mariadb.yml file
+    /**
+     * adds the defaults to the mariadb.yml file
+     */
     public void createDefaults() {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(getMariaFile());
 
@@ -35,7 +40,11 @@ public class MariaConfig {
     }
 
 
-    // used to retrieve the mariadb.yml file
+    /**
+     * used to retrieve the mariadb.yml file
+     *
+     * @return mariadb.yml file
+     */
     public File getMariaFile() {
         return new File(core.getDataFolder(), "mariadb.yml");
     }

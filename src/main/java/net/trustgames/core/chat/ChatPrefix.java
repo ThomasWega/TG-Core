@@ -11,6 +11,9 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.Objects;
 
+/**
+ * Handles the addition of prefix and colors in the chat
+ */
 public class ChatPrefix implements Listener {
 
     private final Core core;
@@ -20,7 +23,12 @@ public class ChatPrefix implements Listener {
     }
 
 
-    // used to apply chat prefixes for players
+    /**
+     * used to apply chat prefixes for players
+     * on chat event
+     *
+     * @param event AsyncPlayerChatEvent - DEPRECATED CHANGE!
+     */
     @EventHandler
     @Deprecated
     private void chatPrefix(AsyncPlayerChatEvent event){

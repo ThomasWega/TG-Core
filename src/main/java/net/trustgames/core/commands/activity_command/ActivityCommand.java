@@ -1,4 +1,4 @@
-package net.trustgames.core.activity_command;
+package net.trustgames.core.commands.activity_command;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -120,8 +120,6 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 actionsMap.clear();
                 pageCount = 0;
 
-                System.out.println(pageCount);
-
                 createRecords(offlinePlayer);
 
                 // if the records list is empty, there is no data for the given target
@@ -188,7 +186,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 loreList.add(Component.text(ChatColor.WHITE + "UUID: " + ChatColor.GRAY + uuid));
                 loreList.add(Component.text(ChatColor.WHITE + "IP: " + ChatColor.GREEN + ip));
                 loreList.add(Component.text(""));
-                loreList.add(Component.text(ChatColor.GRAY + "Click to print").clickEvent(ClickEvent.suggestCommand(encodedId)));
+                loreList.add(Component.text(ChatColor.LIGHT_PURPLE + "Click to print").clickEvent(ClickEvent.suggestCommand(encodedId)));
 
                 // item meta and set display name and lore
                 ItemMeta targetHeadMeta = targetHead.getItemMeta();
@@ -418,8 +416,8 @@ public class ActivityCommand implements CommandExecutor, Listener {
      * Switch the page to the next one or the previous one.
      * That is decided by getting if the item display name
      * contains "Next page" or "Previous page". The pageCount
-     * is always the amount of arrows in the page - 1.
-     * The amount is always -1, as the array starts with 0, not 1.
+     * is always updated either by -1 or +1 depending on if the
+     * page was switched to next or previous.
      *
      * @param item ItemStack of the record
      * @param humanEntity Command sender
@@ -439,7 +437,5 @@ public class ActivityCommand implements CommandExecutor, Listener {
             Inventory previousInv = inventoryList.get(pageCount);
             humanEntity.openInventory(previousInv);
         }
-
-        System.out.println(DebugColors.RED + pageCount);
     }
 }

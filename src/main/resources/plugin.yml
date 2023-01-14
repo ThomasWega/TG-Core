@@ -2,7 +2,6 @@ depend:
   - LuckPerms
 softdepend:
   - PlaceholderAPI
-
 name: Core
 version: '${project.version}'
 main: net.trustgames.core.Core

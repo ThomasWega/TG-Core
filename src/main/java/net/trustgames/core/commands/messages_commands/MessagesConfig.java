@@ -1,4 +1,4 @@
-package net.trustgames.core.messages_commands;
+package net.trustgames.core.commands.messages_commands;
 
 import net.trustgames.core.Core;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Sets the config defaults for Messages (commands.yml)
+ */
 public class MessagesConfig {
     
     private final Core core;
@@ -16,6 +19,9 @@ public class MessagesConfig {
         this.core = core;
     }
 
+    /**
+     * create the config defaults for commands.yml
+     */
     public void createDefaults(){
         YamlConfiguration config = YamlConfiguration.loadConfiguration(getMessagesFile());
         
@@ -47,7 +53,11 @@ public class MessagesConfig {
         }
     }
 
-    // used to retrieve the announcer.yml file
+    /**
+     * Retrieve the announcer.yml file
+     *
+     * @return announcer.yml file
+     */
     public File getMessagesFile() {
         return new File(core.getDataFolder(), "commands.yml");
     }

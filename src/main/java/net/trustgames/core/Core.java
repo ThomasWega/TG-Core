@@ -6,16 +6,16 @@ import net.trustgames.core.announcer.AnnouncerConfig;
 import net.trustgames.core.announcer.ChatAnnouncer;
 import net.trustgames.core.chat.ChatPrefix;
 import net.trustgames.core.chat.MessageLimiter;
-import net.trustgames.core.messages_commands.MessagesCommand;
-import net.trustgames.core.messages_commands.MessagesConfig;
+import net.trustgames.core.commands.messages_commands.MessagesCommand;
+import net.trustgames.core.commands.messages_commands.MessagesConfig;
 import net.trustgames.core.config.DefaultConfig;
 import net.trustgames.core.database.MariaConfig;
 import net.trustgames.core.database.MariaDB;
 import net.trustgames.core.database.player_activity.ActivityListener;
 import net.trustgames.core.database.player_activity.PlayerActivityDB;
 import net.trustgames.core.managers.*;
-import net.trustgames.core.activity_command.ActivityCommand;
-import net.trustgames.core.activity_command.ActivityIdCommand;
+import net.trustgames.core.commands.activity_command.ActivityCommand;
+import net.trustgames.core.commands.activity_command.ActivityIdCommand;
 import net.trustgames.core.playerlist.PlayerListListener;
 import net.trustgames.core.playerlist.PlayerListTeams;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,6 +23,12 @@ import org.bukkit.scoreboard.Scoreboard;
 
 import java.io.File;
 
+/**
+ * Main class of the Core plugin, which registers all the events and commands.
+ * Handles the plugin enable and disable.
+ * Has methods to get other instances of other classes and initializes other classes
+ * to be able to access them from external plugins
+ */
 public final class Core extends JavaPlugin {
 
     final MariaDB mariaDB = new MariaDB(this);
@@ -40,11 +46,10 @@ public final class Core extends JavaPlugin {
     public void onEnable() {
 
         /* ADD
-        - Command completer (tab complete)
         - configurable extendable .yml text info commands (/discord, /store, /help)
-        - chat system
+        - chat system - add level
         - economy system
-        - admin system (vanish, menus, ...)
+        - admin system (vanish, menus, spectate ...)
         - report system
         - level system
         - cosmetics (spawn particles, spawn sounds, balloons)
@@ -61,9 +66,7 @@ public final class Core extends JavaPlugin {
         - maintenance
         */
 
-        // FIXME MariaDB delay is in milliseconds but in config should be in seconds
         // TODO Fix deprecated methods (use new methods)
-        // TODO change comments to documentation comments
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
@@ -130,16 +133,29 @@ public final class Core extends JavaPlugin {
         mariaDB.closeHikari();
     }
 
-    // get the class MariaDB
+    /**
+     * get the class MariaDB instance without creating a new one everytime
+     *
+     * @return MariaDB instance
+     */
     public MariaDB getMariaDB() {
         return mariaDB;
     }
 
-    // obtain luckperms api instance
+    /**
+     * Obtain luckperms api instance
+     */
     public static LuckPerms getLuckPerms() {
         return LuckPermsProvider.get();
     }
 
+    /**
+     * Get the player-list scoreboard. The scoreboard needs to be created in
+     * the main method, as it needs to be created only once and be same for
+     * every player on the server.
+     *
+     * @return Player-list scoreboard
+     */
     public Scoreboard getPlayerListScoreboard() {
         return playerListScoreboard;
     }

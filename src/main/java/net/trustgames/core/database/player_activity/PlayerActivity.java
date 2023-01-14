@@ -2,11 +2,10 @@ package net.trustgames.core.database.player_activity;
 
 import java.sql.Timestamp;
 
-public class PlayerActivity {
-
-    /*
+/**
     This class is just used as getters and setters for the database player_activity
      */
+public class PlayerActivity {
 
     private final String uuid;
     private String ip;

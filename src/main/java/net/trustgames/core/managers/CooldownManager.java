@@ -23,13 +23,15 @@ public class CooldownManager implements Listener {
     private final HashMap<UUID, Long> commandCooldownTime = new HashMap<>();
     private final HashMap<UUID, Long> cooldownMessageTime = new HashMap<>();
 
-    /*
+    /**
     This method can be called from anywhere and ensures, that the command is not being spammed too much. I already
     have one of this check in the CommandManager, but that allows certain number of commands per second. This
     method allows only one execution of the command per given time. It also ensures that the "don't spam" message
     is not being sent too often to the player.
+     * @param player Player to put in a cooldown
+     * @param cooldownTime Cooldown time in seconds
+     * @return if the player is on cooldown
      */
-
     public boolean commandCooldown(Player player, Double cooldownTime){
         /*
          if the player is not in the cooldown yet, or if his cooldown expired,
@@ -45,12 +47,23 @@ public class CooldownManager implements Listener {
         return false;
     }
 
-    // method to check if player is on cooldown
+    /**
+     * Check if player is on cooldown
+     *
+     * @param player Player to check cooldown on
+     * @param cooldownTime Cooldown time in seconds
+     * @return if player is on cooldown
+     */
     private boolean isOnCooldown(Player player, Double cooldownTime){
         return !(cooldownTime <= (System.currentTimeMillis() - commandCooldownTime.get(player.getUniqueId())) / 1000d);
     }
 
-    // check if the wait message isn't being sent too often to avoid it being too spammy
+    /**
+     * check if the wait message isn't being sent too often to avoid it being too spammy
+     *
+     * @param player Player which the cooldown messages are being sent to
+     * @return if the cooldown message is too spammy
+     */
     private boolean isSpam(Player player) {
         FileConfiguration config = core.getConfig();
 
@@ -66,8 +79,13 @@ public class CooldownManager implements Listener {
             return false;
         }
     }
-    
 
+
+    /**
+     * Send the cooldown messages
+     *
+     * @param player Player to send the messages to
+     */
     private void sendMessage(Player player){
         FileConfiguration config = core.getConfig();
 
@@ -79,7 +97,7 @@ public class CooldownManager implements Listener {
         cooldownMessageTime.put(player.getUniqueId(), System.currentTimeMillis());
     }
 
-    // on player quit, remove his entries from the hashmaps
+    // on player quit, remove player's entries from the hashmaps
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event){
         Player player = event.getPlayer();

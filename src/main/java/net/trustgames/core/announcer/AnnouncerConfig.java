@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Sets the config defaults for Announcer (announcer.yml)
+ */
 public class AnnouncerConfig {
 
     private final Core core;
@@ -16,7 +19,9 @@ public class AnnouncerConfig {
         this.core = core;
     }
 
-    // create the config defaults for announcer.yml
+    /**
+     * create the config defaults for announcer.yml
+     */
     public void createDefaults() {
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(getAnnouncerFile());
@@ -46,7 +51,9 @@ public class AnnouncerConfig {
         }
     }
 
-    // used to retrieve the announcer.yml file
+    /**
+     * used to retrieve the announcer.yml file
+      */
     public File getAnnouncerFile() {
         return new File(core.getDataFolder(), "announcer.yml");
     }

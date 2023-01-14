@@ -1,4 +1,4 @@
-package net.trustgames.core.activity_command;
+package net.trustgames.core.commands.activity_command;
 
 import net.trustgames.core.Core;
 

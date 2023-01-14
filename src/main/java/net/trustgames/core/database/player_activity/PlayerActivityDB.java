@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
-/*
+/**
 This class is used to handle the database table player_activity
 including methods, functions etc.
  */
@@ -19,7 +19,7 @@ public class PlayerActivityDB {
         this.core = core;
     }
 
-    /*
+    /**
      use external method from MariaDB class
      with specified SQL statement to create a new table
      (is run async)
@@ -31,11 +31,13 @@ public class PlayerActivityDB {
         });
     }
 
-    /*
+    /**
      finds the current saved player's activity by his uuid
      by showing only rows with player's uuid and ordering it by largest id
      then it limits the results to only one. That should be the last row created
      and the one that should be set with the new stats (ip, time, action, ...)
+
+     * @param uuid Player's uuid
     */
     public PlayerActivity findPlayerActivityByUUID(String uuid) {
 
@@ -64,10 +66,12 @@ public class PlayerActivityDB {
         return null;
     }
 
-    /*
+    /**
     creates a new row with the new player activity.
     values from playerActivity are set for each index
     (is run async)
+     * @param playerActivity Player activity instance
+     * @param runAsync Should the method be run Async
      */
     public void createPlayerActivity(PlayerActivity playerActivity, boolean runAsync) {
 

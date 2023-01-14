@@ -6,6 +6,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
 import org.bukkit.World;
 
+/**
+ * Handles the gamerules of world
+ */
 public class GameruleManager {
 
     private final Core core;
@@ -14,6 +17,11 @@ public class GameruleManager {
         this.core = core;
     }
 
+    /**
+     * Set needed gamerules to the given world
+     *
+     * @param worldName World to set the gamerules on
+     */
     public void setGamerules(String worldName) {
 
         World world = Bukkit.getWorld(worldName);

@@ -5,10 +5,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.Objects;
 
+/**
+ * Chat messages which are announced to all online players
+ * on the server.
+ */
 public class ChatAnnouncer {
 
     private final Core core;
@@ -17,15 +20,19 @@ public class ChatAnnouncer {
         this.core = core;
     }
 
+    /**
+     * Announce a set of messages every x seconds for all
+     * the online players on the server. The messages can be configured
+     * in the announcer.yml config
+     */
     public void announceMessages() {
         AnnouncerConfig announcerConfig = new AnnouncerConfig(core);
         YamlConfiguration config = YamlConfiguration.loadConfiguration(announcerConfig.getAnnouncerFile());
 
-        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        scheduler.scheduleSyncRepeatingTask(core, new Runnable() {
+        core.getServer().getScheduler().scheduleSyncRepeatingTask(core, new Runnable() {
             int i = 1;
 
-            /*
+            /**
              runs once every x seconds (specified in announcer.yml) and loops through each online player
              it sends every player the same message. After all players have the message, it increases
              the int i by one, to move on to the next message in the announcer.yml. When it sent all the messages

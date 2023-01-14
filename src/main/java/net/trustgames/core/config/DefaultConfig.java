@@ -5,8 +5,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * Sets the config defaults for the default config (config.yml)
+ */
 public class DefaultConfig {
 
+    /**
+     * Create the defalts for the default config (config.yml)
+     *
+     * @param defaultConfig config.yml FileConfiguration
+     */
     public static void create(@NotNull FileConfiguration defaultConfig) {
 
         // placeholders
@@ -30,7 +38,7 @@ public class DefaultConfig {
         defaultConfig.addDefault("messages.command-invalid-argument", prefix_chat + "&8You need to specify a valid argument!");
         defaultConfig.addDefault("messages.command-invalid-player", prefix_chat + "&8The player %s doesn't exist!");
         defaultConfig.addDefault("messages.command-no-player-activity", prefix_chat + "&8No activity data for player %s!");
-        defaultConfig.addDefault("messages.command-no-id-activity", prefix_chat + "&8No activity data for id %s!");
+        defaultConfig.addDefault("messages.command-no-id-activity", prefix_chat + "&8No activity data for ID %s!");
 
 
         // cooldowns

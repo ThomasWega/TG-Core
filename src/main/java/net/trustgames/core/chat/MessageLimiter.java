@@ -11,7 +11,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.*;
 
-/*
+/**
+ * Limit the time player can send the next message. Each permission can have different times set.
+ * If the message is the same as the last one, the timeout can be longer. It also makes sure to not send
+ * too many warning messages to not spam the player's chat.
 NOTE: this class is coded so badly, that it shouldn't even exist. If anyone needs to go through this
 at anytime, I am deeply sorry, as you will probably want to grab a huge gun, put it right in your
 ass and press it to end this sacrifice. At least I tried to comment it good. Still shitty to understand tho.
@@ -32,9 +35,10 @@ public class MessageLimiter implements Listener {
     private final HashMap<UUID, String> lastPlayerMessage = new HashMap<>();
     private final HashMap<UUID, Long> lastWaitMessage = new HashMap<>();
 
-    /*
+    /**
     on player chat event (this doesn't include writing commands), it gets the keys from the config and puts them
     to a hashmap with their corresponding values. Then it runs the checks method
+     * @param event AsyncChatEvent
      */
     @EventHandler
     public void onPlayerChat(AsyncChatEvent event) {
@@ -60,7 +64,14 @@ public class MessageLimiter implements Listener {
         doChecks(player, event, playerMessage);
     }
 
-    // run the checks and the methods
+    /**
+     * Checks if the player is on cooldown, if the message is same as the last time,
+     * and makes sure to cancel the event, send the proper message to the player
+     * or put the player's message to the correct map.
+     * @param player Player who wrote the message
+     * @param event AsyncChatEvent
+     * @param playerMessage Player's chat message
+     */
     private void doChecks(Player player, AsyncChatEvent event, String playerMessage) {
         // gets the highest rank player has permission to
         String rank = getPermission(player);
@@ -98,13 +109,16 @@ public class MessageLimiter implements Listener {
         }
     }
 
-    /*
+    /**
     check which is the highest permission (group) the player has access to.
     Then return that permission
 
     IMPORTANT NOTE: in the config.yml. In spam or normal message cooldown times there needs to be the same ranks specified,
     and they all need to have different values, otherwise this code won't work properly and will show the highest
     available rank to purchase a better rank!
+     *
+     * @param player Player who wrote the message
+     * @return Player's highest permission
      */
     private String getPermission(Player player) {
 
@@ -129,9 +143,14 @@ public class MessageLimiter implements Listener {
     }
 
 
-    /*
+    /**
      checks if the player has a cooldown. If he does have a cooldown, it returns true.
      If he doesn't have a cooldown, it returns false
+     *
+     * @param player Player who wrote the message
+     * @param rank Player's highest rank which is also in the config
+     * @param sameMessage if the message same as the last time
+     * @return is Player on Cooldown
      */
     private boolean isOnCooldown(Player player, String rank, boolean sameMessage) {
 
@@ -154,12 +173,16 @@ public class MessageLimiter implements Listener {
         }
     }
 
-    /*
+    /**
     This will check if his current messages matches the last message
     in the hashmap. It will remove all non-alphanumeric characters
     from the message (using regex) and compare the current one
     with the one from the hashmap. If they are the same, it returns true,
     otherwise if they are different, it returns false.
+     *
+     * @param player Player who wrote the message
+     * @param playerMessage The message the player wrote
+     * @return is the same message as the last time
      */
     private boolean isSameMessage(Player player, String playerMessage){
         if (playerMessage.replaceAll("[^\\p{Alnum}]", "").equalsIgnoreCase(lastPlayerMessage.get(player.getUniqueId()).replaceAll("[^\\p{Alnum}]", ""))){
@@ -171,7 +194,12 @@ public class MessageLimiter implements Listener {
         }
     }
 
-    // sends the wait message to the player
+    /**
+     * sends the wait message to the player
+     * @param player Player who wrote the message
+     * @param rank His highest rank also present in the config
+     * @param sameMessage is it the same message as the last time
+     */
     private void sendMessage(Player player, String rank, boolean sameMessage) {
         FileConfiguration config = core.getConfig();
 
@@ -194,12 +222,22 @@ public class MessageLimiter implements Listener {
         lastWaitMessage.put(player.getUniqueId(), System.currentTimeMillis());
     }
 
-    // get the time player needs to wait until using the chat again
+    /**
+     * get the time player needs to wait until using the chat again
+     * @param player Player who wrote the message
+     * @param time Time of the cooldown
+     * @return The time remaining until the player can write again
+     */
     private double getWaitTime(Player player, double time) {
         return (time - ((System.currentTimeMillis() - cooldownTime.get(player.getUniqueId())) / 1000d));
     }
 
-    // check if the wait message isn't being sent too often to avoid it being too spammy
+    /**
+     * check if the wait message isn't being sent too often to avoid it being too spammy
+     *
+     * @param player Player who wrote the message
+     * @return is the cooldown message being sent too often
+     */
     private boolean isSpam(Player player) {
         FileConfiguration config = core.getConfig();
 
@@ -216,11 +254,13 @@ public class MessageLimiter implements Listener {
         }
     }
 
-    /*
+    /**
     when the player leaves, make sure that he isn't no longer in the maps
     - remove him from the last wait message (lastWaitMessage) map
     - remove him from the cooldown time message (cooldownTime) map
     - remove him from the same message (lastPlayerMessage) map
+     *
+     * @param event PlayerQuit
      */
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {

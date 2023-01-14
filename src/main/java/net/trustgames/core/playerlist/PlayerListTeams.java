@@ -16,6 +16,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
+/**
+ * Handles the priority sorting of groups and players in the player-list
+ */
 public class PlayerListTeams {
 
     private final Core core;
@@ -27,7 +30,7 @@ public class PlayerListTeams {
     Scoreboard playerListScoreboard;
 
 
-    /* create all the teams by getting all groups from LuckPerms and putting each group in map
+    /** Create all the teams by getting all groups from LuckPerms and putting each group in map
     with its corresponding weight. Then register new team with the first parameter weight, and second
     parameter the name of the group. Example: "20vip"
      */
@@ -64,8 +67,9 @@ public class PlayerListTeams {
         }
     }
 
-    /* add player to the corresponding team by getting his primary group and its group's weight.
+    /** Add player to the corresponding team by getting his primary group and its group's weight.
     set the prefix to team with luckperms cached data.
+     * @param player Who to add to the scoreboard team
      */
     public void addToTeam(Player player) {
         if (player == null) return;
@@ -83,7 +87,11 @@ public class PlayerListTeams {
         player.setScoreboard(playerListScoreboard);
     }
 
-    // remove the player from the team
+    /**
+     * remove the player from the team
+     *
+     * @param player Who to remove from the scoreboard team
+      */
     public static void removeFromTeam(Player player) {
         Objects.requireNonNull(player.getScoreboard().getPlayerTeam(player)).removePlayer(player);
     }
