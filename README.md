@@ -35,6 +35,8 @@ no chat limit
 __- STAFF:__  
 no chat limit  
 no same chat limit  
+/activity  
+/activity-id  
 
 __- ADMIN:__  
 
