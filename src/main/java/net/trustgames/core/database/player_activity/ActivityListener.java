@@ -1,7 +1,6 @@
 package net.trustgames.core.database.player_activity;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.debug.DebugColors;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -9,7 +8,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Objects;
@@ -48,7 +46,7 @@ public class ActivityListener implements Listener {
     to find player's last activity by his uuid. If the activity is null, meaning the player
     probably doesn't have any activities saved in the table yet, it creates one with specified values
      */
-    private PlayerActivity getPlayerActivityFromDatabase(Player player, boolean runAsync) throws SQLException {
+    private PlayerActivity getPlayerActivityFromDatabase(Player player, boolean runAsync) {
 
         PlayerActivityDB playerActivityDB = new PlayerActivityDB(core);
 
@@ -56,13 +54,8 @@ public class ActivityListener implements Listener {
         PlayerActivity playerActivity = playerActivityDB.findPlayerActivityByUUID(player.getUniqueId().toString());
 
         if (playerActivity == null) {
-            try {
-                playerActivity = new PlayerActivity(player.getUniqueId().toString(), Objects.requireNonNull(player.getAddress()).getHostString(), "FIRST JOIN PORT " + Bukkit.getServer().getPort(), new Timestamp(Instant.now().toEpochMilli()));
-                playerActivityDB.createPlayerActivity(playerActivity, runAsync);
-            } catch (SQLException e) {
-                core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Error when creating info in player_activity table");
-                throw new RuntimeException(e);
-            }
+            playerActivity = new PlayerActivity(player.getUniqueId().toString(), Objects.requireNonNull(player.getAddress()).getHostString(), "FIRST JOIN PORT " + Bukkit.getServer().getPort(), new Timestamp(Instant.now().toEpochMilli()));
+            playerActivityDB.createPlayerActivity(playerActivity, runAsync);
             return null;
         } else {
             return playerActivity;
@@ -79,22 +72,18 @@ public class ActivityListener implements Listener {
         if (core.getMariaDB().isMySQLDisabled()) return;
 
         PlayerActivity playerActivity;
-        try {
-            playerActivity = getPlayerActivityFromDatabase(player, runAsync);
-            if (playerActivity != null) {
-                PlayerActivityDB playerActivityDB = new PlayerActivityDB(core);
+        playerActivity = getPlayerActivityFromDatabase(player, runAsync);
+        if (playerActivity != null) {
+            PlayerActivityDB playerActivityDB = new PlayerActivityDB(core);
 
 
-                // set the action and time
-                playerActivity.setIp(Objects.requireNonNull(player.getAddress()).getHostString());
-                playerActivity.setAction(action);
-                playerActivity.setTime(new Timestamp(Instant.now().toEpochMilli()));
+            // set the action and time
+            playerActivity.setIp(Objects.requireNonNull(player.getAddress()).getHostString());
+            playerActivity.setAction(action);
+            playerActivity.setTime(new Timestamp(Instant.now().toEpochMilli()));
 
-                // create new stat
-                playerActivityDB.createPlayerActivity(playerActivity, runAsync);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            // create new stat
+            playerActivityDB.createPlayerActivity(playerActivity, runAsync);
         }
     }
 }

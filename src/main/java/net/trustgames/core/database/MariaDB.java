@@ -96,7 +96,7 @@ public class MariaDB {
                 connection = ds.getConnection();
                 return connection;
             } catch (SQLException e) {
-                core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Error when connecting to the database using HikariCP");
+                core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "ERROW: Connecting to the database using HikariCP");
                 throw new RuntimeException(e);
             }
         }

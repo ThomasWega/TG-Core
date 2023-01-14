@@ -69,7 +69,7 @@ public class PlayerActivityDB {
     values from playerActivity are set for each index
     (is run async)
      */
-    public void createPlayerActivity(PlayerActivity playerActivity, boolean runAsync) throws SQLException {
+    public void createPlayerActivity(PlayerActivity playerActivity, boolean runAsync) {
 
         if (runAsync) {
             core.getServer().getScheduler().runTaskAsynchronously(core, () -> {

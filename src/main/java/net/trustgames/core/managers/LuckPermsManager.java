@@ -23,7 +23,7 @@ public class LuckPermsManager {
         this.core = core;
     }
 
-    static LuckPerms luckPerms = Core.getLuckPerms();
+    static final LuckPerms luckPerms = Core.getLuckPerms();
 
     // check if player is in defined group
     public static boolean isPlayerInGroup(Player player, String group) {

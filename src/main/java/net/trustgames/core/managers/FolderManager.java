@@ -1,12 +1,11 @@
 package net.trustgames.core.managers;
 
-import net.trustgames.core.Core;
 import net.trustgames.core.debug.DebugColors;
 import org.bukkit.Bukkit;
 
 import java.io.File;
 
-public record FolderManager(Core core) {
+public class FolderManager {
 
     // Data folder = /plugins/Core folder
     public static void createDataFolder(File file) {

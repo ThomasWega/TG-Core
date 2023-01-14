@@ -33,7 +33,7 @@ https://www.spigotmc.org/threads/tutorial-skulls.135083/#post-1432132
 
      ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
 
-        // check if the skinurl is null or empty, in case it is, it return skull (null)
+        // check if the skinurl is null or empty, in case it is, return skull (null)
         if (skinURL == null || skinURL.isEmpty())
             return skull;
 

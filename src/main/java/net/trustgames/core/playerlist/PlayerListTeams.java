@@ -23,7 +23,7 @@ public class PlayerListTeams {
         this.core = core;
     }
 
-    static TreeMap<String, Integer> groupOrder = new TreeMap<>();
+    static final TreeMap<String, Integer> groupOrder = new TreeMap<>();
     Scoreboard playerListScoreboard;
 
 

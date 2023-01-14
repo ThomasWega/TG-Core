@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.trustgames.core.Core;
+import net.trustgames.core.debug.DebugColors;
 import net.trustgames.core.managers.InventoryManager;
 import net.trustgames.core.managers.ItemManager;
 import org.bukkit.Bukkit;
@@ -32,6 +33,12 @@ import java.time.ZoneId;
 import java.time.format.TextStyle;
 import java.util.*;
 
+/**
+ * Opens up a menu with all the given target's logged activity.
+ * The activity is separated in to pages and different actions
+ * are differentiated by different Materials. The player can click
+ * the item and all the data will be printed in chat.
+ */
 public class ActivityCommand implements CommandExecutor, Listener {
 
     private final Core core;
@@ -40,45 +47,79 @@ public class ActivityCommand implements CommandExecutor, Listener {
         this.core = core;
     }
 
+    /**
+     * Stores all ItemStack with the data for each row
+     * */
     private static final List<ItemStack> records = new ArrayList<>();
+
+    /**
+     *  Stores all Inventories
+     *  */
     private static final List<Inventory> inventoryList = new ArrayList<>();
-    public static final HashMap<String, Material> actionsList = new HashMap<>();
-    ItemStack nextPage = ItemManager.createItemStack(Material.ARROW, 1);
-    ItemStack previousPage = ItemManager.createItemStack(Material.ARROW, 0);
-    ItemStack pageInfo = ItemManager.createItemStack(Material.KNOWLEDGE_BOOK, 1);
+
+    /** Stores all the Actions and their corresponding ItemStack */
+    public static final HashMap<String, Material> actionsMap = new HashMap<>();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         FileConfiguration config = core.getConfig();
 
+        // check if sender is player, if he isn't, send the only in-game message
         if (sender instanceof Player) {
+            // check if player has the required permission
             if (sender.hasPermission("core.staff")) {
+                /*
+                if there is anything else than 1 argument, then the command usage is incorrect,
+                so send the sender a message with the correct command usage and return.
+                 */
                 if (args.length != 1) {
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', config.getString("messages.command-invalid-argument") + "&8 Use /activity <player>"));
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', config.getString("messages.command-invalid-argument") + "&8 Use /activity <Player/UUID>"));
                     return true;
                 }
 
                 Player player = ((Player) sender).getPlayer();
-
                 if (player == null) return true;
 
-                String target = args[0];
-                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(target);
 
+                //the target player is the first argument in the command.
+                String target = args[0];
+
+                /*
+                 check if the supplied target is uuid or a player name by
+                 trying to convert it to uuid. If it succeeds, its uuid and
+                 the target is set the offlinePlayer's name. If it fails
+                 and throws exception, it's the player's name and the target doesn't
+                 need to be changed.
+                */
+                OfflinePlayer offlinePlayer;
+                try {
+                    UUID uuid = UUID.fromString(target);
+                    offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+                    target = offlinePlayer.getName();
+                }
+                catch (IllegalArgumentException e){
+                    offlinePlayer = Bukkit.getOfflinePlayer(target);
+                }
+
+                /*
+                 if the menus were previously opened, all the maps
+                 need to be cleared to avoid the items showing twice.
+                */
                 records.clear();
                 inventoryList.clear();
-                actionsList.clear();
-                nextPage.setAmount(1);
-                previousPage.setAmount(0);
+                actionsMap.clear();
 
-                createRecords(offlinePlayer, target, player);
+                createRecords(offlinePlayer);
 
+                // if the records list is empty, there is no data for the given target
                 if (records.isEmpty()){
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(Objects.requireNonNull(config.getString("messages.command-no-player-activity")), target)));
                     return true;
                 }
 
                 createPages(player, target);
+
+                // open the first inventory (first page) from the list
                 player.openInventory(inventoryList.get(0));
             } else {
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("messages.no-permission"))));
@@ -89,88 +130,169 @@ public class ActivityCommand implements CommandExecutor, Listener {
         return true;
     }
 
-    public void createRecords(OfflinePlayer offlinePlayer, String targetName, Player player){
+    /**
+     * Gets the ResultSet of offlinePlayer (target) from ActivityQuery
+     * and for each result, it creates and ItemStack with display name
+     * and lore with the corresponding data
+     *
+     * @param offlinePlayer Target player
+     */
+    private void createRecords(OfflinePlayer offlinePlayer){
         ActivityQuery activityQuery = new ActivityQuery(core);
+
+        // get the result set of the offlinePlayer (target)
         ResultSet resultSet = activityQuery.getActivityByUUID(offlinePlayer.getUniqueId().toString());
         ItemStack targetHead = ItemManager.createItemStack(Material.PAINTING, 1);
 
+        /*
+        loop through all the results and for each one, set the corresponding
+        id, uuid, ip, and time to the lore and set action as the display name.
+        Also set the correct Material by using setMaterial method.
+        Then add a clone of the ItemStack to the records list
+         */
         try {
             while (resultSet.next()) {
+
+                // results
                 String id = resultSet.getString("id");
-                //     String uuid = resultSet.getString("uuid");
+                String uuid = resultSet.getString("uuid");
                 String ip = resultSet.getString("ip");
                 String action = resultSet.getString("action");
                 Timestamp time = resultSet.getTimestamp("time");
                 String encodedId = activityQuery.encodeId(id);
 
+                /*
+                One of the lore lines needs to have a click event with the value of the encodedID. This is
+                because in other methods it's required to retrieve the encodedId by just clicking on the item.
+                The click event is technically never being executed, as the player doesn't click on the lore, but
+                on the ItemStack, but the click event value is still present in the ItemStack's lore and can be retrieved.
+                That's how I get the encodedId from the ItemStack later on.
+                 */
                 List<Component> loreList = new ArrayList<>();
                 loreList.add(Component.text(ChatColor.WHITE + "Date: " + ChatColor.YELLOW + time.toLocalDateTime().toLocalDate()));
                 loreList.add(Component.text(ChatColor.WHITE + "Time: " + ChatColor.GOLD + time.toLocalDateTime().toLocalTime() + " " + ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT)));
                 loreList.add(Component.text(""));
+                loreList.add(Component.text(ChatColor.WHITE + "UUID: " + ChatColor.GRAY + uuid));
                 loreList.add(Component.text(ChatColor.WHITE + "IP: " + ChatColor.GREEN + ip));
                 loreList.add(Component.text(""));
                 loreList.add(Component.text(ChatColor.GRAY + "Click to print").clickEvent(ClickEvent.suggestCommand(encodedId)));
 
+                // item meta and set display name and lore
                 ItemMeta targetHeadMeta = targetHead.getItemMeta();
                 targetHeadMeta.displayName(Component.text(ChatColor.BOLD + "" + ChatColor.DARK_PURPLE + action));
                 targetHeadMeta.lore(loreList);
-
                 targetHead.setItemMeta(targetHeadMeta);
 
-                setItemType(targetHead);
+                // get which Material the ItemStack should have
+                setMaterial(targetHead);
 
+                // add to the records list
                 records.add(targetHead.clone());
-
-                Inventory inventory = InventoryManager.getInventory(player, 6, targetName + "'s activity");
-                inventory.addItem(targetHead);
             }
         } catch (SQLException e) {
+            Bukkit.getLogger().info(DebugColors.RED + "ERROR: Trying loop through ResultSet in ActivityCommand class");
             throw new RuntimeException(e);
         }
     }
 
-    public void setItemType(ItemStack recordItem){
+    /**
+     * Sets the Material to the ItemStack by checking if the
+     * display name of the ItemStack contains values of the
+     * actionsMap HashMap and setting the value from the matching key.
+     * If none from the actionsMap match, set as BEDROCK
+     *
+     * @param recordItem ItemStack from the records list
+     */
+    private void setMaterial(ItemStack recordItem){
         String itemName = PlainTextComponentSerializer.plainText().serialize(recordItem.displayName());
 
-        actionsList.put("JOIN SERVER", Material.GREEN_BED);
-        actionsList.put("QUIT SERVER", Material.RED_BED);
-        actionsList.put("QUIT SHUTDOWN SERVER", Material.BLACK_BED);
+        /*
+         the list of possible actions names.
+         If more actions are started logging, they need to be added here
+        */
+        actionsMap.put("JOIN SERVER", Material.GREEN_BED);
+        actionsMap.put("QUIT SERVER", Material.RED_BED);
+        actionsMap.put("QUIT SHUTDOWN SERVER", Material.BLACK_BED);
 
-        for (String action : actionsList.keySet()) {
+        /*
+         loop through all the keys and check if itemName contains one of them.
+         If it does, set the type as the value to the key it matches and return.
+        */
+        for (String action : actionsMap.keySet()) {
             if (itemName.contains(action)) {
-                recordItem.setType(actionsList.get(action));
+                recordItem.setType(actionsMap.get(action));
                 return;
             }
         }
 
+        // if none actions of the list match, set as BEDROCK
         recordItem.setType(Material.BEDROCK);
     }
 
-    public void createPages(Player player, String targetName){
+    /**
+     * Creates Inventories separated in pages.
+     * Inventories are filled with record's ItemStacks
+     * and Arrows to move between pages are set in each
+     * Inventory. Book which shows the page number is also
+     * set. All the inventories with all their contents
+     * are then put in inventoryList
+     *
+     * @param player The command sender
+     * @param targetName The target's name
+     */
+    private void createPages(Player player, String targetName){
+
+        ItemStack nextPage = ItemManager.createItemStack(Material.ARROW, 1);
+        ItemStack previousPage = ItemManager.createItemStack(Material.ARROW, 0);
+        ItemStack pageInfo = ItemManager.createItemStack(Material.KNOWLEDGE_BOOK, 1);
+
+        // how many pages are total
         int pagesCount = (int) Math.ceil(records.size() / 45d);
 
+        /*
+         loop through all the records divided by 45 (the max page size) and for each one
+         it creates a new inventory and adds a book with display name which shows the current
+         and the max page. Then it adds the inventory to the inventoryList
+        */
         for (int i = 1; i <= Math.ceil(records.size() / 45d); i++) {
             Inventory inv = InventoryManager.getInventory(player, 6, targetName  + "'s activity");
             pageInfo.setItemMeta(ItemManager.createItemMeta(pageInfo, ChatColor.DARK_GREEN + "Page (" + i + "/" + pagesCount + ")", new ItemFlag[]{ItemFlag.HIDE_ATTRIBUTES}));
             inv.setItem(49, pageInfo);
             inventoryList.add(inv);
-
         }
 
+        // first page of inventory is 0 (array starts with 0)
         int invCount = 0;
         int slot = 0;
+        // max amount of record's per page
         int max = 44;
 
+        // gets the inventory 0 (first page)
         Inventory inv = inventoryList.get(invCount);
+
+        /*
+         loop through all the records and for each one, add it to the inventory and add +1 to slot
+         if slot > max, the next page and previous page arrow is added to the inventory
+         (if there is not 64 arrows already) and the inventory (page) is switched to the next one.
+         The previous arrow will only be set if there is more than 1 inventory. Same for the next page arrow.
+         the max int will be increased by 45 (To have 45 slots free for the next page to fill up)
+        */
         for (ItemStack item : records){
+
+            // if the slot > max, switch to the next inventory and add the nextPage arrow
+            // (if there is not 64 already)
             if (slot > max){
                 invCount++;
                 nextPage.setItemMeta(ItemManager.createItemMeta(nextPage, ChatColor.YELLOW + "Next page", null));
+
+                // check to not go over the item limit
                 if (nextPage.getAmount() < 64){
                     nextPage.setAmount(nextPage.getAmount() + 1);
                 }
                 inv.setItem(50, nextPage);
 
+                // if the inventory is already a second one, add the previousPage arrow
+                // (if there is not 64 already)
                 if (invCount > 1){
                     previousPage.setItemMeta(ItemManager.createItemMeta(previousPage, ChatColor.YELLOW + "Previous page", null));
                     if (previousPage.getAmount() < 64) {
@@ -179,19 +301,49 @@ public class ActivityCommand implements CommandExecutor, Listener {
                     inv.setItem(48, previousPage);
                 }
 
+                // switch the inventory to the next one
                 inv = inventoryList.get(invCount);
+
+                // double the max amount to free up space for the next page
                 max = max + 45;
             }
             inv.addItem(item.clone());
             slot++;
         }
 
+        /*
+        Set these values after the while loop ended. This is done, because otherwise
+        on the last page, there wouldn't be previous page arrow. After the arrow is added
+        to the inventory, the nextPage and previousPage arrows are set to the default values
+        1 - as first page
+        0 - as first page shouldn't have any previous page arrow
+         */
+
+        // check to not go over the item limit
         if (previousPage.getAmount() < 64){
             previousPage.setAmount(previousPage.getAmount() + 1);
         }
+        previousPage.setItemMeta(ItemManager.createItemMeta(previousPage, ChatColor.YELLOW + "Previous page", null));
         inv.setItem(48, previousPage);
+
+        nextPage.setAmount(1);
+        previousPage.setAmount(0);
     }
 
+    /**
+     * When player clicks on an item in the inventory, check if the title contains "'s activity".
+     * If so, check if list of different actions and their Material contains the item material.
+     * or is BEDROCK (unknown action Material).
+     *
+     * If true, perform command /activity-id ID as player to print all the data in chat, where
+     * player can click on each info, and it will be copied to his clipboard. Also close the inventory.
+     *
+     * If false, but the Material is ARROW, switch the page to previous or next
+     * (will be decided in switchPage method)
+     *
+     * @param event When player clicks in the inventory.
+     *              This is sometimes also called when opening and closing the inventory
+     */
     @EventHandler
     public void onPlayerClick(InventoryClickEvent event) {
         HumanEntity humanEntity = event.getWhoClicked();
@@ -199,22 +351,46 @@ public class ActivityCommand implements CommandExecutor, Listener {
         String title = PlainTextComponentSerializer.plainText().serialize(event.getView().title());
         ItemStack item = event.getCurrentItem();
 
+        /*
+         if item or inventory is null, the event was probably executed
+         when opening or closing the inventory, so return here.
+        */
         if (item == null) return;
         if (inventory == null) return;
 
         if (title.contains("'s activity")) {
             try {
-                if (actionsList.containsValue(item.getType()) || item.getType() == Material.BEDROCK) {
+                /*
+                 if the list of actions and their Materials contains the item Material
+                 or the material is bedrock (wasn't found in the map).
+                */
+                if (actionsMap.containsValue(item.getType()) || item.getType() == Material.BEDROCK) {
+
+                    /*
+                     get the id from the click event of the item's lore.
+                     NOTE: read more in createRecords comments
+                    */
                     String id = Objects.requireNonNull(Objects.requireNonNull(item.lore()).get(5).clickEvent()).value();
 
+                    /*
+                     get the player from the humanEntity. This conversion needs to happen,
+                     as later the performCommand method is used, and that method is only
+                     available for Player instance.
+                    */
                     Player player = Bukkit.getPlayer(humanEntity.getUniqueId());
                     if (player == null) return;
+
+                    /*
+                     perform the command /activity-id ID, so the info is printed in chat
+                     if false, the command couldn't be performed, so print an error message to the player
+                    */
                     if (!player.performCommand("activity-id " + id)){
-                        humanEntity.sendMessage(ChatColor.RED + "ERROR when executing /activity-id " + id);
+                        humanEntity.sendMessage(ChatColor.RED + "ERROR: Executing /activity-id " + id + " as a player");
                     }
                     inventory.close();
                 }
 
+                // if the item type is ARROW, switch the page
                 else if (item.getType() == Material.ARROW) {
                     switchPage(item, humanEntity);
                 }
@@ -226,22 +402,32 @@ public class ActivityCommand implements CommandExecutor, Listener {
     }
 
 
-    public void switchPage(ItemStack item, HumanEntity humanEntity){
+    /**
+     * Switch the page to the next one or the previous one.
+     * That is decided by getting if the item display name
+     * contains "Next page" or "Previous page". The pageCount
+     * is always the amount of arrows in the page - 1.
+     * The amount is always -1, as the array starts with 0, not 1.
+     *
+     * @param item ItemStack of the record
+     * @param humanEntity Command sender
+     */
+    private void switchPage(ItemStack item, HumanEntity humanEntity){
         String itemName = PlainTextComponentSerializer.plainText().serialize(item.displayName());
 
+        // needs to be -1, as the array starts with 0
         int pageCount = item.getAmount() - 1;
 
         if (itemName.contains("Next page")) {
+            // get the next inventory
             Inventory nextInv = inventoryList.get(pageCount);
             humanEntity.openInventory(nextInv);
         } else if (itemName.contains("Previous page")) {
+            // get the previous inventory
             Inventory previousInv = inventoryList.get(pageCount);
             humanEntity.openInventory(previousInv);
         }
     }
 }
 
-/*
-TODO/FIXME
-- when opened second time, it goes to the page it was last closed at
- */
+// TODO fix switch page limit top 64

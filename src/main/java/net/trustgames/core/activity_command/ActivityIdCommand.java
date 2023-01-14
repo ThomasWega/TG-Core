@@ -18,6 +18,11 @@ import java.time.ZoneId;
 import java.time.format.TextStyle;
 import java.util.*;
 
+/**
+ * Is used to get the logged player's activity by the activity id, rather
+ * than the player's name. It always prints just one result in the chat,
+ * where player can click on each data, and it will be copied to his clipboard.
+ */
 public class ActivityIdCommand implements CommandExecutor {
 
     private final Core core;
@@ -31,25 +36,40 @@ public class ActivityIdCommand implements CommandExecutor {
         FileConfiguration config = core.getConfig();
 
         if (sender.hasPermission("core.staff")) {
+            // if there is more or less arguments than 1, the command is used incorrectly
             if (args.length != 1) {
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', config.getString("messages.command-invalid-argument") + "&8 Use /activity-id <id>"));
                 return true;
             }
 
             String id = args[0];
+
+            // print the data to the chat
             printData(sender, id);
         }
         return true;
     }
 
-    public void printData(CommandSender sender, String id){
+    /**
+     * Get the data from the result set and put it in a Component List.
+     * Then loop through the list and for each one, send the message to the player.
+     *
+     * @param sender Command sender
+     * @param id Activity id
+     */
+    private void printData(CommandSender sender, String id){
         FileConfiguration config = core.getConfig();
 
         ActivityQuery activityQuery = new ActivityQuery(core);
+
+        // get the result set of the given id
         ResultSet resultSet = activityQuery.getActivityByID(id);
 
         try {
+            // only one resultSet
             if (resultSet.next()) {
+
+                // get all the data from the resultSet
                 String resultId = activityQuery.encodeId(resultSet.getString("id"));
                 String uuid = resultSet.getString("uuid");
                 String name = Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName();
@@ -61,6 +81,7 @@ public class ActivityIdCommand implements CommandExecutor {
                     name = "ERROR: No data";
                 }
 
+                // list of component messages
                 List<Component> chatMessage = new ArrayList<>();
                 chatMessage.add(Component.text(ChatColor.DARK_GRAY + "------------------------"));
                 chatMessage.add(Component.text(ChatColor.WHITE + "Name: " + ChatColor.RED + name).clickEvent(ClickEvent.copyToClipboard(name)));
@@ -74,6 +95,7 @@ public class ActivityIdCommand implements CommandExecutor {
                 chatMessage.add(Component.text(ChatColor.WHITE + "ID: " + ChatColor.DARK_PURPLE + resultId).clickEvent(ClickEvent.copyToClipboard(resultId)));
                 chatMessage.add(Component.text(ChatColor.DARK_GRAY + "------------------------"));
 
+                // loop through the list and for each, send a message
                 for (Component s : chatMessage) {
                     sender.sendMessage(s);
                 }

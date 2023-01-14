@@ -24,11 +24,11 @@ import org.bukkit.scoreboard.Scoreboard;
 import java.io.File;
 
 public final class Core extends JavaPlugin {
-    MariaDB mariaDB = new MariaDB(this);
-    ChatAnnouncer chatAnnouncer = new ChatAnnouncer(this);
-    PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
-    ServerShutdownManager serverShutdownManager = new ServerShutdownManager(this);
-    GameruleManager gameruleManager = new GameruleManager(this);
+    final MariaDB mariaDB = new MariaDB(this);
+    final ChatAnnouncer chatAnnouncer = new ChatAnnouncer(this);
+    final PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
+    final ServerShutdownManager serverShutdownManager = new ServerShutdownManager(this);
+    final GameruleManager gameruleManager = new GameruleManager(this);
     public CooldownManager cooldownManager = new CooldownManager(this);
     Scoreboard playerListScoreboard;
     public LuckPermsManager luckPermsManager;
