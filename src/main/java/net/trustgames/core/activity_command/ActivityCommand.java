@@ -42,7 +42,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
 
     private static final List<ItemStack> records = new ArrayList<>();
     private static final List<Inventory> inventoryList = new ArrayList<>();
-
+    public static final HashMap<String, Material> actionsList = new HashMap<>();
     ItemStack nextPage = ItemManager.createItemStack(Material.ARROW, 1);
     ItemStack previousPage = ItemManager.createItemStack(Material.ARROW, 0);
     ItemStack pageInfo = ItemManager.createItemStack(Material.KNOWLEDGE_BOOK, 1);
@@ -62,22 +62,23 @@ public class ActivityCommand implements CommandExecutor, Listener {
 
                 if (player == null) return true;
 
-                records.clear();
-                inventoryList.clear();
-                nextPage.setAmount(1);
-                previousPage.setAmount(0);
-
                 String target = args[0];
                 OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(target);
 
-                createRecords(offlinePlayer, target);
+                records.clear();
+                inventoryList.clear();
+                actionsList.clear();
+                nextPage.setAmount(1);
+                previousPage.setAmount(0);
+
+                createRecords(offlinePlayer, target, player);
 
                 if (records.isEmpty()){
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(Objects.requireNonNull(config.getString("messages.command-no-player-activity")), target)));
                     return true;
                 }
 
-                createPages(player);
+                createPages(player, target);
                 player.openInventory(inventoryList.get(0));
             } else {
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("messages.no-permission"))));
@@ -88,11 +89,68 @@ public class ActivityCommand implements CommandExecutor, Listener {
         return true;
     }
 
-    public void createPages(Player player){
+    public void createRecords(OfflinePlayer offlinePlayer, String targetName, Player player){
+        ActivityQuery activityQuery = new ActivityQuery(core);
+        ResultSet resultSet = activityQuery.getActivityByUUID(offlinePlayer.getUniqueId().toString());
+        ItemStack targetHead = ItemManager.createItemStack(Material.PAINTING, 1);
+
+        try {
+            while (resultSet.next()) {
+                String id = resultSet.getString("id");
+                //     String uuid = resultSet.getString("uuid");
+                String ip = resultSet.getString("ip");
+                String action = resultSet.getString("action");
+                Timestamp time = resultSet.getTimestamp("time");
+                String encodedId = activityQuery.encodeId(id);
+
+                List<Component> loreList = new ArrayList<>();
+                loreList.add(Component.text(ChatColor.WHITE + "Date: " + ChatColor.YELLOW + time.toLocalDateTime().toLocalDate()));
+                loreList.add(Component.text(ChatColor.WHITE + "Time: " + ChatColor.GOLD + time.toLocalDateTime().toLocalTime() + " " + ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT)));
+                loreList.add(Component.text(""));
+                loreList.add(Component.text(ChatColor.WHITE + "IP: " + ChatColor.GREEN + ip));
+                loreList.add(Component.text(""));
+                loreList.add(Component.text(ChatColor.GRAY + "Click to print").clickEvent(ClickEvent.suggestCommand(encodedId)));
+
+                ItemMeta targetHeadMeta = targetHead.getItemMeta();
+                targetHeadMeta.displayName(Component.text(ChatColor.BOLD + "" + ChatColor.DARK_PURPLE + action));
+                targetHeadMeta.lore(loreList);
+
+                targetHead.setItemMeta(targetHeadMeta);
+
+                setItemType(targetHead);
+
+                records.add(targetHead.clone());
+
+                Inventory inventory = InventoryManager.getInventory(player, 6, targetName + "'s activity");
+                inventory.addItem(targetHead);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void setItemType(ItemStack recordItem){
+        String itemName = PlainTextComponentSerializer.plainText().serialize(recordItem.displayName());
+
+        actionsList.put("JOIN SERVER", Material.GREEN_BED);
+        actionsList.put("QUIT SERVER", Material.RED_BED);
+        actionsList.put("QUIT SHUTDOWN SERVER", Material.BLACK_BED);
+
+        for (String action : actionsList.keySet()) {
+            if (itemName.contains(action)) {
+                recordItem.setType(actionsList.get(action));
+                return;
+            }
+        }
+
+        recordItem.setType(Material.BEDROCK);
+    }
+
+    public void createPages(Player player, String targetName){
         int pagesCount = (int) Math.ceil(records.size() / 45d);
 
         for (int i = 1; i <= Math.ceil(records.size() / 45d); i++) {
-            Inventory inv = InventoryManager.getInventory(player, 6, player.getName()  + "'s activity");
+            Inventory inv = InventoryManager.getInventory(player, 6, targetName  + "'s activity");
             pageInfo.setItemMeta(ItemManager.createItemMeta(pageInfo, ChatColor.DARK_GREEN + "Page (" + i + "/" + pagesCount + ")", new ItemFlag[]{ItemFlag.HIDE_ATTRIBUTES}));
             inv.setItem(49, pageInfo);
             inventoryList.add(inv);
@@ -132,11 +190,6 @@ public class ActivityCommand implements CommandExecutor, Listener {
             previousPage.setAmount(previousPage.getAmount() + 1);
         }
         inv.setItem(48, previousPage);
-
-        nextPage.setAmount(1);
-        previousPage.setAmount(0);
-
-        nextPage(player);
     }
 
     @EventHandler
@@ -145,14 +198,13 @@ public class ActivityCommand implements CommandExecutor, Listener {
         Inventory inventory = event.getClickedInventory();
         String title = PlainTextComponentSerializer.plainText().serialize(event.getView().title());
         ItemStack item = event.getCurrentItem();
-        if (item == null) return;
-        String itemName = PlainTextComponentSerializer.plainText().serialize(item.displayName());
 
+        if (item == null) return;
         if (inventory == null) return;
 
-        if (title.contains(humanEntity.getName() + "'s activity")) {
+        if (title.contains("'s activity")) {
             try {
-                if (actionsList.containsValue(item.getType())) {
+                if (actionsList.containsValue(item.getType()) || item.getType() == Material.BEDROCK) {
                     String id = Objects.requireNonNull(Objects.requireNonNull(item.lore()).get(5).clickEvent()).value();
 
                     Player player = Bukkit.getPlayer(humanEntity.getUniqueId());
@@ -164,11 +216,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 }
 
                 else if (item.getType() == Material.ARROW) {
-                    if (itemName.contains("Next page")) {
-                        nextPage(humanEntity);
-                    } else if (itemName.contains("Previous page")) {
-                        previousPage(humanEntity);
-                    }
+                    switchPage(item, humanEntity);
                 }
             }
             catch (IndexOutOfBoundsException e){
@@ -177,88 +225,18 @@ public class ActivityCommand implements CommandExecutor, Listener {
         }
     }
 
-    public void nextPage(HumanEntity humanEntity){
 
-        int nextPageCount = nextPage.getAmount() + 1;
-        int previousPageCount = previousPage.getAmount() + 1;
+    public void switchPage(ItemStack item, HumanEntity humanEntity){
+        String itemName = PlainTextComponentSerializer.plainText().serialize(item.displayName());
 
-        nextPage.setAmount(nextPageCount);
-        previousPage.setAmount(previousPageCount);
+        int pageCount = item.getAmount() - 1;
 
-        Inventory nextInv = inventoryList.get(nextPage.getAmount());
-
-        humanEntity.openInventory(nextInv);
-    }
-
-    public void previousPage(HumanEntity humanEntity){
-        int nextPageCount = nextPage.getAmount() - 1;
-        int previousPageCount = previousPage.getAmount() - 1;
-
-        Inventory previousInv = inventoryList.get(previousPage.getAmount());
-
-        nextPage.setAmount(nextPageCount);
-        previousPage.setAmount(previousPageCount);
-
-        humanEntity.openInventory(previousInv);
-    }
-
-    public static final HashMap<String, Material> actionsList = new HashMap<>();
-
-    public void setItemType(ItemStack recordItem){
-        String itemName = PlainTextComponentSerializer.plainText().serialize(recordItem.displayName());
-
-        actionsList.put("JOIN SERVER", Material.GREEN_BED);
-        actionsList.put("QUIT SERVER", Material.RED_BED);
-        actionsList.put("QUIT SHUTDOWN SERVER", Material.BLACK_BED);
-
-        for (String action : actionsList.keySet()) {
-            if (itemName.contains(action)) {
-                recordItem.setType(actionsList.get(action));
-                return;
-            }
-        }
-
-        recordItem.setType(Material.BEDROCK);
-    }
-
-    public void createRecords(OfflinePlayer offlinePlayer, String targetName){
-        ActivityQuery activityQuery = new ActivityQuery(core);
-        ResultSet resultSet = activityQuery.getActivityByUUID(offlinePlayer.getUniqueId().toString());
-        ItemStack targetHead = ItemManager.createItemStack(Material.PAINTING, 1);
-
-
-        try {
-            while (resultSet.next()) {
-                String id = resultSet.getString("id");
-                //     String uuid = resultSet.getString("uuid");
-                String ip = resultSet.getString("ip");
-                String action = resultSet.getString("action");
-                Timestamp time = resultSet.getTimestamp("time");
-                String encodedId = activityQuery.encodeId(id);
-
-                List<Component> loreList = new ArrayList<>();
-                loreList.add(Component.text(ChatColor.WHITE + "Date: " + ChatColor.YELLOW + time.toLocalDateTime().toLocalDate()));
-                loreList.add(Component.text(ChatColor.WHITE + "Time: " + ChatColor.GOLD + time.toLocalDateTime().toLocalTime() + " " + ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT)));
-                loreList.add(Component.text(""));
-                loreList.add(Component.text(ChatColor.WHITE + "IP: " + ChatColor.GREEN + ip));
-                loreList.add(Component.text(""));
-                loreList.add(Component.text(ChatColor.GRAY + "Click to print").clickEvent(ClickEvent.suggestCommand(encodedId)));
-
-                ItemMeta targetHeadMeta = targetHead.getItemMeta();
-                targetHeadMeta.displayName(Component.text(ChatColor.BOLD + "" + ChatColor.DARK_PURPLE + action));
-                targetHeadMeta.lore(loreList);
-
-                targetHead.setItemMeta(targetHeadMeta);
-
-                setItemType(targetHead);
-
-                records.add(targetHead.clone());
-
-                Inventory inventory = InventoryManager.getInventory(offlinePlayer.getPlayer(), 6, targetName + "'s activity");
-                inventory.addItem(targetHead);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        if (itemName.contains("Next page")) {
+            Inventory nextInv = inventoryList.get(pageCount);
+            humanEntity.openInventory(nextInv);
+        } else if (itemName.contains("Previous page")) {
+            Inventory previousInv = inventoryList.get(pageCount);
+            humanEntity.openInventory(previousInv);
         }
     }
 }
