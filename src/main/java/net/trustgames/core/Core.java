@@ -6,15 +6,16 @@ import net.trustgames.core.announcer.AnnouncerConfig;
 import net.trustgames.core.announcer.ChatAnnouncer;
 import net.trustgames.core.chat.ChatPrefix;
 import net.trustgames.core.chat.MessageLimiter;
-import net.trustgames.core.commands.MessagesCommand;
-import net.trustgames.core.commands.MessagesConfig;
+import net.trustgames.core.messages_commands.MessagesCommand;
+import net.trustgames.core.messages_commands.MessagesConfig;
 import net.trustgames.core.config.DefaultConfig;
 import net.trustgames.core.database.MariaConfig;
 import net.trustgames.core.database.MariaDB;
 import net.trustgames.core.database.player_activity.ActivityListener;
 import net.trustgames.core.database.player_activity.PlayerActivityDB;
 import net.trustgames.core.managers.*;
-import net.trustgames.core.player_activity.ActivityCommand;
+import net.trustgames.core.activity_command.ActivityCommand;
+import net.trustgames.core.activity_command.ActivityIdCommand;
 import net.trustgames.core.playerlist.PlayerListListener;
 import net.trustgames.core.playerlist.PlayerListTeams;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -61,6 +62,7 @@ public final class Core extends JavaPlugin {
 
         // FIXME MariaDB delay is in milliseconds but in config should be in seconds
         // TODO Fix deprecated methods (use new methods)
+        // TODO change comments to manual comments
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
@@ -105,6 +107,7 @@ public final class Core extends JavaPlugin {
         CommandManager.registerCommand("website", new MessagesCommand(this));
         CommandManager.registerCommand("store", new MessagesCommand(this));
         CommandManager.registerCommand("activity", new ActivityCommand(this));
+        CommandManager.registerCommand("activity-id", new ActivityIdCommand(this));
 
         // mariadb database
         playerActivityDB.initializePlayerActivityTable();

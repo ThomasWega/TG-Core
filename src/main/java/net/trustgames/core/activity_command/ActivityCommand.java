@@ -1,4 +1,4 @@
-package net.trustgames.core.player_activity;
+package net.trustgames.core.activity_command;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -20,6 +20,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
@@ -44,6 +45,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
 
     ItemStack nextPage = ItemManager.createItemStack(Material.ARROW, 1);
     ItemStack previousPage = ItemManager.createItemStack(Material.ARROW, 0);
+    ItemStack pageInfo = ItemManager.createItemStack(Material.KNOWLEDGE_BOOK, 1);
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -51,10 +53,14 @@ public class ActivityCommand implements CommandExecutor, Listener {
 
         if (sender instanceof Player) {
             if (sender.hasPermission("core.staff")) {
-                if (args.length == 0) {
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', config.getString("messages.command-no-argument") + "&8 Use /activity <player>"));
+                if (args.length != 1) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', config.getString("messages.command-invalid-argument") + "&8 Use /activity <player>"));
                     return true;
                 }
+
+                Player player = ((Player) sender).getPlayer();
+
+                if (player == null) return true;
 
                 records.clear();
                 inventoryList.clear();
@@ -62,52 +68,17 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 previousPage.setAmount(0);
 
                 String target = args[0];
-                OfflinePlayer offlinePlayer = core.getServer().getOfflinePlayer(target); // TODO take from database
+                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(target);
 
-                if (offlinePlayer == null){
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(Objects.requireNonNull(config.getString("messages.command-invalid-player")), target)));
+                createRecords(offlinePlayer, target);
+
+                if (records.isEmpty()){
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(Objects.requireNonNull(config.getString("messages.command-no-player-activity")), target)));
                     return true;
                 }
 
-                ItemStack targetHead = ItemManager.createItemStack(Material.PAINTING, 1);
-
-                ActivityQuery activityQuery = new ActivityQuery(core);
-                ResultSet resultSet = activityQuery.getActivity(offlinePlayer.getUniqueId().toString());
-                try {
-                    while (resultSet.next()) {
-                        String id = resultSet.getString("id");
-                        //     String uuid = resultSet.getString("uuid");
-                        String ip = resultSet.getString("ip");
-                        String action = resultSet.getString("action");
-                        Timestamp time = resultSet.getTimestamp("time");
-                        String encodedId = activityQuery.encodeId(id);
-
-                        List<Component> loreList = new ArrayList<>();
-                        loreList.add(Component.text(ChatColor.WHITE + "Date: " + ChatColor.YELLOW + time.toLocalDateTime().toLocalDate()));
-                        loreList.add(Component.text(ChatColor.WHITE + "Time: " + ChatColor.GOLD + time.toLocalDateTime().toLocalTime() + " " + ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT)));
-                        loreList.add(Component.text(""));
-                        loreList.add(Component.text(ChatColor.WHITE + "IP: " + ChatColor.GREEN + ip));
-                        loreList.add(Component.text(""));
-                        loreList.add(Component.text(ChatColor.GRAY + "Click to copy ID").clickEvent(ClickEvent.suggestCommand(encodedId)));
-
-                        ItemMeta targetHeadMeta = targetHead.getItemMeta();
-                        targetHeadMeta.displayName(Component.text(ChatColor.BOLD + "" + ChatColor.DARK_PURPLE + action));
-                        targetHeadMeta.lore(loreList);
-
-                        targetHead.setItemMeta(targetHeadMeta);
-
-                        setItemType(targetHead);
-
-                        records.add(targetHead.clone());
-
-                        Inventory inventory = InventoryManager.getInventory(offlinePlayer.getPlayer(), 6, target + "'s activity" + " (1/" + ((int) Math.ceil(records.size() / 44d)) + ")");
-                        inventory.addItem(targetHead);
-                    }
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-                createPages(offlinePlayer.getPlayer());
-                offlinePlayer.getPlayer().openInventory(inventoryList.get(0));
+                createPages(player);
+                player.openInventory(inventoryList.get(0));
             } else {
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("messages.no-permission"))));
             }
@@ -118,9 +89,14 @@ public class ActivityCommand implements CommandExecutor, Listener {
     }
 
     public void createPages(Player player){
+        int pagesCount = (int) Math.ceil(records.size() / 45d);
 
         for (int i = 1; i <= Math.ceil(records.size() / 45d); i++) {
-            inventoryList.add(InventoryManager.getInventory(player, 6, player.getName()  + "'s activity" + " (" + i + "/" + ((int) Math.ceil(records.size() / 45d)) + ")"));
+            Inventory inv = InventoryManager.getInventory(player, 6, player.getName()  + "'s activity");
+            pageInfo.setItemMeta(ItemManager.createItemMeta(pageInfo, ChatColor.DARK_GREEN + "Page (" + i + "/" + pagesCount + ")", new ItemFlag[]{ItemFlag.HIDE_ATTRIBUTES}));
+            inv.setItem(49, pageInfo);
+            inventoryList.add(inv);
+
         }
 
         int invCount = 0;
@@ -132,12 +108,16 @@ public class ActivityCommand implements CommandExecutor, Listener {
             if (slot > max){
                 invCount++;
                 nextPage.setItemMeta(ItemManager.createItemMeta(nextPage, ChatColor.YELLOW + "Next page", null));
-                nextPage.setAmount(nextPage.getAmount() + 1);
+                if (nextPage.getAmount() < 64){
+                    nextPage.setAmount(nextPage.getAmount() + 1);
+                }
                 inv.setItem(50, nextPage);
 
                 if (invCount > 1){
                     previousPage.setItemMeta(ItemManager.createItemMeta(previousPage, ChatColor.YELLOW + "Previous page", null));
-                    previousPage.setAmount(previousPage.getAmount() + 1);
+                    if (previousPage.getAmount() < 64) {
+                        previousPage.setAmount(previousPage.getAmount() + 1);
+                    }
                     inv.setItem(48, previousPage);
                 }
 
@@ -148,7 +128,9 @@ public class ActivityCommand implements CommandExecutor, Listener {
             slot++;
         }
 
-        previousPage.setAmount(previousPage.getAmount() + 1);
+        if (previousPage.getAmount() < 64){
+            previousPage.setAmount(previousPage.getAmount() + 1);
+        }
         inv.setItem(48, previousPage);
 
         nextPage.setAmount(1);
@@ -163,22 +145,26 @@ public class ActivityCommand implements CommandExecutor, Listener {
         Inventory inventory = event.getClickedInventory();
         String title = PlainTextComponentSerializer.plainText().serialize(event.getView().title());
         ItemStack item = event.getCurrentItem();
+        if (item == null) return;
         String itemName = PlainTextComponentSerializer.plainText().serialize(item.displayName());
 
         if (inventory == null) return;
 
         if (title.contains(humanEntity.getName() + "'s activity")) {
             try {
-                if (item.getType() == Material.PAINTING) {
-                    String id = item.lore().get(5).clickEvent().value();
-                    humanEntity.sendMessage(Component.text(ChatColor.YELLOW + "Click here to copy ID").clickEvent(ClickEvent.copyToClipboard(id)));
+                if (actionsList.containsValue(item.getType())) {
+                    String id = Objects.requireNonNull(Objects.requireNonNull(item.lore()).get(5).clickEvent()).value();
 
+                    Player player = Bukkit.getPlayer(humanEntity.getUniqueId());
+                    if (player == null) return;
+                    if (!player.performCommand("activity-id " + id)){
+                        humanEntity.sendMessage(ChatColor.RED + "ERROR when executing /activity-id " + id);
+                    }
                     inventory.close();
                 }
 
                 else if (item.getType() == Material.ARROW) {
                     if (itemName.contains("Next page")) {
-                        System.out.println("NEXT PAGE EVENT");
                         nextPage(humanEntity);
                     } else if (itemName.contains("Previous page")) {
                         previousPage(humanEntity);
@@ -199,9 +185,6 @@ public class ActivityCommand implements CommandExecutor, Listener {
         nextPage.setAmount(nextPageCount);
         previousPage.setAmount(previousPageCount);
 
-        System.out.println("OPENED NEXT INV");
-        System.out.println(nextPage.getAmount() + " | " + previousPage.getAmount());
-
         Inventory nextInv = inventoryList.get(nextPage.getAmount());
 
         humanEntity.openInventory(nextInv);
@@ -211,10 +194,6 @@ public class ActivityCommand implements CommandExecutor, Listener {
         int nextPageCount = nextPage.getAmount() - 1;
         int previousPageCount = previousPage.getAmount() - 1;
 
-
-        System.out.println("OPENED PREVIOUS INV");
-        System.out.println(nextPage.getAmount() + " | " + previousPage.getAmount());
-
         Inventory previousInv = inventoryList.get(previousPage.getAmount());
 
         nextPage.setAmount(nextPageCount);
@@ -223,10 +202,11 @@ public class ActivityCommand implements CommandExecutor, Listener {
         humanEntity.openInventory(previousInv);
     }
 
+    public static final HashMap<String, Material> actionsList = new HashMap<>();
+
     public void setItemType(ItemStack recordItem){
         String itemName = PlainTextComponentSerializer.plainText().serialize(recordItem.displayName());
 
-        HashMap<String, Material> actionsList = new HashMap<>();
         actionsList.put("JOIN SERVER", Material.GREEN_BED);
         actionsList.put("QUIT SERVER", Material.RED_BED);
         actionsList.put("QUIT SHUTDOWN SERVER", Material.BLACK_BED);
@@ -240,11 +220,50 @@ public class ActivityCommand implements CommandExecutor, Listener {
 
         recordItem.setType(Material.BEDROCK);
     }
+
+    public void createRecords(OfflinePlayer offlinePlayer, String targetName){
+        ActivityQuery activityQuery = new ActivityQuery(core);
+        ResultSet resultSet = activityQuery.getActivityByUUID(offlinePlayer.getUniqueId().toString());
+        ItemStack targetHead = ItemManager.createItemStack(Material.PAINTING, 1);
+
+
+        try {
+            while (resultSet.next()) {
+                String id = resultSet.getString("id");
+                //     String uuid = resultSet.getString("uuid");
+                String ip = resultSet.getString("ip");
+                String action = resultSet.getString("action");
+                Timestamp time = resultSet.getTimestamp("time");
+                String encodedId = activityQuery.encodeId(id);
+
+                List<Component> loreList = new ArrayList<>();
+                loreList.add(Component.text(ChatColor.WHITE + "Date: " + ChatColor.YELLOW + time.toLocalDateTime().toLocalDate()));
+                loreList.add(Component.text(ChatColor.WHITE + "Time: " + ChatColor.GOLD + time.toLocalDateTime().toLocalTime() + " " + ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT)));
+                loreList.add(Component.text(""));
+                loreList.add(Component.text(ChatColor.WHITE + "IP: " + ChatColor.GREEN + ip));
+                loreList.add(Component.text(""));
+                loreList.add(Component.text(ChatColor.GRAY + "Click to print").clickEvent(ClickEvent.suggestCommand(encodedId)));
+
+                ItemMeta targetHeadMeta = targetHead.getItemMeta();
+                targetHeadMeta.displayName(Component.text(ChatColor.BOLD + "" + ChatColor.DARK_PURPLE + action));
+                targetHeadMeta.lore(loreList);
+
+                targetHead.setItemMeta(targetHeadMeta);
+
+                setItemType(targetHead);
+
+                records.add(targetHead.clone());
+
+                Inventory inventory = InventoryManager.getInventory(offlinePlayer.getPlayer(), 6, targetName + "'s activity");
+                inventory.addItem(targetHead);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 
 /*
 TODO/FIXME
 - when opened second time, it goes to the page it was last closed at
-- create a new database with only player uuid (to know if he ever joined before)
-    - make OfflinePlayer get the player from the database
  */

@@ -1,6 +1,5 @@
 package net.trustgames.core.config;
 
-import net.trustgames.core.debug.DebugColors;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,11 +24,13 @@ public class DefaultConfig {
         defaultConfig.addDefault("messages.no-permission", prefix_chat + "&8You don't have permission to perform this command!");
         defaultConfig.addDefault("messages.chat-cooldown", prefix_chat + "&8Wait another %s seconds before using chat again!");
         defaultConfig.addDefault("messages.same-chat-cooldown", prefix_chat + "&8Don't write the same message! (wait %s seconds)");
-        defaultConfig.addDefault("messages.only-in-game-command", DebugColors.RED + "This command can be executed by in-game players only!");
+        defaultConfig.addDefault("messages.only-in-game-command", "This command can be executed by in-game players only!");
         defaultConfig.addDefault("messages.buy.rank", "&fBuy a rank for better experience.");
         defaultConfig.addDefault("messages.buy.higher-rank", "&fBuy a higher rank for even better experience.");
-        defaultConfig.addDefault("messages.command-no-argument", prefix_chat + "&8You need to specify a valid argument!");
+        defaultConfig.addDefault("messages.command-invalid-argument", prefix_chat + "&8You need to specify a valid argument!");
         defaultConfig.addDefault("messages.command-invalid-player", prefix_chat + "&8The player %s doesn't exist!");
+        defaultConfig.addDefault("messages.command-no-player-activity", prefix_chat + "&8No activity data for player %s!");
+        defaultConfig.addDefault("messages.command-no-id-activity", prefix_chat + "&8No activity data for id %s!");
 
 
         // cooldowns

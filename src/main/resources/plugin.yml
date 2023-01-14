@@ -28,8 +28,17 @@ commands:
       - shop
   activity:
     usage: /activity <player>
-    description: Gets the player's activity from database
+    description: Get the player's activity by his name or UUID from the database
     permission: core.staff
     aliases:
        - activ
        - act
+  activity-id:
+    usage: /activity-id <id>
+    description: Get the activity by it's ID from the database
+    permission: core.staff
+    aliases:
+      - activ-id
+      - act-id
+      - activityid
+

@@ -1,4 +1,4 @@
-package net.trustgames.core.commands;
+package net.trustgames.core.messages_commands;
 
 import net.trustgames.core.Core;
 import org.bukkit.Bukkit;
