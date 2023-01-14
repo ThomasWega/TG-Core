@@ -58,7 +58,15 @@ public class ActivityCommand implements CommandExecutor, Listener {
     private static final List<Inventory> inventoryList = new ArrayList<>();
 
     /** Stores all the Actions and their corresponding ItemStack */
-    public static final HashMap<String, Material> actionsMap = new HashMap<>();
+    private static final HashMap<String, Material> actionsMap = new HashMap<>();
+
+    /**
+     * Used for switching pages.
+     * +1 everytime page is switched to next page.
+     * -1 everytime page is switched to previous page.
+     * */
+    private static int pageCount = 0;
+
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -104,10 +112,15 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 /*
                  if the menus were previously opened, all the maps
                  need to be cleared to avoid the items showing twice.
+                 The int needs to be reset so when the menu is opened a
+                 second time, the pages are reset to the first one
                 */
                 records.clear();
                 inventoryList.clear();
                 actionsMap.clear();
+                pageCount = 0;
+
+                System.out.println(pageCount);
 
                 createRecords(offlinePlayer);
 
@@ -370,7 +383,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
                      get the id from the click event of the item's lore.
                      NOTE: read more in createRecords comments
                     */
-                    String id = Objects.requireNonNull(Objects.requireNonNull(item.lore()).get(5).clickEvent()).value();
+                    String id = Objects.requireNonNull(Objects.requireNonNull(item.lore()).get(6).clickEvent()).value();
 
                     /*
                      get the player from the humanEntity. This conversion needs to happen,
@@ -401,7 +414,6 @@ public class ActivityCommand implements CommandExecutor, Listener {
         }
     }
 
-
     /**
      * Switch the page to the next one or the previous one.
      * That is decided by getting if the item display name
@@ -412,22 +424,22 @@ public class ActivityCommand implements CommandExecutor, Listener {
      * @param item ItemStack of the record
      * @param humanEntity Command sender
      */
+
     private void switchPage(ItemStack item, HumanEntity humanEntity){
         String itemName = PlainTextComponentSerializer.plainText().serialize(item.displayName());
 
-        // needs to be -1, as the array starts with 0
-        int pageCount = item.getAmount() - 1;
-
         if (itemName.contains("Next page")) {
             // get the next inventory
+            pageCount++;
             Inventory nextInv = inventoryList.get(pageCount);
             humanEntity.openInventory(nextInv);
         } else if (itemName.contains("Previous page")) {
             // get the previous inventory
+            pageCount--;
             Inventory previousInv = inventoryList.get(pageCount);
             humanEntity.openInventory(previousInv);
         }
+
+        System.out.println(DebugColors.RED + pageCount);
     }
 }
-
-// TODO fix switch page limit top 64

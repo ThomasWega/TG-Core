@@ -24,6 +24,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import java.io.File;
 
 public final class Core extends JavaPlugin {
+
     final MariaDB mariaDB = new MariaDB(this);
     final ChatAnnouncer chatAnnouncer = new ChatAnnouncer(this);
     final PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
@@ -62,7 +63,7 @@ public final class Core extends JavaPlugin {
 
         // FIXME MariaDB delay is in milliseconds but in config should be in seconds
         // TODO Fix deprecated methods (use new methods)
-        // TODO change comments to manual comments
+        // TODO change comments to documentation comments
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
