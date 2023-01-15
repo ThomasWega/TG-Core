@@ -60,7 +60,6 @@ public class ActivityListener implements Listener {
 
         PlayerActivityDB playerActivityDB = new PlayerActivityDB(core);
 
-        // find the playerStats for the player using method findPlayerStatsByUUID in MariaDB class
         PlayerActivity playerActivity = playerActivityDB.findPlayerActivityByUUID(player.getUniqueId().toString());
 
         if (playerActivity == null) {
@@ -82,7 +81,6 @@ public class ActivityListener implements Listener {
      */
     private void writeActivity(Player player, String action, boolean runAsync) {
 
-        // check if mysql is enabled in the mariadb.yml
         if (core.getMariaDB().isMySQLDisabled()) return;
 
         PlayerActivity playerActivity;
@@ -90,13 +88,10 @@ public class ActivityListener implements Listener {
         if (playerActivity != null) {
             PlayerActivityDB playerActivityDB = new PlayerActivityDB(core);
 
-
-            // set the action and time
             playerActivity.setIp(Objects.requireNonNull(player.getAddress()).getHostString());
             playerActivity.setAction(action);
             playerActivity.setTime(new Timestamp(Instant.now().toEpochMilli()));
 
-            // create new stat
             playerActivityDB.createPlayerActivity(playerActivity, runAsync);
         }
     }

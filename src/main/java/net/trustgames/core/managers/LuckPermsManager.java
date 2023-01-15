@@ -29,8 +29,6 @@ public class LuckPermsManager {
     static final LuckPerms luckPerms = Core.getLuckPerms();
 
     /**
-     * check if player is in defined group
-     *
      * @param player What player to check on
      * @param group What group to check for
      * @return if the given player is in the given group
@@ -40,8 +38,6 @@ public class LuckPermsManager {
     }
 
     /**
-     * Get set of all loaded groups
-     *
      * @return Set of all loaded groups
      */
     public static Set<Group> getGroups() {
@@ -49,8 +45,6 @@ public class LuckPermsManager {
     }
 
     /**
-     * Check if player is in group from defined list
-     *
      * @param player Player to check on
      * @param possibleGroups List of groups to check for
      * @return Player's group found from the list
@@ -65,8 +59,6 @@ public class LuckPermsManager {
     }
 
     /**
-     * Gets the player's primary group
-     *
      * @param player Player to check primary group for
      * @return Primary group of the given player
      */
@@ -74,44 +66,32 @@ public class LuckPermsManager {
         return Objects.requireNonNull(luckPerms.getUserManager().getUser(player.getUniqueId())).getPrimaryGroup();
     }
 
-    /**
-     * Return the group manager of luckperms
-     *
-     * @return LuckPerms GroupManager
-     */
     public static GroupManager getGroupManager() {
         return luckPerms.getGroupManager();
     }
 
     /**
-     * Get the user instance from player instance
-     *
      * @param player Player to convert to User
-     * @return User from given Player
+     * @return User from the given Player
      */
     public static User getUser(Player player) {
         return luckPerms.getPlayerAdapter(Player.class).getUser(player);
     }
 
-    /**
-     * Register listeners for luckperms
-     */
     public void registerListeners() {
-        // register the user data change event
         EventBus eventBus = Core.getLuckPerms().getEventBus();
+
         eventBus.subscribe(core, UserDataRecalculateEvent.class, this::onUserDataRecalculate);
     }
 
     /**
-     * On luckperms user's data change
-     *
      * @param event Every data recalculation of the user
      */
     private void onUserDataRecalculate(UserDataRecalculateEvent event) {
         core.getServer().getScheduler().runTask(core, () -> {
             User user = event.getUser();
 
-            // add player to playerlist team to sort correctly
+            // add player to player-list team to sort priority
             PlayerListTeams playerListTeams = new PlayerListTeams(core);
             playerListTeams.addToTeam(Bukkit.getPlayer(user.getUniqueId()));
         });

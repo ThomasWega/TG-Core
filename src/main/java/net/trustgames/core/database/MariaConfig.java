@@ -39,12 +39,6 @@ public class MariaConfig {
         }
     }
 
-
-    /**
-     * used to retrieve the mariadb.yml file
-     *
-     * @return mariadb.yml file
-     */
     public File getMariaFile() {
         return new File(core.getDataFolder(), "mariadb.yml");
     }

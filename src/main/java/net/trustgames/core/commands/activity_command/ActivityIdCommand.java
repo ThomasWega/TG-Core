@@ -36,7 +36,6 @@ public class ActivityIdCommand implements CommandExecutor {
         FileConfiguration config = core.getConfig();
 
         if (sender.hasPermission("core.staff")) {
-            // if there is more or less arguments than 1, the command is used incorrectly
             if (args.length != 1) {
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', config.getString("messages.command-invalid-argument") + "&8 Use /activity-id <id>"));
                 return true;

@@ -21,10 +21,6 @@ public class ActivityQuery {
     }
 
     /**
-     * Gets the all the player's activity by his uuid
-     * with PreparedStatement and ResultSet.
-     *
-     * @param uuid Given UUID
      * @return ResultSet of all rows which matches
      */
     public ResultSet getActivityByUUID(String uuid) {
@@ -39,11 +35,7 @@ public class ActivityQuery {
     }
 
     /**
-     * Gets the activity by id with PreparedStatement.
-     * It can also take both encoded id in Base64 or
-     * plain decoded id in int.
-     *
-     * @param id Given ID
+     * @param id Given ID in Base64 encoded or plain (decoded)
      * @return ResultSet of the row with the matching id
      */
     public ResultSet getActivityByID(String id){
@@ -69,9 +61,7 @@ public class ActivityQuery {
     }
 
     /**
-     * Returns the encoded ID string of the given decoded ID string
-     *
-     * @param id Decoded ID String
+     * @param id Plain ID String
      * @return Encoded ID String
      */
     public String encodeId(String id) {
@@ -79,9 +69,6 @@ public class ActivityQuery {
     }
 
     /**
-     * Returns the decoded ID string of the given encoded ID String
-     * or if the id cannot be decoded, it returns null.
-     *
      * @param encodedId Encoded ID String
      * @return Decoded ID String or Null
      */

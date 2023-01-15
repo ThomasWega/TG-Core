@@ -22,13 +22,6 @@ public class ChatPrefix implements Listener {
         this.core = core;
     }
 
-
-    /**
-     * used to apply chat prefixes for players
-     * on chat event
-     *
-     * @param event AsyncPlayerChatEvent - DEPRECATED CHANGE!
-     */
     @EventHandler
     @Deprecated
     private void chatPrefix(AsyncPlayerChatEvent event){

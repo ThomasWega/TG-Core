@@ -51,9 +51,6 @@ public class AnnouncerConfig {
         }
     }
 
-    /**
-     * used to retrieve the announcer.yml file
-      */
     public File getAnnouncerFile() {
         return new File(core.getDataFolder(), "announcer.yml");
     }

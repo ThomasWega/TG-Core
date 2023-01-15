@@ -15,8 +15,6 @@ import javax.annotation.Nullable;
 public class ItemManager {
 
     /**
-     * create the itemStack
-     *
      * @param material ItemStack Material
      * @param count What amount
      * @return created ItemStack
@@ -26,8 +24,6 @@ public class ItemManager {
     }
 
     /**
-     * creates the itemMeta
-     *
      * @param itemStack ItemStack to create ItemMeta to
      * @param name Display name of the ItemStack
      * @param itemFlags What items flags to put on the ItemStack. Can be null

@@ -116,7 +116,7 @@ public final class Core extends JavaPlugin {
         // mariadb database
         playerActivityDB.initializePlayerActivityTable();
 
-        // set the gamerules
+        // gamerules
         gameruleManager.setGamerules("world");
 
         // run ChatAnnouncer
@@ -133,18 +133,11 @@ public final class Core extends JavaPlugin {
         mariaDB.closeHikari();
     }
 
-    /**
-     * get the class MariaDB instance without creating a new one everytime
-     *
-     * @return MariaDB instance
-     */
     public MariaDB getMariaDB() {
         return mariaDB;
     }
 
-    /**
-     * Obtain luckperms api instance
-     */
+
     public static LuckPerms getLuckPerms() {
         return LuckPermsProvider.get();
     }

@@ -33,8 +33,7 @@ public class ChatAnnouncer {
             int i = 1;
 
             /**
-             runs once every x seconds (specified in announcer.yml) and loops through each online player
-             it sends every player the same message. After all players have the message, it increases
+             After all players have the message, it increases
              the int i by one, to move on to the next message in the announcer.yml. When it sent all the messages
              it sets the int i back to one and starts all over again.
             */

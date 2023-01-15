@@ -26,8 +26,6 @@ public class CommandManager implements Listener {
     private final HashMap<UUID, Long> commandCooldown = new HashMap<>();
 
     /**
-     * Register the given command
-     *
      * @param commandName The name of the command
      * @param commandExecutor The executor of the command
      */
@@ -65,14 +63,13 @@ public class CommandManager implements Listener {
              Meaning the player typed a command in the last second more than the allowed count.
             */
             if (i >= config.getDouble("cooldowns.max-commands-per-second")) {
-                // send him the not spam message
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("messages.command-spam"))));
                 event.setCancelled(true);
             }
             // add i + 1 to increase the amount of times the player has typed a command in the last second
             i++;
         }
-        // preferably if the last time player typed a command is more than a second.
+        // iff the last time player typed a command is more than a second.
         else{
             // put him in the cooldown with the new time of last command used
             commandCooldown.put(player.getUniqueId(), System.currentTimeMillis());
@@ -81,11 +78,6 @@ public class CommandManager implements Listener {
         }
     }
 
-    /**
-     * on player quit, remove him from the hashmap
-     *
-     * @param event PlayerQuit
-     */
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event){
         Player player = event.getPlayer();

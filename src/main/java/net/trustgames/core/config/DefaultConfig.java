@@ -13,7 +13,7 @@ public class DefaultConfig {
     /**
      * Create the defalts for the default config (config.yml)
      *
-     * @param defaultConfig config.yml FileConfiguration
+     * @param defaultConfig plugin.getConfig()
      */
     public static void create(@NotNull FileConfiguration defaultConfig) {
 

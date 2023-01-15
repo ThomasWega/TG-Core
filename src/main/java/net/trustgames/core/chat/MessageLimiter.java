@@ -14,11 +14,7 @@ import java.util.*;
 /**
  * Limit the time player can send the next message. Each permission can have different times set.
  * If the message is the same as the last one, the timeout can be longer. It also makes sure to not send
- * too many warning messages to not spam the player's chat.
-NOTE: this class is coded so badly, that it shouldn't even exist. If anyone needs to go through this
-at anytime, I am deeply sorry, as you will probably want to grab a huge gun, put it right in your
-ass and press it to end this sacrifice. At least I tried to comment it good. Still shitty to understand tho.
-- by Wega
+ * too many cooldown messages to not spam the player's chat.
  */
 
 public class MessageLimiter implements Listener {
@@ -36,9 +32,8 @@ public class MessageLimiter implements Listener {
     private final HashMap<UUID, Long> lastWaitMessage = new HashMap<>();
 
     /**
-    on player chat event (this doesn't include writing commands), it gets the keys from the config and puts them
+    It gets the keys from the config and puts them
     to a hashmap with their corresponding values. Then it runs the checks method
-     * @param event AsyncChatEvent
      */
     @EventHandler
     public void onPlayerChat(AsyncChatEvent event) {
@@ -65,7 +60,7 @@ public class MessageLimiter implements Listener {
     }
 
     /**
-     * Checks if the player is on cooldown, if the message is same as the last time,
+     * Checks if the player is on cooldown, and if the message is same as the last time,
      * and makes sure to cancel the event, send the proper message to the player
      * or put the player's message to the correct map.
      * @param player Player who wrote the message
@@ -174,7 +169,7 @@ public class MessageLimiter implements Listener {
     }
 
     /**
-    This will check if his current messages matches the last message
+    Will check if his current messages matches the last message
     in the hashmap. It will remove all non-alphanumeric characters
     from the message (using regex) and compare the current one
     with the one from the hashmap. If they are the same, it returns true,

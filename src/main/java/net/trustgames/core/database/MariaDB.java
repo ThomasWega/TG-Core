@@ -51,7 +51,7 @@ public class MariaDB {
     */
     private void createDatabaseIfNotExists() {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
-            // get the mariadb config credentials
+
             YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
             String user = config.getString("mariadb.user");
             String password = config.getString("mariadb.password");
@@ -60,7 +60,6 @@ public class MariaDB {
             String database = config.getString("mariadb.database");
 
             try {
-                // try to create a connection and prepared statement with sql statement
                 Class.forName("org.mariadb.jdbc.Driver");
                 try (Connection connection = DriverManager.getConnection("jdbc:mariadb://" + ip + ":" + port + "/", user, password); PreparedStatement statement = connection.prepareStatement("CREATE DATABASE IF NOT EXISTS " + database)) {
                     statement.executeUpdate();
@@ -78,13 +77,11 @@ public class MariaDB {
     */
     public Connection getConnection() {
 
-        // if the connection isn't null, it returns the connection
         if (connection != null) {
             return connection;
-            // create new pool with new connection
+
         } else {
 
-            // get the mariadb config credentials
             YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
             String user = config.getString("mariadb.user");
             String password = config.getString("mariadb.password");
@@ -92,9 +89,7 @@ public class MariaDB {
             String port = config.getString("mariadb.port");
             String database = config.getString("mariadb.database");
 
-            // tries to connect to the database
             try {
-                // set the basic stuff
                 hikariDataSource = new HikariDataSource();
                 HikariDataSource ds = hikariDataSource;
                 ds.setDriverClassName("org.mariadb.jdbc.Driver");
@@ -128,11 +123,9 @@ public class MariaDB {
             createDatabaseIfNotExists();
 
             core.getServer().getScheduler().runTaskLaterAsynchronously(core, () -> {
-                // if the connection is null, return. if the table already exists, return.
                 try {
                     if (getConnection() == null) return;
                     if (tableExist(getConnection(), tableName)) return;
-                    // if the table doesn't yet exist
                     core.getLogger().info(DebugColors.CYAN + "Database table " + tableName + " doesn't exist, creating...");
                     try (PreparedStatement statement = getConnection().prepareStatement(stringStatement)) {
                         statement.executeUpdate();
@@ -149,9 +142,7 @@ public class MariaDB {
     }
 
     /**
-     * check if mysql is enabled in the config¨
-     *
-     * @return if mysql is disabled
+     * @return true if mysql is disabled
      */
     public boolean isMySQLDisabled() {
         mariaConfig = new MariaConfig(core);
@@ -159,9 +150,6 @@ public class MariaDB {
         return !Boolean.parseBoolean(config.getString("mariadb.enable"));
     }
 
-    /**
-     * close the hikari connection
-     */
     public void closeHikari() {
         if (isMySQLDisabled()) return;
         hikariDataSource.close();

@@ -53,11 +53,6 @@ public class MessagesConfig {
         }
     }
 
-    /**
-     * Retrieve the announcer.yml file
-     *
-     * @return announcer.yml file
-     */
     public File getMessagesFile() {
         return new File(core.getDataFolder(), "commands.yml");
     }

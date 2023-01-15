@@ -18,8 +18,6 @@ public class GameruleManager {
     }
 
     /**
-     * Set needed gamerules to the given world
-     *
      * @param worldName World to set the gamerules on
      */
     public void setGamerules(String worldName) {

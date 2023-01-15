@@ -42,20 +42,15 @@ public class PlayerActivityDB {
     public PlayerActivity findPlayerActivityByUUID(String uuid) {
 
         try {
-            // gets all columns of all rows that include player's uuid. It orders them by largest id and limits the results to only one row
             try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("SELECT * FROM player_activity WHERE uuid = ? ORDER BY id DESC LIMIT 1")) {
-                // sets the '?' to given uuid
                 statement.setString(1, uuid);
-                // gets the results, which in this case should be only one result
                 try (ResultSet results = statement.executeQuery()) {
                     if (results.next()) {
 
-                        // saves the results as variables
                         String ip = results.getString("ip");
                         String action = results.getString("action");
                         Timestamp time = results.getTimestamp("time");
 
-                        // passes the variables to new PlayerActivity
                         return new PlayerActivity(uuid, ip, action, time);
                     }
                 }
@@ -77,9 +72,7 @@ public class PlayerActivityDB {
 
         if (runAsync) {
             core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
-                // inserts new player's activity to table
                 try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("INSERT INTO player_activity(uuid, ip, action, time) VALUES (?, ?, ?, ?)")) {
-                    // replaces the '?' with variables
                     statement.setString(1, playerActivity.getUuid());
                     statement.setString(2, playerActivity.getIp());
                     statement.setString(3, playerActivity.getAction());
@@ -91,9 +84,7 @@ public class PlayerActivityDB {
                 }
             });
         } else {
-            // inserts new player's activity to table
             try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("INSERT INTO player_activity(uuid, ip, action, time) VALUES (?, ?, ?, ?)")) {
-                // replaces the '?' with variables
                 statement.setString(1, playerActivity.getUuid());
                 statement.setString(2, playerActivity.getIp());
                 statement.setString(3, playerActivity.getAction());

@@ -47,14 +47,10 @@ public class ActivityCommand implements CommandExecutor, Listener {
         this.core = core;
     }
 
-    /**
-     * Stores all ItemStack with the data for each row
-     * */
+    /** Stores all ItemStack with the data for each row */
     private static final List<ItemStack> records = new ArrayList<>();
 
-    /**
-     *  Stores all Inventories
-     *  */
+    /** Stores all Inventories */
     private static final List<Inventory> inventoryList = new ArrayList<>();
 
     /** Stores all the Actions and their corresponding ItemStack */
@@ -72,14 +68,8 @@ public class ActivityCommand implements CommandExecutor, Listener {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         FileConfiguration config = core.getConfig();
 
-        // check if sender is player, if he isn't, send the only in-game message
         if (sender instanceof Player) {
-            // check if player has the required permission
             if (sender.hasPermission("core.staff")) {
-                /*
-                if there is anything else than 1 argument, then the command usage is incorrect,
-                so send the sender a message with the correct command usage and return.
-                 */
                 if (args.length != 1) {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', config.getString("messages.command-invalid-argument") + "&8 Use /activity <Player/UUID>"));
                     return true;
@@ -89,7 +79,6 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 if (player == null) return true;
 
 
-                //the target player is the first argument in the command.
                 String target = args[0];
 
                 /*
@@ -122,7 +111,6 @@ public class ActivityCommand implements CommandExecutor, Listener {
 
                 createRecords(offlinePlayer);
 
-                // if the records list is empty, there is no data for the given target
                 if (records.isEmpty()){
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(Objects.requireNonNull(config.getString("messages.command-no-player-activity")), target)));
                     return true;
@@ -151,7 +139,6 @@ public class ActivityCommand implements CommandExecutor, Listener {
     private void createRecords(OfflinePlayer offlinePlayer){
         ActivityQuery activityQuery = new ActivityQuery(core);
 
-        // get the result set of the offlinePlayer (target)
         ResultSet resultSet = activityQuery.getActivityByUUID(offlinePlayer.getUniqueId().toString());
         ItemStack targetHead = ItemManager.createItemStack(Material.PAINTING, 1);
 
@@ -188,16 +175,13 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 loreList.add(Component.text(""));
                 loreList.add(Component.text(ChatColor.LIGHT_PURPLE + "Click to print").clickEvent(ClickEvent.suggestCommand(encodedId)));
 
-                // item meta and set display name and lore
                 ItemMeta targetHeadMeta = targetHead.getItemMeta();
                 targetHeadMeta.displayName(Component.text(ChatColor.BOLD + "" + ChatColor.DARK_PURPLE + action));
                 targetHeadMeta.lore(loreList);
                 targetHead.setItemMeta(targetHeadMeta);
 
-                // get which Material the ItemStack should have
                 setMaterial(targetHead);
 
-                // add to the records list
                 records.add(targetHead.clone());
             }
         } catch (SQLException e) {
@@ -225,10 +209,6 @@ public class ActivityCommand implements CommandExecutor, Listener {
         actionsMap.put("QUIT SERVER", Material.RED_BED);
         actionsMap.put("QUIT SHUTDOWN SERVER", Material.BLACK_BED);
 
-        /*
-         loop through all the keys and check if itemName contains one of them.
-         If it does, set the type as the value to the key it matches and return.
-        */
         for (String action : actionsMap.keySet()) {
             if (itemName.contains(action)) {
                 recordItem.setType(actionsMap.get(action));
@@ -261,21 +241,19 @@ public class ActivityCommand implements CommandExecutor, Listener {
         int pagesCount = (int) Math.ceil(records.size() / 45d);
 
         /*
-         loop through all the records divided by 45 (the max page size) and for each one
-         it creates a new inventory and adds a book with display name which shows the current
-         and the max page. Then it adds the inventory to the inventoryList
+         loop through all pages and for each one and create a new inventory for each one.
+         Add a book with display name which shows the current
+         and the max page.
         */
         for (int i = 1; i <= Math.ceil(records.size() / 45d); i++) {
-            Inventory inv = InventoryManager.getInventory(player, 6, targetName  + "'s activity");
+            Inventory inv = InventoryManager.createInventory(player, 6, targetName  + "'s activity");
             pageInfo.setItemMeta(ItemManager.createItemMeta(pageInfo, ChatColor.DARK_GREEN + "Page (" + i + "/" + pagesCount + ")", new ItemFlag[]{ItemFlag.HIDE_ATTRIBUTES}));
             inv.setItem(49, pageInfo);
             inventoryList.add(inv);
         }
 
-        // first page of inventory is 0 (array starts with 0)
         int invCount = 0;
         int slot = 0;
-        // max amount of record's per page
         int max = 44;
 
         // gets the inventory 0 (first page)
@@ -290,8 +268,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
         */
         for (ItemStack item : records){
 
-            // if the slot > max, switch to the next inventory and add the nextPage arrow
-            // (if there is not 64 already)
+            // switch to the next inventory and add the nextPage arrow
             if (slot > max){
                 invCount++;
                 nextPage.setItemMeta(ItemManager.createItemMeta(nextPage, ChatColor.YELLOW + "Next page", null));
@@ -303,7 +280,6 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 inv.setItem(50, nextPage);
 
                 // if the inventory is already a second one, add the previousPage arrow
-                // (if there is not 64 already)
                 if (invCount > 1){
                     previousPage.setItemMeta(ItemManager.createItemMeta(previousPage, ChatColor.YELLOW + "Previous page", null));
                     if (previousPage.getAmount() < 64) {
@@ -364,17 +340,13 @@ public class ActivityCommand implements CommandExecutor, Listener {
 
         /*
          if item or inventory is null, the event was probably executed
-         when opening or closing the inventory, so return here.
+         when opening or closing the inventory, and not on click so return here.
         */
         if (item == null) return;
         if (inventory == null) return;
 
         if (title.contains("'s activity")) {
             try {
-                /*
-                 if the list of actions and their Materials contains the item Material
-                 or the material is bedrock (wasn't found in the map).
-                */
                 if (actionsMap.containsValue(item.getType()) || item.getType() == Material.BEDROCK) {
 
                     /*
@@ -383,25 +355,15 @@ public class ActivityCommand implements CommandExecutor, Listener {
                     */
                     String id = Objects.requireNonNull(Objects.requireNonNull(item.lore()).get(6).clickEvent()).value();
 
-                    /*
-                     get the player from the humanEntity. This conversion needs to happen,
-                     as later the performCommand method is used, and that method is only
-                     available for Player instance.
-                    */
                     Player player = Bukkit.getPlayer(humanEntity.getUniqueId());
                     if (player == null) return;
 
-                    /*
-                     perform the command /activity-id ID, so the info is printed in chat
-                     if false, the command couldn't be performed, so print an error message to the player
-                    */
                     if (!player.performCommand("activity-id " + id)){
                         humanEntity.sendMessage(ChatColor.RED + "ERROR: Executing /activity-id " + id + " as a player");
                     }
                     inventory.close();
                 }
 
-                // if the item type is ARROW, switch the page
                 else if (item.getType() == Material.ARROW) {
                     switchPage(item, humanEntity);
                 }
@@ -427,12 +389,10 @@ public class ActivityCommand implements CommandExecutor, Listener {
         String itemName = PlainTextComponentSerializer.plainText().serialize(item.displayName());
 
         if (itemName.contains("Next page")) {
-            // get the next inventory
             pageCount++;
             Inventory nextInv = inventoryList.get(pageCount);
             humanEntity.openInventory(nextInv);
         } else if (itemName.contains("Previous page")) {
-            // get the previous inventory
             pageCount--;
             Inventory previousInv = inventoryList.get(pageCount);
             humanEntity.openInventory(previousInv);

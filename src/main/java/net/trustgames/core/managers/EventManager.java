@@ -10,8 +10,6 @@ import org.bukkit.plugin.Plugin;
 public class EventManager {
 
     /**
-     * used to register all events
-     *
      * @param listener Listener class of the event
      * @param plugin Plugin instance
      */

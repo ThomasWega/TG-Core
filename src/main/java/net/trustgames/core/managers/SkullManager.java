@@ -17,7 +17,7 @@ public class SkullManager {
 
     /**
      gets the player skull by his url. Use mineskin.org for url
-     Using advanced paper api method for this. (will not work on spigot)
+     Using paper api method for this. (will not work on spigot)
      * @param textureValue Value of the Texture of the Skull
      * @param textureSignature Signature of the texture of the Skull
      * @return ItemStack with the Skull texture

@@ -88,8 +88,6 @@ public class PlayerListTeams {
     }
 
     /**
-     * remove the player from the team
-     *
      * @param player Who to remove from the scoreboard team
       */
     public static void removeFromTeam(Player player) {

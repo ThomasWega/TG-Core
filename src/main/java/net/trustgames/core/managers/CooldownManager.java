@@ -24,10 +24,11 @@ public class CooldownManager implements Listener {
     private final HashMap<UUID, Long> cooldownMessageTime = new HashMap<>();
 
     /**
-    This method can be called from anywhere and ensures, that the command is not being spammed too much. I already
-    have one of this check in the CommandManager, but that allows certain number of commands per second. This
-    method allows only one execution of the command per given time. It also ensures that the "don't spam" message
-    is not being sent too often to the player.
+     * Ensures, that the command is not being spammed too much.
+     * There is already one of this check in the CommandManager,
+     * but that allows certain number of commands per second.
+     * This method allows only one execution of the command per given time.
+     * It also ensures that the "don't spam" message is not being sent too often to the player.
      * @param player Player to put in a cooldown
      * @param cooldownTime Cooldown time in seconds
      * @return if the player is on cooldown
@@ -39,7 +40,6 @@ public class CooldownManager implements Listener {
         */
         if (!commandCooldownTime.containsKey(player.getUniqueId()) || !isOnCooldown(player, cooldownTime)) {
             commandCooldownTime.put(player.getUniqueId(), System.currentTimeMillis());
-        // if the player has a cooldown, send him the wait message
         } else if (isOnCooldown(player, cooldownTime)) {
             sendMessage(player);
             return true;
@@ -48,8 +48,6 @@ public class CooldownManager implements Listener {
     }
 
     /**
-     * Check if player is on cooldown
-     *
      * @param player Player to check cooldown on
      * @param cooldownTime Cooldown time in seconds
      * @return if player is on cooldown
@@ -73,7 +71,6 @@ public class CooldownManager implements Listener {
         */
         if (cooldownMessageTime.containsKey(player.getUniqueId())) {
             return !(config.getDouble("cooldowns.cooldown-warn-messages-limit-in-seconds") <= (System.currentTimeMillis() - cooldownMessageTime.get(player.getUniqueId())) / 1000d);
-            // if the last message doesn't contain the player (meaning he probably didn't receive any wait messages, put him in the map and return false
         } else {
             cooldownMessageTime.put(player.getUniqueId(), System.currentTimeMillis());
             return false;
@@ -89,7 +86,6 @@ public class CooldownManager implements Listener {
     private void sendMessage(Player player){
         FileConfiguration config = core.getConfig();
 
-        // check if the message is not too spammy
         if (isSpam(player)) return;
 
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("messages.command-spam"))));
