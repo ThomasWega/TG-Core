@@ -20,6 +20,7 @@ public class PlayerListListener implements Listener {
 
     public PlayerListListener(Core core) {
         this.core = core;
+        core.getServer().getPluginManager().registerEvents(this,core);
     }
 
     PlayerListTeams playerListTeams;

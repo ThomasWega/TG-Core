@@ -23,6 +23,7 @@ public class ChatPrefix implements Listener {
 
     public ChatPrefix(Core core) {
         this.core = core;
+        core.getServer().getPluginManager().registerEvents(this,core);
     }
 
     @EventHandler
