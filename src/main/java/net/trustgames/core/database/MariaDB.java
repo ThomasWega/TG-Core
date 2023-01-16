@@ -2,14 +2,14 @@ package net.trustgames.core.database;
 
 import com.zaxxer.hikari.HikariDataSource;
 import net.trustgames.core.Core;
-import net.trustgames.core.debug.DebugColors;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.sql.*;
 
 /**
  * This class handles the basic MariaDB and HikariCP methods such as getting connection,
- * creating the database, table (if not exists) and closing the hikari connection.
+ * creating the database, table (if not exists) and closing the hikari connection. Note that the
+ * plugin#getLogger is used instead of Bukkit#getLogger, because async methods should not access Bukkit API
  */
 public class MariaDB {
 
@@ -65,7 +65,7 @@ public class MariaDB {
                     statement.executeUpdate();
                 }
             } catch (SQLException | ClassNotFoundException e) {
-                core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Unable to create " + database + " database!");
+                core.getLogger().severe("Unable to create " + database + " database!");
                 throw new RuntimeException(e);
             }
         });
@@ -102,8 +102,7 @@ public class MariaDB {
                 connection = ds.getConnection();
                 return connection;
             } catch (SQLException e) {
-                core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND +
-                        "ERROR: Connecting to the database using HikariCP");
+                core.getLogger().severe("ERROR: Connecting to the database using HikariCP");
                 throw new RuntimeException(e);
             }
         }
@@ -118,8 +117,7 @@ public class MariaDB {
     public void initializeTable(String tableName, String stringStatement) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             if (isMySQLDisabled()) {
-                core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND +
-                        "MySQL is turned off. Not initializing table " + tableName);
+                core.getLogger().warning("MySQL is turned off. Not initializing table " + tableName);
                 return;
             }
             createDatabaseIfNotExists();
@@ -128,16 +126,15 @@ public class MariaDB {
                 try {
                     if (getConnection() == null) return;
                     if (tableExist(getConnection(), tableName)) return;
-                    core.getLogger().info(DebugColors.CYAN + "Database table " + tableName + " doesn't exist, creating...");
+                    core.getLogger().info("Database table " + tableName + " doesn't exist, creating...");
                     try (PreparedStatement statement = getConnection().prepareStatement(stringStatement)) {
                         statement.executeUpdate();
                         if (tableExist(getConnection(), tableName)) {
-                            core.getLogger().info(DebugColors.BLUE + "Successfully created the table " + tableName);
+                            core.getLogger().finest("Successfully created the table " + tableName);
                         }
                     }
                 } catch (SQLException e) {
-                    core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND +
-                            "Unable to create " + tableName + " table in the database!");
+                    core.getLogger().severe("Unable to create " + tableName + " table in the database!");
                     throw new RuntimeException(e);
                 }
             }, YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile()).getLong("delay.database-table-creation"));

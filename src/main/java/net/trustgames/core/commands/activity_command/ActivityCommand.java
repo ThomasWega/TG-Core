@@ -4,7 +4,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.trustgames.core.Core;
-import net.trustgames.core.debug.DebugColors;
 import net.trustgames.core.managers.ColorManager;
 import net.trustgames.core.managers.InventoryManager;
 import net.trustgames.core.managers.ItemManager;
@@ -136,7 +135,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
             }
         } else {
             String path = "messages.only-in-game-command";
-            Bukkit.getLogger().info(Objects.requireNonNull(
+            Bukkit.getLogger().severe(Objects.requireNonNull(
                     config.getString(path), "String on path " + path + " wasn't found in config!"));
         }
         return true;
@@ -198,7 +197,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 records.add(targetHead.clone());
             }
         } catch (SQLException e) {
-            Bukkit.getLogger().info(DebugColors.RED + "ERROR: Trying loop through ResultSet in ActivityCommand class");
+            Bukkit.getLogger().severe("ERROR: Trying loop through ResultSet in ActivityCommand class");
             throw new RuntimeException(e);
         }
     }

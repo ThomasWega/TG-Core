@@ -59,7 +59,7 @@ public class MessageLimiter implements Listener {
         // cooldown if the message is same as the last one
         String sectionSame = "cooldowns.same-message-limit-in-seconds";
         for (String rankSameCooldown : Objects.requireNonNull(config.getConfigurationSection(sectionSame),
-                "Configuration section " + section + " wasn't found in config!")
+                "Configuration section " + sectionSame + " wasn't found in config!")
                 .getKeys(false)) {
 
             ranksSameChatCooldown.put(rankSameCooldown, config.getDouble("cooldowns.same-message-limit-in-seconds." + rankSameCooldown));

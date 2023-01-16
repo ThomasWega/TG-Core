@@ -1,6 +1,5 @@
 package net.trustgames.core.managers;
 
-import net.trustgames.core.debug.DebugColors;
 import org.bukkit.Bukkit;
 
 import java.io.File;
@@ -20,15 +19,15 @@ public class FolderManager {
         // check if the folder exists, in case it doesn't, create it.
         try {
             if (!folder.exists()) {
-                Bukkit.getLogger().info(DebugColors.YELLOW + "Data folder not found, creating...");
+                Bukkit.getLogger().warning("Data folder not found, creating...");
                 if (folder.mkdirs()) {
-                    Bukkit.getLogger().info(DebugColors.GREEN + "Done creating data folder");
+                    Bukkit.getLogger().finest( "Done creating data folder");
                 } else {
-                    Bukkit.getLogger().info(DebugColors.RED + "Failed creating data folder");
+                    Bukkit.getLogger().severe("Failed creating data folder");
                 }
             }
         } catch (Exception e) {
-            Bukkit.getLogger().info(DebugColors.RED + "Couldn't create data folder");
+            Bukkit.getLogger().severe("Couldn't create data folder");
             throw new RuntimeException(e);
         }
     }
@@ -42,11 +41,11 @@ public class FolderManager {
         // check if the folder exists, in case it doesn't, it creates it
         // .
         if (!folder.exists()) {
-            Bukkit.getLogger().info(DebugColors.YELLOW + "Folder " + folder.getPath() + " not found, creating...");
+            Bukkit.getLogger().warning("Folder " + folder.getPath() + " not found, creating...");
             if (folder.mkdir()) {
-                Bukkit.getLogger().info(DebugColors.GREEN + "Done creating folder " + folder.getPath());
+                Bukkit.getLogger().finest("Done creating folder " + folder.getPath());
             } else {
-                Bukkit.getLogger().info(DebugColors.RED + "Failed creating folder " + folder.getPath());
+                Bukkit.getLogger().severe("Failed creating folder " + folder.getPath());
             }
         }
     }

@@ -42,6 +42,7 @@ public final class Core extends JavaPlugin {
 
 
     // TODO set prefix and cancel chat event conflicts with MessageLimiter class
+    // TODO improve config creation and fix unnecessary defaultConfig creation
 
     @Override
     public void onEnable() {

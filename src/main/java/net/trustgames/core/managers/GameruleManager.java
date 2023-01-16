@@ -1,7 +1,6 @@
 package net.trustgames.core.managers;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.debug.DebugColors;
 import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
 import org.bukkit.World;
@@ -50,7 +49,7 @@ public class GameruleManager {
             world.setGameRule(GameRule.SPECTATORS_GENERATE_CHUNKS, false);
         }
         else{
-            core.getLogger().info(DebugColors.YELLOW + "Invalid world. Not settings the gamerules!");
+            Bukkit.getLogger().severe("Invalid world. Not settings the gamerules!");
         }
     }
 }

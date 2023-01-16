@@ -4,7 +4,6 @@ import net.kyori.adventure.text.Component;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.node.Node;
 import net.trustgames.core.Core;
-import net.trustgames.core.debug.DebugColors;
 import net.trustgames.core.managers.ColorManager;
 import net.trustgames.core.managers.LuckPermsManager;
 import org.bukkit.Bukkit;
@@ -48,8 +47,7 @@ public class PlayerListTeams {
                 groupWeight.put(y.getName(), y.getWeight().getAsInt());
             }
             else{
-                Bukkit.getLogger().info(DebugColors.PURPLE + DebugColors.WHITE_BACKGROUND +
-                        "LuckPerms group " + y.getName() + " doesn't have any weight! Settings the weight to 1...");
+                Bukkit.getLogger().severe("LuckPerms group " + y.getName() + " doesn't have any weight! Settings the weight to 1...");
 
                 Objects.requireNonNull(LuckPermsManager.getGroupManager().getGroup(y.getName()),
                         "Group " + y.getName() + " wasn't found when setting a missing weight")
