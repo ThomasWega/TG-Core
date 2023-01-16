@@ -26,7 +26,7 @@ public class ConfigManager {
                 throw new RuntimeException(e);
             }
             if (isFileCreated) {
-                Bukkit.getLogger().finest("Done creating " + file.getName());
+                Bukkit.getLogger().warning("Done creating " + file.getName());
             } else {
                 Bukkit.getLogger().severe("Couldn't create " + file.getName());
             }

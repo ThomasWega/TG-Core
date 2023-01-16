@@ -130,7 +130,7 @@ public class MariaDB {
                     try (PreparedStatement statement = getConnection().prepareStatement(stringStatement)) {
                         statement.executeUpdate();
                         if (tableExist(getConnection(), tableName)) {
-                            core.getLogger().finest("Successfully created the table " + tableName);
+                            core.getLogger().warning("Successfully created the table " + tableName);
                         }
                     }
                 } catch (SQLException e) {

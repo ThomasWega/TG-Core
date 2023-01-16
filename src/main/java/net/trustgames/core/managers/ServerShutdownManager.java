@@ -41,7 +41,7 @@ public class ServerShutdownManager {
                         config.getString(path), "String on path " + path + " wasn't found in config!"))));
                 activityListener.onServerShutdown(player);
             }
-            Bukkit.getLogger().finest("Online players activities successfully saved to the database");
+            Bukkit.getLogger().warning("Online players activities successfully saved to the database");
         }
     }
 }
