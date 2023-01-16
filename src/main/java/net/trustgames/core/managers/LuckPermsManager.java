@@ -63,7 +63,9 @@ public class LuckPermsManager {
      * @return Primary group of the given player
      */
     public static String getPlayerPrimaryGroup(Player player) {
-        return Objects.requireNonNull(luckPerms.getUserManager().getUser(player.getUniqueId())).getPrimaryGroup();
+        return Objects.requireNonNull(luckPerms.getUserManager().getUser(player.getUniqueId()),
+                "Player UUID was null when getting his primary group")
+                .getPrimaryGroup();
     }
 
     public static GroupManager getGroupManager() {

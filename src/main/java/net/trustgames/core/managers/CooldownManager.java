@@ -1,7 +1,6 @@
 package net.trustgames.core.managers;
 
 import net.trustgames.core.Core;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -88,7 +87,9 @@ public class CooldownManager implements Listener {
 
         if (isSpam(player)) return;
 
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("messages.command-spam"))));
+        String path = "messages.command-spam";
+        player.sendMessage(ColorManager.translateColors(Objects.requireNonNull(
+                config.getString(path), "String on path " + path + " wasn't found in config!")));
 
         cooldownMessageTime.put(player.getUniqueId(), System.currentTimeMillis());
     }

@@ -63,7 +63,11 @@ public class ActivityListener implements Listener {
         PlayerActivity playerActivity = playerActivityDB.findPlayerActivityByUUID(player.getUniqueId().toString());
 
         if (playerActivity == null) {
-            playerActivity = new PlayerActivity(player.getUniqueId().toString(), Objects.requireNonNull(player.getAddress()).getHostString(), "FIRST JOIN PORT " + Bukkit.getServer().getPort(), new Timestamp(Instant.now().toEpochMilli()));
+            playerActivity = new PlayerActivity(player.getUniqueId().toString(), Objects.requireNonNull(
+                    player.getAddress(), "Player " + player.getUniqueId() + " IP address is null!")
+                    .getHostString(), "FIRST JOIN PORT " + Bukkit.getServer().getPort(),
+                    new Timestamp(Instant.now().toEpochMilli()));
+
             playerActivityDB.createPlayerActivity(playerActivity, runAsync);
             return null;
         } else {
@@ -88,7 +92,10 @@ public class ActivityListener implements Listener {
         if (playerActivity != null) {
             PlayerActivityDB playerActivityDB = new PlayerActivityDB(core);
 
-            playerActivity.setIp(Objects.requireNonNull(player.getAddress()).getHostString());
+            playerActivity.setIp(Objects.requireNonNull(player.getAddress(),
+                    "Player " + player.getUniqueId() + " IP address is null")
+                    .getHostString());
+
             playerActivity.setAction(action);
             playerActivity.setTime(new Timestamp(Instant.now().toEpochMilli()));
 

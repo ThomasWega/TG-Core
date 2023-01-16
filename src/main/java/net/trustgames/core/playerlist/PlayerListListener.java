@@ -2,7 +2,7 @@ package net.trustgames.core.playerlist;
 
 import net.kyori.adventure.text.Component;
 import net.trustgames.core.Core;
-import org.bukkit.ChatColor;
+import net.trustgames.core.managers.ColorManager;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,8 +29,10 @@ public class PlayerListListener implements Listener {
         Player player = event.getPlayer();
         FileConfiguration config = core.getConfig();
 
-        player.sendPlayerListHeader(Component.text(ChatColor.translateAlternateColorCodes('&', String.join("\n", config.getStringList("tablist.header")))));
-        player.sendPlayerListFooter(Component.text(ChatColor.translateAlternateColorCodes('&', String.join("\n", config.getStringList("tablist.footer")))));
+        player.sendPlayerListHeader(Component.text(ColorManager.translateColors(String.join("\n",
+                config.getStringList("tablist.header")))));
+        player.sendPlayerListFooter(Component.text(ColorManager.translateColors(String.join("\n",
+                config.getStringList("tablist.footer")))));
 
         Scoreboard playerListScoreboard = core.getPlayerListScoreboard();
         playerListTeams = new PlayerListTeams(core);

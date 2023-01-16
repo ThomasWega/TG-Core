@@ -2,7 +2,6 @@ package net.trustgames.core.managers;
 
 import net.trustgames.core.Core;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -30,7 +29,9 @@ public class CommandManager implements Listener {
      * @param commandExecutor The executor of the command
      */
     public static void registerCommand(String commandName, CommandExecutor commandExecutor) {
-        Objects.requireNonNull(Bukkit.getServer().getPluginCommand(commandName)).setExecutor(commandExecutor);
+        Objects.requireNonNull(Bukkit.getServer().getPluginCommand(commandName),
+                "Command " + commandName + " is null")
+                .setExecutor(commandExecutor);
     }
 
     int i = 1;
@@ -63,7 +64,9 @@ public class CommandManager implements Listener {
              Meaning the player typed a command in the last second more than the allowed count.
             */
             if (i >= config.getDouble("cooldowns.max-commands-per-second")) {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("messages.command-spam"))));
+                String path = "messages.command-spam";
+                player.sendMessage(ColorManager.translateColors(Objects.requireNonNull(
+                        config.getString(path), "String on path " + path + " wasn't found in config!")));
                 event.setCancelled(true);
             }
             // add i + 1 to increase the amount of times the player has typed a command in the last second

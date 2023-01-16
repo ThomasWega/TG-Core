@@ -2,7 +2,7 @@ package net.trustgames.core.chat;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.trustgames.core.Core;
-import org.bukkit.ChatColor;
+import net.trustgames.core.managers.ColorManager;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -49,11 +49,19 @@ public class MessageLimiter implements Listener {
          */
 
         // cooldown for normal messages
-        for (String rankCooldown : Objects.requireNonNull(config.getConfigurationSection("cooldowns.chat-limit-in-seconds")).getKeys(false)) {
+        String section = "cooldowns.chat-limit-in-seconds";
+        for (String rankCooldown : Objects.requireNonNull(config.getConfigurationSection(section),
+                "Configuration section " + section + " wasn't found in config!")
+                .getKeys(false)) {
+
             ranksChatCooldown.put(rankCooldown, config.getDouble("cooldowns.chat-limit-in-seconds." + rankCooldown));
         }
         // cooldown if the message is same as the last one
-        for (String rankSameCooldown : Objects.requireNonNull(config.getConfigurationSection("cooldowns.same-message-limit-in-seconds")).getKeys(false)) {
+        String sectionSame = "cooldowns.same-message-limit-in-seconds";
+        for (String rankSameCooldown : Objects.requireNonNull(config.getConfigurationSection(sectionSame),
+                "Configuration section " + section + " wasn't found in config!")
+                .getKeys(false)) {
+
             ranksSameChatCooldown.put(rankSameCooldown, config.getDouble("cooldowns.same-message-limit-in-seconds." + rankSameCooldown));
         }
         doChecks(player, event, playerMessage);
@@ -127,7 +135,9 @@ public class MessageLimiter implements Listener {
          it goes back and tries the next rank. This continues until finished (meaning the rank is "default")
          or until a rank that player has permission to is found.
          */
-        for (String x : ranksChatCooldown.entrySet().stream().sorted(Map.Entry.comparingByValue()).map(Map.Entry::getKey).toList()) {
+        for (String x : ranksChatCooldown.entrySet()
+                .stream().sorted(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey).toList()) {
             if (x.equalsIgnoreCase("default")) break;
             if (player.hasPermission("core." + x)) {
                 rank = x;
@@ -207,10 +217,16 @@ public class MessageLimiter implements Listener {
 
         //Check if the message is the same as the last time. It is given earlier by the boolean in the method.
         if (sameMessage){
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(Objects.requireNonNull(config.getString("messages.same-chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank))))));
+            String pathSame = "messages.same-chat-cooldown";
+            player.sendMessage(ColorManager.translateColors(String.format(Objects.requireNonNull(
+                    config.getString(pathSame), "String on path " + pathSame + " wasn't found in config!"),
+                    String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank))))));
         }
         else{
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(Objects.requireNonNull(config.getString("messages.chat-cooldown")), String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank))))));
+            String path = "messages.chat-cooldown";
+            player.sendMessage(ColorManager.translateColors(String.format(Objects.requireNonNull(
+                    config.getString(path), "String on path " + path + " wasn't found in config!"),
+                    String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank))))));
 
         }
         // log the last time player got the wait message (used in the anti-spam method)

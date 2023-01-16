@@ -102,7 +102,8 @@ public class MariaDB {
                 connection = ds.getConnection();
                 return connection;
             } catch (SQLException e) {
-                core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "ERROR: Connecting to the database using HikariCP");
+                core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND +
+                        "ERROR: Connecting to the database using HikariCP");
                 throw new RuntimeException(e);
             }
         }
@@ -117,7 +118,8 @@ public class MariaDB {
     public void initializeTable(String tableName, String stringStatement) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             if (isMySQLDisabled()) {
-                core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "MySQL is turned off. Not initializing table " + tableName);
+                core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND +
+                        "MySQL is turned off. Not initializing table " + tableName);
                 return;
             }
             createDatabaseIfNotExists();
@@ -134,7 +136,8 @@ public class MariaDB {
                         }
                     }
                 } catch (SQLException e) {
-                    core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND + "Unable to create " + tableName + " table in the database!");
+                    core.getLogger().info(DebugColors.BLUE + DebugColors.RED_BACKGROUND +
+                            "Unable to create " + tableName + " table in the database!");
                     throw new RuntimeException(e);
                 }
             }, YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile()).getLong("delay.database-table-creation"));

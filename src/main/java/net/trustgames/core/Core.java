@@ -41,6 +41,7 @@ public final class Core extends JavaPlugin {
     public LuckPermsManager luckPermsManager;
 
 
+    // TODO set prefix and cancel chat event conflicts with MessageLimiter class
 
     @Override
     public void onEnable() {
@@ -65,8 +66,6 @@ public final class Core extends JavaPlugin {
         - chat mention
         - maintenance
         */
-
-        // TODO Fix deprecated methods (use new methods)
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);

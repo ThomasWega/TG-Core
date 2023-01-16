@@ -5,6 +5,7 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.trustgames.core.Core;
 import net.trustgames.core.debug.DebugColors;
+import net.trustgames.core.managers.ColorManager;
 import net.trustgames.core.managers.InventoryManager;
 import net.trustgames.core.managers.ItemManager;
 import org.bukkit.Bukkit;
@@ -71,7 +72,13 @@ public class ActivityCommand implements CommandExecutor, Listener {
         if (sender instanceof Player) {
             if (sender.hasPermission("core.staff")) {
                 if (args.length != 1) {
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', config.getString("messages.command-invalid-argument") + "&8 Use /activity <Player/UUID>"));
+                    sender.sendMessage(ColorManager.translateColors(
+                            config.getString("messages.command-invalid-argument") + "&8 Use /activity <Player/UUID>"));
+                    return true;
+                }
+
+                if (core.getMariaDB().isMySQLDisabled()){
+                    sender.sendMessage(ColorManager.translateColors(config.getString("messages.mariadb-disabled")));
                     return true;
                 }
 
@@ -112,7 +119,9 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 createRecords(offlinePlayer);
 
                 if (records.isEmpty()){
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(Objects.requireNonNull(config.getString("messages.command-no-player-activity")), target)));
+                    String path = "messages.command-no-player-activity";
+                    sender.sendMessage(ColorManager.translateColors(String.format(Objects.requireNonNull(
+                            config.getString(path), "String on path " + path + " wasn't found in config!"), target)));
                     return true;
                 }
 
@@ -121,10 +130,14 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 // open the first inventory (first page) from the list
                 player.openInventory(inventoryList.get(0));
             } else {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(config.getString("messages.no-permission"))));
+                String path = "messages.no-permission";
+                sender.sendMessage(ColorManager.translateColors(Objects.requireNonNull(
+                        config.getString(path), "String on path " + path + " wasn't found in config!")));
             }
         } else {
-            Bukkit.getLogger().info(Objects.requireNonNull(core.getConfig().getString("messages.only-in-game-command")));
+            String path = "messages.only-in-game-command";
+            Bukkit.getLogger().info(Objects.requireNonNull(
+                    config.getString(path), "String on path " + path + " wasn't found in config!"));
         }
         return true;
     }
@@ -353,7 +366,9 @@ public class ActivityCommand implements CommandExecutor, Listener {
                      get the id from the click event of the item's lore.
                      NOTE: read more in createRecords comments
                     */
-                    String id = Objects.requireNonNull(Objects.requireNonNull(item.lore()).get(6).clickEvent()).value();
+                    String id = Objects.requireNonNull(Objects.requireNonNull(
+                            item.lore()).get(6).clickEvent(), "Click event on item is null!")
+                            .value();
 
                     Player player = Bukkit.getPlayer(humanEntity.getUniqueId());
                     if (player == null) return;

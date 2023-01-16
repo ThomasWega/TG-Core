@@ -1,10 +1,9 @@
 package net.trustgames.core.announcer;
 
+import net.kyori.adventure.text.Component;
 import net.trustgames.core.Core;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.trustgames.core.managers.ColorManager;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
 import java.util.Objects;
 
@@ -39,14 +38,21 @@ public class ChatAnnouncer {
             */
             @Override
             public void run() {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', String.join("\n", config.getStringList("announcer.messages.message" + i))));
-                }
-                if (i == Objects.requireNonNull(config.getConfigurationSection("announcer.messages")).getKeys(false).size()) {
+
+                core.getServer().broadcast
+                        (Component.text(ColorManager.translateColors(String.join("\n",
+                                config.getStringList("announcer.messages.message" + i)))));
+
+                String section = "announcer.messages";
+                if (i == Objects.requireNonNull(config.getConfigurationSection(section),
+                        "Configuration section " + section + " wasn't found in config!")
+                        .getKeys(false).size()) {
                     i = 1;
-                } else {
-                    i++;
+                    return;
                 }
+
+                i++;
+
             }
         }, 0L, config.getLong("announcer.time") * 20);
     }

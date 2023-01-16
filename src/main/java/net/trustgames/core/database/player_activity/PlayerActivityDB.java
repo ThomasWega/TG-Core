@@ -42,7 +42,8 @@ public class PlayerActivityDB {
     public PlayerActivity findPlayerActivityByUUID(String uuid) {
 
         try {
-            try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("SELECT * FROM player_activity WHERE uuid = ? ORDER BY id DESC LIMIT 1")) {
+            try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement(
+                    "SELECT * FROM player_activity WHERE uuid = ? ORDER BY id DESC LIMIT 1")) {
                 statement.setString(1, uuid);
                 try (ResultSet results = statement.executeQuery()) {
                     if (results.next()) {
@@ -72,7 +73,8 @@ public class PlayerActivityDB {
 
         if (runAsync) {
             core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
-                try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("INSERT INTO player_activity(uuid, ip, action, time) VALUES (?, ?, ?, ?)")) {
+                try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement(
+                        "INSERT INTO player_activity(uuid, ip, action, time) VALUES (?, ?, ?, ?)")) {
                     statement.setString(1, playerActivity.getUuid());
                     statement.setString(2, playerActivity.getIp());
                     statement.setString(3, playerActivity.getAction());
@@ -84,7 +86,8 @@ public class PlayerActivityDB {
                 }
             });
         } else {
-            try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("INSERT INTO player_activity(uuid, ip, action, time) VALUES (?, ?, ?, ?)")) {
+            try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement(
+                    "INSERT INTO player_activity(uuid, ip, action, time) VALUES (?, ?, ?, ?)")) {
                 statement.setString(1, playerActivity.getUuid());
                 statement.setString(2, playerActivity.getIp());
                 statement.setString(3, playerActivity.getAction());

@@ -3,6 +3,7 @@ package net.trustgames.core.commands.activity_command;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.trustgames.core.Core;
+import net.trustgames.core.managers.ColorManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -37,7 +38,15 @@ public class ActivityIdCommand implements CommandExecutor {
 
         if (sender.hasPermission("core.staff")) {
             if (args.length != 1) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', config.getString("messages.command-invalid-argument") + "&8 Use /activity-id <id>"));
+                sender.sendMessage(ColorManager.translateColors(
+                        config.getString("messages.command-invalid-argument") + "&8 Use /activity-id <id>"));
+                return true;
+            }
+
+            if (core.getMariaDB().isMySQLDisabled()){
+                String path = "messages.mariadb-disabled";
+                sender.sendMessage(ColorManager.translateColors(Objects.requireNonNull(
+                        config.getString(path), "String on path " + path + " wasn't found in config!")));
                 return true;
             }
 
@@ -100,7 +109,9 @@ public class ActivityIdCommand implements CommandExecutor {
                 }
                 return;
             }
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(Objects.requireNonNull(config.getString("messages.command-no-id-activity")), id)));
+            String path = "messages.command-no-id-activity";
+            sender.sendMessage(ColorManager.translateColors(String.format(Objects.requireNonNull(
+                    config.getString(path), "String on path " + path + " wasn't found in config!"), id)));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

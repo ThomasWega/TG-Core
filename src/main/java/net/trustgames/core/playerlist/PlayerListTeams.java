@@ -5,9 +5,9 @@ import net.luckperms.api.model.group.Group;
 import net.luckperms.api.node.Node;
 import net.trustgames.core.Core;
 import net.trustgames.core.debug.DebugColors;
+import net.trustgames.core.managers.ColorManager;
 import net.trustgames.core.managers.LuckPermsManager;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 
@@ -48,8 +48,13 @@ public class PlayerListTeams {
                 groupWeight.put(y.getName(), y.getWeight().getAsInt());
             }
             else{
-                Bukkit.getLogger().info(DebugColors.PURPLE + DebugColors.WHITE_BACKGROUND + "LuckPerms group " + y.getName() + " doesn't have any weight! Settings the weight to 1...");
-                Objects.requireNonNull(LuckPermsManager.getGroupManager().getGroup(y.getName())).data().add(Node.builder("weight.1").build());
+                Bukkit.getLogger().info(DebugColors.PURPLE + DebugColors.WHITE_BACKGROUND +
+                        "LuckPerms group " + y.getName() + " doesn't have any weight! Settings the weight to 1...");
+
+                Objects.requireNonNull(LuckPermsManager.getGroupManager().getGroup(y.getName()),
+                        "Group " + y.getName() + " wasn't found when setting a missing weight")
+                        .data().add(Node.builder("weight.1").build());
+
                 LuckPermsManager.getGroupManager().saveGroup(y);
                 groupWeight.put(y.getName(), y.getWeight().getAsInt());
             }
@@ -60,9 +65,13 @@ public class PlayerListTeams {
          also register a new team with (i + name). The lower "i", the highest order priority.
          Example: 1prime is lower then 0admin
         */
-        for (String x : groupWeight.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).map(Map.Entry::getKey).toList()){
+        for (String x : groupWeight.entrySet()
+                .stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .map(Map.Entry::getKey).toList()){
             groupOrder.put(x, i);
-            playerListScoreboard.registerNewTeam(i + "" + Objects.requireNonNull(LuckPermsManager.getGroupManager().getGroup(x)).getName());
+            playerListScoreboard.registerNewTeam(i + "" + Objects.requireNonNull(LuckPermsManager.getGroupManager().getGroup(x),
+                    "Group " + x + " wasn't found when setting a missing weight")
+                    .getName());
             i++;
         }
     }
@@ -78,10 +87,15 @@ public class PlayerListTeams {
 
         String team = groupOrder.get(LuckPermsManager.getPlayerPrimaryGroup(player)) + LuckPermsManager.getPlayerPrimaryGroup(player);
 
-        Objects.requireNonNull(playerListScoreboard.getTeam(team)).addPlayer(player);
+        Objects.requireNonNull(playerListScoreboard.getTeam(team),
+                "Scoreboard team " + team + " wasn't found when adding player " + player.getName() + "!")
+                .addPlayer(player);
 
         if (!team.contains("default")) {
-            Objects.requireNonNull(playerListScoreboard.getTeam(team)).prefix(Component.text(ChatColor.translateAlternateColorCodes('&', LuckPermsManager.getUser(player).getCachedData().getMetaData().getPrefix() + " ")));
+            Objects.requireNonNull(playerListScoreboard.getTeam(team),
+                    "Scoreboard team " + team + " wasn't found when setting prefix!")
+                    .prefix(Component.text(ColorManager.translateColors(
+                            LuckPermsManager.getUser(player).getCachedData().getMetaData().getPrefix() + " ")));
         }
 
         player.setScoreboard(playerListScoreboard);
@@ -91,6 +105,8 @@ public class PlayerListTeams {
      * @param player Who to remove from the scoreboard team
       */
     public static void removeFromTeam(Player player) {
-        Objects.requireNonNull(player.getScoreboard().getPlayerTeam(player)).removePlayer(player);
+        Objects.requireNonNull(player.getScoreboard().getPlayerTeam(player),
+                "Player " + player.getName() + " scoreboard team was null when removing him from it!")
+                .removePlayer(player);
     }
 }

@@ -1,8 +1,8 @@
 package net.trustgames.core.commands.messages_commands;
 
 import net.trustgames.core.Core;
+import net.trustgames.core.managers.ColorManager;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -37,11 +37,14 @@ public class MessagesCommand implements CommandExecutor {
             MessagesConfig messagesConfig = new MessagesConfig(core);
             YamlConfiguration config = YamlConfiguration.loadConfiguration(messagesConfig.getMessagesFile());
 
-            player.sendMessage(ChatColor.translateAlternateColorCodes(('&'), String.join("\n", config.getStringList("messages." + command.getName().toLowerCase()))));
+            player.sendMessage(ColorManager.translateColors(String.join("\n",
+                    config.getStringList("messages." + command.getName().toLowerCase()))));
 
         }
         else{
-            Bukkit.getLogger().info(Objects.requireNonNull(core.getConfig().getString("messages.only-in-game-command")));
+            String path = "messages.only-in-game-command";
+            Bukkit.getLogger().info(Objects.requireNonNull(core.getConfig().getString(path),
+                    "String on path " + path + " wasn't found in config!"));
         }
 
         return true;
