@@ -1,6 +1,7 @@
 package net.trustgames.core.managers;
 
 import org.bukkit.ChatColor;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
@@ -15,11 +16,7 @@ public class ColorManager {
      * @param text Text to translate colors on
      * @return Text with translated colors
      */
-    public static String translateColors(@Nullable Object text){
-
-        if (text == null){
-            return ChatColor.RED + "ERROR: Text was null when translating color codes!";
-        }
-        return ChatColor.translateAlternateColorCodes('&', text.toString());
+    public static String translateColors(@NotNull String text){
+        return ChatColor.translateAlternateColorCodes('&', text);
     }
 }

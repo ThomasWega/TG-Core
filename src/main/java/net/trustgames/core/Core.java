@@ -72,8 +72,10 @@ public final class Core extends JavaPlugin {
         luckPermsManager = new LuckPermsManager(this);
         luckPermsManager.registerListeners();
 
-        // create a folder
-        FolderManager.createDataFolder(getDataFolder());
+        // create DataFolder if not exists
+        if(getDataFolder().exists()){
+            getDataFolder().mkdirs();
+        }
         //  FolderManager.createFolder(new File(getDataFolder() + File.separator + "data"));
 
         // create config files
@@ -97,14 +99,8 @@ public final class Core extends JavaPlugin {
         playerListScoreboard = getServer().getScoreboardManager().getNewScoreboard();
         playerListTeams.createTeams();
 
-        // register events
-        EventManager.registerEvent(new ActivityListener(this), this);
-        EventManager.registerEvent(new CommandManager(this), this);
-        EventManager.registerEvent(new MessageLimiter(this), this);
-        EventManager.registerEvent(new CooldownManager(this), this);
-        EventManager.registerEvent(new ChatPrefix(this), this);
-        EventManager.registerEvent(new PlayerListListener(this), this);
-        EventManager.registerEvent(new ActivityCommand(this), this);
+        //register events
+        registerEvents();
 
         // register commands
         CommandManager.registerCommand("discord", new MessagesCommand(this));
@@ -135,6 +131,16 @@ public final class Core extends JavaPlugin {
 
     public MariaDB getMariaDB() {
         return mariaDB;
+    }
+
+    private void registerEvents(){
+        new ActivityListener(this);
+        new CommandManager(this);
+        new MessageLimiter(this);
+        new CooldownManager(this);
+        new ChatPrefix(this);
+        new PlayerListListener(this);
+        new ActivityCommand(this);
     }
 
 
