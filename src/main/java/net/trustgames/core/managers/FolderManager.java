@@ -21,7 +21,7 @@ public class FolderManager {
             if (!folder.exists()) {
                 Bukkit.getLogger().warning("Data folder not found, creating...");
                 if (folder.mkdirs()) {
-                    Bukkit.getLogger().warning( "Done creating data folder");
+                    Bukkit.getLogger().finest( "Done creating data folder");
                 } else {
                     Bukkit.getLogger().severe("Failed creating data folder");
                 }
@@ -43,7 +43,7 @@ public class FolderManager {
         if (!folder.exists()) {
             Bukkit.getLogger().warning("Folder " + folder.getPath() + " not found, creating...");
             if (folder.mkdir()) {
-                Bukkit.getLogger().warning("Done creating folder " + folder.getPath());
+                Bukkit.getLogger().finest("Done creating folder " + folder.getPath());
             } else {
                 Bukkit.getLogger().severe("Failed creating folder " + folder.getPath());
             }
