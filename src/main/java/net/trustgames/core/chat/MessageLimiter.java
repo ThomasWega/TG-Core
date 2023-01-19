@@ -21,7 +21,6 @@ public class MessageLimiter {
 
     public MessageLimiter(Core core) {
         this.core = core;
-        core.getServer().getPluginManager().registerEvents(this,core);
     }
 
     private final HashMap<UUID, Long> cooldownTime = new HashMap<>();

@@ -45,7 +45,6 @@ public class ActivityCommand implements CommandExecutor, Listener {
 
     public ActivityCommand(Core core) {
         this.core = core;
-        core.getServer().getPluginManager().registerEvents(this,core);
     }
 
     /** Stores all ItemStack with the data for each row */

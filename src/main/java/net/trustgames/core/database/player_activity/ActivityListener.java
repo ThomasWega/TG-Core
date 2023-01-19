@@ -21,7 +21,6 @@ public class ActivityListener implements Listener {
 
     public ActivityListener(Core core) {
         this.core = core;
-        core.getServer().getPluginManager().registerEvents(this,core);
     }
 
     @EventHandler

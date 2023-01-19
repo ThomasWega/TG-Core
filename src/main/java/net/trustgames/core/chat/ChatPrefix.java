@@ -21,7 +21,6 @@ public class ChatPrefix {
 
     public ChatPrefix(Core core) {
         this.core = core;
-        core.getServer().getPluginManager().registerEvents(this,core);
     }
 
     public void prefix(AsyncChatEvent event){
