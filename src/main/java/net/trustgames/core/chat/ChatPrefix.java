@@ -9,15 +9,13 @@ import net.trustgames.core.managers.LuckPermsManager;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 
 import java.util.Objects;
 
 /**
  * Handles the addition of prefix and colors in the chat
  */
-public class ChatPrefix implements Listener {
+public class ChatPrefix {
 
     private final Core core;
 
@@ -25,8 +23,7 @@ public class ChatPrefix implements Listener {
         this.core = core;
     }
 
-    @EventHandler
-    public void onPlayerChat(AsyncChatEvent event){
+    public void prefix(AsyncChatEvent event){
         FileConfiguration config = core.getConfig();
 
         Player player = event.getPlayer();
@@ -40,13 +37,13 @@ public class ChatPrefix implements Listener {
         if (player.hasPermission(Objects.requireNonNull(config.getString(path,
                 "String on path " + path + " wasn't found in config!"))))
 
-            message = ColorManager.translateColors(event.originalMessage().toString());
+            message = ColorManager.color(event.originalMessage().toString());
 
         if (prefix == null)
-            core.getServer().broadcast(Component.text(ColorManager.translateColors
+            core.getServer().broadcast(Component.text(ColorManager.color
                     ("&e" + playerDisplayName + ChatColor.RESET + " ") + message));
         else
-            core.getServer().broadcast(Component.text(ColorManager.translateColors
+            core.getServer().broadcast(Component.text(ColorManager.color
                     (prefix + ChatColor.RESET + "&e " + playerDisplayName + ChatColor.RESET + " ") + message));
 
         event.setCancelled(true);

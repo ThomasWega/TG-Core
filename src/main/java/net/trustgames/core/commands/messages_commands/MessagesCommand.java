@@ -25,10 +25,8 @@ public class MessagesCommand implements CommandExecutor {
     }
 
     /*
-    there are multiple command in the config file. It is possible to specify custom messages that are sent
+    There are multiple command in the config file (extendable). It is possible to specify custom messages that are sent
     to players for each of the commands. Then, the message is sent, by getting the command name.
-    It is not possible to add new commands right in the file, as they need to be in plugin.yml too.
-    MAYBE ADD THAT SOON?
      */
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -37,7 +35,7 @@ public class MessagesCommand implements CommandExecutor {
             MessagesConfig messagesConfig = new MessagesConfig(core);
             YamlConfiguration config = YamlConfiguration.loadConfiguration(messagesConfig.getMessagesFile());
 
-            player.sendMessage(ColorManager.translateColors(String.join("\n",
+            player.sendMessage(ColorManager.color(String.join("\n",
                     config.getStringList("messages." + command.getName().toLowerCase()))));
 
         }

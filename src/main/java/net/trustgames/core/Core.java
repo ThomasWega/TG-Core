@@ -4,8 +4,8 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.trustgames.core.announcer.AnnouncerConfig;
 import net.trustgames.core.announcer.ChatAnnouncer;
-import net.trustgames.core.chat.ChatPrefix;
-import net.trustgames.core.chat.MessageLimiter;
+import net.trustgames.core.commands.activity_command.ActivityCommand;
+import net.trustgames.core.commands.activity_command.ActivityIdCommand;
 import net.trustgames.core.commands.messages_commands.MessagesCommand;
 import net.trustgames.core.commands.messages_commands.MessagesConfig;
 import net.trustgames.core.config.DefaultConfig;
@@ -14,14 +14,18 @@ import net.trustgames.core.database.MariaDB;
 import net.trustgames.core.database.player_activity.ActivityListener;
 import net.trustgames.core.database.player_activity.PlayerActivityDB;
 import net.trustgames.core.managers.*;
-import net.trustgames.core.commands.activity_command.ActivityCommand;
-import net.trustgames.core.commands.activity_command.ActivityIdCommand;
 import net.trustgames.core.playerlist.PlayerListListener;
 import net.trustgames.core.playerlist.PlayerListTeams;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * Main class of the Core plugin, which registers all the events and commands.
@@ -35,14 +39,10 @@ public final class Core extends JavaPlugin {
     final ChatAnnouncer chatAnnouncer = new ChatAnnouncer(this);
     final PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
     final ServerShutdownManager serverShutdownManager = new ServerShutdownManager(this);
-    final GameruleManager gameruleManager = new GameruleManager(this);
+    final GameruleManager gameruleManager = new GameruleManager();
     public CooldownManager cooldownManager = new CooldownManager(this);
     Scoreboard playerListScoreboard;
     public LuckPermsManager luckPermsManager;
-
-
-    // TODO set prefix and cancel chat event conflicts with MessageLimiter class
-    // TODO improve config creation and fix unnecessary defaultConfig creation
 
     @Override
     public void onEnable() {
@@ -72,52 +72,25 @@ public final class Core extends JavaPlugin {
         luckPermsManager = new LuckPermsManager(this);
         luckPermsManager.registerListeners();
 
-        // create a folder
-        FolderManager.createDataFolder(getDataFolder());
+        // create a data folder
+        if (getDataFolder().mkdirs()) {
+            getLogger().warning("Created config.yml");
+        }
         //  FolderManager.createFolder(new File(getDataFolder() + File.separator + "data"));
 
-        // create config files
-        ConfigManager.createConfig(new File(getDataFolder(), "announcer.yml"));
-        ConfigManager.createConfig(new File(getDataFolder(), "mariadb.yml"));
-        ConfigManager.createConfig(new File(getDataFolder(), "commands.yml"));
+        createConfigs();
+        createConfigDefaults();
 
-        // create config defaults
-        DefaultConfig.create(getConfig());
-        getConfig().options().copyDefaults(true);
-        saveConfig();
-        MariaConfig mariaConfig = new MariaConfig(this);
-        mariaConfig.createDefaults();
-        AnnouncerConfig announcerConfig = new AnnouncerConfig(this);
-        announcerConfig.createDefaults();
-        MessagesConfig messagesConfig = new MessagesConfig(this);
-        messagesConfig.createDefaults();
+        registerEvents();
+        registerCommands();
 
-        // tablist
-        PlayerListTeams playerListTeams = new PlayerListTeams(this);
-        playerListScoreboard = getServer().getScoreboardManager().getNewScoreboard();
-        playerListTeams.createTeams();
-
-        // register events
-        EventManager.registerEvent(new ActivityListener(this), this);
-        EventManager.registerEvent(new CommandManager(this), this);
-        EventManager.registerEvent(new MessageLimiter(this), this);
-        EventManager.registerEvent(new CooldownManager(this), this);
-        EventManager.registerEvent(new ChatPrefix(this), this);
-        EventManager.registerEvent(new PlayerListListener(this), this);
-        EventManager.registerEvent(new ActivityCommand(this), this);
-
-        // register commands
-        CommandManager.registerCommand("discord", new MessagesCommand(this));
-        CommandManager.registerCommand("website", new MessagesCommand(this));
-        CommandManager.registerCommand("store", new MessagesCommand(this));
-        CommandManager.registerCommand("activity", new ActivityCommand(this));
-        CommandManager.registerCommand("activity-id", new ActivityIdCommand(this));
+        playerList();
 
         // mariadb database
         playerActivityDB.initializePlayerActivityTable();
 
         // gamerules
-        gameruleManager.setGamerules("world");
+        gameruleManager.setGamerules();
 
         // run ChatAnnouncer
         chatAnnouncer.announceMessages();
@@ -133,6 +106,60 @@ public final class Core extends JavaPlugin {
         mariaDB.closeHikari();
     }
 
+
+    private void registerEvents() {
+        PluginManager pluginManager = getServer().getPluginManager();
+
+        pluginManager.registerEvents(new ActivityListener(this), this);
+        pluginManager.registerEvents(new CommandManager(this), this);
+        pluginManager.registerEvents(new CooldownManager(this), this);
+        pluginManager.registerEvents(new ChatManager(this), this);
+        pluginManager.registerEvents(new PlayerListListener(this), this);
+        pluginManager.registerEvents(new ActivityCommand(this), this);
+    }
+
+    private void registerCommands() {
+        MessagesConfig messagesConfig = new MessagesConfig(this);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(messagesConfig.getMessagesFile());
+
+        // List of command to register
+        HashMap<PluginCommand, CommandExecutor> cmdList = new HashMap<>();
+        cmdList.put(getCommand("activity"), new ActivityCommand(this));
+        cmdList.put(getCommand("activity-id"), new ActivityIdCommand(this));
+
+        // Messages Commands
+        String section = "messages";
+        for (String s : Objects.requireNonNull(config.getConfigurationSection(section),
+                "Configuration section " + section + " wasn't found in config!").getKeys(false)){
+            cmdList.put(getCommand(s), new MessagesCommand(this));
+        }
+
+        for (PluginCommand cmd : cmdList.keySet()) {
+            cmd.setExecutor(cmdList.get(cmd));
+        }
+    }
+
+    private void createConfigs() {
+        ConfigManager.createConfig(new File(getDataFolder(), "announcer.yml"));
+        ConfigManager.createConfig(new File(getDataFolder(), "mariadb.yml"));
+        ConfigManager.createConfig(new File(getDataFolder(), "commands.yml"));
+    }
+
+    private void createConfigDefaults() {
+        DefaultConfig.create(getConfig());
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+
+        MariaConfig mariaConfig = new MariaConfig(this);
+        mariaConfig.createDefaults();
+
+        AnnouncerConfig announcerConfig = new AnnouncerConfig(this);
+        announcerConfig.createDefaults();
+
+        MessagesConfig messagesConfig = new MessagesConfig(this);
+        messagesConfig.createDefaults();
+    }
+
     public MariaDB getMariaDB() {
         return mariaDB;
     }
@@ -140,6 +167,16 @@ public final class Core extends JavaPlugin {
 
     public static LuckPerms getLuckPerms() {
         return LuckPermsProvider.get();
+    }
+
+    /**
+     * Create the playlist and create teams for it
+     * with luckperms groups weight support
+     */
+    private void playerList(){
+        PlayerListTeams playerListTeams = new PlayerListTeams(this);
+        playerListScoreboard = getServer().getScoreboardManager().getNewScoreboard();
+        playerListTeams.createTeams();
     }
 
     /**

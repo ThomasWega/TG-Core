@@ -11,6 +11,10 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Handles cooldowns for chat and commands messages.
+ * Can be used by external classes
+ */
 public class CooldownManager implements Listener {
 
     private final Core core;
@@ -88,7 +92,7 @@ public class CooldownManager implements Listener {
         if (isSpam(player)) return;
 
         String path = "messages.command-spam";
-        player.sendMessage(ColorManager.translateColors(Objects.requireNonNull(
+        player.sendMessage(ColorManager.color(Objects.requireNonNull(
                 config.getString(path), "String on path " + path + " wasn't found in config!")));
 
         cooldownMessageTime.put(player.getUniqueId(), System.currentTimeMillis());

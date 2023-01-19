@@ -1,8 +1,6 @@
 package net.trustgames.core.managers;
 
 import net.trustgames.core.Core;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,6 +12,9 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Handles the command cooldowns
+ */
 public class CommandManager implements Listener {
 
     private final Core core;
@@ -23,16 +24,6 @@ public class CommandManager implements Listener {
     }
 
     private final HashMap<UUID, Long> commandCooldown = new HashMap<>();
-
-    /**
-     * @param commandName The name of the command
-     * @param commandExecutor The executor of the command
-     */
-    public static void registerCommand(String commandName, CommandExecutor commandExecutor) {
-        Objects.requireNonNull(Bukkit.getServer().getPluginCommand(commandName),
-                "Command " + commandName + " is null")
-                .setExecutor(commandExecutor);
-    }
 
     int i = 1;
 
@@ -65,7 +56,7 @@ public class CommandManager implements Listener {
             */
             if (i >= config.getDouble("cooldowns.max-commands-per-second")) {
                 String path = "messages.command-spam";
-                player.sendMessage(ColorManager.translateColors(Objects.requireNonNull(
+                player.sendMessage(ColorManager.color(Objects.requireNonNull(
                         config.getString(path), "String on path " + path + " wasn't found in config!")));
                 event.setCancelled(true);
             }

@@ -22,10 +22,9 @@ public class DefaultConfig {
         defaultConfig.addDefault("placeholders.discord", "discord.trustgames.net");
         defaultConfig.addDefault("placeholders.website", "www.trustgames.net");
         defaultConfig.addDefault("placeholders.store", "store.trustgames.net");
-        defaultConfig.addDefault("placeholders.prefix.chat", "&9Chat> ");
 
         // prefixes
-        String prefix_chat = defaultConfig.getString("placeholders.prefix.chat");
+        String prefix_chat = "&3Chat | ";
 
         // messages
         defaultConfig.addDefault("messages.server-restart", "&eServer is restarting...");
@@ -36,7 +35,7 @@ public class DefaultConfig {
         defaultConfig.addDefault("messages.only-in-game-command", "This command can be executed by in-game players only!");
         defaultConfig.addDefault("messages.buy.rank", "&fBuy a rank for better experience.");
         defaultConfig.addDefault("messages.buy.higher-rank", "&fBuy a higher rank for even better experience.");
-        defaultConfig.addDefault("messages.mariadb-disabled", prefix_chat + "&8MariaDB is disabled!");
+        defaultConfig.addDefault("messages.mariadb-disabled", prefix_chat + "&8Database is disabled!");
         defaultConfig.addDefault("messages.command-invalid-argument", prefix_chat + "&8You need to specify a valid argument!");
         defaultConfig.addDefault("messages.command-invalid-player", prefix_chat + "&8The player %s doesn't exist!");
         defaultConfig.addDefault("messages.command-no-player-activity", prefix_chat + "&8No activity data for player %s!");

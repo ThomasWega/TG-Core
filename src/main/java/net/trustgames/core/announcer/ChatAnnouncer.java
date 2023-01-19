@@ -40,7 +40,7 @@ public class ChatAnnouncer {
             public void run() {
 
                 core.getServer().broadcast
-                        (Component.text(ColorManager.translateColors(String.join("\n",
+                        (Component.text(ColorManager.color(String.join("\n",
                                 config.getStringList("announcer.messages.message" + i)))));
 
                 String section = "announcer.messages";

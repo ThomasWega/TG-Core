@@ -5,8 +5,6 @@ import net.trustgames.core.Core;
 import net.trustgames.core.managers.ColorManager;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.*;
@@ -17,7 +15,7 @@ import java.util.*;
  * too many cooldown messages to not spam the player's chat.
  */
 
-public class MessageLimiter implements Listener {
+public class MessageLimiter {
 
     private final Core core;
 
@@ -35,8 +33,7 @@ public class MessageLimiter implements Listener {
     It gets the keys from the config and puts them
     to a hashmap with their corresponding values. Then it runs the checks method
      */
-    @EventHandler
-    public void onPlayerChat(AsyncChatEvent event) {
+    public void limit(AsyncChatEvent event) {
         Player player = event.getPlayer();
         String playerMessage = event.message().toString();
         FileConfiguration config = core.getConfig();
@@ -218,13 +215,13 @@ public class MessageLimiter implements Listener {
         //Check if the message is the same as the last time. It is given earlier by the boolean in the method.
         if (sameMessage){
             String pathSame = "messages.same-chat-cooldown";
-            player.sendMessage(ColorManager.translateColors(String.format(Objects.requireNonNull(
+            player.sendMessage(ColorManager.color(String.format(Objects.requireNonNull(
                     config.getString(pathSame), "String on path " + pathSame + " wasn't found in config!"),
                     String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank))))));
         }
         else{
             String path = "messages.chat-cooldown";
-            player.sendMessage(ColorManager.translateColors(String.format(Objects.requireNonNull(
+            player.sendMessage(ColorManager.color(String.format(Objects.requireNonNull(
                     config.getString(path), "String on path " + path + " wasn't found in config!"),
                     String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank))))));
 
@@ -273,7 +270,7 @@ public class MessageLimiter implements Listener {
      *
      * @param event PlayerQuit
      */
-    @EventHandler
+
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
