@@ -21,6 +21,7 @@ public class CommandManager implements Listener {
 
     public CommandManager(Core core) {
         this.core = core;
+        core.getServer().getPluginManager().registerEvents(this,core);
     }
 
     private final HashMap<UUID, Long> commandCooldown = new HashMap<>();

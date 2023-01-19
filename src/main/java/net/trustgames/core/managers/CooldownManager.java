@@ -21,6 +21,7 @@ public class CooldownManager implements Listener {
 
     public CooldownManager(Core core) {
         this.core = core;
+        core.getServer().getPluginManager().registerEvents(this,core);
     }
 
     private final HashMap<UUID, Long> commandCooldownTime = new HashMap<>();
