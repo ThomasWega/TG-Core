@@ -100,7 +100,7 @@ public class CooldownManager implements Listener {
 
     // on player quit, remove player's entries from the hashmaps
     @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event){
+    private void onPlayerQuit(PlayerQuitEvent event){
         Player player = event.getPlayer();
 
         commandCooldownTime.remove(player.getUniqueId());

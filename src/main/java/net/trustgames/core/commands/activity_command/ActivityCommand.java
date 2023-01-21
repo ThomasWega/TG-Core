@@ -347,7 +347,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
      *              This is sometimes also called when opening and closing the inventory
      */
     @EventHandler
-    public void onPlayerClick(InventoryClickEvent event) {
+    private void onPlayerClick(InventoryClickEvent event) {
         HumanEntity humanEntity = event.getWhoClicked();
         Inventory inventory = event.getClickedInventory();
         String title = PlainTextComponentSerializer.plainText().serialize(event.getView().title());

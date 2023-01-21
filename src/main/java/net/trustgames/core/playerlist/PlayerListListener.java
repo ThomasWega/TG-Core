@@ -25,7 +25,7 @@ public class PlayerListListener implements Listener {
     PlayerListTeams playerListTeams;
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event){
+    private void onPlayerJoin(PlayerJoinEvent event){
         Player player = event.getPlayer();
         FileConfiguration config = core.getConfig();
 
@@ -41,7 +41,7 @@ public class PlayerListListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event){
+    private void onPlayerQuit(PlayerQuitEvent event){
         Player player = event.getPlayer();
 
         playerListTeams = new PlayerListTeams(core);

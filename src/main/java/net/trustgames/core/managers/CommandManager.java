@@ -40,7 +40,7 @@ public class CommandManager implements Listener {
      * @param event Command preprocess event
      */
     @EventHandler
-    public void onPlayerPreCommand(PlayerCommandPreprocessEvent event) {
+    private void onPlayerPreCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         FileConfiguration config = core.getConfig();
 
@@ -73,7 +73,7 @@ public class CommandManager implements Listener {
     }
 
     @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event){
+    private void onPlayerQuit(PlayerQuitEvent event){
         Player player = event.getPlayer();
 
         commandCooldown.remove(player.getUniqueId());

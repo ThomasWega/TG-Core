@@ -48,7 +48,6 @@ public final class Core extends JavaPlugin {
     public void onEnable() {
 
         /* ADD
-        - configurable extendable .yml text info commands (/discord, /store, /help)
         - chat system - add level
         - economy system
         - admin system (vanish, menus, spectate ...)
@@ -68,10 +67,8 @@ public final class Core extends JavaPlugin {
         - maintenance
         */
 
-        // TODO make listener (events) classes private
-        // TODO change lists to array where possible
-        // TODO set priority to events
         // TODO make HEX color ready
+        // TODO register commands without plugin.yml
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
