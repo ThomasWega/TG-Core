@@ -2,6 +2,7 @@ package net.trustgames.core.chat;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.trustgames.core.Core;
 import net.trustgames.core.managers.ColorManager;
@@ -38,7 +39,7 @@ public class ChatDecoration {
         FileConfiguration config = core.getConfig();
 
         Player player = event.getPlayer();
-        String playerDisplayName = PlainTextComponentSerializer.plainText().serialize(event.getPlayer().displayName());
+        String playerDisplayName = PlainTextComponentSerializer.plainText().serialize(player.displayName());
 
         String message = setColors(player, event.message());
         String path = "chat.default-chat-color";
@@ -49,8 +50,12 @@ public class ChatDecoration {
         for (Player p : Bukkit.getOnlinePlayers()) {
             // if the player is not mentioned, send him the normal message without colored name
             if (!setMention(p, message, prefix, playerDisplayName, event, messageColor)) {
-                p.sendMessage(ColorManager.color
-                        (prefix + ChatColor.RESET + "&e" + playerDisplayName + ChatColor.RESET + " ") + messageColor + message);
+                p.sendMessage(Component.text(
+                        ColorManager.color(prefix))
+                        .append(Component.text(ColorManager.color(ChatColor.RESET + "&e" + playerDisplayName))
+                                .clickEvent(ClickEvent.suggestCommand(player.getName())))
+                        .append(Component.text(ColorManager.color(ChatColor.RESET + " ") + messageColor + message)));
+
                 // log the message in console without the colors
                 Bukkit.getLogger().log(Level.INFO, ChatColor.stripColor(prefix + playerDisplayName + " " + message)
                         .replaceAll("&.", ""));
@@ -124,8 +129,11 @@ public class ChatDecoration {
 
             String msg = String.join(" ", newMsg);
 
-            p.sendMessage(ColorManager.color
-                    (prefix + ChatColor.RESET + "&e" + playerDisplayName + ChatColor.RESET + " ") + messageColor + msg);
+            p.sendMessage(Component.text(
+                            ColorManager.color(prefix))
+                    .append(Component.text(ColorManager.color(ChatColor.RESET + "&e" + playerDisplayName))
+                            .clickEvent(ClickEvent.suggestCommand(player.getName())))
+                    .append(Component.text(ColorManager.color(ChatColor.RESET + " ") + messageColor + msg)));
             // log the message in console without the colors
             Bukkit.getLogger().log(Level.INFO, ChatColor.stripColor(prefix + playerDisplayName + " " + msg)
                     .replaceAll("&.", ""));
