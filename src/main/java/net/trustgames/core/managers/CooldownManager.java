@@ -73,7 +73,7 @@ public class CooldownManager implements Listener {
          current time - the last time of wait message is larger than the min value in config
         */
         if (cooldownMessageTime.containsKey(player.getUniqueId())) {
-            return !(config.getDouble("cooldowns.cooldown-warn-messages-limit-in-seconds") <= (System.currentTimeMillis() - cooldownMessageTime.get(player.getUniqueId())) / 1000d);
+            return !(config.getDouble("cooldowns.warn-messages-limit-in-seconds") <= (System.currentTimeMillis() - cooldownMessageTime.get(player.getUniqueId())) / 1000d);
         } else {
             cooldownMessageTime.put(player.getUniqueId(), System.currentTimeMillis());
             return false;
@@ -91,7 +91,7 @@ public class CooldownManager implements Listener {
 
         if (isSpam(player)) return;
 
-        String path = "messages.command-spam";
+        String path = "messages.command.spam";
         player.sendMessage(ColorManager.color(Objects.requireNonNull(
                 config.getString(path), "String on path " + path + " wasn't found in config!")));
 

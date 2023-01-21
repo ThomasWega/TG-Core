@@ -39,7 +39,7 @@ public class ActivityIdCommand implements CommandExecutor {
         if (sender.hasPermission("core.staff")) {
             
             if (core.getMariaDB().isMySQLDisabled()){
-                String path = "messages.mariadb-disabled";
+                String path = "messages.mariadb.disabled";
                 sender.sendMessage(ColorManager.color(Objects.requireNonNull(
                         config.getString(path), "String on path " + path + " wasn't found in config!")));
                 return true;
@@ -47,7 +47,7 @@ public class ActivityIdCommand implements CommandExecutor {
 
             if (args.length != 1) {
                 sender.sendMessage(ColorManager.color(
-                        config.getString("messages.command-invalid-argument") + "&8 Use /activity-id <id>"));
+                        config.getString("messages.command.invalid-argument") + "&8 Use /activity-id <id>"));
                 return true;
             }
 
@@ -110,7 +110,7 @@ public class ActivityIdCommand implements CommandExecutor {
                 }
                 return;
             }
-            String path = "messages.command-no-id-activity";
+            String path = "messages.command.no-id-activity";
             sender.sendMessage(ColorManager.color(String.format(Objects.requireNonNull(
                     config.getString(path), "String on path " + path + " wasn't found in config!"), id)));
         } catch (SQLException e) {

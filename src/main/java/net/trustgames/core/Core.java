@@ -68,6 +68,11 @@ public final class Core extends JavaPlugin {
         - maintenance
         */
 
+        // TODO make listener (events) classes private
+        // TODO change lists to array where possible
+        // TODO set priority to events
+        // TODO make HEX color ready
+
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
         luckPermsManager.registerListeners();

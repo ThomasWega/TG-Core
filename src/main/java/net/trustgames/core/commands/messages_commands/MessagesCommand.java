@@ -40,8 +40,8 @@ public class MessagesCommand implements CommandExecutor {
 
         }
         else{
-            String path = "messages.only-in-game-command";
-            Bukkit.getLogger().severe(Objects.requireNonNull(core.getConfig().getString(path),
+            String path = "messages.command.only-in-game";
+            Bukkit.getLogger().warning(Objects.requireNonNull(core.getConfig().getString(path),
                     "String on path " + path + " wasn't found in config!"));
         }
 

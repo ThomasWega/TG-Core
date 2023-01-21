@@ -51,7 +51,7 @@ public class MessageLimiter {
                 "Configuration section " + section + " wasn't found in config!")
                 .getKeys(false)) {
 
-            ranksChatCooldown.put(rankCooldown, config.getDouble("cooldowns.chat-limit-in-seconds." + rankCooldown));
+            ranksChatCooldown.put(rankCooldown, config.getDouble("cooldowns.chat.limit-in-seconds." + rankCooldown));
         }
         // cooldown if the message is same as the last one
         String sectionSame = "cooldowns.same-message-limit-in-seconds";
@@ -59,7 +59,7 @@ public class MessageLimiter {
                 "Configuration section " + sectionSame + " wasn't found in config!")
                 .getKeys(false)) {
 
-            ranksSameChatCooldown.put(rankSameCooldown, config.getDouble("cooldowns.same-message-limit-in-seconds." + rankSameCooldown));
+            ranksSameChatCooldown.put(rankSameCooldown, config.getDouble("cooldowns.chat.same-limit-in-seconds." + rankSameCooldown));
         }
         doChecks(player, event, playerMessage);
     }
@@ -214,13 +214,13 @@ public class MessageLimiter {
 
         //Check if the message is the same as the last time. It is given earlier by the boolean in the method.
         if (sameMessage){
-            String pathSame = "messages.same-chat-cooldown";
+            String pathSame = "messages.chat.on-same-cooldown";
             player.sendMessage(ColorManager.color(String.format(Objects.requireNonNull(
                     config.getString(pathSame), "String on path " + pathSame + " wasn't found in config!"),
                     String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank))))));
         }
         else{
-            String path = "messages.chat-cooldown";
+            String path = "messages.chat.on-cooldown";
             player.sendMessage(ColorManager.color(String.format(Objects.requireNonNull(
                     config.getString(path), "String on path " + path + " wasn't found in config!"),
                     String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank))))));
@@ -254,7 +254,7 @@ public class MessageLimiter {
          current time - the last time of wait message is larger than the min value in config
         */
         if (lastWaitMessage.containsKey(player.getUniqueId())) {
-            return config.getDouble("cooldowns.cooldown-warn-messages-limit-in-seconds") > (System.currentTimeMillis() - lastWaitMessage.get(player.getUniqueId())) / 1000d;
+            return config.getDouble("cooldowns.warn-messages-limit-in-seconds") > (System.currentTimeMillis() - lastWaitMessage.get(player.getUniqueId())) / 1000d;
         // if the last message doesn't contain the player (meaning he probably didn't receive any wait messages, put him in the map and return false
         } else {
             lastWaitMessage.put(player.getUniqueId(), System.currentTimeMillis());

@@ -72,7 +72,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
             if (sender.hasPermission("core.staff")) {
 
                 if (core.getMariaDB().isMySQLDisabled()){
-                    String path = "messages.mariadb-disabled";
+                    String path = "messages.mariadb.disabled";
                     sender.sendMessage(ColorManager.color(Objects.requireNonNull(
                             config.getString(path), "String on path " + path + " wasn't found in config!")));
                     return true;
@@ -80,7 +80,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
 
                 if (args.length != 1) {
                     sender.sendMessage(ColorManager.color(
-                            config.getString("messages.command-invalid-argument") + "&8 Use /activity <Player/UUID>"));
+                            config.getString("messages.command.invalid-argument") + "&8 Use /activity <Player/UUID>"));
                     return true;
                 }
 
@@ -121,7 +121,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 createRecords(offlinePlayer);
 
                 if (records.isEmpty()){
-                    String path = "messages.command-no-player-activity";
+                    String path = "messages.command.no-player-activity";
                     sender.sendMessage(ColorManager.color(String.format(Objects.requireNonNull(
                             config.getString(path), "String on path " + path + " wasn't found in config!"), target)));
                     return true;
@@ -137,8 +137,8 @@ public class ActivityCommand implements CommandExecutor, Listener {
                         config.getString(path), "String on path " + path + " wasn't found in config!")));
             }
         } else {
-            String path = "messages.only-in-game-command";
-            Bukkit.getLogger().severe(Objects.requireNonNull(
+            String path = "messages.command.only-in-game";
+            Bukkit.getLogger().warning(Objects.requireNonNull(
                     config.getString(path), "String on path " + path + " wasn't found in config!"));
         }
         return true;

@@ -54,8 +54,8 @@ public class CommandManager implements Listener {
              if "i" is more than the config value number.
              Meaning the player typed a command in the last second more than the allowed count.
             */
-            if (i >= config.getDouble("cooldowns.max-commands-per-second")) {
-                String path = "messages.command-spam";
+            if (i >= config.getDouble("cooldowns.command.max-per-second")) {
+                String path = "messages.command.spam";
                 player.sendMessage(ColorManager.color(Objects.requireNonNull(
                         config.getString(path), "String on path " + path + " wasn't found in config!")));
                 event.setCancelled(true);
