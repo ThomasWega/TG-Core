@@ -69,6 +69,7 @@ public final class Core extends JavaPlugin {
 
         // TODO use paperapi MiniMessage for chatAnnouncer
         // TODO register commands without plugin.yml
+        // TODO better design - use hex - for lobby too
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);

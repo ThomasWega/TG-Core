@@ -25,6 +25,7 @@ public class DefaultConfig {
 
         // prefixes
         String prefix_chat = "&3Chat | ";
+        String prefix_db = "&#ed7168Database | ";
 
         // messages
         defaultConfig.addDefault("messages.server.restart", "&eServer is restarting...");
@@ -36,8 +37,8 @@ public class DefaultConfig {
         defaultConfig.addDefault("messages.command.spam", prefix_chat + "&8Please don't spam the command!");
         defaultConfig.addDefault("messages.command.invalid-argument", prefix_chat + "&8You need to specify a valid argument!");
         defaultConfig.addDefault("messages.command.invalid-player", prefix_chat + "&8The player %s doesn't exist!");
-        defaultConfig.addDefault("messages.command.no-player-activity", prefix_chat + "&8No activity data for player %s!");
-        defaultConfig.addDefault("messages.command.no-id-activity", prefix_chat + "&8No activity data for ID %s!");
+        defaultConfig.addDefault("messages.command.no-player-activity", prefix_db + "&8No activity data for player %s!");
+        defaultConfig.addDefault("messages.command.no-id-activity", prefix_db + "&8No activity data for ID %s!");
         defaultConfig.addDefault("messages.chat.on-cooldown", prefix_chat + "&8Wait another %s seconds before using chat again!");
         defaultConfig.addDefault("messages.chat.on-same-cooldown", prefix_chat + "&8Don't write the same message! (wait %s seconds)");
         defaultConfig.addDefault("messages.mention.action-bar", "&7You have been mentioned in chat");
