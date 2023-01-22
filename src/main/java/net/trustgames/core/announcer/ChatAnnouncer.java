@@ -1,6 +1,5 @@
 package net.trustgames.core.announcer;
 
-import net.kyori.adventure.text.Component;
 import net.trustgames.core.Core;
 import net.trustgames.core.managers.ColorManager;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -40,8 +39,8 @@ public class ChatAnnouncer {
             public void run() {
 
                 core.getServer().broadcast
-                        (Component.text(ColorManager.color(String.join("\n",
-                                config.getStringList("announcer.messages.message" + i)))));
+                        (ColorManager.color(String.join("\n",
+                                config.getStringList("announcer.messages.message" + i))));
 
                 String section = "announcer.messages";
                 if (i == Objects.requireNonNull(config.getConfigurationSection(section),

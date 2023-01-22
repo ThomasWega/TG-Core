@@ -1,6 +1,5 @@
 package net.trustgames.core.playerlist;
 
-import net.kyori.adventure.text.Component;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.node.Node;
 import net.trustgames.core.Core;
@@ -92,8 +91,8 @@ public class PlayerListTeams {
         if (!team.contains("default")) {
             Objects.requireNonNull(playerListScoreboard.getTeam(team),
                     "Scoreboard team " + team + " wasn't found when setting prefix!")
-                    .prefix(Component.text(ColorManager.color(
-                            LuckPermsManager.getUser(player).getCachedData().getMetaData().getPrefix() + " ")));
+                    .prefix(ColorManager.color(
+                            LuckPermsManager.getUser(player).getCachedData().getMetaData().getPrefix() + " "));
         }
 
         player.setScoreboard(playerListScoreboard);

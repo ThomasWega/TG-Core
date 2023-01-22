@@ -37,8 +37,8 @@ public class ServerShutdownManager {
 
             for (Player player : Bukkit.getOnlinePlayers()) {
                 String path = "messages.server.restart";
-                player.kick(Component.text(ColorManager.color(Objects.requireNonNull(
-                        config.getString(path), "String on path " + path + " wasn't found in config!"))));
+                player.kick(ColorManager.color(Objects.requireNonNull(
+                        config.getString(path), "String on path " + path + " wasn't found in config!")));
                 activityListener.onServerShutdown(player);
             }
             Bukkit.getLogger().finest("Online players activities successfully saved to the database");

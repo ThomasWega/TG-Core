@@ -46,20 +46,20 @@ public class MessageLimiter {
          */
 
         // cooldown for normal messages
-        String section = "cooldowns.chat-limit-in-seconds";
+        String section = "cooldowns.chat.limit-in-seconds";
         for (String rankCooldown : Objects.requireNonNull(config.getConfigurationSection(section),
                 "Configuration section " + section + " wasn't found in config!")
                 .getKeys(false)) {
 
-            ranksChatCooldown.put(rankCooldown, config.getDouble("cooldowns.chat.limit-in-seconds." + rankCooldown));
+            ranksChatCooldown.put(rankCooldown, config.getDouble(section + "." + rankCooldown));
         }
         // cooldown if the message is same as the last one
-        String sectionSame = "cooldowns.same-message-limit-in-seconds";
+        String sectionSame = "cooldowns.chat.same-limit-in-seconds";
         for (String rankSameCooldown : Objects.requireNonNull(config.getConfigurationSection(sectionSame),
                 "Configuration section " + sectionSame + " wasn't found in config!")
                 .getKeys(false)) {
 
-            ranksSameChatCooldown.put(rankSameCooldown, config.getDouble("cooldowns.chat.same-limit-in-seconds." + rankSameCooldown));
+            ranksSameChatCooldown.put(rankSameCooldown, config.getDouble(sectionSame + "." + rankSameCooldown));
         }
         doChecks(player, event, playerMessage);
     }

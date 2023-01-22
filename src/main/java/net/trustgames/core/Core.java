@@ -69,7 +69,6 @@ public final class Core extends JavaPlugin {
 
         // TODO make HEX color ready
         // TODO register commands without plugin.yml
-        // TODO when clicked on player name, copy it
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
@@ -119,6 +118,7 @@ public final class Core extends JavaPlugin {
         pluginManager.registerEvents(new ChatManager(this), this);
         pluginManager.registerEvents(new PlayerListListener(this), this);
         pluginManager.registerEvents(new ActivityCommand(this), this);
+
     }
 
     private void registerCommands() {

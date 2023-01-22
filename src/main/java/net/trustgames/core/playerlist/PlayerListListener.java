@@ -1,6 +1,5 @@
 package net.trustgames.core.playerlist;
 
-import net.kyori.adventure.text.Component;
 import net.trustgames.core.Core;
 import net.trustgames.core.managers.ColorManager;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -29,10 +28,10 @@ public class PlayerListListener implements Listener {
         Player player = event.getPlayer();
         FileConfiguration config = core.getConfig();
 
-        player.sendPlayerListHeader(Component.text(ColorManager.color(String.join("\n",
-                config.getStringList("tablist.header")))));
-        player.sendPlayerListFooter(Component.text(ColorManager.color(String.join("\n",
-                config.getStringList("tablist.footer")))));
+        player.sendPlayerListHeader(ColorManager.color(String.join("\n",
+                config.getStringList("tablist.header"))));
+        player.sendPlayerListFooter(ColorManager.color(String.join("\n",
+                config.getStringList("tablist.footer"))));
 
         Scoreboard playerListScoreboard = core.getPlayerListScoreboard();
         playerListTeams = new PlayerListTeams(core);
