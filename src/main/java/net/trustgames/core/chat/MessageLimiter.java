@@ -2,7 +2,7 @@ package net.trustgames.core.chat;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.trustgames.core.Core;
-import net.trustgames.core.managers.ColorManager;
+import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -215,13 +215,13 @@ public class MessageLimiter {
         //Check if the message is the same as the last time. It is given earlier by the boolean in the method.
         if (sameMessage){
             String pathSame = "messages.chat.on-same-cooldown";
-            player.sendMessage(ColorManager.color(String.format(Objects.requireNonNull(
+            player.sendMessage(ColorUtils.colorString(String.format(Objects.requireNonNull(
                     config.getString(pathSame), "String on path " + pathSame + " wasn't found in config!"),
                     String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank))))));
         }
         else{
             String path = "messages.chat.on-cooldown";
-            player.sendMessage(ColorManager.color(String.format(Objects.requireNonNull(
+            player.sendMessage(ColorUtils.colorString(String.format(Objects.requireNonNull(
                     config.getString(path), "String on path " + path + " wasn't found in config!"),
                     String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank))))));
 

@@ -62,8 +62,9 @@ public class DefaultConfig {
         defaultConfig.addDefault("tablist.footer", List.of("&astore.trustgames.net"));
 
         // chat
-        defaultConfig.addDefault("chat.default-chat-color", "&f");
+        defaultConfig.addDefault("chat.color", "&f");
+        defaultConfig.addDefault("chat.name-color", "&e");
         defaultConfig.addDefault("chat.allow-colors-permission", "core.knight");
-        defaultConfig.addDefault("chat.mention.color", "&d");
+        defaultConfig.addDefault("chat.mention-color", "&a");
     }
 }

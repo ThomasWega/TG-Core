@@ -2,11 +2,10 @@ package net.trustgames.core.commands.activity_command;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.trustgames.core.Core;
-import net.trustgames.core.managers.ColorManager;
 import net.trustgames.core.managers.InventoryManager;
 import net.trustgames.core.managers.ItemManager;
+import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -73,13 +72,13 @@ public class ActivityCommand implements CommandExecutor, Listener {
 
                 if (core.getMariaDB().isMySQLDisabled()){
                     String path = "messages.mariadb.disabled";
-                    sender.sendMessage(ColorManager.color(Objects.requireNonNull(
+                    sender.sendMessage(ColorUtils.colorString(Objects.requireNonNull(
                             config.getString(path), "String on path " + path + " wasn't found in config!")));
                     return true;
                 }
 
                 if (args.length != 1) {
-                    sender.sendMessage(ColorManager.color(
+                    sender.sendMessage(ColorUtils.colorString(
                             config.getString("messages.command.invalid-argument") + "&8 Use /activity <Player/UUID>"));
                     return true;
                 }
@@ -122,7 +121,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
 
                 if (records.isEmpty()){
                     String path = "messages.command.no-player-activity";
-                    sender.sendMessage(ColorManager.color(String.format(Objects.requireNonNull(
+                    sender.sendMessage(ColorUtils.colorString(String.format(Objects.requireNonNull(
                             config.getString(path), "String on path " + path + " wasn't found in config!"), target)));
                     return true;
                 }
@@ -133,7 +132,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 player.openInventory(inventoryList.get(0));
             } else {
                 String path = "messages.no-permission";
-                sender.sendMessage(ColorManager.color(Objects.requireNonNull(
+                sender.sendMessage(ColorUtils.colorString(Objects.requireNonNull(
                         config.getString(path), "String on path " + path + " wasn't found in config!")));
             }
         } else {
@@ -214,7 +213,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
      * @param recordItem ItemStack from the records list
      */
     private void setMaterial(ItemStack recordItem){
-        String itemName = PlainTextComponentSerializer.plainText().serialize(recordItem.displayName());
+        String itemName = ColorUtils.stripColor(recordItem.displayName());
 
         /*
          the list of possible actions names.
@@ -350,7 +349,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
     private void onPlayerClick(InventoryClickEvent event) {
         HumanEntity humanEntity = event.getWhoClicked();
         Inventory inventory = event.getClickedInventory();
-        String title = PlainTextComponentSerializer.plainText().serialize(event.getView().title());
+        String title = ColorUtils.stripColor(event.getView().title());
         ItemStack item = event.getCurrentItem();
 
         /*
@@ -403,7 +402,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
      */
 
     private void switchPage(ItemStack item, HumanEntity humanEntity){
-        String itemName = PlainTextComponentSerializer.plainText().serialize(item.displayName());
+        String itemName = ColorUtils.stripColor(item.displayName());
 
         if (itemName.contains("Next page")) {
             pageCount++;

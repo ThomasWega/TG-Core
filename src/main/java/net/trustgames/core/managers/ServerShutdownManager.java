@@ -1,8 +1,8 @@
 package net.trustgames.core.managers;
 
-import net.kyori.adventure.text.Component;
 import net.trustgames.core.Core;
 import net.trustgames.core.database.player_activity.ActivityListener;
+import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -37,7 +37,7 @@ public class ServerShutdownManager {
 
             for (Player player : Bukkit.getOnlinePlayers()) {
                 String path = "messages.server.restart";
-                player.kick(ColorManager.color(Objects.requireNonNull(
+                player.kick(ColorUtils.colorString(Objects.requireNonNull(
                         config.getString(path), "String on path " + path + " wasn't found in config!")));
                 activityListener.onServerShutdown(player);
             }

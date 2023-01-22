@@ -1,7 +1,7 @@
 package net.trustgames.core.announcer;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.managers.ColorManager;
+import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.util.Objects;
@@ -39,7 +39,7 @@ public class ChatAnnouncer {
             public void run() {
 
                 core.getServer().broadcast
-                        (ColorManager.color(String.join("\n",
+                        (ColorUtils.colorString(String.join("\n",
                                 config.getStringList("announcer.messages.message" + i))));
 
                 String section = "announcer.messages";

@@ -3,7 +3,7 @@ package net.trustgames.core.playerlist;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.node.Node;
 import net.trustgames.core.Core;
-import net.trustgames.core.managers.ColorManager;
+import net.trustgames.core.utils.ColorUtils;
 import net.trustgames.core.managers.LuckPermsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -91,7 +91,7 @@ public class PlayerListTeams {
         if (!team.contains("default")) {
             Objects.requireNonNull(playerListScoreboard.getTeam(team),
                     "Scoreboard team " + team + " wasn't found when setting prefix!")
-                    .prefix(ColorManager.color(
+                    .prefix(ColorUtils.colorString(
                             LuckPermsManager.getUser(player).getCachedData().getMetaData().getPrefix() + " "));
         }
 

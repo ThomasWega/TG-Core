@@ -1,7 +1,7 @@
 package net.trustgames.core.playerlist;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.managers.ColorManager;
+import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,9 +28,9 @@ public class PlayerListListener implements Listener {
         Player player = event.getPlayer();
         FileConfiguration config = core.getConfig();
 
-        player.sendPlayerListHeader(ColorManager.color(String.join("\n",
+        player.sendPlayerListHeader(ColorUtils.colorString(String.join("\n",
                 config.getStringList("tablist.header"))));
-        player.sendPlayerListFooter(ColorManager.color(String.join("\n",
+        player.sendPlayerListFooter(ColorUtils.colorString(String.join("\n",
                 config.getStringList("tablist.footer"))));
 
         Scoreboard playerListScoreboard = core.getPlayerListScoreboard();

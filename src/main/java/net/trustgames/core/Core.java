@@ -67,7 +67,7 @@ public final class Core extends JavaPlugin {
         - maintenance
         */
 
-        // TODO make HEX color ready
+        // TODO use paperapi MiniMessage for chatAnnouncer
         // TODO register commands without plugin.yml
 
         // luckperms
