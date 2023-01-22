@@ -91,7 +91,7 @@ public class PlayerListTeams {
         if (!team.contains("default")) {
             Objects.requireNonNull(playerListScoreboard.getTeam(team),
                     "Scoreboard team " + team + " wasn't found when setting prefix!")
-                    .prefix(ColorUtils.colorString(
+                    .prefix(ColorUtils.color(
                             LuckPermsManager.getUser(player).getCachedData().getMetaData().getPrefix() + " "));
         }
 

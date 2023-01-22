@@ -28,9 +28,9 @@ public class PlayerListListener implements Listener {
         Player player = event.getPlayer();
         FileConfiguration config = core.getConfig();
 
-        player.sendPlayerListHeader(ColorUtils.colorString(String.join("\n",
+        player.sendPlayerListHeader(ColorUtils.color(String.join("\n",
                 config.getStringList("tablist.header"))));
-        player.sendPlayerListFooter(ColorUtils.colorString(String.join("\n",
+        player.sendPlayerListFooter(ColorUtils.color(String.join("\n",
                 config.getStringList("tablist.footer"))));
 
         Scoreboard playerListScoreboard = core.getPlayerListScoreboard();

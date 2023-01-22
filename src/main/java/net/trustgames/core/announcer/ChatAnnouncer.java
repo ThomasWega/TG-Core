@@ -38,8 +38,8 @@ public class ChatAnnouncer {
             @Override
             public void run() {
 
-                core.getServer().broadcast
-                        (ColorUtils.colorString(String.join("\n",
+                core.getServer().broadcast(
+                        ColorUtils.color(String.join("\n",
                                 config.getStringList("announcer.messages.message" + i))));
 
                 String section = "announcer.messages";

@@ -93,7 +93,7 @@ public class CooldownManager implements Listener {
         if (isSpam(player)) return;
 
         String path = "messages.command.spam";
-        player.sendMessage(ColorUtils.colorString(Objects.requireNonNull(
+        player.sendMessage(ColorUtils.color(Objects.requireNonNull(
                 config.getString(path), "String on path " + path + " wasn't found in config!")));
 
         cooldownMessageTime.put(player.getUniqueId(), System.currentTimeMillis());

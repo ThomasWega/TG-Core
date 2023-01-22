@@ -66,7 +66,7 @@ public class ChatDecoration {
      */
     private Component setColor(Player player, Component message){
         if (allowColor(player)) {
-            message = ColorUtils.colorString(ColorUtils.colorComponent(message));
+            message = ColorUtils.color(message);
         }
         else{
             message = Component.text(ColorUtils.stripColor(message));
@@ -108,7 +108,7 @@ public class ChatDecoration {
         message = setColor(player, message);
 
         // remove the player name from the message
-        String desMsg = ColorUtils.colorComponent(message)
+        String desMsg = ColorUtils.stripColor(message)
                 .replace(player.displayName().toString(), "");
         List<String> split = Arrays.stream(desMsg.split(" ")).toList();
 
@@ -129,9 +129,9 @@ public class ChatDecoration {
             // if the word equals player's name, color the name
             for (String s : split) {
                 if (s.equalsIgnoreCase(p.getName())) {
-                    newMsg.add(ColorUtils.colorString(nameColor + s + messageColor));
+                    newMsg.add(ColorUtils.color(nameColor + s + messageColor));
                 }else{
-                    newMsg.add(ColorUtils.colorString(messageColor).append(ColorUtils.colorString(s)));
+                    newMsg.add(ColorUtils.color(messageColor).append(ColorUtils.color(s)));
                 }
             }
 
@@ -143,7 +143,7 @@ public class ChatDecoration {
             logMessage(prefix, player.getName(), msg);
 
             String path2 = "messages.mention.action-bar";
-            p.sendActionBar(ColorUtils.colorString(Objects.requireNonNull(config.getString(path2),
+            p.sendActionBar(ColorUtils.color(Objects.requireNonNull(config.getString(path2),
                     "String on path " + path2 + " wasn't found in config!")));
             p.playSound(player, Sound.BLOCK_NOTE_BLOCK_FLUTE, 0.75f, 2);
 
@@ -180,7 +180,7 @@ public class ChatDecoration {
 
         String path = "chat.name-color";
         String color = config.getString(path);
-        player.displayName(ColorUtils.colorString(Objects.requireNonNull(color,
+        player.displayName(ColorUtils.color(Objects.requireNonNull(color,
                 "String on path " + path + " wasn't found in config!"))
                 .append(Component.text(player.getName())));
     }
@@ -196,11 +196,11 @@ public class ChatDecoration {
      * @return Complete Component message
      */
     private Component getMessage(Player player, String prefix, String messageColor, Component message){
-        return Component.textOfChildren(ColorUtils.colorString(prefix))
+        return Component.textOfChildren(ColorUtils.color(prefix))
                 .append(Component.textOfChildren(
                         player.displayName()
                                 .clickEvent(ClickEvent.suggestCommand(player.getName()))))
-                .append(ColorUtils.colorString(messageColor + " ")
+                .append(ColorUtils.color(messageColor + " ")
                         .append(message));
     }
 
@@ -213,6 +213,6 @@ public class ChatDecoration {
      */
     private void logMessage(String prefix, String playerName, Component message){
         Bukkit.getLogger().log(Level.INFO, ColorUtils.stripColor(
-                ColorUtils.colorString(prefix + playerName + " ").append(message)));
+                ColorUtils.color(prefix + playerName + " ").append(message)));
     }
 }

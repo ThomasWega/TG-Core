@@ -35,7 +35,7 @@ public class MessagesCommand implements CommandExecutor {
             MessagesConfig messagesConfig = new MessagesConfig(core);
             YamlConfiguration config = YamlConfiguration.loadConfiguration(messagesConfig.getMessagesFile());
 
-            player.sendMessage(ColorUtils.colorString(String.join("\n",
+            player.sendMessage(ColorUtils.color(String.join("\n",
                     config.getStringList("messages." + command.getName().toLowerCase()))));
 
         }

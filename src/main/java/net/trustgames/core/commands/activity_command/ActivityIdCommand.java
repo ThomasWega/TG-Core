@@ -40,13 +40,13 @@ public class ActivityIdCommand implements CommandExecutor {
             
             if (core.getMariaDB().isMySQLDisabled()){
                 String path = "messages.mariadb.disabled";
-                sender.sendMessage(ColorUtils.colorString(Objects.requireNonNull(
+                sender.sendMessage(ColorUtils.color(Objects.requireNonNull(
                         config.getString(path), "String on path " + path + " wasn't found in config!")));
                 return true;
             }
 
             if (args.length != 1) {
-                sender.sendMessage(ColorUtils.colorString(
+                sender.sendMessage(ColorUtils.color(
                         config.getString("messages.command.invalid-argument") + "&8 Use /activity-id <id>"));
                 return true;
             }
@@ -111,7 +111,7 @@ public class ActivityIdCommand implements CommandExecutor {
                 return;
             }
             String path = "messages.command.no-id-activity";
-            sender.sendMessage(ColorUtils.colorString(String.format(Objects.requireNonNull(
+            sender.sendMessage(ColorUtils.color(String.format(Objects.requireNonNull(
                     config.getString(path), "String on path " + path + " wasn't found in config!"), id)));
         } catch (SQLException e) {
             throw new RuntimeException(e);
