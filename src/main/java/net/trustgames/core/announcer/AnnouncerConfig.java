@@ -5,8 +5,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Sets the config defaults for Announcer (announcer.yml)
@@ -28,20 +26,10 @@ public class AnnouncerConfig {
 
         config.addDefault("announcer.time", 120);
 
-        List<String> message1 = new ArrayList<>();
-        message1.add("&r");
-        message1.add("&c1");
-        message1.add("&c11");
-        message1.add("&8111");
-        message1.add("&r");
-        config.addDefault("announcer.messages.message1", message1);
+        String message1 = "<newline><yellow>1111</yellow><newline><hover:show_text:'<green>CLICK TO OPEN</green>'><gold><bold><click:open_url:'http://www.trustgames.net'>OPEN URL</gold><bold></hover> non CLICK<newline><yellow>1111</yellow><newline>";
+        String message2 = "<newline><yellow>2222</yellow><newline><hover:show_text:'<green>CLICK TO OPEN</green>'><gold><bold><click:open_url:'http://store.trustgames.net'>OPEN URL</gold><bold></hover> non CLICK<newline><yellow>2222</yellow><newline>";
 
-        List<String> message2 = new ArrayList<>();
-        message2.add("&r");
-        message2.add("&c2");
-        message2.add("&c22");
-        message2.add("&8222");
-        message2.add("&r");
+        config.addDefault("announcer.messages.message1", message1);
         config.addDefault("announcer.messages.message2", message2);
         try {
             config.options().copyDefaults(true);

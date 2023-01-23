@@ -1,7 +1,7 @@
 package net.trustgames.core.announcer;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.trustgames.core.Core;
-import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.util.Objects;
@@ -38,9 +38,10 @@ public class ChatAnnouncer {
             @Override
             public void run() {
 
-                core.getServer().broadcast(
-                        ColorUtils.color(String.join("\n",
-                                config.getStringList("announcer.messages.message" + i))));
+                String path = "";
+                core.getServer().broadcast(MiniMessage.miniMessage().deserialize(Objects.requireNonNull(
+                        config.getString("announcer.messages.message" + i),
+                        "String on path " + path + " wasn't found in config!")));
 
                 String section = "announcer.messages";
                 if (i == Objects.requireNonNull(config.getConfigurationSection(section),
