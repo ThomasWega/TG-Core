@@ -50,6 +50,7 @@ public class MariaDB {
      (is run async)
     */
     private void createDatabaseIfNotExists() {
+
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
 
             YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());

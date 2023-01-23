@@ -2,7 +2,9 @@ package net.trustgames.core.announcer;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.trustgames.core.Core;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
 
@@ -27,7 +29,7 @@ public class ChatAnnouncer {
         AnnouncerConfig announcerConfig = new AnnouncerConfig(core);
         YamlConfiguration config = YamlConfiguration.loadConfiguration(announcerConfig.getAnnouncerFile());
 
-        core.getServer().getScheduler().scheduleSyncRepeatingTask(core, new Runnable() {
+        new BukkitRunnable() {
             int i = 1;
 
             /**
@@ -38,22 +40,20 @@ public class ChatAnnouncer {
             @Override
             public void run() {
 
-                String path = "";
+                String path = "announcer.messages.message";
                 core.getServer().broadcast(MiniMessage.miniMessage().deserialize(Objects.requireNonNull(
-                        config.getString("announcer.messages.message" + i),
+                        config.getString(path + i),
                         "String on path " + path + " wasn't found in config!")));
 
-                String section = "announcer.messages";
-                if (i == Objects.requireNonNull(config.getConfigurationSection(section),
+                ConfigurationSection section = config.getConfigurationSection("announcer.messages");
+                if (i == Objects.requireNonNull(section,
                         "Configuration section " + section + " wasn't found in config!")
                         .getKeys(false).size()) {
                     i = 1;
                     return;
                 }
-
                 i++;
-
             }
-        }, 0L, config.getLong("announcer.time") * 20);
+        }.runTaskTimerAsynchronously(core, 300, config.getLong("announcer.time") * 20);
     }
 }

@@ -1,4 +1,4 @@
-package net.trustgames.core.managers;
+package net.trustgames.core.gamerule;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
@@ -7,9 +7,9 @@ import org.bukkit.World;
 /**
  * Handles the gamerules of world
  */
-public class GameruleManager {
+public class CoreGamerules {
 
-    public void setGamerules() {
+    public static void setGamerules() {
 
         for (World world : Bukkit.getServer().getWorlds()) {
 

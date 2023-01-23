@@ -13,11 +13,13 @@ import net.trustgames.core.database.MariaConfig;
 import net.trustgames.core.database.MariaDB;
 import net.trustgames.core.database.player_activity.ActivityListener;
 import net.trustgames.core.database.player_activity.PlayerActivityDB;
+import net.trustgames.core.gamerule.CoreGamerules;
 import net.trustgames.core.managers.*;
 import net.trustgames.core.playerlist.PlayerListListener;
 import net.trustgames.core.playerlist.PlayerListTeams;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -39,7 +41,6 @@ public final class Core extends JavaPlugin {
     final ChatAnnouncer chatAnnouncer = new ChatAnnouncer(this);
     final PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
     final ServerShutdownManager serverShutdownManager = new ServerShutdownManager(this);
-    final GameruleManager gameruleManager = new GameruleManager();
     public CooldownManager cooldownManager = new CooldownManager(this);
     Scoreboard playerListScoreboard;
     public LuckPermsManager luckPermsManager;
@@ -92,7 +93,7 @@ public final class Core extends JavaPlugin {
         playerActivityDB.initializePlayerActivityTable();
 
         // gamerules
-        gameruleManager.setGamerules();
+        CoreGamerules.setGamerules();
 
         // run ChatAnnouncer
         chatAnnouncer.announceMessages();
@@ -131,8 +132,8 @@ public final class Core extends JavaPlugin {
         cmdList.put(getCommand("activity-id"), new ActivityIdCommand(this));
 
         // Messages Commands
-        String section = "messages";
-        for (String s : Objects.requireNonNull(config.getConfigurationSection(section),
+        ConfigurationSection section = config.getConfigurationSection("messages");
+        for (String s : Objects.requireNonNull(section,
                 "Configuration section " + section + " wasn't found in config!").getKeys(false)){
             cmdList.put(getCommand(s), new MessagesCommand(this));
         }
