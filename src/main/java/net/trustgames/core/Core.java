@@ -60,12 +60,13 @@ public final class Core extends JavaPlugin {
         - party and friends system
         - rotating heads
         - npc system
-        - disallow some default command (/?, /version, /plugins, etc.)
-        - change some default messages (unknown command, etc.)
-        - suppress join messages (that should be handled by mini-games core and lobby plugin)
-        - chat mention
         - maintenance
         */
+
+        /* CHANGE on server side
+        - disallow some default command (/?, /version, /plugins, etc.) - make permissions false
+        - change some default messages (unknown command, etc.) - change in server .yml files
+         */
 
         // TODO register commands without plugin.yml
 
