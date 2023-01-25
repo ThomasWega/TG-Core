@@ -1,4 +1,4 @@
-package net.trustgames.core.commands.activity_command;
+package net.trustgames.core.commands.activity_commands;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -199,7 +199,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 records.add(targetHead.clone());
             }
         } catch (SQLException e) {
-            Bukkit.getLogger().severe("ERROR: Trying loop through ResultSet in ActivityCommand class");
+            Bukkit.getLogger().severe("Trying loop through ResultSet in ActivityCommand class");
             throw new RuntimeException(e);
         }
     }
@@ -375,7 +375,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
                     if (player == null) return;
 
                     if (!player.performCommand("activity-id " + id)){
-                        humanEntity.sendMessage(ChatColor.RED + "ERROR: Executing /activity-id " + id + " as a player");
+                        humanEntity.sendMessage(ChatColor.RED + "Executing /activity-id " + id + " as a player");
                     }
                     inventory.close();
                 }

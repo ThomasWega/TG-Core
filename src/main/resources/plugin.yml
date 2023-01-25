@@ -1,5 +1,6 @@
 depend:
   - LuckPerms
+  - ProtocolLib
 softdepend:
   - PlaceholderAPI
 name: Core
@@ -40,4 +41,5 @@ commands:
       - activ-id
       - act-id
       - activityid
+
 

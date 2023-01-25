@@ -103,7 +103,7 @@ public class MariaDB {
                 connection = ds.getConnection();
                 return connection;
             } catch (SQLException e) {
-                core.getLogger().severe("ERROR: Connecting to the database using HikariCP");
+                core.getLogger().severe("Connecting to the database using HikariCP");
                 throw new RuntimeException(e);
             }
         }

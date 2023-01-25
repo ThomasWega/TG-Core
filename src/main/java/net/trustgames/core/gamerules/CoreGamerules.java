@@ -1,4 +1,4 @@
-package net.trustgames.core.gamerule;
+package net.trustgames.core.gamerules;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
@@ -20,7 +20,6 @@ public class CoreGamerules {
                 world.setGameRule(GameRule.DISABLE_RAIDS, true);
                 world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
                 world.setGameRule(GameRule.DO_ENTITY_DROPS, false);
-                world.setGameRule(GameRule.DO_FIRE_TICK, false);
                 world.setGameRule(GameRule.DO_INSOMNIA, false);
                 world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
                 world.setGameRule(GameRule.DO_MOB_LOOT, false);
@@ -35,7 +34,6 @@ public class CoreGamerules {
                 world.setGameRule(GameRule.MAX_ENTITY_CRAMMING, 0);
                 world.setGameRule(GameRule.REDUCED_DEBUG_INFO, false);
                 world.setGameRule(GameRule.SEND_COMMAND_FEEDBACK, true);
-                world.setGameRule(GameRule.SHOW_DEATH_MESSAGES, false);
                 world.setGameRule(GameRule.SPECTATORS_GENERATE_CHUNKS, false);
             }
         }

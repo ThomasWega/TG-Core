@@ -4,8 +4,8 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.trustgames.core.announcer.AnnouncerConfig;
 import net.trustgames.core.announcer.ChatAnnouncer;
-import net.trustgames.core.commands.activity_command.ActivityCommand;
-import net.trustgames.core.commands.activity_command.ActivityIdCommand;
+import net.trustgames.core.commands.activity_commands.ActivityCommand;
+import net.trustgames.core.commands.activity_commands.ActivityIdCommand;
 import net.trustgames.core.commands.messages_commands.MessagesCommand;
 import net.trustgames.core.commands.messages_commands.MessagesConfig;
 import net.trustgames.core.config.DefaultConfig;
@@ -13,7 +13,7 @@ import net.trustgames.core.database.MariaConfig;
 import net.trustgames.core.database.MariaDB;
 import net.trustgames.core.database.player_activity.ActivityListener;
 import net.trustgames.core.database.player_activity.PlayerActivityDB;
-import net.trustgames.core.gamerule.CoreGamerules;
+import net.trustgames.core.gamerules.CoreGamerules;
 import net.trustgames.core.managers.*;
 import net.trustgames.core.playerlist.PlayerListListener;
 import net.trustgames.core.playerlist.PlayerListTeams;
@@ -70,6 +70,7 @@ public final class Core extends JavaPlugin {
          */
 
         // TODO register commands without plugin.yml
+        // TODO mariadb lombok
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
