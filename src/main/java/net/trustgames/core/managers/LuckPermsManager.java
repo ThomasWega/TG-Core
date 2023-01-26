@@ -68,8 +68,30 @@ public class LuckPermsManager {
                 .getPrimaryGroup();
     }
 
+    /**
+     * Get the GroupManager of LuckPerms
+     *
+     * @return LuckPerms GroupManager
+     */
     public static GroupManager getGroupManager() {
         return luckPerms.getGroupManager();
+    }
+
+    /**
+     * Get the player's prefix. If the prefix is null,
+     * it will be set to ""
+     *
+     * @param player Player to get prefix for
+     * @return Player prefix String
+     */
+    public static String getPlayerPrefix(Player player){
+        String prefix = Objects.requireNonNull(luckPerms.getUserManager().getUser(player.getUniqueId()),
+                        "No LuckPerms cached data for " + player.getName())
+                .getCachedData().getMetaData().getPrefix();
+        if (prefix == null){
+            prefix = "";
+        }
+        return prefix;
     }
 
     /**

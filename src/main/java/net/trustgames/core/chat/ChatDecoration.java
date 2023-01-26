@@ -160,10 +160,10 @@ public class ChatDecoration {
      * @return Player's prefix
      */
     private String setPrefix(Player player){
-        String prefix = LuckPermsManager.getUser(player).getCachedData().getMetaData().getPrefix() + " ";
+        String prefix = LuckPermsManager.getPlayerPrefix(player) + " ";
 
         // if player doesn't have any prefix, make sure there is not a space before his name
-        if (LuckPermsManager.getUser(player).getCachedData().getMetaData().getPrefix() == null) {
+        if (LuckPermsManager.getPlayerPrefix(player).equals("")) {
             prefix = "";
         }
         return prefix;
