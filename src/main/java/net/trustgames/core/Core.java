@@ -2,6 +2,7 @@ package net.trustgames.core;
 
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
+import net.minecraft.server.level.ServerPlayer;
 import net.trustgames.core.announcer.AnnouncerConfig;
 import net.trustgames.core.announcer.ChatAnnouncer;
 import net.trustgames.core.commands.activity_commands.ActivityCommand;
@@ -15,6 +16,7 @@ import net.trustgames.core.database.player_activity.ActivityListener;
 import net.trustgames.core.database.player_activity.PlayerActivityDB;
 import net.trustgames.core.gamerules.CoreGamerules;
 import net.trustgames.core.managers.*;
+import net.trustgames.core.npc.Listen;
 import net.trustgames.core.playerlist.PlayerListListener;
 import net.trustgames.core.playerlist.PlayerListTeams;
 import org.bukkit.command.CommandExecutor;
@@ -26,7 +28,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -44,6 +48,11 @@ public final class Core extends JavaPlugin {
     public CooldownManager cooldownManager = new CooldownManager(this);
     Scoreboard playerListScoreboard;
     public LuckPermsManager luckPermsManager;
+
+
+
+    //Used to keep our NPCs to be accessed in other classes
+    private List<ServerPlayer> npcs = new ArrayList<>();
 
     @Override
     public void onEnable() {
@@ -120,6 +129,7 @@ public final class Core extends JavaPlugin {
         pluginManager.registerEvents(new ChatManager(this), this);
         pluginManager.registerEvents(new PlayerListListener(this), this);
         pluginManager.registerEvents(new ActivityCommand(this), this);
+        pluginManager.registerEvents(new Listen(this), this);
 
     }
 
@@ -193,5 +203,9 @@ public final class Core extends JavaPlugin {
      */
     public Scoreboard getPlayerListScoreboard() {
         return playerListScoreboard;
+    }
+
+    public List<ServerPlayer> getNpcs() {
+        return npcs;
     }
 }
