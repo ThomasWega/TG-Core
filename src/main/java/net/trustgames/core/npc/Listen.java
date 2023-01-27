@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class Listen implements Listener {
@@ -33,7 +34,7 @@ public class Listen implements Listener {
 
         Bukkit.getScheduler().runTaskLater(core, () -> {
             npc.sendSetNPCSkinPacket(npc1, player, "Tomousek");
-            npc.lookNPCPacket(npc1, player, 90, 0);
+            npc.lookNPCPacket(npc1, player, 120, 0);
 
             Bukkit.getScheduler().runTaskLater(core, () -> npc.hideFromTab(npc1, player), 20);
 
@@ -46,4 +47,10 @@ public class Listen implements Listener {
 
         npc.removeNPCPacket(npc1, player);
     }
+
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event){
+        Player player = event.getPlayer();
+    }
+
 }
