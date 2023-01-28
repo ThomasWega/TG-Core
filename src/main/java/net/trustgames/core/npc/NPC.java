@@ -20,12 +20,6 @@ import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
-import javax.net.ssl.HttpsURLConnection;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.UUID;
 
 public class NPC {
@@ -36,7 +30,7 @@ public class NPC {
         this.core = core;
     }
 
-    public ServerPlayer create(Location location, String name){
+    public ServerPlayer create(Location location, String name) {
         MinecraftServer nmsServer = ((CraftServer) Bukkit.getServer()).getServer();
         ServerLevel nmsWorld = ((CraftWorld) Bukkit.getWorld("world")).getHandle(); // Change "world" to the world the NPC should be spawned in.
         GameProfile gameProfile = new GameProfile(UUID.randomUUID(), name); // Change "playername" to the name the NPC should have, max 16 characters.
@@ -46,77 +40,56 @@ public class NPC {
         return npc;
     }
 
-    public void addNPCPacket(ServerPlayer npc, Player player) {
+    public void add(ServerPlayer npc, Player player) {
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
         connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, npc));
         connection.send(new ClientboundAddPlayerPacket(npc)); // Spawns the NPC for the player client.
         connection.send(new ClientboundRotateHeadPacket(npc, (byte) (npc.getBukkitYaw() * 256 / 360))); // Correct head rotation when spawned in player look direction.
     }
 
-    public void removeNPCPacket(ServerPlayer npc, Player player) {
+    public void remove(ServerPlayer npc, Player player) {
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
         connection.send(new ClientboundRemoveEntitiesPacket(npc.getId()));
         connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, npc));
     }
 
-    public void lookNPCPacket(Entity npc, Player player, float yaw, float pitch) {
+    public void look(Entity npc, Player player, float yaw, float pitch, boolean straighten) {
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
 
-        float add = 32;
         float angle = (yaw * 256.0f / 360.0f);
-        if (angle - add > -128 && angle < 0){
-            System.out.println("1");
-            angle = angle - add;
+        if (straighten) {
+            float str8n = 35;
+            if (angle < 0) {
+                if (angle - str8n > -128)
+                    angle = angle - str8n;
+                else
+                    angle = -1;
+            } else if (angle + str8n >= 0) {
+                if (angle + str8n < 128)
+                    angle = angle + str8n;
+                else
+                    angle = 127;
+            }
         }
-        else if (angle + add >= 0){
-            System.out.println("2");
-            angle = angle + add;
-        }
 
-
-        connection.send(new ClientboundRotateHeadPacket(npc, (byte)(yaw * 256 / 360)));
-        connection.send(new ClientboundMoveEntityPacket.Rot(npc.getId(), (byte)angle, (byte)(pitch * 256 / 360), true));
-
-        System.out.println(angle);
+        connection.send(new ClientboundRotateHeadPacket(npc, (byte) (yaw * 256 / 360)));
+        connection.send(new ClientboundMoveEntityPacket.Rot(npc.getId(), (byte) angle, (byte) (pitch * 256 / 360), true));
     }
 
     // TODO NOTE: not sure this works
-    public static void sendMoveEntityPacket(Entity entity, Player player, double x, double y, double z) {
+    public static void move(Entity entity, Player player, double x, double y, double z) {
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
         connection.send(new ClientboundMoveEntityPacket.Pos(
-                entity.getId(), (short)(x * 4096), (short)(y * 4096), (short)(z * 4096), true));
+                entity.getId(), (short) (x * 4096), (short) (y * 4096), (short) (z * 4096), true));
     }
 
-    public void sendSetNPCSkinPacket(ServerPlayer npc, Player player, String username) { // The username is the name for the player that has the skin.
-        removeNPCPacket(npc, player);
+    public void skin(ServerPlayer npc, Player player, String texture, String signature) { // The username is the name for the player that has the skin.
+        remove(npc, player);
 
-        try {
-            HttpsURLConnection connection = (HttpsURLConnection) new URL(String.format("https://api.ashcon.app/mojang/v2/user/%s", username)).openConnection();
-            if (connection.getResponseCode() == HttpsURLConnection.HTTP_OK) {
-                ArrayList<String> lines = new ArrayList<>();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                reader.lines().forEach(lines::add);
 
-                String reply = String.join(" ",lines);
-                int indexOfValue = reply.indexOf("\"value\": \"");
-                int indexOfSignature = reply.indexOf("\"signature\": \"");
-           //     String skin = reply.substring(indexOfValue + 10, reply.indexOf("\"", indexOfValue + 10));
-            //    String signature = reply.substring(indexOfSignature + 14, reply.indexOf("\"", indexOfSignature + 14));
+        npc.getGameProfile().getProperties().put("textures", new Property("textures", texture, signature));
 
-                String skin = "ewogICJ0aW1lc3RhbXAiIDogMTY3NDgyODU2NDg2MCwKICAicHJvZmlsZUlkIiA6ICIwNTVhOTk2NTk2M2E0YjRmOGMwMjRmMTJmNDFkMmNmMiIsCiAgInByb2ZpbGVOYW1lIiA6ICJUaGVWb3hlbGxlIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzI3ZDBjODk2MGY4N2RiZTc2OGQ2YTE0ZDQ2NDc1NDBlM2Y1NzJjZTYwMjEyNTgyYWQ1OGU3NjU4YWY0NGVhYjEiCiAgICB9CiAgfQp9";
-                String signature = "trjc49KCGED81QrSAiNxLhMnwGa+W4vjpujTyG9iTHc8JMi9h5eG5E2BkVv8B76wJlWz261FKEIZA9XYFcJtkfBeZRpswUL79gO7SN41lembKK4ajz5mLbkP7j2eeG0A0VjbfonD7EhGyKJzIGEhLFXLZplgERd3OfDnqR51Y0lQA7HvYgnO9+NjEHyd0POTCsp0XtMGWxFUskcxa/5Vv5yc11EJpbpFrhXgLg0kjh9DfKTM3f+7KZN+NImHeAAuJ/2N66EUsZPidSkhMAorDF1T1hrCZCARR3lxMi3zcpAmekyVLXH9oGLQESPDjGCeqifZJtxnBqubDjTuTmdNU6muXE4QS2qaSdq1X/jvNK1mVnQkqImI/ZJjqOVTzDG8w5DnkSeGOECNSdHJDbuhjisnQvg+V8/HEuPzGqlkXSYDa7bj5tkHjV8GlHp15TIxMagPocrMdJhbqm1xNMmPCwUDtUxtD35UPirSFCV2WXq7zN89pmpb6M4ustcLWf0TLPEc5J9RzUaSqkJI/3SBGZyrurwcfDJAl3hY4rJfdofubQV57HGoxf5sJOo+TIuKdb7P+9XooJl1aaejVKlZB5tq15FiIC9QKtkje5krLWlhrGFKNcr+LWcBp4V7ZvmdzAl/je9IflxK/PraokJYuKbDrRYSZ7XiNUGQja2RFmQ=";
-
-                npc.getGameProfile().getProperties().put("textures", new Property("textures", skin, signature));
-            }
-
-            else {
-                Bukkit.getConsoleSender().sendMessage("Connection could not be opened when fetching player skin (Response code " + connection.getResponseCode() + ", " + connection.getResponseMessage() + ")");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        addNPCPacket(npc, player);
+        add(npc, player);
 
         // Second layer on skin
         SynchedEntityData dataWatcher = npc.getEntityData();
@@ -125,9 +98,9 @@ public class NPC {
         ((CraftPlayer) player).getHandle().connection.send(packet);
     }
 
-    public void hideName(ServerPlayer npc){
+    public void hideName(ServerPlayer npc) {
         Team team = core.getPlayerListScoreboard().getTeam("9999NPC");
-        if (team == null){
+        if (team == null) {
             team = core.getPlayerListScoreboard().registerNewTeam("9999NPC");
         }
 
@@ -135,7 +108,7 @@ public class NPC {
         team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
     }
 
-    public void hideFromTab(ServerPlayer npc, Player player){
+    public void hideTab(ServerPlayer npc, Player player) {
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
         connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, npc));
     }
