@@ -1,4 +1,4 @@
-package net.trustgames.core.npc;
+package net.trustgames.core.managers;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -22,17 +22,24 @@ import org.bukkit.scoreboard.Team;
 
 import java.util.UUID;
 
-public class NPC {
+public class NPCManager {
 
     private final Core core;
 
-    public NPC(Core core) {
+    public NPCManager(Core core) {
         this.core = core;
     }
 
+    /**
+     * Create a new npc using NMS Packets. This method won't spawn it!
+     *
+     * @param location Location of the npc
+     * @param name Name of the npc
+     * @return new create npc
+     */
     public ServerPlayer create(Location location, String name) {
         MinecraftServer nmsServer = ((CraftServer) Bukkit.getServer()).getServer();
-        ServerLevel nmsWorld = ((CraftWorld) Bukkit.getWorld("world")).getHandle(); // Change "world" to the world the NPC should be spawned in.
+        ServerLevel nmsWorld = ((CraftWorld) location.getWorld()).getHandle(); // Change "world" to the world the NPC should be spawned in.
         GameProfile gameProfile = new GameProfile(UUID.randomUUID(), name); // Change "playername" to the name the NPC should have, max 16 characters.
         ServerPlayer npc = new ServerPlayer(nmsServer, nmsWorld, gameProfile, null); // This will be the EntityPlayer (NPC) we send with the sendNPCPacket method.
         npc.setPos(location.getX(), location.getY(), location.getZ());
@@ -40,6 +47,12 @@ public class NPC {
         return npc;
     }
 
+    /**
+     * Add the npc for the given player
+     *
+     * @param npc Npc to add
+     * @param player Player to add the NPC to
+     */
     public void add(ServerPlayer npc, Player player) {
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
         connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, npc));
@@ -47,16 +60,33 @@ public class NPC {
         connection.send(new ClientboundRotateHeadPacket(npc, (byte) (npc.getBukkitYaw() * 256 / 360))); // Correct head rotation when spawned in player look direction.
     }
 
+    /**
+     * Remove the given NPC
+     *
+     * @param npc NPC to remove
+     * @param player Player to remove the NPC from
+     */
     public void remove(ServerPlayer npc, Player player) {
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
         connection.send(new ClientboundRemoveEntitiesPacket(npc.getId()));
         connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, npc));
     }
 
+    /**
+     * Set where the npc should be looking
+     *
+     * @param npc NPC to set the location to
+     * @param player Player to set the NPC to
+     * @param yaw Location yaw
+     * @param pitch Location pitch
+     * @param straighten Try to make the npc body point the same direction as the head
+     */
     public void look(Entity npc, Player player, float yaw, float pitch, boolean straighten) {
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
 
         float angle = (yaw * 256.0f / 360.0f);
+
+        // add 35 to the angle to try to make the npc body stand straight
         if (straighten) {
             float str8n = 35;
             if (angle < 0) {
@@ -83,6 +113,14 @@ public class NPC {
                 entity.getId(), (short) (x * 4096), (short) (y * 4096), (short) (z * 4096), true));
     }
 
+    /**
+     * Apply the skin to the given NPC
+     *
+     * @param npc NPC to apply skin to
+     * @param player Player to set the NPC to
+     * @param texture Texture of the skin
+     * @param signature Signature of the skin
+     */
     public void skin(ServerPlayer npc, Player player, String texture, String signature) { // The username is the name for the player that has the skin.
         remove(npc, player);
 
@@ -98,6 +136,11 @@ public class NPC {
         ((CraftPlayer) player).getHandle().connection.send(packet);
     }
 
+    /**
+     * Hide the name on NPC's head
+     *
+     * @param npc NPC to hide the name of
+     */
     public void hideName(ServerPlayer npc) {
         Team team = core.getPlayerListScoreboard().getTeam("9999NPC");
         if (team == null) {
@@ -108,6 +151,12 @@ public class NPC {
         team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
     }
 
+    /**
+     * Hide the NPC from the TAB
+     *
+     * @param npc NPC to hide
+     * @param player Player to hide NPC from
+     */
     public void hideTab(ServerPlayer npc, Player player) {
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
         connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, npc));

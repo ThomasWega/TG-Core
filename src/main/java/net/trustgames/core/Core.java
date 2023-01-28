@@ -80,6 +80,9 @@ public final class Core extends JavaPlugin {
 
         // TODO register commands without plugin.yml
         // TODO mariadb lombok
+        // TODO NPC Holograms
+        // TODO HOLO system
+        // TODO NPC interact
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
@@ -87,12 +90,12 @@ public final class Core extends JavaPlugin {
 
         // create a data folder
         if (getDataFolder().mkdirs()) {
-            getLogger().warning("Created config.yml");
+            getLogger().warning("Created main plugin folder");
         }
         //  FolderManager.createFolder(new File(getDataFolder() + File.separator + "data"));
 
         createConfigs();
-        createConfigDefaults();
+        createConfigsDefaults();
 
         registerEvents();
         registerCommands();
@@ -160,7 +163,7 @@ public final class Core extends JavaPlugin {
         ConfigManager.createConfig(new File(getDataFolder(), "commands.yml"));
     }
 
-    private void createConfigDefaults() {
+    private void createConfigsDefaults() {
         DefaultConfig.create(getConfig());
         getConfig().options().copyDefaults(true);
         saveConfig();

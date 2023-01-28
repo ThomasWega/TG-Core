@@ -71,6 +71,15 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--     <plugin>
+                     <groupId>org.apache.maven.plugins</groupId>
+                     <artifactId>maven-jar-plugin</artifactId>
+                     <version>2.3.1</version>
+                     <configuration>
+                         <outputDirectory>/Users/weglarz/Desktop/MC/plugins/</outputDirectory>
+                     </configuration>
+                 </plugin>
+                 <-->
             <plugin>
                 <groupId>net.md-5</groupId>
                 <artifactId>specialsource-maven-plugin</artifactId>
@@ -189,12 +198,5 @@
             <version>2.11.2</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>com.comphenix.protocol</groupId>
-            <artifactId>ProtocolLib</artifactId>
-            <version>4.8.0</version>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
-
 </project>
