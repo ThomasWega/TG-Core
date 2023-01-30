@@ -2,6 +2,7 @@ package net.trustgames.core.managers;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -12,6 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.Entity;
 import net.trustgames.core.Core;
+import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_19_R1.CraftServer;
@@ -39,9 +41,9 @@ public class NPCManager {
      */
     public ServerPlayer create(Location location, String name) {
         MinecraftServer nmsServer = ((CraftServer) Bukkit.getServer()).getServer();
-        ServerLevel nmsWorld = ((CraftWorld) location.getWorld()).getHandle(); // Change "world" to the world the NPC should be spawned in.
-        GameProfile gameProfile = new GameProfile(UUID.randomUUID(), name); // Change "playername" to the name the NPC should have, max 16 characters.
-        ServerPlayer npc = new ServerPlayer(nmsServer, nmsWorld, gameProfile, null); // This will be the EntityPlayer (NPC) we send with the sendNPCPacket method.
+        ServerLevel nmsWorld = ((CraftWorld) location.getWorld()).getHandle();
+        GameProfile gameProfile = new GameProfile(UUID.randomUUID(), name);
+        ServerPlayer npc = new ServerPlayer(nmsServer, nmsWorld, gameProfile, null);
         npc.setPos(location.getX(), location.getY(), location.getZ());
 
         return npc;
@@ -121,7 +123,7 @@ public class NPCManager {
      * @param texture Texture of the skin
      * @param signature Signature of the skin
      */
-    public void skin(ServerPlayer npc, Player player, String texture, String signature) { // The username is the name for the player that has the skin.
+    public void skin(ServerPlayer npc, Player player, String texture, String signature) {
         remove(npc, player);
 
 
@@ -148,6 +150,8 @@ public class NPCManager {
         }
 
         team.addEntity(npc.getBukkitEntity());
+        team.prefix(ColorUtils.color("&8[NPC] "));
+        team.color(NamedTextColor.DARK_GRAY);
         team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
     }
 

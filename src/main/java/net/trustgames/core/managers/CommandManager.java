@@ -64,7 +64,7 @@ public class CommandManager implements Listener {
             // add i + 1 to increase the amount of times the player has typed a command in the last second
             i++;
         }
-        // iff the last time player typed a command is more than a second.
+        // if the last time player typed a command is more than a second.
         else{
             // put him in the cooldown with the new time of last command used
             commandCooldown.put(player.getUniqueId(), System.currentTimeMillis());

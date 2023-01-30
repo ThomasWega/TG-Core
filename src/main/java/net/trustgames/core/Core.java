@@ -16,7 +16,6 @@ import net.trustgames.core.database.player_activity.ActivityListener;
 import net.trustgames.core.database.player_activity.PlayerActivityDB;
 import net.trustgames.core.gamerules.CoreGamerules;
 import net.trustgames.core.managers.*;
-import net.trustgames.core.npc.Listen;
 import net.trustgames.core.playerlist.PlayerListListener;
 import net.trustgames.core.playerlist.PlayerListTeams;
 import org.bukkit.command.CommandExecutor;
@@ -65,11 +64,9 @@ public final class Core extends JavaPlugin {
         - level system
         - cosmetics (spawn particles, spawn sounds, balloons)
         - nick and skin changer
-        - holo system
         - image maps
         - party and friends system
         - rotating heads
-        - npc system
         - maintenance
         */
 
@@ -80,8 +77,6 @@ public final class Core extends JavaPlugin {
 
         // TODO register commands without plugin.yml
         // TODO mariadb lombok
-        // TODO NPC Holograms
-        // TODO HOLO system
         // TODO NPC interact
 
         // luckperms
@@ -132,8 +127,6 @@ public final class Core extends JavaPlugin {
         pluginManager.registerEvents(new ChatManager(this), this);
         pluginManager.registerEvents(new PlayerListListener(this), this);
         pluginManager.registerEvents(new ActivityCommand(this), this);
-        pluginManager.registerEvents(new Listen(this), this);
-
     }
 
     private void registerCommands() {
@@ -206,9 +199,5 @@ public final class Core extends JavaPlugin {
      */
     public Scoreboard getPlayerListScoreboard() {
         return playerListScoreboard;
-    }
-
-    public List<ServerPlayer> getNpcs() {
-        return npcs;
     }
 }

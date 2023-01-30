@@ -1,7 +1,6 @@
 load: POSTWORLD
 depend:
   - LuckPerms
-  - ProtocolLib
 softdepend:
   - PlaceholderAPI
 name: Core
