@@ -108,7 +108,7 @@ public class NPCManager {
         connection.send(new ClientboundMoveEntityPacket.Rot(npc.getId(), (byte) angle, (byte) (pitch * 256 / 360), true));
     }
 
-    // TODO NOTE: not sure this works
+    // NOTE: not sure if this works
     public static void move(Entity entity, Player player, double x, double y, double z) {
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
         connection.send(new ClientboundMoveEntityPacket.Pos(

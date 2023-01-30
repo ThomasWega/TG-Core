@@ -17,9 +17,6 @@ import java.util.List;
 
 public class HoloManager {
 
-    // TODO REMOVE
-    List<ArmorStand> armorStands = new ArrayList<>();
-
     /**
      * Spawns the hologram with the text for the player
      * on the given location
@@ -30,7 +27,7 @@ public class HoloManager {
      * @return List of created armorstands
      */
     public List<ArmorStand> spawn(Player player, Location location, List<String> text) {
-        //List<ArmorStand> armorStands = new ArrayList<>(text.size());
+        List<ArmorStand> armorStands = new ArrayList<>(text.size());
         CraftWorld craftWorld = (CraftWorld) location.getWorld();
         for (int i = -1; ++i < text.size(); ) {
             ArmorStand armorStand = new ArmorStand(craftWorld.getHandle(), location.getX(), location.getY(), location.getZ());
