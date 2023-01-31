@@ -77,6 +77,7 @@ public final class Core extends JavaPlugin {
 
         // TODO register commands without plugin.yml
         // TODO mariadb lombok
+        // TODO NPC cache skins
         // TODO NPC interact
 
         // luckperms
