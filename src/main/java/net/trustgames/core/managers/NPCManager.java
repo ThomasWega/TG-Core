@@ -126,7 +126,6 @@ public class NPCManager {
     public void skin(ServerPlayer npc, Player player, String texture, String signature) {
         remove(npc, player);
 
-
         npc.getGameProfile().getProperties().put("textures", new Property("textures", texture, signature));
 
         add(npc, player);

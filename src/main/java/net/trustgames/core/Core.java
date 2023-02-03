@@ -73,11 +73,12 @@ public final class Core extends JavaPlugin {
          */
 
         // TODO register commands without plugin.yml
-        // TODO mariadb lombok - test
-        // TODO NPC cache skins (maybe skulls too?)
+        // TODO ask chatgpt is skulls call mojang-api
+        // TODO test skin cache
+        // TODO test uuid cache
+        // TODO SkinData lombok
         // TODO NPC interact
         // TODO HOLO clickable
-        // TODO UUID cache
         // TODO NPC add equipments (hand, armor)
         // TODO NPC add glow
         // TODO NPC look at player
