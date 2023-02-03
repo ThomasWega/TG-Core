@@ -8,12 +8,14 @@ import net.luckperms.api.model.group.GroupManager;
 import net.luckperms.api.model.user.User;
 import net.trustgames.core.Core;
 import net.trustgames.core.playerlist.PlayerListTeams;
+import net.trustgames.core.utils.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Handles the various LuckPerms checks and events
@@ -63,7 +65,8 @@ public class LuckPermsManager {
      * @return Primary group of the given player
      */
     public static String getPlayerPrimaryGroup(Player player) {
-        return Objects.requireNonNull(luckPerms.getUserManager().getUser(player.getUniqueId()),
+        UUID uuid = PlayerUtils.getUUID(player);
+        return Objects.requireNonNull(luckPerms.getUserManager().getUser(uuid),
                 "Player UUID was null when getting his primary group")
                 .getPrimaryGroup();
     }
@@ -85,7 +88,8 @@ public class LuckPermsManager {
      * @return Player prefix String
      */
     public static String getPlayerPrefix(Player player){
-        String prefix = Objects.requireNonNull(luckPerms.getUserManager().getUser(player.getUniqueId()),
+        UUID uuid = PlayerUtils.getUUID(player);
+        String prefix = Objects.requireNonNull(luckPerms.getUserManager().getUser(uuid),
                         "No LuckPerms cached data for " + player.getName())
                 .getCachedData().getMetaData().getPrefix();
         if (prefix == null){

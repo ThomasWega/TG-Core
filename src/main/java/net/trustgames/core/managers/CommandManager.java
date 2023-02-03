@@ -2,6 +2,7 @@ package net.trustgames.core.managers;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.utils.ColorUtils;
+import net.trustgames.core.utils.PlayerUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -43,22 +44,21 @@ public class CommandManager implements Listener {
     @EventHandler
     private void onPlayerPreCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
+        UUID uuid = PlayerUtils.getUUID(player);
         FileConfiguration config = core.getConfig();
 
         // if player is in the cooldown hashmap
-        if (!commandCooldown.containsKey(player.getUniqueId())) {
-            commandCooldown.put(player.getUniqueId(), System.currentTimeMillis());
+        if (!commandCooldown.containsKey(uuid)) {
+            commandCooldown.put(uuid, System.currentTimeMillis());
         }
         // if the last time of the command is less than a second (1000 milliseconds)
-        else if (System.currentTimeMillis() - commandCooldown.get(player.getUniqueId()) < 1000){
+        else if (System.currentTimeMillis() - commandCooldown.get(uuid) < 1000){
             /*
              if "i" is more than the config value number.
              Meaning the player typed a command in the last second more than the allowed count.
             */
             if (i >= config.getDouble("cooldowns.command.max-per-second")) {
-                String path = "messages.command.spam";
-                player.sendMessage(ColorUtils.color(Objects.requireNonNull(
-                        config.getString(path), "String on path " + path + " wasn't found in config!")));
+                player.sendMessage(ColorUtils.color(Objects.requireNonNull(config.getString("messages.command.spam"))));
                 event.setCancelled(true);
             }
             // add i + 1 to increase the amount of times the player has typed a command in the last second
@@ -67,7 +67,7 @@ public class CommandManager implements Listener {
         // if the last time player typed a command is more than a second.
         else{
             // put him in the cooldown with the new time of last command used
-            commandCooldown.put(player.getUniqueId(), System.currentTimeMillis());
+            commandCooldown.put(uuid, System.currentTimeMillis());
             // reset the integer "i" to default value
             i = 1;
         }
@@ -76,7 +76,8 @@ public class CommandManager implements Listener {
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent event){
         Player player = event.getPlayer();
+        UUID uuid = PlayerUtils.getUUID(player);
 
-        commandCooldown.remove(player.getUniqueId());
+        commandCooldown.remove(uuid);
     }
 }

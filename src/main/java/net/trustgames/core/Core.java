@@ -1,5 +1,7 @@
 package net.trustgames.core;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.trustgames.core.announcer.AnnouncerConfig;
@@ -44,7 +46,9 @@ public final class Core extends JavaPlugin {
     public CooldownManager cooldownManager = new CooldownManager(this);
     Scoreboard playerListScoreboard;
     public LuckPermsManager luckPermsManager;
-    
+
+    private ProtocolManager protocolManager;
+
 
     @Override
     public void onEnable() {
@@ -69,13 +73,21 @@ public final class Core extends JavaPlugin {
          */
 
         // TODO register commands without plugin.yml
-        // TODO mariadb lombok
-        // TODO NPC cache skins
+        // TODO mariadb lombok - test
+        // TODO NPC cache skins (maybe skulls too?)
         // TODO NPC interact
+        // TODO HOLO clickable
+        // TODO UUID cache
+        // TODO NPC add equipments (hand, armor)
+        // TODO NPC add glow
+        // TODO NPC look at player
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
         luckPermsManager.registerListeners();
+
+        // protocollib
+        protocolManager = ProtocolLibrary.getProtocolManager();
 
         // create a data folder
         if (getDataFolder().mkdirs()) {
@@ -194,4 +206,9 @@ public final class Core extends JavaPlugin {
     public Scoreboard getPlayerListScoreboard() {
         return playerListScoreboard;
     }
+
+    public ProtocolManager getProtocolManager(){
+        return protocolManager;
+    }
+
 }

@@ -165,4 +165,19 @@ public class NPCManager {
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
         connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, npc));
     }
+
+  /*  public void interact(){
+        ProtocolManager manager = core.getProtocolManager();
+
+        manager.addPacketListener(new PacketAdapter(core, PacketType.Play.Client.USE_ENTITY) {
+            @Override
+            public void onPacketReceiving(PacketEvent event) {
+                PacketContainer packet = event.getPacket();
+                Bukkit.getServer().getConsoleSender().sendMessage("Used Entity" + packet.getIntegers().read(0));
+                Bukkit.getLogger().severe("USED ENTITY " + packet.getIntegers().read(0));
+            }
+        });
+    }
+
+   */
 }
