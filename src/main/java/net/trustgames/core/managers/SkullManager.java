@@ -28,6 +28,7 @@ public class SkullManager {
         PlayerProfile playerProfile = Bukkit.createProfile(UUID.randomUUID(), null);
         playerProfile.getProperties().add(new ProfileProperty("textures", textureValue, textureSignature));
         skullMeta.setPlayerProfile(playerProfile);
+
         skull.setItemMeta(skullMeta);
 
         return skull;

@@ -73,7 +73,6 @@ public final class Core extends JavaPlugin {
          */
 
         // TODO register commands without plugin.yml
-        // TODO ask chatgpt is skulls call mojang-api
         // TODO test skin cache
         // TODO test uuid cache
         // TODO SkinData lombok
