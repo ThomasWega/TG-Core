@@ -36,18 +36,18 @@ public class NPCManager {
 
     private final Core core;
 
+    private final ProtocolManager manager;
+
     public NPCManager(Core core) {
         this.core = core;
         manager = core.getProtocolManager();
     }
 
-    ProtocolManager manager;
-
     /**
      * Create a new npc using NMS Packets. This method won't spawn it!
      *
      * @param location Location of the npc
-     * @param name Name of the npc
+     * @param name     Name of the npc
      * @return new create npc
      */
     public ServerPlayer create(Location location, String name) {
@@ -63,7 +63,7 @@ public class NPCManager {
     /**
      * Add the npc for the given player
      *
-     * @param npc Npc to add
+     * @param npc    Npc to add
      * @param player Player to add the NPC to
      */
     public void add(ServerPlayer npc, Player player) {
@@ -76,7 +76,7 @@ public class NPCManager {
     /**
      * Remove the given NPC
      *
-     * @param npc NPC to remove
+     * @param npc    NPC to remove
      * @param player Player to remove the NPC from
      */
     public void remove(ServerPlayer npc, Player player) {
@@ -88,14 +88,17 @@ public class NPCManager {
     /**
      * Set where the npc should be looking
      *
-     * @param npc NPC to set the location to
-     * @param player Player to set the NPC to
-     * @param yaw Location yaw
-     * @param pitch Location pitch
+     * @param npc        NPC to set the location to
+     * @param player     Player to set the NPC to
+     * @param yaw        Location yaw
+     * @param pitch      Location pitch
      * @param straighten Try to make the npc body point the same direction as the head
      */
-    public void look(Entity npc, Player player, float yaw, float pitch, boolean straighten) {
+    public void lookAtPosition(Entity npc, Player player, float yaw, float pitch, boolean straighten) {
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
+
+        Bukkit.getLogger().warning(String.valueOf(yaw));
+        Bukkit.getLogger().warning(String.valueOf(pitch));
 
         float angle = (yaw * 256.0f / 360.0f);
 
@@ -115,8 +118,40 @@ public class NPCManager {
             }
         }
 
+        // horizontal head movement
         connection.send(new ClientboundRotateHeadPacket(npc, (byte) (yaw * 256 / 360)));
+        // body movement and vertical head movement
         connection.send(new ClientboundMoveEntityPacket.Rot(npc.getId(), (byte) angle, (byte) (pitch * 256 / 360), true));
+    }
+
+    /**
+     * NPC will look at the players position and follow him
+     *
+     * @param npc NPC to make look at the player
+     * @param player Player NPC will be looking at
+     * @param npcLocation Location of the NPC
+     */
+    public void lookAtPlayer(ServerPlayer npc, Player player, Location npcLocation) {
+
+        Location loc = npcLocation.clone();
+        //Calculate a new direction by subtracting the location of the player vector from the location vector of the npc
+        loc.setDirection(player.getLocation().subtract(loc).toVector());
+
+        // if the player is in larger distance than 10 blocks, the npcs will stop looking at him
+        if (loc.distance(player.getLocation()) > 10){
+            lookAtPosition(npc, player, npcLocation.getYaw(), npcLocation.getPitch(), false);
+            return;
+        }
+
+        float yaw = loc.getYaw();
+        float pitch = loc.getPitch();
+
+        ServerGamePacketListenerImpl ps = ((CraftPlayer) player).getHandle().connection;
+
+        // horizontal head movement
+        ps.send(new ClientboundRotateHeadPacket(npc, (byte) ((yaw % 360) * 256 / 360)));
+        // body movement and vertical head movement
+        ps.send(new ClientboundMoveEntityPacket.Rot(npc.getBukkitEntity().getEntityId(), (byte) ((yaw % 360.) * 256 / 360), (byte) ((pitch % 360.) * 256 / 360), false));
     }
 
     // NOTE: not sure if this works
@@ -129,9 +164,9 @@ public class NPCManager {
     /**
      * Apply the skin to the given NPC
      *
-     * @param npc NPC to apply skin to
-     * @param player Player to set the NPC to
-     * @param texture Texture of the skin
+     * @param npc       NPC to apply skin to
+     * @param player    Player to set the NPC to
+     * @param texture   Texture of the skin
      * @param signature Signature of the skin
      */
     public void skin(ServerPlayer npc, Player player, String texture, String signature) {
@@ -168,7 +203,7 @@ public class NPCManager {
     /**
      * Hide the NPC from the TAB
      *
-     * @param npc NPC to hide
+     * @param npc    NPC to hide
      * @param player Player to hide NPC from
      */
     public void hideTab(ServerPlayer npc, Player player) {
@@ -176,9 +211,14 @@ public class NPCManager {
         connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, npc));
     }
 
-    public void equipment(ServerPlayer npc, Player player, List<Pair<EnumWrappers.ItemSlot, ItemStack>> equipments){
-        ProtocolManager manager = core.getProtocolManager();
-
+    /**
+     * Sets the equipment for the npc from the item list
+     *
+     * @param npc        NPC to set equipments for
+     * @param player     Player who will see the NPC with equipment
+     * @param equipments What items to set as equipment
+     */
+    public void equipment(ServerPlayer npc, Player player, List<Pair<EnumWrappers.ItemSlot, ItemStack>> equipments) {
         PacketContainer packet = manager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
         packet.getIntegers().write(0, npc.getId());
         packet.getSlotStackPairLists().write(0, equipments);

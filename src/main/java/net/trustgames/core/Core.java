@@ -78,8 +78,10 @@ public final class Core extends JavaPlugin {
         // TODO NPC interact
         // TODO HOLO clickable
         // TODO use ProtocolLib everywhere
-        // TODO NPC add glow
         // TODO NPC look at player
+        // TODO NPC add straighten boolean to config
+
+        // TODO NPC add glow
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
