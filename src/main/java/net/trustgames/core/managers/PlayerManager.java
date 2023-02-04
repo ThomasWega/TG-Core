@@ -1,4 +1,4 @@
-package net.trustgames.core.utils;
+package net.trustgames.core.managers;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Handles the player's uuids and caching with expiration
  */
-public class PlayerUtils {
+public class PlayerManager {
 
     /**
      * Cache that holds the players uuid and expires every 6 hours

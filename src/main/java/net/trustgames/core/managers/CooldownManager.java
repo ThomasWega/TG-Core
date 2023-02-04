@@ -2,7 +2,6 @@ package net.trustgames.core.managers;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.utils.ColorUtils;
-import net.trustgames.core.utils.PlayerUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -39,7 +38,7 @@ public class CooldownManager implements Listener {
      * @return if the player is on cooldown
      */
     public boolean commandCooldown(Player player, Double cooldownTime){
-        UUID uuid = PlayerUtils.getUUID(player);
+        UUID uuid = PlayerManager.getUUID(player);
         /*
          if the player is not in the cooldown yet, or if his cooldown expired,
          put him in the hashmap with the new time
@@ -59,7 +58,7 @@ public class CooldownManager implements Listener {
      * @return if player is on cooldown
      */
     private boolean isOnCooldown(Player player, Double cooldownTime){
-        return !(cooldownTime <= (System.currentTimeMillis() - commandCooldownTime.get(PlayerUtils.getUUID(player))) / 1000d);
+        return !(cooldownTime <= (System.currentTimeMillis() - commandCooldownTime.get(PlayerManager.getUUID(player))) / 1000d);
     }
 
     /**
@@ -69,7 +68,7 @@ public class CooldownManager implements Listener {
      * @return if the cooldown message is too spammy
      */
     private boolean isSpam(Player player) {
-        UUID uuid = PlayerUtils.getUUID(player);
+        UUID uuid = PlayerManager.getUUID(player);
         FileConfiguration config = core.getConfig();
 
         /*
@@ -91,7 +90,7 @@ public class CooldownManager implements Listener {
      * @param player Player to send the messages to
      */
     private void sendMessage(Player player){
-        UUID uuid = PlayerUtils.getUUID(player);
+        UUID uuid = PlayerManager.getUUID(player);
         FileConfiguration config = core.getConfig();
 
         if (isSpam(player)) return;
@@ -105,7 +104,7 @@ public class CooldownManager implements Listener {
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent event){
         Player player = event.getPlayer();
-        UUID uuid = PlayerUtils.getUUID(player);
+        UUID uuid = PlayerManager.getUUID(player);
 
         commandCooldownTime.remove(uuid);
         cooldownMessageTime.remove(uuid);

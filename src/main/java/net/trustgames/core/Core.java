@@ -75,10 +75,9 @@ public final class Core extends JavaPlugin {
         // TODO register commands without plugin.yml
         // TODO test skin cache
         // TODO test uuid cache
-        // TODO SkinData lombok
         // TODO NPC interact
         // TODO HOLO clickable
-        // TODO NPC add equipments (hand, armor)
+        // TODO use ProtocolLib everywhere
         // TODO NPC add glow
         // TODO NPC look at player
 

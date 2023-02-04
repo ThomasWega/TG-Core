@@ -1,5 +1,10 @@
 package net.trustgames.core.managers;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.Pair;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -20,8 +25,11 @@ import org.bukkit.craftbukkit.v1_19_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Team;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.UUID;
 
 public class NPCManager {
@@ -30,7 +38,10 @@ public class NPCManager {
 
     public NPCManager(Core core) {
         this.core = core;
+        manager = core.getProtocolManager();
     }
+
+    ProtocolManager manager;
 
     /**
      * Create a new npc using NMS Packets. This method won't spawn it!
@@ -109,10 +120,10 @@ public class NPCManager {
     }
 
     // NOTE: not sure if this works
-    public static void move(Entity entity, Player player, double x, double y, double z) {
+    public static void move(ServerPlayer npc, Player player, double x, double y, double z) {
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
         connection.send(new ClientboundMoveEntityPacket.Pos(
-                entity.getId(), (short) (x * 4096), (short) (y * 4096), (short) (z * 4096), true));
+                npc.getId(), (short) (x * 4096), (short) (y * 4096), (short) (z * 4096), true));
     }
 
     /**
@@ -163,6 +174,20 @@ public class NPCManager {
     public void hideTab(ServerPlayer npc, Player player) {
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
         connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, npc));
+    }
+
+    public void equipment(ServerPlayer npc, Player player, List<Pair<EnumWrappers.ItemSlot, ItemStack>> equipments){
+        ProtocolManager manager = core.getProtocolManager();
+
+        PacketContainer packet = manager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
+        packet.getIntegers().write(0, npc.getId());
+        packet.getSlotStackPairLists().write(0, equipments);
+
+        try {
+            manager.sendServerPacket(player, packet);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
   /*  public void interact(){

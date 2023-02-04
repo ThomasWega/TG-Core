@@ -2,7 +2,6 @@ package net.trustgames.core.managers;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.utils.ColorUtils;
-import net.trustgames.core.utils.PlayerUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -44,7 +43,7 @@ public class CommandManager implements Listener {
     @EventHandler
     private void onPlayerPreCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
-        UUID uuid = PlayerUtils.getUUID(player);
+        UUID uuid = PlayerManager.getUUID(player);
         FileConfiguration config = core.getConfig();
 
         // if player is in the cooldown hashmap
@@ -76,7 +75,7 @@ public class CommandManager implements Listener {
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent event){
         Player player = event.getPlayer();
-        UUID uuid = PlayerUtils.getUUID(player);
+        UUID uuid = PlayerManager.getUUID(player);
 
         commandCooldown.remove(uuid);
     }
