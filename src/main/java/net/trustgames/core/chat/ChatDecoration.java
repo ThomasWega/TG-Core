@@ -4,7 +4,7 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
-import net.trustgames.core.settings.chat.CoreChat;
+import net.trustgames.core.config.chat.ChatConfig;
 import net.trustgames.core.managers.LuckPermsManager;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
@@ -30,7 +30,7 @@ public class ChatDecoration {
     public void decorate(AsyncChatEvent event) {
         Player player = event.getPlayer();
         Component message = setColor(player, event.originalMessage());
-        String messageColor = CoreChat.CHAT_COLOR.getValue();
+        String messageColor = ChatConfig.COLOR.getRaw();
 
         String prefix = setPrefix(player);
 
@@ -71,7 +71,7 @@ public class ChatDecoration {
      * @return True if player has permission to use color codes
      */
     private boolean allowColor(Player player){
-        return player.hasPermission(CoreChat.CHAT_ALLOW_COLORS_PERM.getValue());
+        return player.hasPermission(ChatConfig.ALLOW_COLORS_PERM.getRaw());
     }
 
     /**
@@ -106,7 +106,7 @@ public class ChatDecoration {
         if (mentionedPlayers.contains(p)) {
             List<Component> newMsg = new ArrayList<>();
 
-            String nameColor = CoreChat.CHAT_MENTION_COLOR.getValue();
+            String nameColor = ChatConfig.MENTION_COLOR.getRaw();
 
             // if the word equals player's name, color the name
             for (String s : split) {
@@ -124,7 +124,7 @@ public class ChatDecoration {
 
             logMessage(prefix, player.getName(), msg);
 
-            p.sendActionBar(ColorUtils.color(CoreChat.CHAT_MENTION_ACTIONBAR.getValue()));
+            p.sendActionBar(ChatConfig.MENTION_ACTIONBAR.getText());
             p.playSound(player, Sound.BLOCK_NOTE_BLOCK_FLUTE, 0.75f, 2);
 
             return true;
@@ -156,7 +156,7 @@ public class ChatDecoration {
      * @param player Player to change name color on
      */
     private void setNameColor(Player player){
-        player.displayName(ColorUtils.color(CoreChat.CHAT_NAME_COLOR.getValue())
+        player.displayName(ColorUtils.color(ChatConfig.NAME_COLOR.getText())
                 .append(Component.text(player.getName())));
     }
 

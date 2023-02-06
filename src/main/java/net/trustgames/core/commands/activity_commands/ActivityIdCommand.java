@@ -2,9 +2,9 @@ package net.trustgames.core.commands.activity_commands;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.trustgames.core.Core;
-import net.trustgames.core.settings.command.CoreCommand;
-import net.trustgames.core.utils.ColorUtils;
+import net.trustgames.core.config.command.CommandConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -40,13 +40,13 @@ public class ActivityIdCommand implements CommandExecutor {
         if (sender.hasPermission("core.staff")) {
             
             if (core.getMariaDB().isMySQLDisabled()){
-                sender.sendMessage(ColorUtils.color(CoreCommand.COMMAND_DATABASE_OFF.getValue()));
+                sender.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
                 return true;
             }
 
             if (args.length != 1) {
-                sender.sendMessage(ColorUtils.color(
-                        CoreCommand.COMMAND_INVALID_ARG.getValue() + "&8 Use /activity-id <id>"));
+                sender.sendMessage(CommandConfig.COMMAND_INVALID_ARG.getText().append(
+                        Component.text(" Use /activity-id <ID>", NamedTextColor.DARK_GRAY)));
                 return true;
             }
 
@@ -107,7 +107,7 @@ public class ActivityIdCommand implements CommandExecutor {
                 }
                 return;
             }
-            sender.sendMessage(ColorUtils.color(String.format(CoreCommand.COMMAND_NO_ID_ACT.getValue(), id)));
+            sender.sendMessage(CommandConfig.COMMAND_NO_ID_ACT.addID(id));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

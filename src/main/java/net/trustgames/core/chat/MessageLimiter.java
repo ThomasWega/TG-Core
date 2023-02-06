@@ -1,11 +1,10 @@
 package net.trustgames.core.chat;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
+import net.trustgames.core.config.chat.ChatLimitConfig;
+import net.trustgames.core.config.chat.ChatConfig;
+import net.trustgames.core.config.cooldown.CooldownConfig;
 import net.trustgames.core.managers.LuckPermsManager;
-import net.trustgames.core.settings.chat.CoreChat;
-import net.trustgames.core.settings.chat.CoreChatLimit;
-import net.trustgames.core.settings.cooldown.CoreCooldown;
-import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -39,11 +38,11 @@ public class MessageLimiter {
         which are later used
          */
 
-        for (CoreChatLimit limitEnum : CoreChatLimit.values()){
+        for (ChatLimitConfig limitEnum : ChatLimitConfig.values()){
             ranksChatCooldown.put(limitEnum.name().toLowerCase(), limitEnum.getChatLimitSec());
         }
 
-        for (CoreChatLimit limitEnum : CoreChatLimit.values()){
+        for (ChatLimitConfig limitEnum : ChatLimitConfig.values()){
             ranksSameChatCooldown.put(limitEnum.name().toLowerCase(), limitEnum.getChatLimitSameSec());
         }
 
@@ -105,7 +104,7 @@ public class MessageLimiter {
      */
     private String getPermission(Player player) {
         List<String> possibleRanks = new ArrayList<>();
-        for (CoreChatLimit limitEnum : CoreChatLimit.values()) {
+        for (ChatLimitConfig limitEnum : ChatLimitConfig.values()) {
             possibleRanks.add(limitEnum.name().toLowerCase());
         }
         String rank = LuckPermsManager.getPlayerGroupFromList(player, possibleRanks);
@@ -184,11 +183,10 @@ public class MessageLimiter {
 
         //Check if the message is the same as the last time. It is given earlier by the boolean in the method.
         if (sameMessage) {
-            player.sendMessage(ColorUtils.color(String.format(CoreChat.CHAT_ON_SAME_COOLDOWN.getValue(),
-                    String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank))))));
+            player.sendMessage(ChatConfig.ON_SAME_COOLDOWN.addSeconds(getWaitTime(player, ranksSameChatCooldown.get(rank))));
         } else {
-            player.sendMessage(ColorUtils.color(String.format(CoreChat.CHAT_ON_COOLDOWN.getValue(),
-                    String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank))))));
+            player.sendMessage(ChatConfig.ON_COOLDOWN.addSeconds(getWaitTime(player, ranksChatCooldown.get(rank))));
+
 
         }
         // log the last time player got the wait message (used in the anti-spam method)
@@ -218,7 +216,7 @@ public class MessageLimiter {
          current time - the last time of wait message is larger than the min value configured
         */
         if (lastWaitMessage.containsKey(player.getUniqueId())) {
-            return CoreCooldown.WARN_MESSAGES_LIMIT_SEC.getValue() > (System.currentTimeMillis() - lastWaitMessage.get(player.getUniqueId())) / 1000d;
+            return CooldownConfig.WARN_MESSAGES_LIMIT_SEC.getValue() > (System.currentTimeMillis() - lastWaitMessage.get(player.getUniqueId())) / 1000d;
             // if the last message doesn't contain the player (meaning he probably didn't receive any wait messages, put him in the map and return false
         } else {
             lastWaitMessage.put(player.getUniqueId(), System.currentTimeMillis());

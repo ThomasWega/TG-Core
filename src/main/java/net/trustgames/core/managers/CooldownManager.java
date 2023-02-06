@@ -1,8 +1,7 @@
 package net.trustgames.core.managers;
 
-import net.trustgames.core.settings.command.CoreCommand;
-import net.trustgames.core.settings.cooldown.CoreCooldown;
-import net.trustgames.core.utils.ColorUtils;
+import net.trustgames.core.config.command.CommandConfig;
+import net.trustgames.core.config.cooldown.CooldownConfig;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -68,7 +67,7 @@ public class CooldownManager implements Listener {
          current time - the last time of wait message is larger than the min value in config
         */
         if (cooldownMessageTime.containsKey(uuid)) {
-            return !(CoreCooldown.WARN_MESSAGES_LIMIT_SEC.getValue() <= (System.currentTimeMillis() - cooldownMessageTime.get(uuid)) / 1000d);
+            return !(CooldownConfig.WARN_MESSAGES_LIMIT_SEC.getValue() <= (System.currentTimeMillis() - cooldownMessageTime.get(uuid)) / 1000d);
         } else {
             cooldownMessageTime.put(uuid, System.currentTimeMillis());
             return false;
@@ -86,7 +85,7 @@ public class CooldownManager implements Listener {
 
         if (isSpam(player)) return;
 
-        player.sendMessage(ColorUtils.color(CoreCommand.COMMAND_SPAM.getValue()));
+        player.sendMessage(CommandConfig.COMMAND_SPAM.getText());
 
         cooldownMessageTime.put(uuid, System.currentTimeMillis());
     }

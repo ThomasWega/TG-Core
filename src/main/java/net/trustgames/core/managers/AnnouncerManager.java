@@ -1,8 +1,7 @@
 package net.trustgames.core.managers;
 
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.trustgames.core.Core;
-import net.trustgames.core.settings.announcer.CoreAnnouncer;
+import net.trustgames.core.config.announcer.AnnouncerConfig;
 
 /**
  * Chat messages which are announced to all online players
@@ -22,10 +21,10 @@ public class AnnouncerManager {
      * in the announcer.yml config
      */
     public void announceMessages() {
-        for (CoreAnnouncer msg : CoreAnnouncer.values()) {
+        for (AnnouncerConfig msg : AnnouncerConfig.values()) {
             core.getServer().getScheduler().runTaskLaterAsynchronously(core, () ->
                     core.getServer().broadcast(
-                            MiniMessage.miniMessage().deserialize(msg.getMessage())), CoreAnnouncer.DELAY.getDelay());
+                            msg.getMessage()), AnnouncerConfig.DELAY.getDelay());
         }
     }
 }

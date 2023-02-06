@@ -2,10 +2,11 @@ package net.trustgames.core.commands.activity_commands;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.trustgames.core.Core;
+import net.trustgames.core.config.command.CommandConfig;
 import net.trustgames.core.managers.InventoryManager;
 import net.trustgames.core.managers.ItemManager;
-import net.trustgames.core.settings.command.CoreCommand;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -69,13 +70,13 @@ public class ActivityCommand implements CommandExecutor, Listener {
             if (sender.hasPermission("core.staff")) {
 
                 if (core.getMariaDB().isMySQLDisabled()){
-                    sender.sendMessage(ColorUtils.color(CoreCommand.COMMAND_DATABASE_OFF.getValue()));
+                    sender.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
                     return true;
                 }
 
                 if (args.length != 1) {
-                    sender.sendMessage(ColorUtils.color(
-                            CoreCommand.COMMAND_INVALID_ARG.getValue() + "&8 Use /activity <Player/UUID>"));
+                    sender.sendMessage(CommandConfig.COMMAND_INVALID_ARG.getText().append(
+                            Component.text(" Use /activity <Player/UUID>", NamedTextColor.DARK_GRAY)));
                     return true;
                 }
 
@@ -116,8 +117,8 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 createRecords(offlinePlayer);
 
                 if (records.isEmpty()){
-                    sender.sendMessage(ColorUtils.color(String.format(
-                            CoreCommand.COMMAND_NO_PLAYER_ACT.getValue(), target)));
+                    sender.sendMessage(
+                            CommandConfig.COMMAND_NO_PLAYER_ACT.formatMessage(offlinePlayer.getPlayer()));
                     return true;
                 }
 
@@ -126,10 +127,10 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 // open the first inventory (first page) from the list
                 player.openInventory(inventoryList.get(0));
             } else {
-                sender.sendMessage(ColorUtils.color(CoreCommand.COMMAND_NO_PERM.getValue()));
+                sender.sendMessage(CommandConfig.COMMAND_NO_PERM.getText());
             }
         } else {
-            Bukkit.getLogger().warning(CoreCommand.COMMAND_ONLY_PLAYER.getValue());
+            Bukkit.getLogger().warning(CommandConfig.COMMAND_ONLY_PLAYER.getRaw());
         }
         return true;
     }

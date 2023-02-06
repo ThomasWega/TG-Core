@@ -1,9 +1,8 @@
 package net.trustgames.core.managers;
 
 import net.trustgames.core.Core;
+import net.trustgames.core.config.server.ServerConfig;
 import net.trustgames.core.database.player_activity.ActivityListener;
-import net.trustgames.core.settings.server.CoreServer;
-import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -32,7 +31,7 @@ public class ShutdownManager {
             Bukkit.getLogger().info("Trying to log players activities...");
 
             for (Player player : Bukkit.getOnlinePlayers()) {
-                player.kick(ColorUtils.color(CoreServer.RESTART));
+                player.kick(ServerConfig.RESTART.getText());
                 activityListener.onServerShutdown(player);
             }
             Bukkit.getLogger().finest("Online players activities successfully saved to the database");

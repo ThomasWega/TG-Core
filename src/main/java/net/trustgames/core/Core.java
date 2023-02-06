@@ -4,11 +4,9 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
-import net.trustgames.core.managers.AnnouncerManager;
+import net.trustgames.core.commands.MessagesCommand;
 import net.trustgames.core.commands.activity_commands.ActivityCommand;
 import net.trustgames.core.commands.activity_commands.ActivityIdCommand;
-import net.trustgames.core.commands.messages_commands.MessagesCommand;
-import net.trustgames.core.commands.messages_commands.MessagesConfig;
 import net.trustgames.core.database.MariaConfig;
 import net.trustgames.core.database.MariaDB;
 import net.trustgames.core.database.player_activity.ActivityListener;
@@ -17,17 +15,15 @@ import net.trustgames.core.gamerules.CoreGamerules;
 import net.trustgames.core.managers.*;
 import net.trustgames.core.playerlist.PlayerListListener;
 import net.trustgames.core.playerlist.PlayerListTeams;
+import net.trustgames.core.config.command.MessagesCommandConfig;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Objects;
 
 /**
  * Main class of the Core plugin, which registers all the events and commands.
@@ -77,7 +73,9 @@ public final class Core extends JavaPlugin {
         // TODO use ProtocolLib everywhere
         // TODO NPC action - command prints the command in chat
         // TODO NPC add glow
-        // TODO MessagesConfig MiniMessage and enums config
+        // TODO chat mention add who mentioned me
+        // TODO Chat decoration use Component instead of String
+        // TODO on every startup, 120 is printed
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
@@ -100,13 +98,10 @@ public final class Core extends JavaPlugin {
 
         playerList();
 
-        // mariadb database
         playerActivityDB.initializePlayerActivityTable();
 
-        // gamerules
         CoreGamerules.setGamerules();
 
-        // run ChatAnnouncer
         announcerManager.announceMessages();
     }
 
@@ -116,7 +111,6 @@ public final class Core extends JavaPlugin {
         // run the server shutdown manager (kick players, write activity, ...)
         shutdownManager.kickPlayers();
 
-        // close the HikariCP connection
         mariaDB.closeHikari();
     }
 
@@ -133,19 +127,15 @@ public final class Core extends JavaPlugin {
     }
 
     private void registerCommands() {
-        MessagesConfig messagesConfig = new MessagesConfig(this);
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(messagesConfig.getMessagesFile());
 
         // List of command to register
         HashMap<PluginCommand, CommandExecutor> cmdList = new HashMap<>();
         cmdList.put(getCommand("activity"), new ActivityCommand(this));
         cmdList.put(getCommand("activity-id"), new ActivityIdCommand(this));
 
-        // CoreSettings Commands
-        ConfigurationSection section = config.getConfigurationSection("messages");
-        for (String s : Objects.requireNonNull(section,
-                "Configuration section " + section + " wasn't found in config!").getKeys(false)){
-            cmdList.put(getCommand(s), new MessagesCommand(this));
+        // Messages Commands
+        for (MessagesCommandConfig msgCmd : MessagesCommandConfig.values()){
+            cmdList.put(getCommand(msgCmd.name().toLowerCase()), new MessagesCommand());
         }
 
         for (PluginCommand cmd : cmdList.keySet()) {
@@ -163,9 +153,6 @@ public final class Core extends JavaPlugin {
 
         MariaConfig mariaConfig = new MariaConfig(this);
         mariaConfig.createDefaults();
-
-        MessagesConfig messagesConfig = new MessagesConfig(this);
-        messagesConfig.createDefaults();
     }
 
     public MariaDB getMariaDB() {
