@@ -6,8 +6,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Objects;
-
 /**
  * Chat messages which are announced to all online players
  * on the server.
@@ -39,16 +37,13 @@ public class ChatAnnouncer {
             */
             @Override
             public void run() {
-
-                String path = "announcer.messages.message";
-                core.getServer().broadcast(MiniMessage.miniMessage().deserialize(Objects.requireNonNull(
-                        config.getString(path + i),
-                        "String on path " + path + " wasn't found in config!")));
+                
+                for (String s : config.getStringList("announcer.messages.message" + i)) {
+                    core.getServer().broadcast(MiniMessage.miniMessage().deserialize(s));
+                }
 
                 ConfigurationSection section = config.getConfigurationSection("announcer.messages");
-                if (i == Objects.requireNonNull(section,
-                        "Configuration section " + section + " wasn't found in config!")
-                        .getKeys(false).size()) {
+                if (i == (section != null ? section.getKeys(false).size() : 1)) {
                     i = 1;
                     return;
                 }

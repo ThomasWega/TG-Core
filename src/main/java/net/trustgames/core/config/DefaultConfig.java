@@ -30,8 +30,6 @@ public class DefaultConfig {
         // messages
         defaultConfig.addDefault("messages.server.restart", "&eServer is restarting...");
         defaultConfig.addDefault("messages.no-permission", prefix_chat + "&8You don't have permission to perform this action!");
-        defaultConfig.addDefault("messages.buy.rank", "&fBuy a rank for better experience.");
-        defaultConfig.addDefault("messages.buy.higher-rank", "&fBuy a higher rank for even better experience.");
         defaultConfig.addDefault("messages.mariadb.disabled", prefix_chat + "&8Database is disabled!");
         defaultConfig.addDefault("messages.command.only-in-game", "This command can be executed by in-game players only!");
         defaultConfig.addDefault("messages.command.spam", prefix_chat + "&8Please don't spam the command!");
@@ -59,8 +57,8 @@ public class DefaultConfig {
         defaultConfig.addDefault("cooldowns.chat.same-limit-in-seconds.titan", 10d);
 
         // tablist
-        defaultConfig.addDefault("tablist.header", List.of("&e&lTRUSTGAMES &f- &7Chillin' on the hub"));
-        defaultConfig.addDefault("tablist.footer", List.of("&astore.trustgames.net"));
+        defaultConfig.addDefault("tablist.header", List.of("&e&lTRUSTGAMES &f- &7Chillin' on the hub", "LALALA"));
+        defaultConfig.addDefault("tablist.footer", List.of("&astore.trustgames.net", "LALALA"));
 
         // chat
         defaultConfig.addDefault("chat.color", "&f");

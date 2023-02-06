@@ -35,7 +35,7 @@ public class CooldownManager implements Listener {
      * It also ensures that the "don't spam" message is not being sent too often to the player.
      * @param player Player to put in a cooldown
      * @param cooldownTime Cooldown time in seconds
-     * @return if the player is on cooldown
+     * @return True if the player is on cooldown
      */
     public boolean commandCooldown(Player player, Double cooldownTime){
         UUID uuid = PlayerManager.getUUID(player);

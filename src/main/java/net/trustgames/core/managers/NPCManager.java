@@ -2,12 +2,15 @@ package net.trustgames.core.managers;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.Pair;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -21,6 +24,7 @@ import net.trustgames.core.Core;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_19_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
@@ -30,6 +34,7 @@ import org.bukkit.scoreboard.Team;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class NPCManager {
@@ -37,10 +42,12 @@ public class NPCManager {
     private final Core core;
 
     private final ProtocolManager manager;
+    CooldownManager cooldownManager;
 
     public NPCManager(Core core) {
         this.core = core;
         manager = core.getProtocolManager();
+        cooldownManager = new CooldownManager(core);
     }
 
     /**
@@ -97,9 +104,6 @@ public class NPCManager {
     public void lookAtPosition(Entity npc, Player player, float yaw, float pitch, boolean straighten) {
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
 
-        Bukkit.getLogger().warning(String.valueOf(yaw));
-        Bukkit.getLogger().warning(String.valueOf(pitch));
-
         float angle = (yaw * 256.0f / 360.0f);
 
         // add 35 to the angle to try to make the npc body stand straight
@@ -127,8 +131,8 @@ public class NPCManager {
     /**
      * NPC will look at the players position and follow him
      *
-     * @param npc NPC to make look at the player
-     * @param player Player NPC will be looking at
+     * @param npc         NPC to make look at the player
+     * @param player      Player NPC will be looking at
      * @param npcLocation Location of the NPC
      */
     public void lookAtPlayer(ServerPlayer npc, Player player, Location npcLocation) {
@@ -138,7 +142,7 @@ public class NPCManager {
         loc.setDirection(player.getLocation().subtract(loc).toVector());
 
         // if the player is in larger distance than 10 blocks, the npcs will stop looking at him
-        if (loc.distance(player.getLocation()) > 10){
+        if (loc.distance(player.getLocation()) > 10) {
             lookAtPosition(npc, player, npcLocation.getYaw(), npcLocation.getPitch(), false);
             return;
         }
@@ -230,18 +234,55 @@ public class NPCManager {
         }
     }
 
-  /*  public void interact(){
+    public enum ActionType {
+        COMMAND, MESSAGE
+    }
+
+    /**
+     * Listens for the entity use packet. Handles what action
+     * should be taken on entity click by getting the actions
+     * from the config
+     *
+     * @param npcs List of NPCs to run actions on
+     * @param config Config where the NPCs are specified
+     */
+    public void interact(List<ServerPlayer> npcs, YamlConfiguration config) {
         ProtocolManager manager = core.getProtocolManager();
 
         manager.addPacketListener(new PacketAdapter(core, PacketType.Play.Client.USE_ENTITY) {
             @Override
             public void onPacketReceiving(PacketEvent event) {
                 PacketContainer packet = event.getPacket();
-                Bukkit.getServer().getConsoleSender().sendMessage("Used Entity" + packet.getIntegers().read(0));
-                Bukkit.getLogger().severe("USED ENTITY " + packet.getIntegers().read(0));
+                Player player = event.getPlayer();
+                int entityId = packet.getIntegers().read(0);
+
+                for (ServerPlayer npc : npcs) {
+
+                    if (npc.getId() == entityId) {
+
+                        boolean isPresent = Objects.requireNonNull(
+                                config.getConfigurationSection("npcs")).getKeys(false).contains(npc.displayName);
+                        if (!isPresent) return;
+
+                        double cooldown = config.getDouble("npcs." + npc.displayName + ".action.cooldown");
+                        if (cooldownManager.commandCooldown(player, cooldown)) return;
+
+                        String action = config.getString("npcs." + npc.displayName + ".action.type");
+                        List<String> value = config.getStringList("npcs." + npc.displayName + ".action.value");
+                        ActionType actionType = ActionType.valueOf(action);
+
+                        switch (actionType) {
+                            case COMMAND:
+                                core.getServer().getScheduler().runTask(core, () -> value.forEach(player::performCommand));
+                            case MESSAGE:
+                                for (String s : value) {
+                                    player.sendMessage(MiniMessage.miniMessage().deserialize(s));
+                                }
+                        }
+                        break;
+                    }
+                }
             }
         });
     }
-
-   */
 }

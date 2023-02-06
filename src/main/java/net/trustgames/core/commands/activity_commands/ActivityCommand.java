@@ -375,7 +375,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
                     if (player == null) return;
 
                     if (!player.performCommand("activity-id " + id)){
-                        humanEntity.sendMessage(ChatColor.RED + "Executing /activity-id " + id + " as a player");
+                        humanEntity.sendMessage(ChatColor.RED + "ERROR: Executing /activity-id " + id + " as a player");
                     }
                     inventory.close();
                 }

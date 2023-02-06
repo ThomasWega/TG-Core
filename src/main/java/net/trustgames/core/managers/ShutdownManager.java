@@ -2,22 +2,21 @@ package net.trustgames.core.managers;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.database.player_activity.ActivityListener;
+import net.trustgames.core.locales.Messages;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import java.util.Objects;
-
 /**
  * Handles what should happen when the server shutdowns.
  * This method DOESN'T move players to the next online server!
  */
-public class ServerShutdownManager {
+public class ShutdownManager {
 
     private final Core core;
 
-    public ServerShutdownManager(Core core) {
+    public ShutdownManager(Core core) {
         this.core = core;
     }
 
@@ -36,7 +35,8 @@ public class ServerShutdownManager {
             Bukkit.getLogger().info("Trying to log players activities...");
 
             for (Player player : Bukkit.getOnlinePlayers()) {
-                player.kick(ColorUtils.color(Objects.requireNonNull(config.getString("messages.server.restart"))));
+             //   player.kick(ColorUtils.color(Objects.requireNonNull(config.getString("messages.server.restart"))));
+                player.kick(ColorUtils.color(Messages.RESTART));
                 activityListener.onServerShutdown(player);
             }
             Bukkit.getLogger().finest("Online players activities successfully saved to the database");

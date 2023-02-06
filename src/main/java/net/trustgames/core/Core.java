@@ -42,7 +42,7 @@ public final class Core extends JavaPlugin {
     final MariaDB mariaDB = new MariaDB(this);
     final ChatAnnouncer chatAnnouncer = new ChatAnnouncer(this);
     final PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
-    final ServerShutdownManager serverShutdownManager = new ServerShutdownManager(this);
+    final ShutdownManager shutdownManager = new ShutdownManager(this);
     public CooldownManager cooldownManager = new CooldownManager(this);
     Scoreboard playerListScoreboard;
     public LuckPermsManager luckPermsManager;
@@ -75,12 +75,10 @@ public final class Core extends JavaPlugin {
         // TODO register commands without plugin.yml
         // TODO test skin cache
         // TODO test uuid cache
-        // TODO NPC interact
         // TODO HOLO clickable
         // TODO use ProtocolLib everywhere
-        // TODO NPC look at player
-        // TODO NPC add straighten boolean to config
-
+        // TODO NPC action - command prints the command in chat
+        // TODO Instead of config, make locales class
         // TODO NPC add glow
 
         // luckperms
@@ -118,7 +116,7 @@ public final class Core extends JavaPlugin {
     public void onDisable() {
 
         // run the server shutdown manager (kick players, write activity, ...)
-        serverShutdownManager.kickPlayers();
+        shutdownManager.kickPlayers();
 
         // close the HikariCP connection
         mariaDB.closeHikari();
