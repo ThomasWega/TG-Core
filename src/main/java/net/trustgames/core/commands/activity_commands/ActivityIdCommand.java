@@ -3,7 +3,7 @@ package net.trustgames.core.commands.activity_commands;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.trustgames.core.Core;
-import net.trustgames.core.settings.CoreSettings;
+import net.trustgames.core.settings.commands.CoreCommand;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -40,13 +40,13 @@ public class ActivityIdCommand implements CommandExecutor {
         if (sender.hasPermission("core.staff")) {
             
             if (core.getMariaDB().isMySQLDisabled()){
-                sender.sendMessage(ColorUtils.color(CoreSettings.DATABASE_OFF));
+                sender.sendMessage(ColorUtils.color(CoreCommand.COMMAND_DATABASE_OFF.getValue()));
                 return true;
             }
 
             if (args.length != 1) {
                 sender.sendMessage(ColorUtils.color(
-                        CoreSettings.COMMAND_INVALID_ARG + "&8 Use /activity-id <id>"));
+                        CoreCommand.COMMAND_INVALID_ARG.getValue() + "&8 Use /activity-id <id>"));
                 return true;
             }
 
@@ -107,7 +107,7 @@ public class ActivityIdCommand implements CommandExecutor {
                 }
                 return;
             }
-            sender.sendMessage(ColorUtils.color(String.format(CoreSettings.COMMAND_NO_ID_ACT, id)));
+            sender.sendMessage(ColorUtils.color(String.format(CoreCommand.COMMAND_NO_ID_ACT.getValue(), id)));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

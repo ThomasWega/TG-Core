@@ -3,9 +3,9 @@ package net.trustgames.core.commands.activity_commands;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.trustgames.core.Core;
-import net.trustgames.core.settings.CoreSettings;
 import net.trustgames.core.managers.InventoryManager;
 import net.trustgames.core.managers.ItemManager;
+import net.trustgames.core.settings.commands.CoreCommand;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -69,13 +69,13 @@ public class ActivityCommand implements CommandExecutor, Listener {
             if (sender.hasPermission("core.staff")) {
 
                 if (core.getMariaDB().isMySQLDisabled()){
-                    sender.sendMessage(ColorUtils.color(CoreSettings.DATABASE_OFF));
+                    sender.sendMessage(ColorUtils.color(CoreCommand.COMMAND_DATABASE_OFF.getValue()));
                     return true;
                 }
 
                 if (args.length != 1) {
                     sender.sendMessage(ColorUtils.color(
-                            CoreSettings.COMMAND_INVALID_ARG + "&8 Use /activity <Player/UUID>"));
+                            CoreCommand.COMMAND_INVALID_ARG.getValue() + "&8 Use /activity <Player/UUID>"));
                     return true;
                 }
 
@@ -117,7 +117,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
 
                 if (records.isEmpty()){
                     sender.sendMessage(ColorUtils.color(String.format(
-                            CoreSettings.COMMAND_NO_PLAYER_ACT, target)));
+                            CoreCommand.COMMAND_NO_PLAYER_ACT.getValue(), target)));
                     return true;
                 }
 
@@ -126,10 +126,10 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 // open the first inventory (first page) from the list
                 player.openInventory(inventoryList.get(0));
             } else {
-                sender.sendMessage(ColorUtils.color(CoreSettings.NO_PERM));
+                sender.sendMessage(ColorUtils.color(CoreCommand.COMMAND_NO_PERM.getValue()));
             }
         } else {
-            Bukkit.getLogger().warning(CoreSettings.COMMAND_ONLY_PLAYER);
+            Bukkit.getLogger().warning(CoreCommand.COMMAND_ONLY_PLAYER.getValue());
         }
         return true;
     }

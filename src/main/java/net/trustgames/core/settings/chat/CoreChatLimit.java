@@ -1,6 +1,6 @@
-package net.trustgames.core.settings;
+package net.trustgames.core.settings.chat;
 
-public enum ChatLimit {
+public enum CoreChatLimit {
     TITAN(0.1d, 10d),
     LORD(3d, 25d),
     KNIGHT(5d, 45d),
@@ -10,7 +10,7 @@ public enum ChatLimit {
     private final double chatLimitSec;
     private final double chatLimitSameSec;
 
-    ChatLimit(double chatLimitSec, double chatLimitSameSec) {
+    CoreChatLimit(double chatLimitSec, double chatLimitSameSec) {
         this.chatLimitSec = chatLimitSec;
         this.chatLimitSameSec = chatLimitSameSec;
     }

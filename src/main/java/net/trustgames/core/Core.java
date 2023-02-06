@@ -4,13 +4,11 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
-import net.trustgames.core.announcer.AnnouncerConfig;
-import net.trustgames.core.announcer.ChatAnnouncer;
+import net.trustgames.core.managers.AnnouncerManager;
 import net.trustgames.core.commands.activity_commands.ActivityCommand;
 import net.trustgames.core.commands.activity_commands.ActivityIdCommand;
 import net.trustgames.core.commands.messages_commands.MessagesCommand;
 import net.trustgames.core.commands.messages_commands.MessagesConfig;
-import net.trustgames.core.config.DefaultConfig;
 import net.trustgames.core.database.MariaConfig;
 import net.trustgames.core.database.MariaDB;
 import net.trustgames.core.database.player_activity.ActivityListener;
@@ -40,11 +38,11 @@ import java.util.Objects;
 public final class Core extends JavaPlugin {
 
     final MariaDB mariaDB = new MariaDB(this);
-    final ChatAnnouncer chatAnnouncer = new ChatAnnouncer(this);
-    final PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
-    final ShutdownManager shutdownManager = new ShutdownManager(this);
+    private final AnnouncerManager announcerManager = new AnnouncerManager(this);
+    private final PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
+    private final ShutdownManager shutdownManager = new ShutdownManager(this);
     public CooldownManager cooldownManager = new CooldownManager();
-    Scoreboard playerListScoreboard;
+    private Scoreboard playerListScoreboard;
     public LuckPermsManager luckPermsManager;
 
     private ProtocolManager protocolManager;
@@ -79,6 +77,7 @@ public final class Core extends JavaPlugin {
         // TODO use ProtocolLib everywhere
         // TODO NPC action - command prints the command in chat
         // TODO NPC add glow
+        // TODO MessagesConfig MiniMessage and enums config
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
@@ -108,7 +107,7 @@ public final class Core extends JavaPlugin {
         CoreGamerules.setGamerules();
 
         // run ChatAnnouncer
-        chatAnnouncer.announceMessages();
+        announcerManager.announceMessages();
     }
 
     @Override
@@ -161,15 +160,9 @@ public final class Core extends JavaPlugin {
     }
 
     private void createConfigsDefaults() {
-        DefaultConfig.create(getConfig());
-        getConfig().options().copyDefaults(true);
-        saveConfig();
 
         MariaConfig mariaConfig = new MariaConfig(this);
         mariaConfig.createDefaults();
-
-        AnnouncerConfig announcerConfig = new AnnouncerConfig(this);
-        announcerConfig.createDefaults();
 
         MessagesConfig messagesConfig = new MessagesConfig(this);
         messagesConfig.createDefaults();
