@@ -1,4 +1,4 @@
-package net.trustgames.core.settings.commands;
+package net.trustgames.core.settings.command;
 
 public enum CoreCommand {
 

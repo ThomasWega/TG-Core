@@ -1,4 +1,4 @@
-package net.trustgames.core.settings.placeholders;
+package net.trustgames.core.settings.placeholder;
 
 public enum CorePlaceholder {
     IP("play.trustgames.net"),

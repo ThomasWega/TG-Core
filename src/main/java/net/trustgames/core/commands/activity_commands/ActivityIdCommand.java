@@ -3,7 +3,7 @@ package net.trustgames.core.commands.activity_commands;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.trustgames.core.Core;
-import net.trustgames.core.settings.commands.CoreCommand;
+import net.trustgames.core.settings.command.CoreCommand;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

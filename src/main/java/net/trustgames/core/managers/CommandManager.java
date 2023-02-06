@@ -1,6 +1,6 @@
 package net.trustgames.core.managers;
 
-import net.trustgames.core.settings.commands.CoreCommand;
+import net.trustgames.core.settings.command.CoreCommand;
 import net.trustgames.core.settings.cooldown.CoreCooldown;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.entity.Player;
