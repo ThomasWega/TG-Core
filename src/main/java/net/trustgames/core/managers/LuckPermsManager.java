@@ -46,6 +46,8 @@ public class LuckPermsManager {
     }
 
     /**
+     * Returns the first group it matches from the list
+     *
      * @param player Player to check on
      * @param possibleGroups List of groups to check for
      * @return Player's group found from the list

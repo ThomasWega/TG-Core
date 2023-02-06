@@ -78,7 +78,6 @@ public final class Core extends JavaPlugin {
         // TODO HOLO clickable
         // TODO use ProtocolLib everywhere
         // TODO NPC action - command prints the command in chat
-        // TODO Instead of config, make locales class
         // TODO NPC add glow
 
         // luckperms
@@ -129,7 +128,7 @@ public final class Core extends JavaPlugin {
         pluginManager.registerEvents(new ActivityListener(this), this);
         pluginManager.registerEvents(new CommandManager(), this);
         pluginManager.registerEvents(new CooldownManager(), this);
-        pluginManager.registerEvents(new ChatManager(this), this);
+        pluginManager.registerEvents(new ChatManager(), this);
         pluginManager.registerEvents(new PlayerListListener(this), this);
         pluginManager.registerEvents(new ActivityCommand(this), this);
     }

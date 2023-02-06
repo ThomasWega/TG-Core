@@ -1,9 +1,10 @@
 package net.trustgames.core.chat;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
-import net.trustgames.core.Core;
+import net.trustgames.core.managers.LuckPermsManager;
+import net.trustgames.core.settings.ChatLimit;
+import net.trustgames.core.settings.CoreSettings;
 import net.trustgames.core.utils.ColorUtils;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -16,13 +17,6 @@ import java.util.*;
  */
 
 public class MessageLimiter {
-
-    private final Core core;
-
-    public MessageLimiter(Core core) {
-        this.core = core;
-    }
-
     private final HashMap<UUID, Long> cooldownTime = new HashMap<>();
     private final Map<String, Double> ranksChatCooldown = new TreeMap<>();
     private final Map<String, Double> ranksSameChatCooldown = new TreeMap<>();
@@ -30,37 +24,28 @@ public class MessageLimiter {
     private final HashMap<UUID, Long> lastWaitMessage = new HashMap<>();
 
     /**
-    It gets the keys from the config and puts them
-    to a hashmap with their corresponding values. Then it runs the checks method
+     * It gets the configured keys and puts them
+     * to a hashmap with their corresponding values. Then it runs the checks method
      */
     public void limit(AsyncChatEvent event) {
         Player player = event.getPlayer();
         String playerMessage = event.message().toString();
-        FileConfiguration config = core.getConfig();
         if (player.hasPermission("core.staff")) return;
 
         /*
-        These for loops will loop through all the keys in the config (the normal cooldown
+        These for loops will loop through all the configured keys (the normal cooldown
         and the same message cooldown) and save them with the values (time) into hashmaps
         which are later used
          */
 
-        // cooldown for normal messages
-        String section = "cooldowns.chat.limit-in-seconds";
-        for (String rankCooldown : Objects.requireNonNull(config.getConfigurationSection(section),
-                "Configuration section " + section + " wasn't found in config!")
-                .getKeys(false)) {
-
-            ranksChatCooldown.put(rankCooldown, config.getDouble(section + "." + rankCooldown));
+        for (ChatLimit limitEnum : ChatLimit.values()){
+            ranksChatCooldown.put(limitEnum.name().toLowerCase(), limitEnum.getChatLimitSec());
         }
-        // cooldown if the message is same as the last one
-        String sectionSame = "cooldowns.chat.same-limit-in-seconds";
-        for (String rankSameCooldown : Objects.requireNonNull(config.getConfigurationSection(sectionSame),
-                "Configuration section " + sectionSame + " wasn't found in config!")
-                .getKeys(false)) {
 
-            ranksSameChatCooldown.put(rankSameCooldown, config.getDouble(sectionSame + "." + rankSameCooldown));
+        for (ChatLimit limitEnum : ChatLimit.values()){
+            ranksSameChatCooldown.put(limitEnum.name().toLowerCase(), limitEnum.getChatLimitSameSec());
         }
+
         doChecks(player, event, playerMessage);
     }
 
@@ -68,8 +53,9 @@ public class MessageLimiter {
      * Checks if the player is on cooldown, and if the message is same as the last time,
      * and makes sure to cancel the event, send the proper message to the player
      * or put the player's message to the correct map.
-     * @param player Player who wrote the message
-     * @param event AsyncChatEvent
+     *
+     * @param player        Player who wrote the message
+     * @param event         AsyncChatEvent
      * @param playerMessage Player's chat message
      */
     private void doChecks(Player player, AsyncChatEvent event, String playerMessage) {
@@ -88,9 +74,9 @@ public class MessageLimiter {
         to the hashmap. If he is already in the hashmap and at the same time is on the cooldown, it
         will send him the wait message and cancel the event.
          */
-        if (!lastPlayerMessage.containsKey(player.getUniqueId())){
+        if (!lastPlayerMessage.containsKey(player.getUniqueId())) {
             lastPlayerMessage.put(player.getUniqueId(), playerMessage);
-        } else if (isSameMessage(player, playerMessage) && isOnCooldown(player, rank, true)){
+        } else if (isSameMessage(player, playerMessage) && isOnCooldown(player, rank, true)) {
             sendMessage(player, rank, true);
             event.setCancelled(true);
             return;
@@ -110,47 +96,32 @@ public class MessageLimiter {
     }
 
     /**
-    check which is the highest permission (group) the player has access to.
-    Then return that permission
-
-    IMPORTANT NOTE: in the config.yml. In spam or normal message cooldown times there needs to be the same ranks specified,
-    and they all need to have different values, otherwise this code won't work properly and will show the highest
-    available rank to purchase a better rank!
+     * check which is the highest permission (group) the player has access to.
+     * Then return that permission
      *
      * @param player Player who wrote the message
      * @return Player's highest permission
      */
     private String getPermission(Player player) {
-
-        // default rank's cooldown time is named default in the config
-        String rank = "default";
-        /*
-         goes through all the keys (ranks) in the cooldown time config.
-         The keys (ranks) are sorted by lowest cooldown values. For each one, it checks
-         if the player has the permission of the rank. If he does, it assigns it to the
-         string rank (which is later returned), and breaks the loop. If he doesn't have the permission,
-         it goes back and tries the next rank. This continues until finished (meaning the rank is "default")
-         or until a rank that player has permission to is found.
-         */
-        for (String x : ranksChatCooldown.entrySet()
-                .stream().sorted(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey).toList()) {
-            if (x.equalsIgnoreCase("default")) break;
-            if (player.hasPermission("core." + x)) {
-                rank = x;
-                break;
-            }
+        List<String> possibleRanks = new ArrayList<>();
+        for (ChatLimit limitEnum : ChatLimit.values()) {
+            possibleRanks.add(limitEnum.name().toLowerCase());
         }
+        String rank = LuckPermsManager.getPlayerGroupFromList(player, possibleRanks);
+
+        if (rank == null)
+            rank = "default";
+
         return rank;
     }
 
 
     /**
-     checks if the player has a cooldown. If he does have a cooldown, it returns true.
-     If he doesn't have a cooldown, it returns false
+     * checks if the player has a cooldown. If he does have a cooldown, it returns true.
+     * If he doesn't have a cooldown, it returns false
      *
      * @param player Player who wrote the message
-     * @param rank Player's highest rank which is also in the config
+     * @param rank Player's closest highest rank present in configuration
      * @param sameMessage if the message same as the last time
      * @return is Player on Cooldown
      */
@@ -162,35 +133,33 @@ public class MessageLimiter {
          Else, if the message isn't the same as the last time, it will use
         the normal cooldown time and return true if he is still in the cooldown
          */
-        if (sameMessage){
+        if (sameMessage) {
             return !(ranksSameChatCooldown.get(rank) <= (System.currentTimeMillis() - cooldownTime.get(player.getUniqueId())) / 1000d);
-        }
-        else{
+        } else {
             /*
          check if the cooldown time of the given rank is smaller than the
          (current time - the time the player last wrote a message) divided by 1000
-         (to convert it to seconds to match the config time)
+         (to convert it to seconds to match the configured time)
          */
             return !(ranksChatCooldown.get(rank) <= (System.currentTimeMillis() - cooldownTime.get(player.getUniqueId())) / 1000d);
         }
     }
 
     /**
-    Will check if his current messages matches the last message
-    in the hashmap. It will remove all non-alphanumeric characters
-    from the message (using regex) and compare the current one
-    with the one from the hashmap. If they are the same, it returns true,
-    otherwise if they are different, it returns false.
+     * Will check if his current messages matches the last message
+     * in the hashmap. It will remove all non-alphanumeric characters
+     * from the message (using regex) and compare the current one
+     * with the one from the hashmap. If they are the same, it returns true,
+     * otherwise if they are different, it returns false.
      *
      * @param player Player who wrote the message
      * @param playerMessage The message the player wrote
      * @return is the same message as the last time
      */
-    private boolean isSameMessage(Player player, String playerMessage){
-        if (playerMessage.replaceAll("[^\\p{Alnum}]", "").equalsIgnoreCase(lastPlayerMessage.get(player.getUniqueId()).replaceAll("[^\\p{Alnum}]", ""))){
+    private boolean isSameMessage(Player player, String playerMessage) {
+        if (playerMessage.replaceAll("[^\\p{Alnum}]", "").equalsIgnoreCase(lastPlayerMessage.get(player.getUniqueId()).replaceAll("[^\\p{Alnum}]", ""))) {
             return true;
-        }
-        else{
+        } else {
             lastPlayerMessage.put(player.getUniqueId(), playerMessage);
             return false;
         }
@@ -198,12 +167,12 @@ public class MessageLimiter {
 
     /**
      * sends the wait message to the player
+     *
      * @param player Player who wrote the message
-     * @param rank His highest rank also present in the config
+     * @param rank Player's closest highest rank present in configuration
      * @param sameMessage is it the same message as the last time
      */
     private void sendMessage(Player player, String rank, boolean sameMessage) {
-        FileConfiguration config = core.getConfig();
 
         /*
          checks if the message print wouldn't be too spammy. Meaning, if the player used
@@ -213,16 +182,11 @@ public class MessageLimiter {
         if (isSpam(player)) return;
 
         //Check if the message is the same as the last time. It is given earlier by the boolean in the method.
-        if (sameMessage){
-            String pathSame = "messages.chat.on-same-cooldown";
-            player.sendMessage(ColorUtils.color(String.format(Objects.requireNonNull(
-                    config.getString(pathSame), "String on path " + pathSame + " wasn't found in config!"),
+        if (sameMessage) {
+            player.sendMessage(ColorUtils.color(String.format(CoreSettings.CHAT_ON_SAME_COOLDOWN,
                     String.format("%.1f", getWaitTime(player, ranksSameChatCooldown.get(rank))))));
-        }
-        else{
-            String path = "messages.chat.on-cooldown";
-            player.sendMessage(ColorUtils.color(String.format(Objects.requireNonNull(
-                    config.getString(path), "String on path " + path + " wasn't found in config!"),
+        } else {
+            player.sendMessage(ColorUtils.color(String.format(CoreSettings.CHAT_ON_COOLDOWN,
                     String.format("%.1f", getWaitTime(player, ranksChatCooldown.get(rank))))));
 
         }
@@ -232,8 +196,9 @@ public class MessageLimiter {
 
     /**
      * get the time player needs to wait until using the chat again
+     *
      * @param player Player who wrote the message
-     * @param time Time of the cooldown
+     * @param time   Time of the cooldown
      * @return The time remaining until the player can write again
      */
     private double getWaitTime(Player player, double time) {
@@ -247,15 +212,13 @@ public class MessageLimiter {
      * @return is the cooldown message being sent too often
      */
     private boolean isSpam(Player player) {
-        FileConfiguration config = core.getConfig();
-
         /*
          if he has any last wait message, get the time and make sure the
-         current time - the last time of wait message is larger than the min value in config
+         current time - the last time of wait message is larger than the min value configured
         */
         if (lastWaitMessage.containsKey(player.getUniqueId())) {
-            return config.getDouble("cooldowns.warn-messages-limit-in-seconds") > (System.currentTimeMillis() - lastWaitMessage.get(player.getUniqueId())) / 1000d;
-        // if the last message doesn't contain the player (meaning he probably didn't receive any wait messages, put him in the map and return false
+            return CoreSettings.WARN_MESSAGES_LIMIT_SEC > (System.currentTimeMillis() - lastWaitMessage.get(player.getUniqueId())) / 1000d;
+            // if the last message doesn't contain the player (meaning he probably didn't receive any wait messages, put him in the map and return false
         } else {
             lastWaitMessage.put(player.getUniqueId(), System.currentTimeMillis());
             return false;
@@ -263,10 +226,10 @@ public class MessageLimiter {
     }
 
     /**
-    when the player leaves, make sure that he isn't no longer in the maps
-    - remove him from the last wait message (lastWaitMessage) map
-    - remove him from the cooldown time message (cooldownTime) map
-    - remove him from the same message (lastPlayerMessage) map
+     * when the player leaves, make sure that he isn't no longer in the maps
+     * - remove him from the last wait message (lastWaitMessage) map
+     * - remove him from the cooldown time message (cooldownTime) map
+     * - remove him from the same message (lastPlayerMessage) map
      *
      * @param event PlayerQuit
      */

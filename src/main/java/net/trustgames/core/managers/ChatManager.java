@@ -1,7 +1,6 @@
 package net.trustgames.core.managers;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
-import net.trustgames.core.Core;
 import net.trustgames.core.chat.ChatDecoration;
 import net.trustgames.core.chat.MessageLimiter;
 import org.bukkit.event.EventHandler;
@@ -25,8 +24,8 @@ public class ChatManager implements Listener {
     private final ChatDecoration chatDecoration;
 
 
-    public ChatManager(Core core) {
-        messageLimiter = new MessageLimiter(core);
+    public ChatManager() {
+        messageLimiter = new MessageLimiter();
         chatDecoration = new ChatDecoration();
     }
 
