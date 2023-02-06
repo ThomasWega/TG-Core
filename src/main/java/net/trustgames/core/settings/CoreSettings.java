@@ -1,6 +1,6 @@
-package net.trustgames.core.locales;
+package net.trustgames.core.settings;
 
-public class Messages {
+public class CoreSettings {
 
     // placeholders
     public static final String IP = "play.trustgames.net";
@@ -40,13 +40,14 @@ public class Messages {
     public static final double CHAT_LIMIT_SAME_SEC_VIP3 = 25d;
     public static final double CHAT_LIMIT_SAME_SEC_VIP4 = 10d;
 
+
     // tablist
-    public static final String[] TABLIST_HEADER = {"&e&lTRUSTGAMES &f- &7Chillin' on the hub"};
-    public static final String[] TABLIST_FOOTER = {"&astore.trustgames.net"};
+    public static final String TABLIST_HEADER = "&e&lTRUSTGAMES &f- &7Chillin' on the hub";
+    public static final String TABLIST_FOOTER = "&astore.trustgames.net";
 
     // chat
     public static final String CHAT_COLOR = "&f";
     public static final String CHAT_NAME_COLOR = "&e";
-    public static final String CHAT_ALLOW_COLORS_PERM = "core.vip2";
+    public static final String CHAT_ALLOW_COLORS_PERM = "core.knight";
     public static final String CHAT_MENTION_COLOR = "&a";
 }

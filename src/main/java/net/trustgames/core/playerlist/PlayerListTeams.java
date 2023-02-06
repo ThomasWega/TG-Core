@@ -46,7 +46,7 @@ public class PlayerListTeams {
                 groupWeight.put(y.getName(), y.getWeight().getAsInt());
             }
             else{
-                Bukkit.getLogger().severe("LuckPerms group " + y.getName() + " doesn't have any weight! Settings the weight to 1...");
+                Bukkit.getLogger().severe("LuckPerms group " + y.getName() + " doesn't have any weight! CoreSettings the weight to 1...");
 
                 Objects.requireNonNull(LuckPermsManager.getGroupManager().getGroup(y.getName()),
                         "Group " + y.getName() + " wasn't found when setting a missing weight")

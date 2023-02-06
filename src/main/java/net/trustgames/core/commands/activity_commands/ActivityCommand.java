@@ -3,6 +3,7 @@ package net.trustgames.core.commands.activity_commands;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.trustgames.core.Core;
+import net.trustgames.core.settings.CoreSettings;
 import net.trustgames.core.managers.InventoryManager;
 import net.trustgames.core.managers.ItemManager;
 import net.trustgames.core.utils.ColorUtils;
@@ -13,7 +14,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -65,21 +65,17 @@ public class ActivityCommand implements CommandExecutor, Listener {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        FileConfiguration config = core.getConfig();
-
         if (sender instanceof Player) {
             if (sender.hasPermission("core.staff")) {
 
                 if (core.getMariaDB().isMySQLDisabled()){
-                    String path = "messages.mariadb.disabled";
-                    sender.sendMessage(ColorUtils.color(Objects.requireNonNull(
-                            config.getString(path), "String on path " + path + " wasn't found in config!")));
+                    sender.sendMessage(ColorUtils.color(CoreSettings.DATABASE_OFF));
                     return true;
                 }
 
                 if (args.length != 1) {
                     sender.sendMessage(ColorUtils.color(
-                            config.getString("messages.command.invalid-argument") + "&8 Use /activity <Player/UUID>"));
+                            CoreSettings.COMMAND_INVALID_ARG + "&8 Use /activity <Player/UUID>"));
                     return true;
                 }
 
@@ -120,9 +116,8 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 createRecords(offlinePlayer);
 
                 if (records.isEmpty()){
-                    String path = "messages.command.no-player-activity";
-                    sender.sendMessage(ColorUtils.color(String.format(Objects.requireNonNull(
-                            config.getString(path), "String on path " + path + " wasn't found in config!"), target)));
+                    sender.sendMessage(ColorUtils.color(String.format(
+                            CoreSettings.COMMAND_NO_PLAYER_ACT, target)));
                     return true;
                 }
 
@@ -131,14 +126,10 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 // open the first inventory (first page) from the list
                 player.openInventory(inventoryList.get(0));
             } else {
-                String path = "messages.no-permission";
-                sender.sendMessage(ColorUtils.color(Objects.requireNonNull(
-                        config.getString(path), "String on path " + path + " wasn't found in config!")));
+                sender.sendMessage(ColorUtils.color(CoreSettings.NO_PERM));
             }
         } else {
-            String path = "messages.command.only-in-game";
-            Bukkit.getLogger().warning(Objects.requireNonNull(
-                    config.getString(path), "String on path " + path + " wasn't found in config!"));
+            Bukkit.getLogger().warning(CoreSettings.COMMAND_ONLY_PLAYER);
         }
         return true;
     }

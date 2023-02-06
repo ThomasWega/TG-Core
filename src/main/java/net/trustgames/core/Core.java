@@ -43,7 +43,7 @@ public final class Core extends JavaPlugin {
     final ChatAnnouncer chatAnnouncer = new ChatAnnouncer(this);
     final PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
     final ShutdownManager shutdownManager = new ShutdownManager(this);
-    public CooldownManager cooldownManager = new CooldownManager(this);
+    public CooldownManager cooldownManager = new CooldownManager();
     Scoreboard playerListScoreboard;
     public LuckPermsManager luckPermsManager;
 
@@ -127,8 +127,8 @@ public final class Core extends JavaPlugin {
         PluginManager pluginManager = getServer().getPluginManager();
 
         pluginManager.registerEvents(new ActivityListener(this), this);
-        pluginManager.registerEvents(new CommandManager(this), this);
-        pluginManager.registerEvents(new CooldownManager(this), this);
+        pluginManager.registerEvents(new CommandManager(), this);
+        pluginManager.registerEvents(new CooldownManager(), this);
         pluginManager.registerEvents(new ChatManager(this), this);
         pluginManager.registerEvents(new PlayerListListener(this), this);
         pluginManager.registerEvents(new ActivityCommand(this), this);
@@ -143,7 +143,7 @@ public final class Core extends JavaPlugin {
         cmdList.put(getCommand("activity"), new ActivityCommand(this));
         cmdList.put(getCommand("activity-id"), new ActivityIdCommand(this));
 
-        // Messages Commands
+        // CoreSettings Commands
         ConfigurationSection section = config.getConfigurationSection("messages");
         for (String s : Objects.requireNonNull(section,
                 "Configuration section " + section + " wasn't found in config!").getKeys(false)){

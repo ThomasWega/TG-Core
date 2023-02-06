@@ -3,13 +3,13 @@ package net.trustgames.core.commands.activity_commands;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.trustgames.core.Core;
+import net.trustgames.core.settings.CoreSettings;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.ResultSet;
@@ -17,7 +17,10 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.format.TextStyle;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
 
 /**
  * Is used to get the logged player's activity by the activity id, rather
@@ -34,20 +37,16 @@ public class ActivityIdCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        FileConfiguration config = core.getConfig();
-
         if (sender.hasPermission("core.staff")) {
             
             if (core.getMariaDB().isMySQLDisabled()){
-                String path = "messages.mariadb.disabled";
-                sender.sendMessage(ColorUtils.color(Objects.requireNonNull(
-                        config.getString(path), "String on path " + path + " wasn't found in config!")));
+                sender.sendMessage(ColorUtils.color(CoreSettings.DATABASE_OFF));
                 return true;
             }
 
             if (args.length != 1) {
                 sender.sendMessage(ColorUtils.color(
-                        config.getString("messages.command.invalid-argument") + "&8 Use /activity-id <id>"));
+                        CoreSettings.COMMAND_INVALID_ARG + "&8 Use /activity-id <id>"));
                 return true;
             }
 
@@ -67,8 +66,6 @@ public class ActivityIdCommand implements CommandExecutor {
      * @param id Activity id
      */
     private void printData(CommandSender sender, String id){
-        FileConfiguration config = core.getConfig();
-
         ActivityQuery activityQuery = new ActivityQuery(core);
 
         // get the result set of the given id
@@ -110,9 +107,7 @@ public class ActivityIdCommand implements CommandExecutor {
                 }
                 return;
             }
-            String path = "messages.command.no-id-activity";
-            sender.sendMessage(ColorUtils.color(String.format(Objects.requireNonNull(
-                    config.getString(path), "String on path " + path + " wasn't found in config!"), id)));
+            sender.sendMessage(ColorUtils.color(String.format(CoreSettings.COMMAND_NO_ID_ACT, id)));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

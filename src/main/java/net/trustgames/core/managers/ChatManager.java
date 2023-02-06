@@ -27,7 +27,7 @@ public class ChatManager implements Listener {
 
     public ChatManager(Core core) {
         messageLimiter = new MessageLimiter(core);
-        chatDecoration = new ChatDecoration(core);
+        chatDecoration = new ChatDecoration();
     }
 
     @EventHandler

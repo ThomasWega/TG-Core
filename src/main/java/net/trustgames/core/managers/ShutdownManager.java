@@ -2,10 +2,9 @@ package net.trustgames.core.managers;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.database.player_activity.ActivityListener;
-import net.trustgames.core.locales.Messages;
+import net.trustgames.core.settings.CoreSettings;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 /**
@@ -24,8 +23,6 @@ public class ShutdownManager {
      * Kick all the online players and log their activity to database
      */
     public void kickPlayers() {
-        FileConfiguration config = core.getConfig();
-
         ActivityListener activityListener = new ActivityListener(core);
 
         if (core.getMariaDB().isMySQLDisabled()){
@@ -35,8 +32,7 @@ public class ShutdownManager {
             Bukkit.getLogger().info("Trying to log players activities...");
 
             for (Player player : Bukkit.getOnlinePlayers()) {
-             //   player.kick(ColorUtils.color(Objects.requireNonNull(config.getString("messages.server.restart"))));
-                player.kick(ColorUtils.color(Messages.RESTART));
+                player.kick(ColorUtils.color(CoreSettings.RESTART));
                 activityListener.onServerShutdown(player);
             }
             Bukkit.getLogger().finest("Online players activities successfully saved to the database");

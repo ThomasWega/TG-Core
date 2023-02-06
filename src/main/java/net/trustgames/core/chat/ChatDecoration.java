@@ -4,12 +4,11 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
-import net.trustgames.core.Core;
+import net.trustgames.core.settings.CoreSettings;
 import net.trustgames.core.managers.LuckPermsManager;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -20,12 +19,6 @@ import java.util.logging.Level;
  */
 public class ChatDecoration {
 
-    private final Core core;
-
-    public ChatDecoration(Core core) {
-        this.core = core;
-    }
-
     /**
      * Adds the player a prefix and makes sure that the Minecraft new
      * report feature doesn't work and doesn't produce the symbols next to the
@@ -35,12 +28,9 @@ public class ChatDecoration {
      * @param event the main AsyncChatEvent
      */
     public void decorate(AsyncChatEvent event) {
-        FileConfiguration config = core.getConfig();
-
         Player player = event.getPlayer();
         Component message = setColor(player, event.originalMessage());
-        String path = "chat.color";
-        String messageColor = Objects.requireNonNull(config.getString(path), "String on path " + path + " wasn't found in config!");
+        String messageColor = CoreSettings.CHAT_COLOR;
 
         String prefix = setPrefix(player);
 
@@ -81,11 +71,7 @@ public class ChatDecoration {
      * @return True if player has permission to use color codes
      */
     private boolean allowColor(Player player){
-        FileConfiguration config = core.getConfig();
-        // get the permission player needs to have to allow to use color codes in chat
-        String path = "chat.allow-colors-permission";
-        return player.hasPermission(Objects.requireNonNull(config.getString(path,
-                "String on path " + path + " wasn't found in config!")));
+        return player.hasPermission(CoreSettings.CHAT_ALLOW_COLORS_PERM);
     }
 
     /**
@@ -100,8 +86,6 @@ public class ChatDecoration {
      * @return True if mention colors were set
      */
     private boolean setMention(Player p, Component message, String prefix, AsyncChatEvent event, String messageColor){
-        FileConfiguration config = core.getConfig();
-
         Set<Player> mentionedPlayers = new HashSet<>();
         Player player = event.getPlayer();
 
@@ -122,9 +106,7 @@ public class ChatDecoration {
         if (mentionedPlayers.contains(p)) {
             List<Component> newMsg = new ArrayList<>();
 
-            String path1 = "chat.mention-color";
-            String nameColor = Objects.requireNonNull(config.getString(path1),
-                    "String on path " + path1 + " wasn't found in config!");
+            String nameColor = CoreSettings.CHAT_MENTION_COLOR;
 
             // if the word equals player's name, color the name
             for (String s : split) {
@@ -142,9 +124,7 @@ public class ChatDecoration {
 
             logMessage(prefix, player.getName(), msg);
 
-            String path2 = "messages.mention.action-bar";
-            p.sendActionBar(ColorUtils.color(Objects.requireNonNull(config.getString(path2),
-                    "String on path " + path2 + " wasn't found in config!")));
+            p.sendActionBar(ColorUtils.color(CoreSettings.CHAT_MENTION_ACTIONBAR));
             p.playSound(player, Sound.BLOCK_NOTE_BLOCK_FLUTE, 0.75f, 2);
 
             return true;
@@ -176,12 +156,7 @@ public class ChatDecoration {
      * @param player Player to change name color on
      */
     private void setNameColor(Player player){
-        FileConfiguration config = core.getConfig();
-
-        String path = "chat.name-color";
-        String color = config.getString(path);
-        player.displayName(ColorUtils.color(Objects.requireNonNull(color,
-                "String on path " + path + " wasn't found in config!"))
+        player.displayName(ColorUtils.color(CoreSettings.CHAT_NAME_COLOR)
                 .append(Component.text(player.getName())));
     }
 

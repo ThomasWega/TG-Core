@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Sets the config defaults for Messages (commands.yml)
+ * Sets the config defaults for CoreSettings (commands.yml)
  */
 public class MessagesConfig {
     

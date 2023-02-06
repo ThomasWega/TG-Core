@@ -1,8 +1,7 @@
 package net.trustgames.core.managers;
 
-import net.trustgames.core.Core;
+import net.trustgames.core.settings.CoreSettings;
 import net.trustgames.core.utils.ColorUtils;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,19 +9,12 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
  * Handles the command cooldowns
  */
 public class CommandManager implements Listener {
-
-    private final Core core;
-
-    public CommandManager(Core core) {
-        this.core = core;
-    }
 
     private final HashMap<UUID, Long> commandCooldown = new HashMap<>();
 
@@ -44,7 +36,6 @@ public class CommandManager implements Listener {
     private void onPlayerPreCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         UUID uuid = PlayerManager.getUUID(player);
-        FileConfiguration config = core.getConfig();
 
         // if player is in the cooldown hashmap
         if (!commandCooldown.containsKey(uuid)) {
@@ -56,8 +47,8 @@ public class CommandManager implements Listener {
              if "i" is more than the config value number.
              Meaning the player typed a command in the last second more than the allowed count.
             */
-            if (i >= config.getDouble("cooldowns.command.max-per-second")) {
-                player.sendMessage(ColorUtils.color(Objects.requireNonNull(config.getString("messages.command.spam"))));
+            if (i >= CoreSettings.COMMAND_MAX_PER_SEC) {
+                player.sendMessage(ColorUtils.color(CoreSettings.COMMAND_SPAM));
                 event.setCancelled(true);
             }
             // add i + 1 to increase the amount of times the player has typed a command in the last second

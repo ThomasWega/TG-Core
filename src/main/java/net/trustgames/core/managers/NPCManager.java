@@ -47,7 +47,7 @@ public class NPCManager {
     public NPCManager(Core core) {
         this.core = core;
         manager = core.getProtocolManager();
-        cooldownManager = new CooldownManager(core);
+        cooldownManager = new CooldownManager();
     }
 
     /**

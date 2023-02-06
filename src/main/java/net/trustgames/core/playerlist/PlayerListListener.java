@@ -2,8 +2,8 @@ package net.trustgames.core.playerlist;
 
 import net.kyori.adventure.text.Component;
 import net.trustgames.core.Core;
+import net.trustgames.core.settings.CoreSettings;
 import net.trustgames.core.utils.ColorUtils;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -27,10 +27,9 @@ public class PlayerListListener implements Listener {
     @EventHandler
     private void onPlayerJoin(PlayerJoinEvent event){
         Player player = event.getPlayer();
-        FileConfiguration config = core.getConfig();
 
-        Component header = ColorUtils.color(String.join("\n", config.getStringList("tablist.header")));
-        Component footer = ColorUtils.color(String.join("\n", config.getStringList("tablist.footer")));
+        Component header = ColorUtils.color(CoreSettings.TABLIST_HEADER);
+        Component footer = ColorUtils.color(CoreSettings.TABLIST_FOOTER);
 
         player.sendPlayerListHeaderAndFooter(header, footer);
 

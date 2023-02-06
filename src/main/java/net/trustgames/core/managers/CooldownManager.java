@@ -1,15 +1,13 @@
 package net.trustgames.core.managers;
 
-import net.trustgames.core.Core;
+import net.trustgames.core.settings.CoreSettings;
 import net.trustgames.core.utils.ColorUtils;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -17,12 +15,6 @@ import java.util.UUID;
  * Can be used by external classes
  */
 public class CooldownManager implements Listener {
-
-    private final Core core;
-
-    public CooldownManager(Core core) {
-        this.core = core;
-    }
 
     private final HashMap<UUID, Long> commandCooldownTime = new HashMap<>();
     private final HashMap<UUID, Long> cooldownMessageTime = new HashMap<>();
@@ -69,14 +61,13 @@ public class CooldownManager implements Listener {
      */
     private boolean isSpam(Player player) {
         UUID uuid = PlayerManager.getUUID(player);
-        FileConfiguration config = core.getConfig();
 
         /*
          if he has any last wait message, get the time and make sure the
          current time - the last time of wait message is larger than the min value in config
         */
         if (cooldownMessageTime.containsKey(uuid)) {
-            return !(config.getDouble("cooldowns.warn-messages-limit-in-seconds") <= (System.currentTimeMillis() - cooldownMessageTime.get(uuid)) / 1000d);
+            return !(CoreSettings.WARN_MESSAGES_LIMIT_SEC <= (System.currentTimeMillis() - cooldownMessageTime.get(uuid)) / 1000d);
         } else {
             cooldownMessageTime.put(uuid, System.currentTimeMillis());
             return false;
@@ -91,11 +82,10 @@ public class CooldownManager implements Listener {
      */
     private void sendMessage(Player player){
         UUID uuid = PlayerManager.getUUID(player);
-        FileConfiguration config = core.getConfig();
 
         if (isSpam(player)) return;
 
-        player.sendMessage(ColorUtils.color(Objects.requireNonNull(config.getString("messages.command.spam"))));
+        player.sendMessage(ColorUtils.color(CoreSettings.COMMAND_SPAM));
 
         cooldownMessageTime.put(uuid, System.currentTimeMillis());
     }
