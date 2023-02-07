@@ -77,7 +77,7 @@ public final class Core extends JavaPlugin {
         // TODO NPC add glow
         // TODO chat mention add who mentioned me
         // TODO Chat decoration use Component instead of String
-        // TODO Broken announcer printing
+        // TODO fix shading
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);

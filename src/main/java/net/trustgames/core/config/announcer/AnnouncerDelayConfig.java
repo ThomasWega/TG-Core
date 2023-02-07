@@ -1,7 +1,8 @@
 package net.trustgames.core.config.announcer;
 
 public enum AnnouncerDelayConfig {
-    DELAY(120L);
+    FIRST(30L), // in seconds
+    DELAY(360L); // in seconds
 
     private final long delay;
 

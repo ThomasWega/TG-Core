@@ -1,6 +1,7 @@
 package net.trustgames.core.managers;
 
 import net.trustgames.core.Core;
+import net.trustgames.core.config.announcer.AnnouncerDelayConfig;
 import net.trustgames.core.config.announcer.AnnouncerMessagesConfig;
 
 /**
@@ -21,10 +22,22 @@ public class AnnounceManager {
      * in the announcer.yml config
      */
     public void announceMessages() {
-        for (AnnouncerMessagesConfig msg : AnnouncerMessagesConfig.values()) {
-            core.getServer().getScheduler().runTaskLaterAsynchronously(core, () ->
-                    core.getServer().broadcast(
-                            msg.getMessage()), 120L);
-        }
+        AnnouncerMessagesConfig[] msgList = AnnouncerMessagesConfig.values();
+
+        /*
+         run every X seconds, every loop, it increases the index by 1, to move to the next message
+         if the index is same as the number of messages, go back to the start by setting the index to 0
+        */
+        core.getServer().getScheduler().runTaskTimerAsynchronously(core, new Runnable() {
+            int index = 0;
+                    @Override
+                    public void run() {
+                        if (index == msgList.length){
+                            index = 0;
+                        }
+                        core.getServer().broadcast(msgList[index].getMessage());
+                        index++;
+                    }
+                }, AnnouncerDelayConfig.FIRST.getDelay() * 20, AnnouncerDelayConfig.DELAY.getDelay() * 20);
     }
 }

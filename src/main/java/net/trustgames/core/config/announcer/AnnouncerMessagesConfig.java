@@ -4,18 +4,22 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 public enum AnnouncerMessagesConfig {
-    MESSAGE_WEBSITE(
+    WEB(
             "<newline>" +
                     "<yellow>1111" +
+                    "<newline>" +
                     "<hover:show_text:'<green>CLICK TO OPEN'><gold><bold><click:open_url:'http://www.trustgames.net'>OPEN URL<reset> non CLICK" +
+                    "<newline>" +
                     "<yellow>1111" +
                     "<newline>"
     ),
-    MESSAGE_STORE(
+    STORE(
             "<newline>" +
-                    "<yellow>1111" +
-                    "<hover:show_text:'<green>CLICK TO OPEN'><gold><bold><click:open_url:'http://www.trustgames.net'>OPEN URL<reset> non CLICK" +
-                    "<yellow>1111" +
+                    "<yellow>2222" +
+                    "<newline>" +
+                    "<hover:show_text:'<green>CLICK TO OPEN'><gold><bold><click:open_url:'http://store.trustgames.net'>OPEN URL<reset> non CLICK" +
+                    "<newline>" +
+                    "<yellow>2222" +
                     "<newline>"
     );
 

@@ -1,13 +1,10 @@
 package net.trustgames.core.cache;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.bukkit.entity.Entity;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -18,14 +15,9 @@ public class EntityCache {
     /**
      * Cache that holds the players uuid and expires every 6 hours
      */
-    private static final LoadingCache<Entity, UUID> cache = CacheBuilder.newBuilder()
+    private static final LoadingCache<Entity, UUID> cache = Caffeine.newBuilder()
             .expireAfterWrite(6, TimeUnit.HOURS)
-            .build(new CacheLoader<>() {
-                @Override
-                public @NotNull UUID load(@NotNull Entity player) {
-                    return player.getUniqueId();
-                }
-            });
+            .build(Entity::getUniqueId);
 
     /**
      * Get the UUID of the player from the cache
@@ -36,7 +28,7 @@ public class EntityCache {
     public static UUID getUUID(Entity player) {
         try {
             return cache.get(player);
-        } catch (ExecutionException e) {
+        } catch (RuntimeException e) {
             return player.getUniqueId();
         }
     }
