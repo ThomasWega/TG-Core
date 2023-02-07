@@ -80,8 +80,8 @@ public final class Core extends JavaPlugin {
         // TODO NPC action - command prints the command in chat
         // TODO NPC add glow
         // TODO chat mention add who mentioned me
-        // TODO Chat decoration use Component instead of String
-        // TODO chat - first message is white name
+        // TODO Use Components instead of Strings
+        // TODO MessageLimiter, make sure that colors in chat count as same message (Use Components)
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);

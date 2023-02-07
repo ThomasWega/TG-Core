@@ -10,6 +10,7 @@ import net.trustgames.core.cache.EntityCache;
 import net.trustgames.core.config.chat.ChatConfig;
 import net.trustgames.core.managers.LuckPermsManager;
 import net.trustgames.core.utils.ColorUtils;
+import net.trustgames.core.utils.ComponentUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -43,7 +44,7 @@ public class ChatDecoration implements Listener {
         for (Player p : Bukkit.getOnlinePlayers()) {
             // if the player is not mentioned, send him the normal message without colored name
             if (!setMention(p, message, prefix, event, messageColor)) {
-                p.sendMessage(getMessage(player, prefix, messageColor, message));
+                p.sendMessage(getMessage(player, prefix, message));
 
                 logMessage(prefix, player.getName(), message);
             }
@@ -60,23 +61,13 @@ public class ChatDecoration implements Listener {
      * @return Colored message if player has permission
      */
     private Component setColor(Player player, Component message){
-        if (allowColor(player)) {
+        if (player.hasPermission(ChatConfig.ALLOW_COLORS_PERM.getRaw())) {
             message = ColorUtils.color(message);
         }
         else{
             message = Component.text(ColorUtils.stripColor(message));
         }
         return message;
-    }
-
-    /**
-     * Check if the player has permission to use color codes in chat
-     *
-     * @param player Player to check permission on
-     * @return True if player has permission to use color codes
-     */
-    private boolean allowColor(Player player){
-        return player.hasPermission(ChatConfig.ALLOW_COLORS_PERM.getRaw());
     }
 
     /**
@@ -97,7 +88,7 @@ public class ChatDecoration implements Listener {
         message = setColor(player, message);
 
         // remove the player name from the message
-        String desMsg = ColorUtils.stripColor(message)
+        String desMsg = ComponentUtils.convertToString(message)
                 .replace(player.displayName().toString(), "");
         List<String> split = Arrays.stream(desMsg.split(" ")).toList();
 
@@ -112,19 +103,22 @@ public class ChatDecoration implements Listener {
 
             TextColor nameColor = ChatConfig.MENTION_COLOR.getColor();
 
+            TextColor messageColorNew;
             // if the word equals player's name, color the name
             for (String s : split) {
                 if (s.equalsIgnoreCase(p.getName())) {
                     newMsg.add(Component.text(s).color(nameColor));
                 }else{
-                    newMsg.add(Component.text(s).color(messageColor));
+                    messageColorNew = (ColorUtils.color(s).color() != null) ? ColorUtils.color(s).color() : messageColor;
+                    newMsg.add(ColorUtils.color(s).colorIfAbsent(messageColorNew));
                 }
             }
 
             Component msg = Component.join(JoinConfiguration.separator(Component.text(" ")), newMsg);
+            player.sendMessage(msg);
 
             // send different types of messages depending on if the player has permission to use color codes
-            p.sendMessage(getMessage(player, prefix, messageColor, msg));
+            p.sendMessage(getMessage(player, prefix, msg));
 
             logMessage(prefix, player.getName(), msg);
 
@@ -158,18 +152,17 @@ public class ChatDecoration implements Listener {
      *
      * @param player Player to copy his name on name click
      * @param prefix Prefix the player has
-     * @param messageColor The color of the message
      * @param message Only the last parts change, depending on if player can use color or not
      * @return Complete Component message
      */
-    private Component getMessage(Player player, Component prefix, TextColor messageColor, Component message){
+    private Component getMessage(Player player, Component prefix, Component message){
         return Component.textOfChildren(prefix)
                 .append(Component.textOfChildren(
                         player.displayName()
                                 .hoverEvent(HoverEvent.showText(Component.text("TO ADD...")))
                                 .clickEvent(ClickEvent.suggestCommand(player.getName()))))
                 .append(Component.text(" ")
-                        .append(message)).color(messageColor);
+                        .append(message));
     }
 
     /**
