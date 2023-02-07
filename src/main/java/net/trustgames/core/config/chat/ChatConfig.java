@@ -6,15 +6,17 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.trustgames.core.utils.ColorUtils;
 import net.trustgames.core.utils.MiniMessageUtils;
 
+import java.util.UUID;
+
 public enum ChatConfig {
     PREFIX("<color:#00adc4>Chat | </color>"),
-    COLOR("&3"),
-    NAME_COLOR("&d"),
+    COLOR("&f"),
+    NAME_COLOR("&e"),
     ALLOW_COLORS_PERM("core.knight"),
-    MENTION_COLOR("&e"),
+    MENTION_COLOR("&a"),
     ON_COOLDOWN(PREFIX.value + "<dark_gray>Wait another <sec> seconds before using chat again!"),
     ON_SAME_COOLDOWN(PREFIX.value + "<dark_gray>Don't write the same message! (wait <sec> seconds)"),
-    MENTION_ACTIONBAR("<gray>You've been mentioned in chat");
+    MENTION_ACTIONBAR("<gray><player_name> mentioned you");
 
     private final String value;
 
@@ -27,6 +29,16 @@ public enum ChatConfig {
      */
     public Component getText() {
         return MiniMessage.miniMessage().deserialize(value);
+    }
+
+    /**
+     * Replace tags with player info
+     *
+     * @param uuid UUID of Player to replace the tags with info of
+     * @return New formatted Component message with replaced tags
+     */
+    public Component formatMessage(UUID uuid) {
+        return MiniMessageUtils.format(uuid).deserialize(value);
     }
 
     /**

@@ -34,18 +34,18 @@ public class ChatDecoration implements Listener {
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void decorate(AsyncChatEvent event) {
-        Player player = event.getPlayer();
-        UUID uuid = EntityCache.getUUID(player);
-        Component message = setColor(player, event.originalMessage());
+        Player sender = event.getPlayer();
+        UUID uuid = EntityCache.getUUID(sender);
+        Component message = setColor(sender, event.originalMessage());
 
         Component prefix = setPrefix(uuid);
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             // if the player is not mentioned, send him the normal message without colored name
-            if (!setMention(p, message, prefix, event)) {
-                p.sendMessage(getMessage(player, prefix, message));
+            if (!setMention(sender, p, message, prefix)) {
+                p.sendMessage(getMessage(sender, prefix, message));
 
-                logMessage(prefix, player.getName(), message);
+                logMessage(prefix, sender.getName(), message);
             }
         }
         event.setCancelled(true);
@@ -72,21 +72,20 @@ public class ChatDecoration implements Listener {
      * that were mentioned. Also send them action bar message
      * and play a sound
      *
+     * @param sender The message sender
      * @param p Player from the loop
      * @param message Chat message that was sent
      * @param prefix What prefix the player has
-     * @param event The main AsyncChatEvent
      * @return True if mention colors were set
      */
-    private boolean setMention(Player p, Component message, Component prefix, AsyncChatEvent event){
+    private boolean setMention(Player sender, Player p, Component message, Component prefix){
         Set<Player> mentionedPlayers = new HashSet<>();
-        Player player = event.getPlayer();
 
-        message = setColor(player, message);
+        message = setColor(sender, message);
 
         // remove the player name from the message
         String desMsg = ComponentUtils.toString(message)
-                .replace(player.displayName().toString(), "")
+                .replace(sender.displayName().toString(), "")
                 .replaceAll(ChatConfig.COLOR.getRaw(), "");
         List<String> split = Arrays.stream(desMsg.split(" ")).toList();
 
@@ -112,15 +111,14 @@ public class ChatDecoration implements Listener {
             }
 
             Component msg = Component.join(JoinConfiguration.separator(Component.text(" ")), newMsg);
-            player.sendMessage(msg);
 
             // send different types of messages depending on if the player has permission to use color codes
-            p.sendMessage(getMessage(player, prefix, msg));
+            p.sendMessage(getMessage(sender, prefix, msg));
 
-            logMessage(prefix, player.getName(), msg);
+            logMessage(prefix, sender.getName(), msg);
 
-            p.sendActionBar(ChatConfig.MENTION_ACTIONBAR.getText());
-            p.playSound(player, Sound.BLOCK_NOTE_BLOCK_FLUTE, 0.75f, 2);
+            p.sendActionBar(ChatConfig.MENTION_ACTIONBAR.formatMessage(EntityCache.getUUID(sender)));
+            p.playSound(sender, Sound.BLOCK_NOTE_BLOCK_FLUTE, 0.75f, 2);
 
             return true;
         }

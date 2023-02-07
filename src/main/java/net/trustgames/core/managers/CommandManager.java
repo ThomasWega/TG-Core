@@ -2,7 +2,7 @@ package net.trustgames.core.managers;
 
 import net.trustgames.core.cache.EntityCache;
 import net.trustgames.core.config.command.CommandConfig;
-import net.trustgames.core.config.cooldown.CooldownConfig;
+import net.trustgames.core.config.cooldown.CommandCooldownConfig;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -48,7 +48,7 @@ public class CommandManager implements Listener {
              if "i" is more than the config value number.
              Meaning the player typed a command in the last second more than the allowed count.
             */
-            if (i >= CooldownConfig.COMMAND_MAX_PER_SEC.getValue()) {
+            if (i >= CommandCooldownConfig.MAX_PER_SEC.getValue()) {
                 player.sendMessage(CommandConfig.COMMAND_SPAM.getText());
                 event.setCancelled(true);
             }

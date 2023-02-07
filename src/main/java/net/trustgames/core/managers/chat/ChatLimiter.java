@@ -4,7 +4,7 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import net.trustgames.core.cache.EntityCache;
 import net.trustgames.core.config.chat.ChatConfig;
 import net.trustgames.core.config.chat.ChatLimitConfig;
-import net.trustgames.core.config.cooldown.CooldownConfig;
+import net.trustgames.core.config.cooldown.MessagesCooldownConfig;
 import net.trustgames.core.managers.LuckPermsManager;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.entity.Player;
@@ -226,7 +226,7 @@ public class ChatLimiter implements Listener {
          current time - the last time of wait message is larger than the min value configured
         */
         if (lastWaitMessage.containsKey(uuid)) {
-            return CooldownConfig.WARN_MESSAGES_LIMIT_SEC.getValue() > (System.currentTimeMillis() - lastWaitMessage.get(uuid)) / 1000d;
+            return MessagesCooldownConfig.WARN_MESSAGES_LIMIT_SEC.getValue() > (System.currentTimeMillis() - lastWaitMessage.get(uuid)) / 1000d;
             // if the last message doesn't contain the player (meaning he probably didn't receive any wait messages, put him in the map and return false
         } else {
             lastWaitMessage.put(uuid, System.currentTimeMillis());

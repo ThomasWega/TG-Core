@@ -17,7 +17,7 @@ import net.trustgames.core.managers.chat.ChatDecoration;
 import net.trustgames.core.managers.chat.ChatLimiter;
 import net.trustgames.core.playerlist.PlayerListListener;
 import net.trustgames.core.playerlist.PlayerListTeams;
-import net.trustgames.core.config.command.MessagesCommandConfig;
+import net.trustgames.core.config.command.CommandMessagesConfig;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
@@ -140,7 +140,7 @@ public final class Core extends JavaPlugin {
         cmdList.put(getCommand("activity-id"), new ActivityIdCommand(this));
 
         // Messages Commands
-        for (MessagesCommandConfig msgCmd : MessagesCommandConfig.values()){
+        for (CommandMessagesConfig msgCmd : CommandMessagesConfig.values()){
             cmdList.put(getCommand(msgCmd.name().toLowerCase()), new MessagesCommand());
         }
 
