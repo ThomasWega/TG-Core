@@ -23,15 +23,14 @@ public class MiniMessageUtils {
      * @return new MiniMessage with formatter ready
      */
     public static MiniMessage format(UUID uuid){
-        String prefix = LuckPermsManager.getPlayerPrefix(uuid);
-        if (!prefix.equals("")){
-            prefix = prefix + " ";
+        Component prefix = LuckPermsManager.getPlayerPrefix(uuid);
+        if (!prefix.equals(Component.text(""))){
+            prefix = prefix.append(Component.text(" "));
         }
         return MiniMessage.builder()
                 .tags(TagResolver.builder()
                         .resolver(StandardTags.defaults())
-                        .resolver(TagResolver.resolver("prefix", Tag.selfClosingInserting(
-                                ColorUtils.color(prefix))))
+                        .resolver(TagResolver.resolver("prefix", Tag.selfClosingInserting(prefix)))
                         .resolver(TagResolver.resolver("player_name", Tag.selfClosingInserting(Component.text(Objects.requireNonNull(
                                 Bukkit.getOfflinePlayer(uuid).getName())))))
                         .resolver(TagResolver.resolver("player_display_name", Tag.selfClosingInserting(Objects.requireNonNull(

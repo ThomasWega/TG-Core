@@ -63,6 +63,10 @@ public final class Core extends JavaPlugin {
         - maintenance
         */
 
+        /* SIDE ADDITIONS
+        - hover on player name in chat, add info
+         */
+
         /* CHANGE on server side
         - disallow some default command (/?, /version, /plugins, etc.) - make permissions false
         - change some default messages (unknown command, etc.) - change in server .yml files
@@ -77,6 +81,7 @@ public final class Core extends JavaPlugin {
         // TODO NPC add glow
         // TODO chat mention add who mentioned me
         // TODO Chat decoration use Component instead of String
+        // TODO chat - first message is white name
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
@@ -122,6 +127,7 @@ public final class Core extends JavaPlugin {
         pluginManager.registerEvents(new ActivityListener(this), this);
         pluginManager.registerEvents(new CommandManager(), this);
         pluginManager.registerEvents(new CooldownManager(), this);
+        pluginManager.registerEvents(new PlayerManager(), this);
         pluginManager.registerEvents(new ChatLimiter(), this);
         pluginManager.registerEvents(new ChatDecoration(), this);
         pluginManager.registerEvents(new PlayerListListener(this), this);

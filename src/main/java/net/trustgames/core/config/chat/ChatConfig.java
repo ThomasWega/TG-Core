@@ -1,7 +1,9 @@
 package net.trustgames.core.config.chat;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.trustgames.core.utils.ColorUtils;
 import net.trustgames.core.utils.MiniMessageUtils;
 
 public enum ChatConfig {
@@ -32,6 +34,13 @@ public enum ChatConfig {
      */
     public String getRaw(){
         return value;
+    }
+
+    /**
+     * @return Color with value of enum
+     */
+    public TextColor getColor(){
+        return ColorUtils.color(value).color();
     }
 
     /**

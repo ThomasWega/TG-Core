@@ -1,5 +1,6 @@
 package net.trustgames.core.managers;
 
+import net.kyori.adventure.text.Component;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.event.EventBus;
 import net.luckperms.api.event.user.UserDataRecalculateEvent;
@@ -8,7 +9,9 @@ import net.luckperms.api.model.group.GroupManager;
 import net.luckperms.api.model.user.User;
 import net.trustgames.core.Core;
 import net.trustgames.core.playerlist.PlayerListTeams;
+import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -86,14 +89,12 @@ public class LuckPermsManager {
      * @param uuid UUID of Player to get prefix for
      * @return Player prefix String
      */
-    public static String getPlayerPrefix(UUID uuid){
+    public static @NotNull Component getPlayerPrefix(UUID uuid){
         User user = luckPerms.getUserManager().getUser(uuid);
-        String prefix = null;
+        Component prefix = Component.text("");
         if (user != null){
-            prefix = user.getCachedData().getMetaData().getPrefix();
-        }
-        if (prefix == null){
-            prefix = "";
+            String prefixString = user.getCachedData().getMetaData().getPrefix();
+            prefix = ColorUtils.color(Objects.requireNonNullElse(prefixString, ""));
         }
         return prefix;
     }

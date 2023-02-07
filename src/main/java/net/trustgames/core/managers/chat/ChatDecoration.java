@@ -4,6 +4,8 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.TextColor;
 import net.trustgames.core.cache.EntityCache;
 import net.trustgames.core.config.chat.ChatConfig;
 import net.trustgames.core.managers.LuckPermsManager;
@@ -34,12 +36,11 @@ public class ChatDecoration implements Listener {
         Player player = event.getPlayer();
         UUID uuid = EntityCache.getUUID(player);
         Component message = setColor(player, event.originalMessage());
-        String messageColor = ChatConfig.COLOR.getRaw();
+        TextColor messageColor = ChatConfig.COLOR.getColor();
 
-        String prefix = setPrefix(uuid);
+        Component prefix = setPrefix(uuid);
 
         for (Player p : Bukkit.getOnlinePlayers()) {
-            setNameColor(p);
             // if the player is not mentioned, send him the normal message without colored name
             if (!setMention(p, message, prefix, event, messageColor)) {
                 p.sendMessage(getMessage(player, prefix, messageColor, message));
@@ -89,7 +90,7 @@ public class ChatDecoration implements Listener {
      * @param event The main AsyncChatEvent
      * @return True if mention colors were set
      */
-    private boolean setMention(Player p, Component message, String prefix, AsyncChatEvent event, String messageColor){
+    private boolean setMention(Player p, Component message, Component prefix, AsyncChatEvent event, TextColor messageColor){
         Set<Player> mentionedPlayers = new HashSet<>();
         Player player = event.getPlayer();
 
@@ -101,23 +102,22 @@ public class ChatDecoration implements Listener {
         List<String> split = Arrays.stream(desMsg.split(" ")).toList();
 
         // check if chat message contains player's name
-        for (Player player1 : Bukkit.getOnlinePlayers()){
-            if (split.contains(p.getName())){
-                mentionedPlayers.add(player1);
-            }
+        if (split.contains(p.getName())){
+            mentionedPlayers.add(p);
+
         }
 
         if (mentionedPlayers.contains(p)) {
             List<Component> newMsg = new ArrayList<>();
 
-            String nameColor = ChatConfig.MENTION_COLOR.getRaw();
+            TextColor nameColor = ChatConfig.MENTION_COLOR.getColor();
 
             // if the word equals player's name, color the name
             for (String s : split) {
                 if (s.equalsIgnoreCase(p.getName())) {
-                    newMsg.add(ColorUtils.color(nameColor + s + messageColor));
+                    newMsg.add(Component.text(s).color(nameColor));
                 }else{
-                    newMsg.add(ColorUtils.color(messageColor).append(ColorUtils.color(s)));
+                    newMsg.add(Component.text(s).color(messageColor));
                 }
             }
 
@@ -143,25 +143,14 @@ public class ChatDecoration implements Listener {
      * @param uuid UUID of Player to get prefix on
      * @return Player's prefix
      */
-    private String setPrefix(UUID uuid){
-        String prefix = LuckPermsManager.getPlayerPrefix(uuid) + " ";
+    private Component setPrefix(UUID uuid){
+        Component prefix = LuckPermsManager.getPlayerPrefix(uuid);
 
         // if player doesn't have any prefix, make sure there is not a space before his name
-        if (LuckPermsManager.getPlayerPrefix(uuid).equals("")) {
-            prefix = "";
+        if (!prefix.equals(Component.text(""))) {
+            prefix = prefix.append(Component.text(" "));
         }
         return prefix;
-    }
-
-    /**
-     * Changes the display name color of the player to
-     * the config value
-     *
-     * @param player Player to change name color on
-     */
-    private void setNameColor(Player player){
-        player.displayName(ColorUtils.color(ChatConfig.NAME_COLOR.getText())
-                .append(Component.text(player.getName())));
     }
 
     /**
@@ -170,17 +159,17 @@ public class ChatDecoration implements Listener {
      * @param player Player to copy his name on name click
      * @param prefix Prefix the player has
      * @param messageColor The color of the message
-     * @param message Only the last parts change, depending on
-     *                          if player can use color or not
+     * @param message Only the last parts change, depending on if player can use color or not
      * @return Complete Component message
      */
-    private Component getMessage(Player player, String prefix, String messageColor, Component message){
-        return Component.textOfChildren(ColorUtils.color(prefix))
+    private Component getMessage(Player player, Component prefix, TextColor messageColor, Component message){
+        return Component.textOfChildren(prefix)
                 .append(Component.textOfChildren(
                         player.displayName()
+                                .hoverEvent(HoverEvent.showText(Component.text("TO ADD...")))
                                 .clickEvent(ClickEvent.suggestCommand(player.getName()))))
-                .append(ColorUtils.color(messageColor + " ")
-                        .append(message));
+                .append(Component.text(" ")
+                        .append(message)).color(messageColor);
     }
 
     /**
@@ -190,8 +179,8 @@ public class ChatDecoration implements Listener {
      * @param playerName Player's name that sent the chat message
      * @param message Message sent in chat by Player
      */
-    private void logMessage(String prefix, String playerName, Component message){
+    private void logMessage(Component prefix, String playerName, Component message){
         Bukkit.getLogger().log(Level.INFO, ColorUtils.stripColor(
-                ColorUtils.color(prefix + playerName + " ").append(message)));
+                prefix.append(Component.text(playerName)).append(Component.text(" ")).append(message)));
     }
 }
