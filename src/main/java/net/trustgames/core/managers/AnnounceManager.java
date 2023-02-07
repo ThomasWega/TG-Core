@@ -1,17 +1,17 @@
 package net.trustgames.core.managers;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.config.announcer.AnnouncerConfig;
+import net.trustgames.core.config.announcer.AnnouncerMessagesConfig;
 
 /**
  * Chat messages which are announced to all online players
  * on the server.
  */
-public class AnnouncerManager {
+public class AnnounceManager {
 
     private final Core core;
 
-    public AnnouncerManager(Core core) {
+    public AnnounceManager(Core core) {
         this.core = core;
     }
 
@@ -21,10 +21,10 @@ public class AnnouncerManager {
      * in the announcer.yml config
      */
     public void announceMessages() {
-        for (AnnouncerConfig msg : AnnouncerConfig.values()) {
+        for (AnnouncerMessagesConfig msg : AnnouncerMessagesConfig.values()) {
             core.getServer().getScheduler().runTaskLaterAsynchronously(core, () ->
                     core.getServer().broadcast(
-                            msg.getMessage()), AnnouncerConfig.DELAY.getDelay());
+                            msg.getMessage()), 120L);
         }
     }
 }

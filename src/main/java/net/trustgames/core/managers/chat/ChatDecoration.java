@@ -1,4 +1,4 @@
-package net.trustgames.core.chat;
+package net.trustgames.core.managers.chat;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
@@ -10,6 +10,9 @@ import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -17,16 +20,15 @@ import java.util.logging.Level;
 /**
  * Handles the addition of prefix and colors in the chat
  */
-public class ChatDecoration {
+public class ChatDecoration implements Listener {
 
     /**
      * Adds the player a prefix and makes sure that the Minecraft new
      * report feature doesn't work and doesn't produce the symbols next to the
      * chat message. Also makes sure to send a modified message if a player is
      * mentioned in the chat.
-     *
-     * @param event the main AsyncChatEvent
      */
+    @EventHandler(priority = EventPriority.NORMAL)
     public void decorate(AsyncChatEvent event) {
         Player player = event.getPlayer();
         Component message = setColor(player, event.originalMessage());

@@ -13,6 +13,8 @@ import net.trustgames.core.database.player_activity.ActivityListener;
 import net.trustgames.core.database.player_activity.PlayerActivityDB;
 import net.trustgames.core.gamerules.CoreGamerules;
 import net.trustgames.core.managers.*;
+import net.trustgames.core.managers.chat.ChatDecoration;
+import net.trustgames.core.managers.chat.ChatLimiter;
 import net.trustgames.core.playerlist.PlayerListListener;
 import net.trustgames.core.playerlist.PlayerListTeams;
 import net.trustgames.core.config.command.MessagesCommandConfig;
@@ -34,7 +36,7 @@ import java.util.HashMap;
 public final class Core extends JavaPlugin {
 
     final MariaDB mariaDB = new MariaDB(this);
-    private final AnnouncerManager announcerManager = new AnnouncerManager(this);
+    private final AnnounceManager announceManager = new AnnounceManager(this);
     private final PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
     private final ShutdownManager shutdownManager = new ShutdownManager(this);
     public CooldownManager cooldownManager = new CooldownManager();
@@ -75,7 +77,6 @@ public final class Core extends JavaPlugin {
         // TODO NPC add glow
         // TODO chat mention add who mentioned me
         // TODO Chat decoration use Component instead of String
-        // TODO on every startup, 120 is printed
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
@@ -102,7 +103,7 @@ public final class Core extends JavaPlugin {
 
         CoreGamerules.setGamerules();
 
-        announcerManager.announceMessages();
+        announceManager.announceMessages();
     }
 
     @Override
@@ -121,7 +122,8 @@ public final class Core extends JavaPlugin {
         pluginManager.registerEvents(new ActivityListener(this), this);
         pluginManager.registerEvents(new CommandManager(), this);
         pluginManager.registerEvents(new CooldownManager(), this);
-        pluginManager.registerEvents(new ChatManager(), this);
+        pluginManager.registerEvents(new ChatLimiter(), this);
+        pluginManager.registerEvents(new ChatDecoration(), this);
         pluginManager.registerEvents(new PlayerListListener(this), this);
         pluginManager.registerEvents(new ActivityCommand(this), this);
     }

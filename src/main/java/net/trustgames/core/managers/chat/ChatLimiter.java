@@ -1,4 +1,4 @@
-package net.trustgames.core.chat;
+package net.trustgames.core.managers.chat;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.trustgames.core.config.chat.ChatLimitConfig;
@@ -6,6 +6,9 @@ import net.trustgames.core.config.chat.ChatConfig;
 import net.trustgames.core.config.cooldown.CooldownConfig;
 import net.trustgames.core.managers.LuckPermsManager;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.*;
@@ -16,7 +19,7 @@ import java.util.*;
  * too many cooldown messages to not spam the player's chat.
  */
 
-public class MessageLimiter {
+public class ChatLimiter implements Listener {
     private final HashMap<UUID, Long> cooldownTime = new HashMap<>();
     private final Map<String, Double> ranksChatCooldown = new TreeMap<>();
     private final Map<String, Double> ranksSameChatCooldown = new TreeMap<>();
@@ -27,6 +30,7 @@ public class MessageLimiter {
      * It gets the configured keys and puts them
      * to a hashmap with their corresponding values. Then it runs the checks method
      */
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void limit(AsyncChatEvent event) {
         Player player = event.getPlayer();
         String playerMessage = event.message().toString();
