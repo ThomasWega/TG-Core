@@ -6,6 +6,7 @@ import net.trustgames.core.config.chat.ChatConfig;
 import net.trustgames.core.config.chat.ChatLimitConfig;
 import net.trustgames.core.config.cooldown.CooldownConfig;
 import net.trustgames.core.managers.LuckPermsManager;
+import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -34,7 +35,7 @@ public class ChatLimiter implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void limit(AsyncChatEvent event) {
         Player player = event.getPlayer();
-        String playerMessage = event.message().toString();
+        String playerMessage = ColorUtils.stripColor(event.originalMessage());
         if (player.hasPermission("core.staff")) return;
 
         /*
@@ -195,8 +196,6 @@ public class ChatLimiter implements Listener {
             player.sendMessage(ChatConfig.ON_SAME_COOLDOWN.addSeconds(getWaitTime(player, ranksSameChatCooldown.get(rank))));
         } else {
             player.sendMessage(ChatConfig.ON_COOLDOWN.addSeconds(getWaitTime(player, ranksChatCooldown.get(rank))));
-
-
         }
         // log the last time player got the wait message (used in the anti-spam method)
         lastWaitMessage.put(uuid, System.currentTimeMillis());

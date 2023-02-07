@@ -6,7 +6,6 @@ import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.trustgames.core.cache.EntityCache;
 import net.trustgames.core.config.chat.ChatConfig;
 import net.trustgames.core.managers.LuckPermsManager;
@@ -38,7 +37,6 @@ public class ChatDecoration implements Listener {
         Player player = event.getPlayer();
         UUID uuid = EntityCache.getUUID(player);
         Component message = setColor(player, event.originalMessage());
-        System.out.println(PlainTextComponentSerializer.plainText().serialize(message));
 
         Component prefix = setPrefix(uuid);
 
@@ -91,8 +89,6 @@ public class ChatDecoration implements Listener {
                 .replace(player.displayName().toString(), "")
                 .replaceAll(ChatConfig.COLOR.getRaw(), "");
         List<String> split = Arrays.stream(desMsg.split(" ")).toList();
-
-        System.out.println(desMsg);
 
         // check if chat message contains player's name
         if (split.contains(p.getName())){
