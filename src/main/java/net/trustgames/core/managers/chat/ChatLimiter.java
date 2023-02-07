@@ -1,6 +1,7 @@
 package net.trustgames.core.managers.chat;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
+import net.trustgames.core.cache.EntityCache;
 import net.trustgames.core.config.chat.ChatLimitConfig;
 import net.trustgames.core.config.chat.ChatConfig;
 import net.trustgames.core.config.cooldown.CooldownConfig;
@@ -59,10 +60,12 @@ public class ChatLimiter implements Listener {
      * or put the player's message to the correct map.
      *
      * @param player        Player who wrote the message
-     * @param event         AsyncChatEvent
+     * @param event         the main AsyncChatEvent
      * @param playerMessage Player's chat message
      */
     private void doChecks(Player player, AsyncChatEvent event, String playerMessage) {
+        UUID uuid = EntityCache.getUUID(player);
+
         // gets the highest rank player has permission to
         String rank = getPermission(player);
 
@@ -78,8 +81,8 @@ public class ChatLimiter implements Listener {
         to the hashmap. If he is already in the hashmap and at the same time is on the cooldown, it
         will send him the wait message and cancel the event.
          */
-        if (!lastPlayerMessage.containsKey(player.getUniqueId())) {
-            lastPlayerMessage.put(player.getUniqueId(), playerMessage);
+        if (!lastPlayerMessage.containsKey(uuid)) {
+            lastPlayerMessage.put(uuid, playerMessage);
         } else if (isSameMessage(player, playerMessage) && isOnCooldown(player, rank, true)) {
             sendMessage(player, rank, true);
             event.setCancelled(true);
@@ -91,8 +94,8 @@ public class ChatLimiter implements Listener {
         in the hashmap (if he isn't there already) or if he isn't on cooldown anymore. If he is in on the cooldown
         however, it will send him a wait message and cancel the event.
          */
-        if (!cooldownTime.containsKey(player.getUniqueId()) || !isOnCooldown(player, rank, false)) {
-            cooldownTime.put(player.getUniqueId(), System.currentTimeMillis());
+        if (!cooldownTime.containsKey(uuid) || !isOnCooldown(player, rank, false)) {
+            cooldownTime.put(uuid, System.currentTimeMillis());
         } else if (isOnCooldown(player, rank, false)) {
             sendMessage(player, rank, false);
             event.setCancelled(true);
@@ -130,6 +133,7 @@ public class ChatLimiter implements Listener {
      * @return is Player on Cooldown
      */
     private boolean isOnCooldown(Player player, String rank, boolean sameMessage) {
+        UUID uuid = EntityCache.getUUID(player);
 
         /*
         Check if the message is same as the last time. In case it is, it will use a completely different
@@ -138,14 +142,14 @@ public class ChatLimiter implements Listener {
         the normal cooldown time and return true if he is still in the cooldown
          */
         if (sameMessage) {
-            return !(ranksSameChatCooldown.get(rank) <= (System.currentTimeMillis() - cooldownTime.get(player.getUniqueId())) / 1000d);
+            return !(ranksSameChatCooldown.get(rank) <= (System.currentTimeMillis() - cooldownTime.get(uuid)) / 1000d);
         } else {
             /*
          check if the cooldown time of the given rank is smaller than the
          (current time - the time the player last wrote a message) divided by 1000
          (to convert it to seconds to match the configured time)
          */
-            return !(ranksChatCooldown.get(rank) <= (System.currentTimeMillis() - cooldownTime.get(player.getUniqueId())) / 1000d);
+            return !(ranksChatCooldown.get(rank) <= (System.currentTimeMillis() - cooldownTime.get(uuid)) / 1000d);
         }
     }
 
@@ -161,10 +165,11 @@ public class ChatLimiter implements Listener {
      * @return is the same message as the last time
      */
     private boolean isSameMessage(Player player, String playerMessage) {
-        if (playerMessage.replaceAll("[^\\p{Alnum}]", "").equalsIgnoreCase(lastPlayerMessage.get(player.getUniqueId()).replaceAll("[^\\p{Alnum}]", ""))) {
+        UUID uuid = EntityCache.getUUID(player);
+        if (playerMessage.replaceAll("[^\\p{Alnum}]", "").equalsIgnoreCase(lastPlayerMessage.get(uuid).replaceAll("[^\\p{Alnum}]", ""))) {
             return true;
         } else {
-            lastPlayerMessage.put(player.getUniqueId(), playerMessage);
+            lastPlayerMessage.put(uuid, playerMessage);
             return false;
         }
     }
@@ -177,7 +182,7 @@ public class ChatLimiter implements Listener {
      * @param sameMessage is it the same message as the last time
      */
     private void sendMessage(Player player, String rank, boolean sameMessage) {
-
+        UUID uuid = EntityCache.getUUID(player);
         /*
          checks if the message print wouldn't be too spammy. Meaning, if the player used
          the chat 10 times a second, he would get the wait message only sometimes. The message
@@ -194,7 +199,7 @@ public class ChatLimiter implements Listener {
 
         }
         // log the last time player got the wait message (used in the anti-spam method)
-        lastWaitMessage.put(player.getUniqueId(), System.currentTimeMillis());
+        lastWaitMessage.put(uuid, System.currentTimeMillis());
     }
 
     /**
@@ -205,7 +210,8 @@ public class ChatLimiter implements Listener {
      * @return The time remaining until the player can write again
      */
     private double getWaitTime(Player player, double time) {
-        return (time - ((System.currentTimeMillis() - cooldownTime.get(player.getUniqueId())) / 1000d));
+        UUID uuid = EntityCache.getUUID(player);
+        return (time - ((System.currentTimeMillis() - cooldownTime.get(uuid)) / 1000d));
     }
 
     /**
@@ -215,33 +221,27 @@ public class ChatLimiter implements Listener {
      * @return is the cooldown message being sent too often
      */
     private boolean isSpam(Player player) {
+        UUID uuid = EntityCache.getUUID(player);
         /*
          if he has any last wait message, get the time and make sure the
          current time - the last time of wait message is larger than the min value configured
         */
-        if (lastWaitMessage.containsKey(player.getUniqueId())) {
-            return CooldownConfig.WARN_MESSAGES_LIMIT_SEC.getValue() > (System.currentTimeMillis() - lastWaitMessage.get(player.getUniqueId())) / 1000d;
+        if (lastWaitMessage.containsKey(uuid)) {
+            return CooldownConfig.WARN_MESSAGES_LIMIT_SEC.getValue() > (System.currentTimeMillis() - lastWaitMessage.get(uuid)) / 1000d;
             // if the last message doesn't contain the player (meaning he probably didn't receive any wait messages, put him in the map and return false
         } else {
-            lastWaitMessage.put(player.getUniqueId(), System.currentTimeMillis());
+            lastWaitMessage.put(uuid, System.currentTimeMillis());
             return false;
         }
     }
 
-    /**
-     * when the player leaves, make sure that he isn't no longer in the maps
-     * - remove him from the last wait message (lastWaitMessage) map
-     * - remove him from the cooldown time message (cooldownTime) map
-     * - remove him from the same message (lastPlayerMessage) map
-     *
-     * @param event PlayerQuit
-     */
-
+    @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
+        UUID uuid = EntityCache.getUUID(player);
 
-        lastWaitMessage.remove(player.getUniqueId());
-        cooldownTime.remove(player.getUniqueId());
-        lastPlayerMessage.remove(player.getUniqueId());
+        lastWaitMessage.remove(uuid);
+        cooldownTime.remove(uuid);
+        lastPlayerMessage.remove(uuid);
     }
 }

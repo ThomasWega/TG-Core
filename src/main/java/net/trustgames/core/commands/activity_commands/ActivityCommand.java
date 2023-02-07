@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.trustgames.core.Core;
+import net.trustgames.core.cache.OfflinePlayerCache;
 import net.trustgames.core.config.command.CommandConfig;
 import net.trustgames.core.managers.InventoryManager;
 import net.trustgames.core.managers.ItemManager;
@@ -117,8 +118,8 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 createRecords(offlinePlayer);
 
                 if (records.isEmpty()){
-                    sender.sendMessage(
-                            CommandConfig.COMMAND_NO_PLAYER_ACT.formatMessage(offlinePlayer.getPlayer()));
+                    UUID offlineUUID = OfflinePlayerCache.getUUID(offlinePlayer);
+                    sender.sendMessage(CommandConfig.COMMAND_NO_PLAYER_ACT.formatMessage(offlineUUID));
                     return true;
                 }
 
@@ -144,8 +145,9 @@ public class ActivityCommand implements CommandExecutor, Listener {
      */
     private void createRecords(OfflinePlayer offlinePlayer){
         ActivityQuery activityQuery = new ActivityQuery(core);
+        UUID offlineUuid = OfflinePlayerCache.getUUID(offlinePlayer);
 
-        ResultSet resultSet = activityQuery.getActivityByUUID(offlinePlayer.getUniqueId().toString());
+        ResultSet resultSet = activityQuery.getActivityByUUID(offlineUuid.toString());
         ItemStack targetHead = ItemManager.createItemStack(Material.PAINTING, 1);
 
         /*
@@ -363,12 +365,9 @@ public class ActivityCommand implements CommandExecutor, Listener {
                             item.lore()).get(6).clickEvent(), "Click event on item is null!")
                             .value();
 
-                    Player player = Bukkit.getPlayer(humanEntity.getUniqueId());
-                    if (player == null) return;
 
-                    if (!player.performCommand("activity-id " + id)){
-                        humanEntity.sendMessage(ChatColor.RED + "ERROR: Executing /activity-id " + id + " as a player");
-                    }
+                    Bukkit.dispatchCommand(humanEntity, "activity-id " + id);
+
                     inventory.close();
                 }
 

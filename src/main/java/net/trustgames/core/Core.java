@@ -75,7 +75,7 @@ public final class Core extends JavaPlugin {
         // TODO use ProtocolLib everywhere
         // TODO NPC action - command prints the command in chat
         // TODO NPC add glow
-        // TODO chat mention add who mentioned me
+        // TODO chat me¨ntion add who mentioned me
         // TODO Chat decoration use Component instead of String
 
         // luckperms
@@ -146,13 +146,10 @@ public final class Core extends JavaPlugin {
     }
 
     private void createConfigs() {
-        ConfigManager.createConfig(new File(getDataFolder(), "announcer.yml"));
         ConfigManager.createConfig(new File(getDataFolder(), "mariadb.yml"));
-        ConfigManager.createConfig(new File(getDataFolder(), "commands.yml"));
     }
 
     private void createConfigsDefaults() {
-
         MariaConfig mariaConfig = new MariaConfig(this);
         mariaConfig.createDefaults();
     }

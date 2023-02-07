@@ -3,7 +3,6 @@ package net.trustgames.core.utils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -12,21 +11,28 @@ import org.jetbrains.annotations.NotNull;
 public class ColorUtils {
 
     /**
-     * Translates the colors of the given string text
+     * Translates the colors of the given Component text
      * and returns the colored text. Supports both normal colors
      * and HEX colors.
      *
-     * @param text Text to translate colors on
+     * @param component Component text to translate colors on
      * @return Component text with translated colors
      */
-    public static Component color(@NotNull Object text){
-        if (text instanceof String)
-            return LegacyComponentSerializer.legacyAmpersand().deserialize(text.toString());
-        else if (text instanceof Component)
-            return LegacyComponentSerializer.legacyAmpersand().deserialize(
-                    LegacyComponentSerializer.legacyAmpersand().serialize(
-                            ((Component) text).asComponent()));
-        return Component.text(ChatColor.RED + "ERROR: applying colors to text");
+    public static Component color(@NotNull Component component){
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(
+                LegacyComponentSerializer.legacyAmpersand().serialize(component));
+    }
+
+    /**
+     * Translates the colors of the given String text
+     * and returns the colored text. Supports both normal colors
+     * and HEX colors.
+     *
+     * @param string String text to translate colors on
+     * @return Component text with translated colors
+     */
+    public static Component color(@NotNull String string){
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(string);
     }
 
     /**

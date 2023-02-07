@@ -1,6 +1,7 @@
 package net.trustgames.core.managers;
 
 import net.trustgames.core.Core;
+import net.trustgames.core.cache.EntityCache;
 import net.trustgames.core.config.server.ServerConfig;
 import net.trustgames.core.database.player_activity.ActivityListener;
 import org.bukkit.Bukkit;
@@ -32,7 +33,7 @@ public class ShutdownManager {
 
             for (Player player : Bukkit.getOnlinePlayers()) {
                 player.kick(ServerConfig.RESTART.getText());
-                activityListener.onServerShutdown(player);
+                activityListener.onServerShutdown(EntityCache.getUUID(player));
             }
             Bukkit.getLogger().finest("Online players activities successfully saved to the database");
         }

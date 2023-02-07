@@ -6,27 +6,32 @@ import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import net.trustgames.core.managers.LuckPermsManager;
-import org.bukkit.entity.Player;
+import org.bukkit.Bukkit;
 
 import java.text.DecimalFormat;
+import java.util.Objects;
+import java.util.UUID;
 
 public class MiniMessageUtils {
 
     /**
      * MiniMessage instance, which replaces
      * various tags in the message with values of the player
+     * Some tags work only for offline players or online players!
      *
-     * @param player Player to replace the tags with info of
+     * @param uuid UUID of Player to replace the tags with info of
      * @return new MiniMessage with formatter ready
      */
-    public static MiniMessage format(Player player){
+    public static MiniMessage format(UUID uuid){
         return MiniMessage.builder()
                 .tags(TagResolver.builder()
                         .resolver(StandardTags.defaults())
                         .resolver(TagResolver.resolver("prefix", Tag.selfClosingInserting(
-                                ColorUtils.color(LuckPermsManager.getPlayerPrefix(player)))))
-                        .resolver(TagResolver.resolver("player_name", Tag.selfClosingInserting(Component.text(player.getName()))))
-                        .resolver(TagResolver.resolver("player_display_name", Tag.selfClosingInserting(player.displayName())))
+                                ColorUtils.color(LuckPermsManager.getPlayerPrefix(uuid)))))
+                        .resolver(TagResolver.resolver("player_name", Tag.selfClosingInserting(Component.text(Objects.requireNonNull(
+                                Bukkit.getOfflinePlayer(uuid).getName())))))
+                        .resolver(TagResolver.resolver("player_display_name", Tag.selfClosingInserting(Objects.requireNonNull(
+                                Bukkit.getPlayer(uuid)).displayName())))
                         .build()
                 )
                 .build();

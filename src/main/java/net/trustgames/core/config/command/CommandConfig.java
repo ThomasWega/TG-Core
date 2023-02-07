@@ -3,7 +3,8 @@ package net.trustgames.core.config.command;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.trustgames.core.utils.MiniMessageUtils;
-import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public enum CommandConfig {
 
@@ -41,11 +42,11 @@ public enum CommandConfig {
     /**
      * Replace tags with player info
      *
-     * @param player Player to replace the tags with info of
+     * @param uuid UUID of Player to replace the tags with info of
      * @return New formatted Component message with replaced tags
      */
-    public Component formatMessage(Player player) {
-        return MiniMessageUtils.format(player).deserialize(value);
+    public Component formatMessage(UUID uuid) {
+        return MiniMessageUtils.format(uuid).deserialize(value);
     }
 
     /**

@@ -1,5 +1,6 @@
 package net.trustgames.core.managers;
 
+import net.trustgames.core.cache.EntityCache;
 import net.trustgames.core.config.command.CommandConfig;
 import net.trustgames.core.config.cooldown.CooldownConfig;
 import org.bukkit.entity.Player;
@@ -35,7 +36,7 @@ public class CommandManager implements Listener {
     @EventHandler
     private void onPlayerPreCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
-        UUID uuid = PlayerManager.getUUID(player);
+        UUID uuid = EntityCache.getUUID(player);
 
         // if player is in the cooldown hashmap
         if (!commandCooldown.containsKey(uuid)) {
@@ -66,7 +67,7 @@ public class CommandManager implements Listener {
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent event){
         Player player = event.getPlayer();
-        UUID uuid = PlayerManager.getUUID(player);
+        UUID uuid = EntityCache.getUUID(player);
 
         commandCooldown.remove(uuid);
     }

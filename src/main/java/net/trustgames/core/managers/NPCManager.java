@@ -21,6 +21,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.Entity;
 import net.trustgames.core.Core;
+import net.trustgames.core.cache.EntityCache;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -254,6 +255,7 @@ public class NPCManager {
             public void onPacketReceiving(PacketEvent event) {
                 PacketContainer packet = event.getPacket();
                 Player player = event.getPlayer();
+                UUID uuid = EntityCache.getUUID(player);
                 int entityId = packet.getIntegers().read(0);
 
                 for (ServerPlayer npc : npcs) {
@@ -265,7 +267,7 @@ public class NPCManager {
                         if (!isPresent) return;
 
                         double cooldown = config.getDouble("npcs." + npc.displayName + ".action.cooldown");
-                        if (cooldownManager.commandCooldown(player, cooldown)) return;
+                        if (cooldownManager.commandCooldown(uuid, cooldown)) return;
 
                         String action = config.getString("npcs." + npc.displayName + ".action.type");
                         List<String> value = config.getStringList("npcs." + npc.displayName + ".action.value");

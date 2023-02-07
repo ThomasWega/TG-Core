@@ -9,10 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Handles the priority sorting of groups and players in the player-list
@@ -75,14 +72,16 @@ public class PlayerListTeams {
 
     /** Add player to the corresponding team by getting his primary group and its group's weight.
     set the prefix to team with luckperms cached data.
-     * @param player Who to add to the scoreboard team
+     * @param uuid UUID of whom to add to the scoreboard team
      */
-    public void addToTeam(Player player) {
+    public void addToTeam(UUID uuid) {
+
+        Player player = Bukkit.getPlayer(uuid);
         if (player == null) return;
 
         playerListScoreboard = core.getPlayerListScoreboard();
 
-        String team = groupOrder.get(LuckPermsManager.getPlayerPrimaryGroup(player)) + LuckPermsManager.getPlayerPrimaryGroup(player);
+        String team = groupOrder.get(LuckPermsManager.getPlayerPrimaryGroup(uuid)) + LuckPermsManager.getPlayerPrimaryGroup(uuid);
 
         Objects.requireNonNull(playerListScoreboard.getTeam(team),
                 "Scoreboard team " + team + " wasn't found when adding player " + player.getName() + "!")
@@ -92,18 +91,19 @@ public class PlayerListTeams {
             Objects.requireNonNull(playerListScoreboard.getTeam(team),
                     "Scoreboard team " + team + " wasn't found when setting prefix!")
                     .prefix(ColorUtils.color(
-                            LuckPermsManager.getPlayerPrefix(player) + " "));
+                            LuckPermsManager.getPlayerPrefix(uuid) + " "));
         }
 
         player.setScoreboard(playerListScoreboard);
     }
 
     /**
-     * @param player Who to remove from the scoreboard team
+     * @param uuid UUID of whom to remove from the scoreboard team
       */
-    public static void removeFromTeam(Player player) {
-        Objects.requireNonNull(player.getScoreboard().getPlayerTeam(player),
-                "Player " + player.getName() + " scoreboard team was null when removing him from it!")
-                .removePlayer(player);
+    public static void removeFromTeam(UUID uuid) {
+        Player player = Bukkit.getPlayer(uuid);
+        if (player == null) return;
+
+        Objects.requireNonNull(player.getScoreboard().getPlayerTeam(player)).removePlayer(player);
     }
 }

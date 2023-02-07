@@ -4,6 +4,7 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.trustgames.core.cache.EntityCache;
 import net.trustgames.core.config.chat.ChatConfig;
 import net.trustgames.core.managers.LuckPermsManager;
 import net.trustgames.core.utils.ColorUtils;
@@ -31,10 +32,11 @@ public class ChatDecoration implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void decorate(AsyncChatEvent event) {
         Player player = event.getPlayer();
+        UUID uuid = EntityCache.getUUID(player);
         Component message = setColor(player, event.originalMessage());
         String messageColor = ChatConfig.COLOR.getRaw();
 
-        String prefix = setPrefix(player);
+        String prefix = setPrefix(uuid);
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             setNameColor(p);
@@ -138,14 +140,14 @@ public class ChatDecoration implements Listener {
      * Gets and formats the correct prefix for the player.
      * If player has no prefix, null will be replaced with ""
      *
-     * @param player Player to get prefix on
+     * @param uuid UUID of Player to get prefix on
      * @return Player's prefix
      */
-    private String setPrefix(Player player){
-        String prefix = LuckPermsManager.getPlayerPrefix(player) + " ";
+    private String setPrefix(UUID uuid){
+        String prefix = LuckPermsManager.getPlayerPrefix(uuid) + " ";
 
         // if player doesn't have any prefix, make sure there is not a space before his name
-        if (LuckPermsManager.getPlayerPrefix(player).equals("")) {
+        if (LuckPermsManager.getPlayerPrefix(uuid).equals("")) {
             prefix = "";
         }
         return prefix;

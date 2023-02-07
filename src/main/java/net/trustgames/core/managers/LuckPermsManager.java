@@ -8,7 +8,6 @@ import net.luckperms.api.model.group.GroupManager;
 import net.luckperms.api.model.user.User;
 import net.trustgames.core.Core;
 import net.trustgames.core.playerlist.PlayerListTeams;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -62,11 +61,10 @@ public class LuckPermsManager {
     }
 
     /**
-     * @param player Player to check primary group for
+     * @param uuid UUID of Player to check primary group for
      * @return Primary group of the given player
      */
-    public static String getPlayerPrimaryGroup(Player player) {
-        UUID uuid = PlayerManager.getUUID(player);
+    public static String getPlayerPrimaryGroup(UUID uuid) {
         return Objects.requireNonNull(luckPerms.getUserManager().getUser(uuid),
                 "Player UUID was null when getting his primary group")
                 .getPrimaryGroup();
@@ -85,14 +83,15 @@ public class LuckPermsManager {
      * Get the player's prefix. If the prefix is null,
      * it will be set to ""
      *
-     * @param player Player to get prefix for
+     * @param uuid UUID of Player to get prefix for
      * @return Player prefix String
      */
-    public static String getPlayerPrefix(Player player){
-        UUID uuid = PlayerManager.getUUID(player);
-        String prefix = Objects.requireNonNull(luckPerms.getUserManager().getUser(uuid),
-                        "No LuckPerms cached data for " + player.getName())
-                .getCachedData().getMetaData().getPrefix();
+    public static String getPlayerPrefix(UUID uuid){
+        User user = luckPerms.getUserManager().getUser(uuid);
+        String prefix = null;
+        if (user != null){
+            prefix = user.getCachedData().getMetaData().getPrefix();
+        }
         if (prefix == null){
             prefix = "";
         }
@@ -118,11 +117,11 @@ public class LuckPermsManager {
      */
     private void onUserDataRecalculate(UserDataRecalculateEvent event) {
         core.getServer().getScheduler().runTask(core, () -> {
-            User user = event.getUser();
+            UUID uuid = event.getUser().getUniqueId();
 
             // add player to player-list team to sort priority
             PlayerListTeams playerListTeams = new PlayerListTeams(core);
-            playerListTeams.addToTeam(Bukkit.getPlayer(user.getUniqueId()));
+            playerListTeams.addToTeam(uuid);
         });
     }
 }
