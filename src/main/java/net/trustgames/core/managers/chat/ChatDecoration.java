@@ -29,7 +29,7 @@ public class ChatDecoration implements Listener {
      * chat message. Also makes sure to send a modified message if a player is
      * mentioned in the chat.
      */
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void decorate(AsyncChatEvent event) {
         Player player = event.getPlayer();
         UUID uuid = EntityCache.getUUID(player);

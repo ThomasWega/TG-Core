@@ -2,8 +2,8 @@ package net.trustgames.core.managers.chat;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.trustgames.core.cache.EntityCache;
-import net.trustgames.core.config.chat.ChatLimitConfig;
 import net.trustgames.core.config.chat.ChatConfig;
+import net.trustgames.core.config.chat.ChatLimitConfig;
 import net.trustgames.core.config.cooldown.CooldownConfig;
 import net.trustgames.core.managers.LuckPermsManager;
 import org.bukkit.entity.Player;
@@ -31,7 +31,7 @@ public class ChatLimiter implements Listener {
      * It gets the configured keys and puts them
      * to a hashmap with their corresponding values. Then it runs the checks method
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void limit(AsyncChatEvent event) {
         Player player = event.getPlayer();
         String playerMessage = event.message().toString();
@@ -43,11 +43,11 @@ public class ChatLimiter implements Listener {
         which are later used
          */
 
-        for (ChatLimitConfig limitEnum : ChatLimitConfig.values()){
+        for (ChatLimitConfig limitEnum : ChatLimitConfig.values()) {
             ranksChatCooldown.put(limitEnum.name().toLowerCase(), limitEnum.getChatLimitSec());
         }
 
-        for (ChatLimitConfig limitEnum : ChatLimitConfig.values()){
+        for (ChatLimitConfig limitEnum : ChatLimitConfig.values()) {
             ranksSameChatCooldown.put(limitEnum.name().toLowerCase(), limitEnum.getChatLimitSameSec());
         }
 
@@ -59,8 +59,8 @@ public class ChatLimiter implements Listener {
      * and makes sure to cancel the event, send the proper message to the player
      * or put the player's message to the correct map.
      *
-     * @param player        Player who wrote the message
-     * @param event         the main AsyncChatEvent
+     * @param player Player who wrote the message
+     * @param event the main AsyncChatEvent
      * @param playerMessage Player's chat message
      */
     private void doChecks(Player player, AsyncChatEvent event, String playerMessage) {
@@ -127,8 +127,8 @@ public class ChatLimiter implements Listener {
      * checks if the player has a cooldown. If he does have a cooldown, it returns true.
      * If he doesn't have a cooldown, it returns false
      *
-     * @param player Player who wrote the message
-     * @param rank Player's closest highest rank present in configuration
+     * @param player      Player who wrote the message
+     * @param rank        Player's closest highest rank present in configuration
      * @param sameMessage if the message same as the last time
      * @return is Player on Cooldown
      */
@@ -160,7 +160,7 @@ public class ChatLimiter implements Listener {
      * with the one from the hashmap. If they are the same, it returns true,
      * otherwise if they are different, it returns false.
      *
-     * @param player Player who wrote the message
+     * @param player        Player who wrote the message
      * @param playerMessage The message the player wrote
      * @return is the same message as the last time
      */
@@ -177,8 +177,8 @@ public class ChatLimiter implements Listener {
     /**
      * sends the wait message to the player
      *
-     * @param player Player who wrote the message
-     * @param rank Player's closest highest rank present in configuration
+     * @param player      Player who wrote the message
+     * @param rank        Player's closest highest rank present in configuration
      * @param sameMessage is it the same message as the last time
      */
     private void sendMessage(Player player, String rank, boolean sameMessage) {
