@@ -6,6 +6,7 @@ import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.trustgames.core.cache.EntityCache;
 import net.trustgames.core.config.chat.ChatConfig;
 import net.trustgames.core.managers.LuckPermsManager;
@@ -37,13 +38,13 @@ public class ChatDecoration implements Listener {
         Player player = event.getPlayer();
         UUID uuid = EntityCache.getUUID(player);
         Component message = setColor(player, event.originalMessage());
-        TextColor messageColor = ChatConfig.COLOR.getColor();
+        System.out.println(PlainTextComponentSerializer.plainText().serialize(message));
 
         Component prefix = setPrefix(uuid);
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             // if the player is not mentioned, send him the normal message without colored name
-            if (!setMention(p, message, prefix, event, messageColor)) {
+            if (!setMention(p, message, prefix, event)) {
                 p.sendMessage(getMessage(player, prefix, message));
 
                 logMessage(prefix, player.getName(), message);
@@ -61,12 +62,10 @@ public class ChatDecoration implements Listener {
      * @return Colored message if player has permission
      */
     private Component setColor(Player player, Component message){
-        if (player.hasPermission(ChatConfig.ALLOW_COLORS_PERM.getRaw())) {
-            message = ColorUtils.color(message);
-        }
-        else{
-            message = Component.text(ColorUtils.stripColor(message));
-        }
+        TextColor messageColor = ChatConfig.COLOR.getColor();
+        message = player.hasPermission(ChatConfig.ALLOW_COLORS_PERM.getRaw())
+                ? ColorUtils.color(message).colorIfAbsent(messageColor)
+                : Component.text(ColorUtils.stripColor(message)).color(messageColor);
         return message;
     }
 
@@ -81,34 +80,36 @@ public class ChatDecoration implements Listener {
      * @param event The main AsyncChatEvent
      * @return True if mention colors were set
      */
-    private boolean setMention(Player p, Component message, Component prefix, AsyncChatEvent event, TextColor messageColor){
+    private boolean setMention(Player p, Component message, Component prefix, AsyncChatEvent event){
         Set<Player> mentionedPlayers = new HashSet<>();
         Player player = event.getPlayer();
 
         message = setColor(player, message);
 
         // remove the player name from the message
-        String desMsg = ComponentUtils.convertToString(message)
-                .replace(player.displayName().toString(), "");
+        String desMsg = ComponentUtils.toString(message)
+                .replace(player.displayName().toString(), "")
+                .replaceAll(ChatConfig.COLOR.getRaw(), "");
         List<String> split = Arrays.stream(desMsg.split(" ")).toList();
+
+        System.out.println(desMsg);
 
         // check if chat message contains player's name
         if (split.contains(p.getName())){
             mentionedPlayers.add(p);
-
         }
 
         if (mentionedPlayers.contains(p)) {
             List<Component> newMsg = new ArrayList<>();
 
             TextColor nameColor = ChatConfig.MENTION_COLOR.getColor();
-
+            TextColor messageColor = ChatConfig.COLOR.getColor();
             TextColor messageColorNew;
             // if the word equals player's name, color the name
             for (String s : split) {
                 if (s.equalsIgnoreCase(p.getName())) {
                     newMsg.add(Component.text(s).color(nameColor));
-                }else{
+                } else{
                     messageColorNew = (ColorUtils.color(s).color() != null) ? ColorUtils.color(s).color() : messageColor;
                     newMsg.add(ColorUtils.color(s).colorIfAbsent(messageColorNew));
                 }

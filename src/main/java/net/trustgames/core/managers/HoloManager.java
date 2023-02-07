@@ -35,7 +35,7 @@ public class HoloManager {
             armorStand.setInvisible(true);
             armorStand.setCustomNameVisible(true);
 
-            armorStand.setCustomName(NMSUtils.convertFromJSON(ComponentUtils.convertToJson(
+            armorStand.setCustomName(NMSUtils.convertFromJSON(ComponentUtils.toJson(
                     ColorUtils.color(text.get(i)))));
 
             ClientboundAddEntityPacket addPacket = new ClientboundAddEntityPacket(armorStand);

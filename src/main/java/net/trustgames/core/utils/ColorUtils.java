@@ -37,9 +37,9 @@ public class ColorUtils {
 
     /**
      * Removes the color from the given Component and returns String
-     * without the color
+     * with unformatted colors
      * @param text Component to remove color from
-     * @return String without color
+     * @return String with unformatted colors
      */
     public static String stripColor(@NotNull Component text){
         return PlainTextComponentSerializer.plainText().serialize(

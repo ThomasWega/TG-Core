@@ -8,10 +8,10 @@ import net.trustgames.core.utils.MiniMessageUtils;
 
 public enum ChatConfig {
     PREFIX("<color:#00adc4>Chat | </color>"),
-    COLOR("&f"),
-    NAME_COLOR("&e"),
+    COLOR("&3"),
+    NAME_COLOR("&d"),
     ALLOW_COLORS_PERM("core.knight"),
-    MENTION_COLOR("&a"),
+    MENTION_COLOR("&e"),
     ON_COOLDOWN(PREFIX.value + "<dark_gray>Wait another <sec> seconds before using chat again!"),
     ON_SAME_COOLDOWN(PREFIX.value + "<dark_gray>Don't write the same message! (wait <sec> seconds)"),
     MENTION_ACTIONBAR("<gray>You've been mentioned in chat");
