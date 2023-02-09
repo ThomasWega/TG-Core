@@ -10,6 +10,7 @@ import com.comphenix.protocol.wrappers.Pair;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -31,6 +32,7 @@ import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import java.lang.reflect.InvocationTargetException;
@@ -244,7 +246,7 @@ public class NPCManager {
      * should be taken on entity click by getting the actions
      * from the config
      *
-     * @param npcs List of NPCs to run actions on
+     * @param npcs   List of NPCs to run actions on
      * @param config Config where the NPCs are specified
      */
     public void interact(List<ServerPlayer> npcs, YamlConfiguration config) {
@@ -286,5 +288,20 @@ public class NPCManager {
                 }
             }
         });
+    }
+
+    public void glow(ServerPlayer npc, TextColor color) {
+        Scoreboard scoreboard = core.getPlayerListScoreboard();
+
+        npc.getBukkitEntity().setGlowing(true);
+        Team team = scoreboard.getTeam(npc.displayName);
+
+        if (team == null) {
+            team = scoreboard.registerNewTeam(npc.displayName);
+            team.color(NamedTextColor.nearestTo(color));
+        }
+        team.addEntity(npc.getBukkitEntity());
+        team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+
     }
 }
