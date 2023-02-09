@@ -64,6 +64,10 @@ public class ActivityCommand implements CommandExecutor, Listener {
      * */
     private static int pageCount = 0;
 
+    private static final Component nextPageName = ColorUtils.color("&eNext page");
+    private static final Component prevPageName = ColorUtils.color("&ePrevious page");
+
+
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -242,7 +246,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
     private void createPages(Player player, String targetName){
 
         ItemStack nextPage = ItemManager.createItemStack(Material.ARROW, 1);
-        ItemStack previousPage = ItemManager.createItemStack(Material.ARROW, 0);
+        ItemStack prevPage = ItemManager.createItemStack(Material.ARROW, 0);
         ItemStack pageInfo = ItemManager.createItemStack(Material.KNOWLEDGE_BOOK, 1);
 
         // how many pages are total
@@ -255,7 +259,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
         */
         for (int i = 1; i <= Math.ceil(records.size() / 45d); i++) {
             Inventory inv = InventoryManager.createInventory(player, 6, targetName  + "'s activity");
-            pageInfo.setItemMeta(ItemManager.createItemMeta(pageInfo, ChatColor.DARK_GREEN + "Page (" + i + "/" + pagesCount + ")", new ItemFlag[]{ItemFlag.HIDE_ATTRIBUTES}));
+            pageInfo.setItemMeta(ItemManager.createItemMeta(pageInfo, ColorUtils.color("&2Page (" + i + "/" + pagesCount + ")"), new ItemFlag[]{ItemFlag.HIDE_ATTRIBUTES}));
             inv.setItem(49, pageInfo);
             inventoryList.add(inv);
         }
@@ -279,7 +283,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
             // switch to the next inventory and add the nextPage arrow
             if (slot > max){
                 invCount++;
-                nextPage.setItemMeta(ItemManager.createItemMeta(nextPage, ChatColor.YELLOW + "Next page", null));
+                nextPage.setItemMeta(ItemManager.createItemMeta(nextPage, nextPageName, null));
 
                 // check to not go over the item limit
                 if (nextPage.getAmount() < 64){
@@ -289,11 +293,11 @@ public class ActivityCommand implements CommandExecutor, Listener {
 
                 // if the inventory is already a second one, add the previousPage arrow
                 if (invCount > 1){
-                    previousPage.setItemMeta(ItemManager.createItemMeta(previousPage, ChatColor.YELLOW + "Previous page", null));
-                    if (previousPage.getAmount() < 64) {
-                        previousPage.setAmount(previousPage.getAmount() + 1);
+                    prevPage.setItemMeta(ItemManager.createItemMeta(prevPage, prevPageName, null));
+                    if (prevPage.getAmount() < 64) {
+                        prevPage.setAmount(prevPage.getAmount() + 1);
                     }
-                    inv.setItem(48, previousPage);
+                    inv.setItem(48, prevPage);
                 }
 
                 // switch the inventory to the next one
@@ -315,14 +319,14 @@ public class ActivityCommand implements CommandExecutor, Listener {
          */
 
         // check to not go over the item limit
-        if (previousPage.getAmount() < 64){
-            previousPage.setAmount(previousPage.getAmount() + 1);
+        if (prevPage.getAmount() < 64){
+            prevPage.setAmount(prevPage.getAmount() + 1);
         }
-        previousPage.setItemMeta(ItemManager.createItemMeta(previousPage, ChatColor.YELLOW + "Previous page", null));
-        inv.setItem(48, previousPage);
+        prevPage.setItemMeta(ItemManager.createItemMeta(prevPage, prevPageName, null));
+        inv.setItem(48, prevPage);
 
         nextPage.setAmount(1);
-        previousPage.setAmount(0);
+        prevPage.setAmount(0);
     }
 
     /**
@@ -394,12 +398,14 @@ public class ActivityCommand implements CommandExecutor, Listener {
 
     private void switchPage(ItemStack item, HumanEntity humanEntity){
         String itemName = ColorUtils.stripColor(item.displayName());
+        String nextPageNameString = ColorUtils.stripColor(nextPageName);
+        String prevPageNameString = ColorUtils.stripColor(prevPageName);
 
-        if (itemName.contains("Next page")) {
+        if (itemName.contains(nextPageNameString)) {
             pageCount++;
             Inventory nextInv = inventoryList.get(pageCount);
             humanEntity.openInventory(nextInv);
-        } else if (itemName.contains("Previous page")) {
+        } else if (itemName.contains(prevPageNameString)) {
             pageCount--;
             Inventory previousInv = inventoryList.get(pageCount);
             humanEntity.openInventory(previousInv);

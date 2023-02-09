@@ -29,9 +29,9 @@ public class ItemManager {
      * @param itemFlags What items flags to put on the ItemStack. Can be null
      * @return created ItemMeta of the given ItemStack
      */
-    public static ItemMeta createItemMeta(ItemStack itemStack, String name, @Nullable ItemFlag[] itemFlags) {
+    public static ItemMeta createItemMeta(ItemStack itemStack, Component name, @Nullable ItemFlag[] itemFlags) {
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.displayName(Component.text(name));
+        itemMeta.displayName(name);
 
         if (!(itemFlags == null)){
             itemMeta.addItemFlags(itemFlags);

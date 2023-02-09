@@ -79,7 +79,6 @@ public final class Core extends JavaPlugin {
         // TODO use ProtocolLib everywhere
         // TODO NPC action - command prints the command in chat
         // TODO NPC add glow
-        // TODO chat mention add who mentioned me
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
