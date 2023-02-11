@@ -1,6 +1,9 @@
 package net.trustgames.core.managers.chat;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -12,7 +15,6 @@ import net.trustgames.core.managers.LuckPermsManager;
 import net.trustgames.core.utils.ColorUtils;
 import net.trustgames.core.utils.ComponentUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,6 +27,12 @@ import java.util.logging.Level;
  * Handles the addition of prefix and colors in the chat
  */
 public class ChatDecoration implements Listener {
+
+
+    private final Sound sound = Sound.sound(Key.key(
+            "block.note.block.flute"),
+            Sound.Source.AMBIENT,
+            0.75f, 2f);
 
     /**
      * Adds the player a prefix and makes sure that the Minecraft new
@@ -118,7 +126,7 @@ public class ChatDecoration implements Listener {
             logMessage(prefix, sender.getName(), msg);
 
             p.sendActionBar(ChatConfig.MENTION_ACTIONBAR.formatMessage(EntityCache.getUUID(sender)));
-            p.playSound(sender, Sound.BLOCK_NOTE_BLOCK_FLUTE, 0.75f, 2);
+            Audience.audience(p).playSound(sound, Sound.Emitter.self());
 
             return true;
         }

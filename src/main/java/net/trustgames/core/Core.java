@@ -7,6 +7,7 @@ import net.luckperms.api.LuckPermsProvider;
 import net.trustgames.core.commands.MessagesCommand;
 import net.trustgames.core.commands.activity_commands.ActivityCommand;
 import net.trustgames.core.commands.activity_commands.ActivityIdCommand;
+import net.trustgames.core.config.command.CommandMessagesConfig;
 import net.trustgames.core.database.MariaConfig;
 import net.trustgames.core.database.MariaDB;
 import net.trustgames.core.database.player_activity.ActivityListener;
@@ -17,7 +18,6 @@ import net.trustgames.core.managers.chat.ChatDecoration;
 import net.trustgames.core.managers.chat.ChatLimiter;
 import net.trustgames.core.playerlist.PlayerListListener;
 import net.trustgames.core.playerlist.PlayerListTeams;
-import net.trustgames.core.config.command.CommandMessagesConfig;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
@@ -61,6 +61,8 @@ public final class Core extends JavaPlugin {
         - party and friends system
         - rotating heads
         - maintenance
+        - playtime bonus
+        - boosters
         */
 
         /* SIDE ADDITIONS
@@ -70,6 +72,7 @@ public final class Core extends JavaPlugin {
         /* CHANGE on server side
         - disallow some default command (/?, /version, /plugins, etc.) - make permissions false
         - change some default messages (unknown command, etc.) - change in server .yml files
+        - disable pvp on lobbies
          */
 
         // TODO register commands without plugin.yml
@@ -78,6 +81,8 @@ public final class Core extends JavaPlugin {
         // TODO HOLO clickable
         // TODO NPC action - command prints the command in chat
         // TODO NPC protocolib
+        // TODO use command api
+        // TODO npc glow turns default of on player join
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
