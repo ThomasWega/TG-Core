@@ -45,7 +45,7 @@ public class NPCManager {
     private final Core core;
 
     private final ProtocolManager manager;
-    CooldownManager cooldownManager;
+    private static CooldownManager cooldownManager;
 
     public NPCManager(Core core) {
         this.core = core;
@@ -202,9 +202,7 @@ public class NPCManager {
         }
 
         team.addEntity(npc.getBukkitEntity());
-        team.prefix(ColorUtils.color("&8[NPC] "));
-        team.color(NamedTextColor.DARK_GRAY);
-        team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        setTeamValues(team);
     }
 
     /**
@@ -237,7 +235,7 @@ public class NPCManager {
         }
     }
 
-    public enum ActionType {
+    private enum ActionType {
         COMMAND, MESSAGE
     }
 
@@ -293,15 +291,22 @@ public class NPCManager {
     public void glow(ServerPlayer npc, TextColor color) {
         Scoreboard scoreboard = core.getPlayerListScoreboard();
 
-        npc.getBukkitEntity().setGlowing(true);
+        CraftPlayer npcEntity = npc.getBukkitEntity();
+        npcEntity.setGlowing(true);
         Team team = scoreboard.getTeam(npc.displayName);
 
         if (team == null) {
             team = scoreboard.registerNewTeam(npc.displayName);
             team.color(NamedTextColor.nearestTo(color));
+            setTeamValues(team);
         }
-        team.addEntity(npc.getBukkitEntity());
-        team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
 
+        if (!team.hasEntity(npcEntity))
+            team.addEntity(npcEntity);
+    }
+
+    private void setTeamValues(Team team){
+        team.prefix(ColorUtils.color("&8[NPC] "));
+        team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
     }
 }
