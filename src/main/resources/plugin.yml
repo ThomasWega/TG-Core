@@ -43,4 +43,7 @@ commands:
       - act-id
       - activityid
 
+  disguise:
+    description: TEST DISGUISE
+
 
