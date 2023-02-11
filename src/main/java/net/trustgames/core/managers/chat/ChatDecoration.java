@@ -30,7 +30,7 @@ public class ChatDecoration implements Listener {
 
 
     private final Sound sound = Sound.sound(Key.key(
-            "block.note.block.flute"),
+            "block.note_block.flute"),
             Sound.Source.AMBIENT,
             0.75f, 2f);
 
