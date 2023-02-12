@@ -22,7 +22,7 @@ public class PlayerManager implements Listener {
      *
      * @param player Player to change name color on
      */
-    private static void setNameColor(Player player){
+    public static void setNameColor(Player player){
         player.displayName(Component.text(player.getName()).color(ChatConfig.NAME_COLOR.getColor()));
     }
 }

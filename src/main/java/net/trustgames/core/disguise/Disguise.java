@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.Getter;
 import net.trustgames.core.disguise.utility.NMSHelper;
+import net.trustgames.core.managers.PlayerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -69,7 +70,7 @@ public class Disguise {
       e.printStackTrace();
     }
 
-    if (name != null) player.setDisplayName(name);
+    if (name != null) PlayerManager.setNameColor(player);
 
     Bukkit.getOnlinePlayers().forEach(all -> {
       all.hidePlayer(source, player);
