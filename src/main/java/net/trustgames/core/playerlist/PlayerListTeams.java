@@ -18,12 +18,12 @@ import java.util.*;
 public class PlayerListTeams {
 
     private final Core core;
+    private Scoreboard playerListScoreboard;
     public PlayerListTeams(Core core) {
         this.core = core;
     }
 
     static final TreeMap<String, Integer> groupOrder = new TreeMap<>();
-    Scoreboard playerListScoreboard;
 
 
     /** Create all the teams by getting all groups from LuckPerms and putting each group in map
@@ -64,9 +64,14 @@ public class PlayerListTeams {
                 .stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .map(Map.Entry::getKey).toList()){
             groupOrder.put(x, i);
-            playerListScoreboard.registerNewTeam(i + "" + Objects.requireNonNull(LuckPermsManager.getGroupManager().getGroup(x),
-                    "Group " + x + " wasn't found when setting a missing weight")
-                    .getName());
+
+            Group group = LuckPermsManager.getGroupManager().getGroup(x);
+            if (group == null) return;
+
+            Team team = playerListScoreboard.registerNewTeam(i + "" + x);
+            Component prefix = LuckPermsManager.getGroupPrefix(group);
+            if (!x.equals("default"))
+                team.prefix(prefix.append(Component.text(" ")));
             i++;
         }
     }

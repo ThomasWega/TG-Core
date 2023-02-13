@@ -100,6 +100,18 @@ public class LuckPermsManager {
     }
 
     /**
+     * Get the group's prefix. If the prefix is null,
+     * it will be set to ""
+     *
+     * @param group Group to get prefix for
+     * @return Group prefix String
+     */
+    public static @NotNull Component getGroupPrefix(Group group){
+        String prefixString = group.getCachedData().getMetaData().getPrefix();
+        return ColorUtils.color(Objects.requireNonNullElse(prefixString, ""));
+    }
+
+    /**
      * @param player Player to convert to User
      * @return User from the given Player
      */
