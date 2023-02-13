@@ -8,6 +8,7 @@ import net.trustgames.core.managers.LuckPermsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import java.util.*;
 
@@ -75,23 +76,22 @@ public class PlayerListTeams {
      * @param uuid UUID of whom to add to the scoreboard team
      */
     public void addToTeam(UUID uuid) {
-
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return;
 
         playerListScoreboard = core.getPlayerListScoreboard();
+        String stringTeam = groupOrder.get(LuckPermsManager.getPlayerPrimaryGroup(uuid)) + LuckPermsManager.getPlayerPrimaryGroup(uuid);
+        Team team = playerListScoreboard.getTeam(stringTeam);
 
-        String team = groupOrder.get(LuckPermsManager.getPlayerPrimaryGroup(uuid)) + LuckPermsManager.getPlayerPrimaryGroup(uuid);
-
-        Objects.requireNonNull(playerListScoreboard.getTeam(team),
-                "Scoreboard team " + team + " wasn't found when adding player " + player.getName() + "!")
-                .addPlayer(player);
-
-        if (!team.contains("default")) {
-            Objects.requireNonNull(playerListScoreboard.getTeam(team),
-                    "Scoreboard team " + team + " wasn't found when setting prefix!")
-                    .prefix(LuckPermsManager.getPlayerPrefix(uuid).append(Component.text(" ")));
+        if (team == null){
+            Bukkit.getLogger().severe("Scoreboard team " + stringTeam + " wasn't found");
+            return;
         }
+
+        team.addPlayer(player);
+
+        if (!stringTeam.contains("default"))
+            team.prefix(LuckPermsManager.getPlayerPrefix(uuid).append(Component.text(" ")));
 
         player.setScoreboard(playerListScoreboard);
     }
@@ -99,10 +99,13 @@ public class PlayerListTeams {
     /**
      * @param uuid UUID of whom to remove from the scoreboard team
       */
-    public static void removeFromTeam(UUID uuid) {
+    public void removeFromTeam(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return;
 
-        Objects.requireNonNull(player.getScoreboard().getPlayerTeam(player)).removePlayer(player);
+        playerListScoreboard = core.getPlayerListScoreboard();
+        Team team = playerListScoreboard.getPlayerTeam(player);
+        if (team != null)
+                team.removePlayer(player);
     }
 }

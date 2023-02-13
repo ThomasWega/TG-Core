@@ -47,6 +47,6 @@ public class PlayerListListener implements Listener {
         UUID uuid = EntityCache.getUUID(event.getPlayer());
 
         playerListTeams = new PlayerListTeams(core);
-        PlayerListTeams.removeFromTeam(uuid);
+        playerListTeams.removeFromTeam(uuid);
     }
 }

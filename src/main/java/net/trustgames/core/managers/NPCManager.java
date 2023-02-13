@@ -196,9 +196,10 @@ public class NPCManager {
      * @param npc NPC to hide the name of
      */
     public void hideName(ServerPlayer npc) {
-        Team team = core.getPlayerListScoreboard().getTeam("9999NPC");
+        Scoreboard scoreboard = core.getPlayerListScoreboard();
+        Team team = scoreboard.getTeam("9999NPC");
         if (team == null) {
-            team = core.getPlayerListScoreboard().registerNewTeam("9999NPC");
+            team = scoreboard.registerNewTeam("9999NPC");
         }
 
         team.addEntity(npc.getBukkitEntity());
