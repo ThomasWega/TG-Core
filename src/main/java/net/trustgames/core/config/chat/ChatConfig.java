@@ -18,7 +18,7 @@ public enum ChatConfig {
     ON_SAME_COOLDOWN(PREFIX.value + "<dark_gray>Don't write the same message! (wait <sec> seconds)"),
     MENTION_ACTIONBAR("<gray><player_name> mentioned you");
 
-    private final String value;
+    public final String value;
 
     ChatConfig(String value) {
         this.value = value;
@@ -39,13 +39,6 @@ public enum ChatConfig {
      */
     public Component formatMessage(UUID uuid) {
         return MiniMessageUtils.format(uuid).deserialize(value);
-    }
-
-    /**
-     * @return String value of enum
-     */
-    public String getRaw(){
-        return value;
     }
 
     /**

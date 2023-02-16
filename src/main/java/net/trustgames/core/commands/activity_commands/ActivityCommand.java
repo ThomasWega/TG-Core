@@ -135,7 +135,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 sender.sendMessage(CommandConfig.COMMAND_NO_PERM.getText());
             }
         } else {
-            Bukkit.getLogger().warning(CommandConfig.COMMAND_ONLY_PLAYER.getRaw());
+            Bukkit.getLogger().warning(CommandConfig.COMMAND_ONLY_PLAYER.value);
         }
         return true;
     }
@@ -333,10 +333,10 @@ public class ActivityCommand implements CommandExecutor, Listener {
      * When player clicks on an item in the inventory, check if the title contains "'s activity".
      * If so, check if list of different actions and their Material contains the item material.
      * or is BEDROCK (unknown action Material).
-     *
+     * <p>
      * If true, perform command /activity-id ID as player to print all the data in chat, where
      * player can click on each info, and it will be copied to his clipboard. Also close the inventory.
-     *
+     * <p>
      * If false, but the Material is ARROW, switch the page to previous or next
      * (will be decided in switchPage method)
      *

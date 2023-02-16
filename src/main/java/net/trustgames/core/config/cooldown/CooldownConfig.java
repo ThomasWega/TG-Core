@@ -5,16 +5,9 @@ public enum CooldownConfig {
     MEDIUM(5d),
     LARGE(15d);
 
-    private final double value;
+    public final double value;
 
     CooldownConfig(double value) {
         this.value = value;
-    }
-
-    /**
-     * @return Value of the enum
-     */
-    public double getValue() {
-        return value;
     }
 }

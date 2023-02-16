@@ -66,7 +66,7 @@ public class CooldownManager implements Listener {
          current time - the last time of wait message is larger than the min value in config
         */
         if (cooldownMessageTime.containsKey(uuid)) {
-            return !(MessagesCooldownConfig.WARN_MESSAGES_LIMIT_SEC.getValue() <= (System.currentTimeMillis() - cooldownMessageTime.get(uuid)) / 1000d);
+            return !(MessagesCooldownConfig.WARN_MESSAGES_LIMIT_SEC.value <= (System.currentTimeMillis() - cooldownMessageTime.get(uuid)) / 1000d);
         } else {
             cooldownMessageTime.put(uuid, System.currentTimeMillis());
             return false;

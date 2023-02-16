@@ -26,7 +26,7 @@ public class MessagesCommand implements CommandExecutor {
             player.sendMessage(CommandMessagesConfig.valueOf(command.getName().toUpperCase()).getMessage());
         }
         else
-            Bukkit.getLogger().warning(CommandConfig.COMMAND_ONLY_PLAYER.getRaw());
+            Bukkit.getLogger().warning(CommandConfig.COMMAND_ONLY_PLAYER.value);
 
         return true;
     }

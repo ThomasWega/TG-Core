@@ -7,25 +7,11 @@ public enum ChatLimitConfig {
     PRIME(10d, 60d),
     DEFAULT(15d, 120d);
 
-    private final double chatLimitSec;
-    private final double chatLimitSameSec;
+    public final double chatLimitSec;
+    public final double chatLimitSameSec;
 
     ChatLimitConfig(double chatLimitSec, double chatLimitSameSec) {
         this.chatLimitSec = chatLimitSec;
         this.chatLimitSameSec = chatLimitSameSec;
-    }
-
-    /**
-     * @return Chat message limit of the message for the enum rank
-     */
-    public double getChatLimitSec() {
-        return chatLimitSec;
-    }
-
-    /**
-     * @return Same chat message limit of the message for the enum rank
-     */
-    public double getChatLimitSameSec() {
-        return chatLimitSameSec;
     }
 }

@@ -45,11 +45,11 @@ public class ChatLimiter implements Listener {
          */
 
         for (ChatLimitConfig limitEnum : ChatLimitConfig.values()) {
-            ranksChatCooldown.put(limitEnum.name().toLowerCase(), limitEnum.getChatLimitSec());
+            ranksChatCooldown.put(limitEnum.name().toLowerCase(), limitEnum.chatLimitSec);
         }
 
         for (ChatLimitConfig limitEnum : ChatLimitConfig.values()) {
-            ranksSameChatCooldown.put(limitEnum.name().toLowerCase(), limitEnum.getChatLimitSameSec());
+            ranksSameChatCooldown.put(limitEnum.name().toLowerCase(), limitEnum.chatLimitSameSec);
         }
 
         doChecks(player, event, playerMessage);
@@ -226,7 +226,7 @@ public class ChatLimiter implements Listener {
          current time - the last time of wait message is larger than the min value configured
         */
         if (lastWaitMessage.containsKey(uuid)) {
-            return MessagesCooldownConfig.WARN_MESSAGES_LIMIT_SEC.getValue() > (System.currentTimeMillis() - lastWaitMessage.get(uuid)) / 1000d;
+            return MessagesCooldownConfig.WARN_MESSAGES_LIMIT_SEC.value > (System.currentTimeMillis() - lastWaitMessage.get(uuid)) / 1000d;
             // if the last message doesn't contain the player (meaning he probably didn't receive any wait messages, put him in the map and return false
         } else {
             lastWaitMessage.put(uuid, System.currentTimeMillis());

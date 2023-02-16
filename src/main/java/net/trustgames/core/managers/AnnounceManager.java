@@ -38,6 +38,6 @@ public class AnnounceManager {
                         core.getServer().broadcast(msgList[index].getMessage());
                         index++;
                     }
-                }, AnnouncerDelayConfig.FIRST.getDelay() * 20, AnnouncerDelayConfig.DELAY.getDelay() * 20);
+                }, AnnouncerDelayConfig.FIRST.value * 20, AnnouncerDelayConfig.DELAY.value * 20);
     }
 }

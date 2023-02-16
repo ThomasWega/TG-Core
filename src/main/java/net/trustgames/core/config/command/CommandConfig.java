@@ -19,7 +19,7 @@ public enum CommandConfig {
     COMMAND_NO_PLAYER_ACT(PREFIX_DB.value + "<dark_gray>No activity data for player <white><player>"),
     COMMAND_NO_ID_ACT(PREFIX_DB.value + "<dark_gray>No activity data for ID <white><id>");
 
-    private final String value;
+    public final String value;
 
     CommandConfig(String value) {
         this.value = value;
@@ -30,13 +30,6 @@ public enum CommandConfig {
      */
     public Component getText() {
         return MiniMessage.miniMessage().deserialize(value);
-    }
-
-    /**
-     * @return String value of enum
-     */
-    public String getRaw(){
-        return value;
     }
 
     /**

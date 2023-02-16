@@ -17,16 +17,16 @@ public enum CommandMessagesConfig {
             "<newline>"
     );
 
-    private final String message;
+    private final String value;
 
-    CommandMessagesConfig(String message) {
-        this.message = message;
+    CommandMessagesConfig(String value) {
+        this.value = value;
     }
 
     /**
      * @return Formatted component message
      */
     public Component getMessage() {
-        return MiniMessage.miniMessage().deserialize(message);
+        return MiniMessage.miniMessage().deserialize(value);
     }
 }

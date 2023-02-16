@@ -4,16 +4,9 @@ public enum AnnouncerDelayConfig {
     FIRST(30L), // in seconds
     DELAY(360L); // in seconds
 
-    private final long delay;
+    public final long value;
 
-    AnnouncerDelayConfig(long delay) {
-        this.delay = delay;
-    }
-
-    /**
-     * @return Delay in seconds between announcing next message
-     */
-    public long getDelay() {
-        return delay;
+    AnnouncerDelayConfig(long value) {
+        this.value = value;
     }
 }

@@ -69,7 +69,7 @@ public class ChatDecoration implements Listener {
      */
     private Component setColor(Player player, Component message){
         TextColor messageColor = ChatConfig.COLOR.getColor();
-        message = player.hasPermission(ChatConfig.ALLOW_COLORS_PERM.getRaw())
+        message = player.hasPermission(ChatConfig.ALLOW_COLORS_PERM.value)
                 ? ColorUtils.color(message).colorIfAbsent(messageColor)
                 : Component.text(ColorUtils.stripColor(message)).color(messageColor);
         return message;
@@ -94,7 +94,7 @@ public class ChatDecoration implements Listener {
         // remove the player name from the message
         String desMsg = ComponentUtils.toString(message)
                 .replace(sender.displayName().toString(), "")
-                .replaceAll(ChatConfig.COLOR.getRaw(), "");
+                .replaceAll(ChatConfig.COLOR.value, "");
         List<String> split = Arrays.stream(desMsg.split(" ")).toList();
 
         // check if chat message contains player's name
