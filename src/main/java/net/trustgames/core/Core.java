@@ -12,10 +12,6 @@ import net.trustgames.core.database.MariaConfig;
 import net.trustgames.core.database.MariaDB;
 import net.trustgames.core.database.player_activity.ActivityListener;
 import net.trustgames.core.database.player_activity.PlayerActivityDB;
-import net.trustgames.core.disguise.DisguiseCommand;
-import net.trustgames.core.disguise.DisguiseListener;
-import net.trustgames.core.disguise.DisguiseManager;
-import net.trustgames.core.disguise.utility.HTTPUtility;
 import net.trustgames.core.gamerules.CoreGamerules;
 import net.trustgames.core.managers.*;
 import net.trustgames.core.managers.chat.ChatDecoration;
@@ -112,14 +108,6 @@ public final class Core extends JavaPlugin {
         CoreGamerules.setGamerules();
 
         announceManager.announceMessages();
-
-
-        // FIXME disguise test
-        HTTPUtility httpUtility = new HTTPUtility(this);
-        DisguiseManager disguiseManager = new DisguiseManager(this, httpUtility);
-
-        getCommand("disguise").setExecutor(new DisguiseCommand(disguiseManager));
-        getServer().getPluginManager().registerEvents(new DisguiseListener(disguiseManager), this);
     }
 
     @Override
