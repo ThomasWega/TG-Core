@@ -2,7 +2,7 @@ package net.trustgames.core.managers;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.cache.EntityCache;
-import net.trustgames.core.config.server.ServerConfig;
+import net.trustgames.core.config.ServerConfig;
 import net.trustgames.core.database.player_activity.ActivityListener;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

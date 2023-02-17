@@ -4,7 +4,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.trustgames.core.Core;
-import net.trustgames.core.config.command.CommandConfig;
+import net.trustgames.core.config.CommandConfig;
+import net.trustgames.core.config.CorePermissionsConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -37,7 +38,7 @@ public class ActivityIdCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (sender.hasPermission("core.staff")) {
+        if (sender.hasPermission(CorePermissionsConfig.STAFF.permission)) {
             
             if (core.getMariaDB().isMySQLDisabled()){
                 sender.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());

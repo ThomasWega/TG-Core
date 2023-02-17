@@ -1,10 +1,11 @@
-package net.trustgames.core.managers.chat;
+package net.trustgames.core.chat;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.trustgames.core.cache.EntityCache;
-import net.trustgames.core.config.chat.ChatConfig;
-import net.trustgames.core.config.chat.ChatLimitConfig;
-import net.trustgames.core.config.cooldown.MessagesCooldownConfig;
+import net.trustgames.core.chat.config.ChatConfig;
+import net.trustgames.core.chat.config.ChatLimitConfig;
+import net.trustgames.core.commands.messages_commands.MessagesCommandsConfig;
+import net.trustgames.core.config.CorePermissionsConfig;
 import net.trustgames.core.managers.LuckPermsManager;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.entity.Player;
@@ -23,8 +24,8 @@ import java.util.*;
 
 public class ChatLimiter implements Listener {
     private final HashMap<UUID, Long> cooldownTime = new HashMap<>();
-    private final Map<String, Double> ranksChatCooldown = new TreeMap<>();
-    private final Map<String, Double> ranksSameChatCooldown = new TreeMap<>();
+    private final Map<String, Double> ranksChatCooldown = new HashMap<>();
+    private final Map<String, Double> ranksSameChatCooldown = new HashMap<>();
     private final HashMap<UUID, String> lastPlayerMessage = new HashMap<>();
     private final HashMap<UUID, Long> lastWaitMessage = new HashMap<>();
 
@@ -36,7 +37,7 @@ public class ChatLimiter implements Listener {
     public void limit(AsyncChatEvent event) {
         Player player = event.getPlayer();
         String playerMessage = ColorUtils.stripColor(event.originalMessage());
-        if (player.hasPermission("core.staff")) return;
+        if (player.hasPermission(CorePermissionsConfig.STAFF.permission)) return;
 
         /*
         These for loops will loop through all the configured keys (the normal cooldown
@@ -226,7 +227,7 @@ public class ChatLimiter implements Listener {
          current time - the last time of wait message is larger than the min value configured
         */
         if (lastWaitMessage.containsKey(uuid)) {
-            return MessagesCooldownConfig.WARN_MESSAGES_LIMIT_SEC.value > (System.currentTimeMillis() - lastWaitMessage.get(uuid)) / 1000d;
+            return MessagesCommandsConfig.WARN_MESSAGES_LIMIT_SEC.getDouble() > (System.currentTimeMillis() - lastWaitMessage.get(uuid)) / 1000d;
             // if the last message doesn't contain the player (meaning he probably didn't receive any wait messages, put him in the map and return false
         } else {
             lastWaitMessage.put(uuid, System.currentTimeMillis());

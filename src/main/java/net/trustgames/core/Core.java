@@ -4,20 +4,21 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
-import net.trustgames.core.commands.MessagesCommand;
+import net.trustgames.core.commands.messages_commands.MessagesCommands;
 import net.trustgames.core.commands.activity_commands.ActivityCommand;
 import net.trustgames.core.commands.activity_commands.ActivityIdCommand;
-import net.trustgames.core.config.command.CommandMessagesConfig;
+import net.trustgames.core.commands.messages_commands.MessagesCommandsConfig;
 import net.trustgames.core.database.MariaConfig;
 import net.trustgames.core.database.MariaDB;
 import net.trustgames.core.database.player_activity.ActivityListener;
 import net.trustgames.core.database.player_activity.PlayerActivityDB;
-import net.trustgames.core.gamerules.CoreGamerules;
+import net.trustgames.core.protection.CoreGamerulesHandler;
+import net.trustgames.core.announcer.AnnounceHandler;
 import net.trustgames.core.managers.*;
-import net.trustgames.core.managers.chat.ChatDecoration;
-import net.trustgames.core.managers.chat.ChatLimiter;
-import net.trustgames.core.playerlist.PlayerListListener;
-import net.trustgames.core.playerlist.PlayerListTeams;
+import net.trustgames.core.chat.ChatDecoration;
+import net.trustgames.core.chat.ChatLimiter;
+import net.trustgames.core.player_list.PlayerListHandler;
+import net.trustgames.core.player_list.PlayerListTeams;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
@@ -36,7 +37,7 @@ import java.util.HashMap;
 public final class Core extends JavaPlugin {
 
     final MariaDB mariaDB = new MariaDB(this);
-    private final AnnounceManager announceManager = new AnnounceManager(this);
+    private final AnnounceHandler announceHandler = new AnnounceHandler(this);
     private final PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
     private final ShutdownManager shutdownManager = new ShutdownManager(this);
     public CooldownManager cooldownManager = new CooldownManager();
@@ -105,9 +106,9 @@ public final class Core extends JavaPlugin {
 
         playerActivityDB.initializePlayerActivityTable();
 
-        CoreGamerules.setGamerules();
+        CoreGamerulesHandler.setGamerules();
 
-        announceManager.announceMessages();
+        announceHandler.announceMessages();
     }
 
     @Override
@@ -129,7 +130,7 @@ public final class Core extends JavaPlugin {
         pluginManager.registerEvents(new PlayerManager(), this);
         pluginManager.registerEvents(new ChatLimiter(), this);
         pluginManager.registerEvents(new ChatDecoration(), this);
-        pluginManager.registerEvents(new PlayerListListener(this), this);
+        pluginManager.registerEvents(new PlayerListHandler(this), this);
         pluginManager.registerEvents(new ActivityCommand(this), this);
     }
 
@@ -141,8 +142,8 @@ public final class Core extends JavaPlugin {
         cmdList.put(getCommand("activity-id"), new ActivityIdCommand(this));
 
         // Messages Commands
-        for (CommandMessagesConfig msgCmd : CommandMessagesConfig.values()){
-            cmdList.put(getCommand(msgCmd.name().toLowerCase()), new MessagesCommand());
+        for (MessagesCommandsConfig msgCmd : MessagesCommandsConfig.values()){
+            cmdList.put(getCommand(msgCmd.name().toLowerCase()), new MessagesCommands());
         }
 
         for (PluginCommand cmd : cmdList.keySet()) {
@@ -173,9 +174,9 @@ public final class Core extends JavaPlugin {
      * with luckperms groups weight support
      */
     private void playerList(){
-        PlayerListTeams playerListTeams = new PlayerListTeams(this);
+        PlayerListTeams playerListTeamsManager = new PlayerListTeams(this);
         playerListScoreboard = getServer().getScoreboardManager().getNewScoreboard();
-        playerListTeams.createTeams();
+        playerListTeamsManager.createTeams();
     }
 
     /**

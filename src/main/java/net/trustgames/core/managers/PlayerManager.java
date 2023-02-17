@@ -1,7 +1,7 @@
 package net.trustgames.core.managers;
 
 import net.kyori.adventure.text.Component;
-import net.trustgames.core.config.chat.ChatConfig;
+import net.trustgames.core.chat.config.ChatConfig;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

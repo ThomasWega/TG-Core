@@ -1,4 +1,4 @@
-package net.trustgames.core.config.cooldown;
+package net.trustgames.core.config;
 
 public enum CooldownConfig {
     SMALL(1d),

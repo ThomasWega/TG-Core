@@ -8,7 +8,7 @@ import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.group.GroupManager;
 import net.luckperms.api.model.user.User;
 import net.trustgames.core.Core;
-import net.trustgames.core.playerlist.PlayerListTeams;
+import net.trustgames.core.player_list.PlayerListTeams;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -133,8 +133,8 @@ public class LuckPermsManager {
             UUID uuid = event.getUser().getUniqueId();
 
             // add player to player-list team to sort priority
-            PlayerListTeams playerListTeams = new PlayerListTeams(core);
-            playerListTeams.addToTeam(uuid);
+            PlayerListTeams playerListTeamsManager = new PlayerListTeams(core);
+            playerListTeamsManager.addToTeam(uuid);
         });
     }
 }

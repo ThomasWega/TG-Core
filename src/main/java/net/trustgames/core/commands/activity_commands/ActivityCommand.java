@@ -5,7 +5,8 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.trustgames.core.Core;
 import net.trustgames.core.cache.OfflinePlayerCache;
-import net.trustgames.core.config.command.CommandConfig;
+import net.trustgames.core.config.CommandConfig;
+import net.trustgames.core.config.CorePermissionsConfig;
 import net.trustgames.core.managers.InventoryManager;
 import net.trustgames.core.managers.ItemManager;
 import net.trustgames.core.utils.ColorUtils;
@@ -72,7 +73,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (sender instanceof Player) {
-            if (sender.hasPermission("core.staff")) {
+            if (sender.hasPermission(CorePermissionsConfig.STAFF.permission)) {
 
                 if (core.getMariaDB().isMySQLDisabled()){
                     sender.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
@@ -135,7 +136,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 sender.sendMessage(CommandConfig.COMMAND_NO_PERM.getText());
             }
         } else {
-            Bukkit.getLogger().warning(CommandConfig.COMMAND_ONLY_PLAYER.value);
+            Bukkit.getLogger().warning(CommandConfig.COMMAND_ONLY_PLAYER.value.toString());
         }
         return true;
     }

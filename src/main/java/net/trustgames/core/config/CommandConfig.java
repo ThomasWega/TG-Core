@@ -1,4 +1,4 @@
-package net.trustgames.core.config.command;
+package net.trustgames.core.config;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -10,6 +10,7 @@ public enum CommandConfig {
 
     PREFIX("<color:#2472f0>Command | </color>"),
     PREFIX_DB("<color:#ed7168>Database | </color>"),
+    MAX_PER_SEC(5d),
     COMMAND_NO_PERM(PREFIX.value + "<dark_gray>You don't have permission to perform this action!"),
     COMMAND_DATABASE_OFF(PREFIX_DB.value + "<dark_gray>Database is disabled!"),
     COMMAND_ONLY_PLAYER("This command can be executed by in-game players only!"),
@@ -19,17 +20,24 @@ public enum CommandConfig {
     COMMAND_NO_PLAYER_ACT(PREFIX_DB.value + "<dark_gray>No activity data for player <white><player>"),
     COMMAND_NO_ID_ACT(PREFIX_DB.value + "<dark_gray>No activity data for ID <white><id>");
 
-    public final String value;
+    public final Object value;
 
-    CommandConfig(String value) {
+    CommandConfig(Object value) {
         this.value = value;
+    }
+
+    /**
+     * @return double value of the enum
+     */
+    public double getDouble(){
+        return ((double) value);
     }
 
     /**
      * @return Formatted component message
      */
     public Component getText() {
-        return MiniMessage.miniMessage().deserialize(value);
+        return MiniMessage.miniMessage().deserialize(value.toString());
     }
 
     /**
@@ -39,7 +47,7 @@ public enum CommandConfig {
      * @return New formatted Component message with replaced tags
      */
     public Component formatMessage(UUID uuid) {
-        return MiniMessageUtils.format(uuid).deserialize(value);
+        return MiniMessageUtils.format(uuid).deserialize(value.toString());
     }
 
     /**
@@ -49,6 +57,6 @@ public enum CommandConfig {
      * @return New formatted Component with replaced id tag
      */
     public Component addID(String id){
-        return MiniMessageUtils.addId(id).deserialize(value);
+        return MiniMessageUtils.addId(id).deserialize(value.toString());
     }
 }

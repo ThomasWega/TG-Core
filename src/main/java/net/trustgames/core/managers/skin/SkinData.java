@@ -1,4 +1,4 @@
-package net.trustgames.core.skin;
+package net.trustgames.core.managers.skin;
 
 import lombok.Data;
 

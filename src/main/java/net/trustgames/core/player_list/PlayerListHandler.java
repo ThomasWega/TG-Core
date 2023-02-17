@@ -1,9 +1,9 @@
-package net.trustgames.core.playerlist;
+package net.trustgames.core.player_list;
 
 import net.kyori.adventure.text.Component;
 import net.trustgames.core.Core;
 import net.trustgames.core.cache.EntityCache;
-import net.trustgames.core.config.server.ServerConfig;
+import net.trustgames.core.config.ServerConfig;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,15 +16,15 @@ import java.util.UUID;
 /**
  * Handles the player-list creation
  */
-public class PlayerListListener implements Listener {
+public class PlayerListHandler implements Listener {
 
     private final Core core;
 
-    public PlayerListListener(Core core) {
+    public PlayerListHandler(Core core) {
         this.core = core;
     }
 
-    PlayerListTeams playerListTeams;
+    private PlayerListTeams playerListTeamsManager;
 
     @EventHandler
     private void onPlayerJoin(PlayerJoinEvent event){
@@ -37,8 +37,8 @@ public class PlayerListListener implements Listener {
         player.sendPlayerListHeaderAndFooter(header, footer);
 
         Scoreboard playerListScoreboard = core.getPlayerListScoreboard();
-        playerListTeams = new PlayerListTeams(core);
-        playerListTeams.addToTeam(uuid);
+        playerListTeamsManager = new PlayerListTeams(core);
+        playerListTeamsManager.addToTeam(uuid);
         player.setScoreboard(playerListScoreboard);
     }
 
@@ -46,7 +46,7 @@ public class PlayerListListener implements Listener {
     private void onPlayerQuit(PlayerQuitEvent event){
         UUID uuid = EntityCache.getUUID(event.getPlayer());
 
-        playerListTeams = new PlayerListTeams(core);
-        playerListTeams.removeFromTeam(uuid);
+        playerListTeamsManager = new PlayerListTeams(core);
+        playerListTeamsManager.removeFromTeam(uuid);
     }
 }

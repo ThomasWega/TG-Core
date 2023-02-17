@@ -14,7 +14,6 @@ import java.util.UUID;
  */
 public class SkullManager {
 
-
     /**
      gets the player skull by his url. Use mineskin.org for url
      Using paper api method for this. (will not work on spigot)

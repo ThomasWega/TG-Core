@@ -1,4 +1,4 @@
-package net.trustgames.core.config.chat;
+package net.trustgames.core.chat.config;
 
 public enum ChatLimitConfig {
     TITAN(0.1d, 10d),

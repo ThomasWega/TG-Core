@@ -1,9 +1,8 @@
-package net.trustgames.core.managers;
+package net.trustgames.core.managers.skin;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import net.trustgames.core.skin.SkinData;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 

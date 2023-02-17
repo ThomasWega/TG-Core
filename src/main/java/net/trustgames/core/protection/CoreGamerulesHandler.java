@@ -1,4 +1,4 @@
-package net.trustgames.core.gamerules;
+package net.trustgames.core.protection;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
@@ -7,7 +7,7 @@ import org.bukkit.World;
 /**
  * Handles the gamerules of world
  */
-public class CoreGamerules {
+public class CoreGamerulesHandler {
 
     public static void setGamerules() {
 

@@ -1,18 +1,18 @@
-package net.trustgames.core.managers;
+package net.trustgames.core.announcer;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.config.announcer.AnnouncerDelayConfig;
-import net.trustgames.core.config.announcer.AnnouncerMessagesConfig;
+import net.trustgames.core.announcer.config.AnnouncerDelayConfig;
+import net.trustgames.core.announcer.config.AnnouncerMessagesConfig;
 
 /**
  * Chat messages which are announced to all online players
  * on the server.
  */
-public class AnnounceManager {
+public class AnnounceHandler {
 
     private final Core core;
 
-    public AnnounceManager(Core core) {
+    public AnnounceHandler(Core core) {
         this.core = core;
     }
 

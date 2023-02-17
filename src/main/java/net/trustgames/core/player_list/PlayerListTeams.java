@@ -1,4 +1,4 @@
-package net.trustgames.core.playerlist;
+package net.trustgames.core.player_list;
 
 import net.kyori.adventure.text.Component;
 import net.luckperms.api.model.group.Group;
@@ -23,7 +23,7 @@ public class PlayerListTeams {
         this.core = core;
     }
 
-    static final TreeMap<String, Integer> groupOrder = new TreeMap<>();
+    static final HashMap<Group, Integer> groupOrder = new HashMap<>();
 
 
     /** Create all the teams by getting all groups from LuckPerms and putting each group in map
@@ -36,22 +36,22 @@ public class PlayerListTeams {
 
         int i = 0;
 
-        TreeMap<String, Integer> groupWeight = new TreeMap<>();
+        HashMap<Group, Integer> groupWeight = new HashMap<>();
 
         // get the groups and put the name and weight to the map
-        for (Group y : LuckPermsManager.getGroups()){
-            if (y.getWeight().isPresent()){
-                groupWeight.put(y.getName(), y.getWeight().getAsInt());
+        for (Group group : LuckPermsManager.getGroups()){
+            if (group.getWeight().isPresent()){
+                groupWeight.put(group, group.getWeight().getAsInt());
             }
             else{
-                Bukkit.getLogger().severe("LuckPerms group " + y.getName() + " doesn't have any weight! CoreSettings the weight to 1...");
+                Bukkit.getLogger().severe("LuckPerms group " + group.getName() + " doesn't have any weight! Setting the weight to 1...");
 
-                Objects.requireNonNull(LuckPermsManager.getGroupManager().getGroup(y.getName()),
-                        "Group " + y.getName() + " wasn't found when setting a missing weight")
+                Objects.requireNonNull(LuckPermsManager.getGroupManager().getGroup(group.getName()),
+                        "Group " + group.getName() + " wasn't found when setting a missing weight")
                         .data().add(Node.builder("weight.1").build());
 
-                LuckPermsManager.getGroupManager().saveGroup(y);
-                groupWeight.put(y.getName(), y.getWeight().getAsInt());
+                LuckPermsManager.getGroupManager().saveGroup(group);
+                groupWeight.put(group, group.getWeight().getAsInt());
             }
         }
 
@@ -60,17 +60,16 @@ public class PlayerListTeams {
          also register a new team with (i + name). The lower "i", the highest order priority.
          Example: 1prime is lower then 0admin
         */
-        for (String x : groupWeight.entrySet()
+        for (Group group : groupWeight.entrySet()
                 .stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .map(Map.Entry::getKey).toList()){
-            groupOrder.put(x, i);
+            groupOrder.put(group, i);
 
-            Group group = LuckPermsManager.getGroupManager().getGroup(x);
             if (group == null) return;
 
-            Team team = playerListScoreboard.registerNewTeam(i + "" + x);
+            Team team = playerListScoreboard.registerNewTeam(i + "" + group);
             Component prefix = LuckPermsManager.getGroupPrefix(group);
-            if (!x.equals("default"))
+            if (!group.getName().equals("default"))
                 team.prefix(prefix.append(Component.text(" ")));
             i++;
         }
@@ -85,7 +84,9 @@ public class PlayerListTeams {
         if (player == null) return;
 
         playerListScoreboard = core.getPlayerListScoreboard();
-        String stringTeam = groupOrder.get(LuckPermsManager.getPlayerPrimaryGroup(uuid)) + LuckPermsManager.getPlayerPrimaryGroup(uuid);
+        Group playerGroup = LuckPermsManager.getGroupManager().getGroup(LuckPermsManager.getPlayerPrimaryGroup(uuid));
+        if (playerGroup == null) return;
+        String stringTeam = groupOrder.get(playerGroup) + playerGroup.getName();
         Team team = playerListScoreboard.getTeam(stringTeam);
 
         if (team == null){

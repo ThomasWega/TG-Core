@@ -1,7 +1,6 @@
-package net.trustgames.core.commands;
+package net.trustgames.core.commands.messages_commands;
 
-import net.trustgames.core.config.command.CommandConfig;
-import net.trustgames.core.config.command.CommandMessagesConfig;
+import net.trustgames.core.config.CommandConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  * Just string or list of strings from a config
  * sent to the player on a given command
  */
-public class MessagesCommand implements CommandExecutor {
+public class MessagesCommands implements CommandExecutor {
 
     /*
     There are multiple commands in the config file (extendable). It is possible to specify custom messages that are sent
@@ -23,10 +22,10 @@ public class MessagesCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
         if (sender instanceof Player player){
-            player.sendMessage(CommandMessagesConfig.valueOf(command.getName().toUpperCase()).getMessage());
+            player.sendMessage(MessagesCommandsConfig.valueOf(command.getName().toUpperCase()).getMessage());
         }
         else
-            Bukkit.getLogger().warning(CommandConfig.COMMAND_ONLY_PLAYER.value);
+            Bukkit.getLogger().warning(CommandConfig.COMMAND_ONLY_PLAYER.value.toString());
 
         return true;
     }

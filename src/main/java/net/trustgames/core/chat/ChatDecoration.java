@@ -1,4 +1,4 @@
-package net.trustgames.core.managers.chat;
+package net.trustgames.core.chat;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.audience.Audience;
@@ -10,7 +10,7 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
 import net.trustgames.core.cache.EntityCache;
-import net.trustgames.core.config.chat.ChatConfig;
+import net.trustgames.core.chat.config.ChatConfig;
 import net.trustgames.core.managers.LuckPermsManager;
 import net.trustgames.core.utils.ColorUtils;
 import net.trustgames.core.utils.ComponentUtils;

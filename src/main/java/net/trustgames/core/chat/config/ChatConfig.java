@@ -1,8 +1,9 @@
-package net.trustgames.core.config.chat;
+package net.trustgames.core.chat.config;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.trustgames.core.config.CorePermissionsConfig;
 import net.trustgames.core.utils.ColorUtils;
 import net.trustgames.core.utils.MiniMessageUtils;
 
@@ -12,7 +13,7 @@ public enum ChatConfig {
     PREFIX("<color:#00adc4>Chat | </color>"),
     COLOR("&f"),
     NAME_COLOR("&e"),
-    ALLOW_COLORS_PERM("core.knight"),
+    ALLOW_COLORS_PERM(CorePermissionsConfig.KNIGHT.permission),
     MENTION_COLOR("&a"),
     ON_COOLDOWN(PREFIX.value + "<dark_gray>Wait another <sec> seconds before using chat again!"),
     ON_SAME_COOLDOWN(PREFIX.value + "<dark_gray>Don't write the same message! (wait <sec> seconds)"),

@@ -1,4 +1,4 @@
-package net.trustgames.core.config.announcer;
+package net.trustgames.core.announcer.config;
 
 public enum AnnouncerDelayConfig {
     FIRST(30L), // in seconds

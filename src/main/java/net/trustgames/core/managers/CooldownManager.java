@@ -1,8 +1,8 @@
 package net.trustgames.core.managers;
 
 import net.trustgames.core.cache.EntityCache;
-import net.trustgames.core.config.command.CommandConfig;
-import net.trustgames.core.config.cooldown.MessagesCooldownConfig;
+import net.trustgames.core.commands.messages_commands.MessagesCommandsConfig;
+import net.trustgames.core.config.CommandConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -66,7 +66,7 @@ public class CooldownManager implements Listener {
          current time - the last time of wait message is larger than the min value in config
         */
         if (cooldownMessageTime.containsKey(uuid)) {
-            return !(MessagesCooldownConfig.WARN_MESSAGES_LIMIT_SEC.value <= (System.currentTimeMillis() - cooldownMessageTime.get(uuid)) / 1000d);
+            return !(MessagesCommandsConfig.WARN_MESSAGES_LIMIT_SEC.getDouble() <= (System.currentTimeMillis() - cooldownMessageTime.get(uuid)) / 1000d);
         } else {
             cooldownMessageTime.put(uuid, System.currentTimeMillis());
             return false;

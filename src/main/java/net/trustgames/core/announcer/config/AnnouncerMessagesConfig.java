@@ -1,4 +1,4 @@
-package net.trustgames.core.config.announcer;
+package net.trustgames.core.announcer.config;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
