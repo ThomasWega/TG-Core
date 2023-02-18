@@ -4,7 +4,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 public enum MessagesCommandsConfig {
-    WARN_MESSAGES_LIMIT_SEC(0.5d),
     WEBSITE("<newline>" +
             "<color:#5757cf>You can visit our website by clicking </color><hover:show_text:'<yellow>Click to join</yellow>'><click:open_url:'http://www.trustgames.net'><color:#ffda73>HERE</color></hover>" +
             "<newline>"
@@ -18,23 +17,16 @@ public enum MessagesCommandsConfig {
             "<newline>"
     );
 
-    private final Object value;
+    private final String value;
 
-    MessagesCommandsConfig(Object value) {
+    MessagesCommandsConfig(String value) {
         this.value = value;
-    }
-
-    /**
-     * @return double value of the enum
-     */
-    public double getDouble() {
-        return (double) value;
     }
 
     /**
      * @return Formatted component message
      */
-    public Component getMessage() {
-        return MiniMessage.miniMessage().deserialize(value.toString());
+    public Component getValue() {
+        return MiniMessage.miniMessage().deserialize(value);
     }
 }

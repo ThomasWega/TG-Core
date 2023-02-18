@@ -79,4 +79,21 @@ public class MiniMessageUtils {
                 )
                 .build();
     }
+
+    /**
+     * MiniMessage instance, which replaces
+     * the player_name tag in the message with the component name
+     *
+     * @param name Component to replace the tag with
+     * @return new MiniMessage with formatter ready
+     */
+    public static MiniMessage addName(Component name){
+        return MiniMessage.builder()
+                .tags(TagResolver.builder()
+                        .resolver(StandardTags.defaults())
+                        .resolver(TagResolver.resolver("player_name", Tag.selfClosingInserting(name)))
+                        .build()
+                )
+                .build();
+    }
 }

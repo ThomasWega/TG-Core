@@ -63,6 +63,7 @@ public final class Core extends JavaPlugin {
         - maintenance
         - playtime bonus
         - boosters
+        - autorestart (only if no one is online)
         */
 
         /* SIDE ADDITIONS
@@ -81,7 +82,7 @@ public final class Core extends JavaPlugin {
         // TODO HOLO clickable
         // TODO NPC action - command prints the command in chat
         // TODO NPC protocolib
-        // TODO use command api
+        // TODO use command api (lamp)
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);

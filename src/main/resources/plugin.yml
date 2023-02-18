@@ -14,8 +14,6 @@ website: www.trustgames.net
 commands:
   discord:
     description: Get the discord server url
-    aliases:
-      - dsc
   website:
     description: Get the website url
     aliases:
@@ -31,19 +29,11 @@ commands:
     usage: /activity <Player/UUID>
     description: Get the player's activity by his name or UUID from the database
     permission: core.staff
-    aliases:
-       - activ
-       - act
   activity-id:
     usage: /activity-id <ID>
     description: Get the activity by it's ID from the database
     permission: core.staff
     aliases:
-      - activ-id
-      - act-id
       - activityid
-
-  disguise:
-    description: TEST DISGUISE
 
 

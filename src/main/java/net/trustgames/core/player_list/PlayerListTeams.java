@@ -67,7 +67,7 @@ public class PlayerListTeams {
 
             if (group == null) return;
 
-            Team team = playerListScoreboard.registerNewTeam(i + "" + group);
+            Team team = playerListScoreboard.registerNewTeam(i + "" + group.getName());
             Component prefix = LuckPermsManager.getGroupPrefix(group);
             if (!group.getName().equals("default"))
                 team.prefix(prefix.append(Component.text(" ")));

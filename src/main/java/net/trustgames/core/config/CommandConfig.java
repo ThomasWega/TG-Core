@@ -16,7 +16,7 @@ public enum CommandConfig {
     COMMAND_ONLY_PLAYER("This command can be executed by in-game players only!"),
     COMMAND_SPAM(PREFIX.value + "<dark_gray>Please don't spam the command!"),
     COMMAND_INVALID_ARG(PREFIX.value + "<dark_gray>You need to specify a valid argument!"),
-    COMMAND_INVALID_PLAYER(PREFIX.value + "<dark_gray>The player <white><player> <dark_gray>doesn't exist!"),
+    COMMAND_INVALID_PLAYER(PREFIX.value + "<dark_gray>The player <white><player_name><dark_gray> isn't online on this server!"),
     COMMAND_NO_PLAYER_ACT(PREFIX_DB.value + "<dark_gray>No activity data for player <white><player>"),
     COMMAND_NO_ID_ACT(PREFIX_DB.value + "<dark_gray>No activity data for ID <white><id>");
 
@@ -58,5 +58,16 @@ public enum CommandConfig {
      */
     public Component addID(String id){
         return MiniMessageUtils.addId(id).deserialize(value.toString());
+    }
+
+
+    /**
+     * Replace component tag with given component
+     *
+     * @param component Component to replace the tag with
+     * @return New formatted Component with replaced component tag
+     */
+    public Component addName(Component component){
+        return MiniMessageUtils.addName(component).deserialize(value.toString());
     }
 }
