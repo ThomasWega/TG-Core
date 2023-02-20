@@ -19,6 +19,7 @@ import net.trustgames.core.chat.ChatDecoration;
 import net.trustgames.core.chat.ChatLimiter;
 import net.trustgames.core.player_list.PlayerListHandler;
 import net.trustgames.core.player_list.PlayerListTeams;
+import net.trustgames.core.stats.level.LevelHandler;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
@@ -132,6 +133,7 @@ public final class Core extends JavaPlugin {
         pluginManager.registerEvents(new ChatDecoration(), this);
         pluginManager.registerEvents(new PlayerListHandler(this), this);
         pluginManager.registerEvents(new ActivityCommand(this), this);
+        pluginManager.registerEvents(new LevelHandler(this), this);
     }
 
     private void registerCommands() {
