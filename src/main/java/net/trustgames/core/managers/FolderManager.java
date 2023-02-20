@@ -1,6 +1,6 @@
 package net.trustgames.core.managers;
 
-import org.bukkit.Bukkit;
+import net.trustgames.core.logger.CoreLogger;
 
 import java.io.File;
 
@@ -17,11 +17,11 @@ public class FolderManager {
 
         // check if the folder exists, in case it doesn't, it creates it
         if (!folder.exists()) {
-            Bukkit.getLogger().warning("Folder " + folder.getPath() + " not found, creating...");
+            CoreLogger.LOGGER.warning("Folder " + folder.getPath() + " not found, creating...");
             if (folder.mkdir()) {
-                Bukkit.getLogger().finest("Done creating folder " + folder.getPath());
+                CoreLogger.LOGGER.finest("Done creating folder " + folder.getPath());
             } else {
-                Bukkit.getLogger().severe("Failed creating folder " + folder.getPath());
+                CoreLogger.LOGGER.severe("Failed creating folder " + folder.getPath());
             }
         }
     }

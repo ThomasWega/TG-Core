@@ -1,7 +1,7 @@
 package net.trustgames.core.commands.messages_commands;
 
 import net.trustgames.core.config.CommandConfig;
-import org.bukkit.Bukkit;
+import net.trustgames.core.logger.CoreLogger;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,7 +25,7 @@ public class MessagesCommands implements CommandExecutor {
             player.sendMessage(MessagesCommandsConfig.valueOf(command.getName().toUpperCase()).getValue());
         }
         else
-            Bukkit.getLogger().warning(CommandConfig.COMMAND_ONLY_PLAYER.value.toString());
+            CoreLogger.LOGGER.warning(CommandConfig.COMMAND_ONLY_PLAYER.value.toString());
 
         return true;
     }

@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.node.Node;
 import net.trustgames.core.Core;
+import net.trustgames.core.logger.CoreLogger;
 import net.trustgames.core.managers.LuckPermsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -44,7 +45,7 @@ public class PlayerListTeams {
                 groupWeight.put(group, group.getWeight().getAsInt());
             }
             else{
-                Bukkit.getLogger().severe("LuckPerms group " + group.getName() + " doesn't have any weight! Setting the weight to 1...");
+                CoreLogger.LOGGER.severe("LuckPerms group " + group.getName() + " doesn't have any weight! Setting the weight to 1...");
 
                 Objects.requireNonNull(LuckPermsManager.getGroupManager().getGroup(group.getName()),
                         "Group " + group.getName() + " wasn't found when setting a missing weight")
@@ -90,7 +91,7 @@ public class PlayerListTeams {
         Team team = playerListScoreboard.getTeam(stringTeam);
 
         if (team == null){
-            Bukkit.getLogger().severe("Scoreboard team " + stringTeam + " wasn't found");
+            CoreLogger.LOGGER.severe("Scoreboard team " + stringTeam + " wasn't found");
             return;
         }
 

@@ -7,6 +7,7 @@ import net.trustgames.core.Core;
 import net.trustgames.core.cache.OfflinePlayerCache;
 import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CorePermissionsConfig;
+import net.trustgames.core.logger.CoreLogger;
 import net.trustgames.core.managers.InventoryManager;
 import net.trustgames.core.managers.ItemManager;
 import net.trustgames.core.utils.ColorUtils;
@@ -136,7 +137,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 sender.sendMessage(CommandConfig.COMMAND_NO_PERM.getText());
             }
         } else {
-            Bukkit.getLogger().warning(CommandConfig.COMMAND_ONLY_PLAYER.value.toString());
+            CoreLogger.LOGGER.warning(CommandConfig.COMMAND_ONLY_PLAYER.value.toString());
         }
         return true;
     }
@@ -198,7 +199,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
                 records.add(targetHead.clone());
             }
         } catch (SQLException e) {
-            Bukkit.getLogger().severe("Trying loop through ResultSet in ActivityCommand class");
+            CoreLogger.LOGGER.severe("Trying loop through ResultSet in ActivityCommand class");
             throw new RuntimeException(e);
         }
     }

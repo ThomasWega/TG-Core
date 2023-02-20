@@ -1,6 +1,6 @@
 package net.trustgames.core.managers;
 
-import org.bukkit.Bukkit;
+import net.trustgames.core.logger.CoreLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,12 +17,12 @@ public class ConfigManager {
      */
     public static void createConfig(File file) {
         if (!file.exists()) {
-            Bukkit.getLogger().warning(file.getName() + " not found, creating...");
+            CoreLogger.LOGGER.warning(file.getName() + " not found, creating...");
             try {
                 if (file.createNewFile())
-                    Bukkit.getLogger().finest("Done creating " + file.getName());
+                    CoreLogger.LOGGER.finest("Done creating " + file.getName());
             } catch (IOException e) {
-                Bukkit.getLogger().severe("Couldn't create " + file.getName());
+                CoreLogger.LOGGER.severe("Couldn't create " + file.getName());
                 throw new RuntimeException(e);
             }
         }

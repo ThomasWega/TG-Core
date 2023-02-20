@@ -10,8 +10,8 @@ import net.trustgames.core.commands.activity_commands.ActivityIdCommand;
 import net.trustgames.core.commands.messages_commands.MessagesCommandsConfig;
 import net.trustgames.core.database.MariaConfig;
 import net.trustgames.core.database.MariaDB;
-import net.trustgames.core.database.player_activity.ActivityListener;
-import net.trustgames.core.database.player_activity.PlayerActivityDB;
+import net.trustgames.core.player_activity.ActivityListener;
+import net.trustgames.core.player_activity.PlayerActivityDB;
 import net.trustgames.core.protection.CoreGamerulesHandler;
 import net.trustgames.core.announcer.AnnounceHandler;
 import net.trustgames.core.managers.*;
@@ -82,7 +82,6 @@ public final class Core extends JavaPlugin {
         // TODO HOLO clickable
         // TODO NPC action - command prints the command in chat
         // TODO NPC protocolib
-        // TODO use command api (lamp)
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);

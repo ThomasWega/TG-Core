@@ -3,7 +3,8 @@ package net.trustgames.core.managers;
 import net.trustgames.core.Core;
 import net.trustgames.core.cache.EntityCache;
 import net.trustgames.core.config.ServerConfig;
-import net.trustgames.core.database.player_activity.ActivityListener;
+import net.trustgames.core.player_activity.ActivityListener;
+import net.trustgames.core.logger.CoreLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -26,16 +27,16 @@ public class ShutdownManager {
         ActivityListener activityListener = new ActivityListener(core);
 
         if (core.getMariaDB().isMySQLDisabled()){
-            Bukkit.getLogger().warning("Not logging player activities. MariaDB is turned OFF");
+            CoreLogger.LOGGER.warning("Not logging player activities. MariaDB is turned OFF");
         }
         else{
-            Bukkit.getLogger().info("Trying to log players activities...");
+            CoreLogger.LOGGER.info("Trying to log players activities...");
 
             for (Player player : Bukkit.getOnlinePlayers()) {
                 player.kick(ServerConfig.RESTART.getText());
                 activityListener.onServerShutdown(EntityCache.getUUID(player));
             }
-            Bukkit.getLogger().finest("Online players activities successfully saved to the database");
+            CoreLogger.LOGGER.finest("Online players activities successfully saved to the database");
         }
     }
 }

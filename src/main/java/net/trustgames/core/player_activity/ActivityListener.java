@@ -1,4 +1,4 @@
-package net.trustgames.core.database.player_activity;
+package net.trustgames.core.player_activity;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.cache.EntityCache;
