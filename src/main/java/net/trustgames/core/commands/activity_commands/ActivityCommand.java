@@ -150,7 +150,7 @@ public class ActivityCommand implements CommandExecutor, Listener {
      * @param offlinePlayer Target player
      */
     private void createRecords(OfflinePlayer offlinePlayer){
-        ActivityQuery activityQuery = new ActivityQuery(core);
+        ActivityFetcher activityQuery = new ActivityFetcher(core);
         UUID offlineUuid = OfflinePlayerCache.getUUID(offlinePlayer);
 
         ResultSet resultSet = activityQuery.getActivityByUUID(offlineUuid.toString());

@@ -12,11 +12,11 @@ import java.util.Base64;
  * Used to get the player's activity by uuid,
  * or get activity by id.
  */
-public class ActivityQuery {
+public class ActivityFetcher {
 
     private final Core core;
 
-    public ActivityQuery(Core core) {
+    public ActivityFetcher(Core core) {
         this.core = core;
     }
 

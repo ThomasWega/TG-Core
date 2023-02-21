@@ -1,4 +1,4 @@
-package net.trustgames.core.player_activity;
+package net.trustgames.core.player.activity;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.cache.EntityCache;
@@ -17,11 +17,11 @@ import java.util.UUID;
 /**
 This class is used for listeners for table player_activity
  */
-public class ActivityListener implements Listener {
+public class PlayerActivityHandler implements Listener {
 
     private final Core core;
 
-    public ActivityListener(Core core) {
+    public PlayerActivityHandler(Core core) {
         this.core = core;
     }
 
@@ -29,14 +29,14 @@ public class ActivityListener implements Listener {
     private void onPlayerJoin(PlayerJoinEvent event) {
         UUID uuid = EntityCache.getUUID(event.getPlayer());
 
-        writeActivity(uuid, "JOIN SERVER " + Bukkit.getServer().getName() + " (" + Bukkit.getServer().getPort() + ")", true);
+        write(uuid, "JOIN SERVER " + Bukkit.getServer().getName() + " (" + Bukkit.getServer().getPort() + ")", true);
     }
 
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent event) {
         UUID uuid = EntityCache.getUUID(event.getPlayer());
 
-        writeActivity(uuid, "QUIT SERVER " + Bukkit.getServer().getName() + " (" + Bukkit.getServer().getPort() + ")", true);
+        write(uuid, "QUIT SERVER " + Bukkit.getServer().getName() + " (" + Bukkit.getServer().getPort() + ")", true);
     }
 
     /**
@@ -46,8 +46,8 @@ public class ActivityListener implements Listener {
      *
      * @param uuid UUID of Player to write activity to
      */
-    public void onServerShutdown(UUID uuid) {
-        writeActivity(uuid, "QUIT SHUTDOWN SERVER " + Bukkit.getServer().getName() + " (" + Bukkit.getServer().getPort() + ")", false);
+    public void onShutdown(UUID uuid) {
+        write(uuid, "QUIT SHUTDOWN SERVER " + Bukkit.getServer().getName() + " (" + Bukkit.getServer().getPort() + ")", false);
     }
 
     /**
@@ -58,21 +58,21 @@ public class ActivityListener implements Listener {
      * @param runAsync Should the method be run Async
      * @return Player Activity data
      */
-    private PlayerActivity getPlayerActivityFromDatabase(UUID uuid, boolean runAsync) {
+    private PlayerActivity get(UUID uuid, boolean runAsync) {
         PlayerActivityDB playerActivityDB = new PlayerActivityDB(core);
         Player player = Bukkit.getPlayer(uuid);
 
         if (player == null) return null;
 
-        PlayerActivity playerActivity = playerActivityDB.findPlayerActivityByUUID(uuid.toString());
+        PlayerActivity playerActivity = playerActivityDB.fetchByUUID(uuid);
 
         if (playerActivity == null) {
-            playerActivity = new PlayerActivity(uuid.toString(), Objects.requireNonNull(
+            playerActivity = new PlayerActivity(uuid, Objects.requireNonNull(
                     player.getAddress(), "Player " + uuid + " IP address is null!")
                     .getHostString(), "FIRST JOIN PORT " + Bukkit.getServer().getPort(),
                     new Timestamp(Instant.now().toEpochMilli()));
 
-            playerActivityDB.createPlayerActivity(playerActivity, runAsync);
+            playerActivityDB.add(playerActivity, runAsync);
             return null;
         } else {
             return playerActivity;
@@ -80,21 +80,20 @@ public class ActivityListener implements Listener {
     }
 
     /**
-    writes the values for the newly created player activity to the table.
-    Assigns a new player activity by getting the player's activity from
-    the database and setting the values accordingly. Then it creates the full row.
+    writes the values for the newly created player activity to the new PlayerActivity instance.
+    Then it creates the full row.
      * @param uuid UUID of Player to write activity to
      * @param action What actions to write
      * @param runAsync Should the method be run Async
      */
-    private void writeActivity(UUID uuid, String action, boolean runAsync) {
+    private void write(UUID uuid, String action, boolean runAsync) {
         Player player = Bukkit.getPlayer(uuid);
 
         if (player == null) return;
         if (core.getMariaDB().isMySQLDisabled()) return;
 
         PlayerActivity playerActivity;
-        playerActivity = getPlayerActivityFromDatabase(uuid, runAsync);
+        playerActivity = get(uuid, runAsync);
         if (playerActivity != null) {
             PlayerActivityDB playerActivityDB = new PlayerActivityDB(core);
 
@@ -103,7 +102,7 @@ public class ActivityListener implements Listener {
             playerActivity.setAction(action);
             playerActivity.setTime(new Timestamp(Instant.now().toEpochMilli()));
 
-            playerActivityDB.createPlayerActivity(playerActivity, runAsync);
+            playerActivityDB.add(playerActivity, runAsync);
         }
     }
 }

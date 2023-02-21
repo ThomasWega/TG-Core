@@ -8,7 +8,7 @@ import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.group.GroupManager;
 import net.luckperms.api.model.user.User;
 import net.trustgames.core.Core;
-import net.trustgames.core.player_list.PlayerListTeams;
+import net.trustgames.core.player.tablist.TablistTeams;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +33,7 @@ public class LuckPermsManager {
 
     /**
      * @param player What player to check on
-     * @param group What group to check for
+     * @param group What group check for
      * @return if the given player is in the given group
      */
     public static boolean isPlayerInGroup(Player player, String group) {
@@ -133,7 +133,7 @@ public class LuckPermsManager {
             UUID uuid = event.getUser().getUniqueId();
 
             // add player to player-list team to sort priority
-            PlayerListTeams playerListTeamsManager = new PlayerListTeams(core);
+            TablistTeams playerListTeamsManager = new TablistTeams(core);
             playerListTeamsManager.addToTeam(uuid);
         });
     }

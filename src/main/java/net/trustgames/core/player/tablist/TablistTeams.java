@@ -1,4 +1,4 @@
-package net.trustgames.core.player_list;
+package net.trustgames.core.player.tablist;
 
 import net.kyori.adventure.text.Component;
 import net.luckperms.api.model.group.Group;
@@ -16,11 +16,11 @@ import java.util.*;
 /**
  * Handles the priority sorting of groups and players in the player-list
  */
-public class PlayerListTeams {
+public class TablistTeams {
 
     private final Core core;
-    private Scoreboard playerListScoreboard;
-    public PlayerListTeams(Core core) {
+    private Scoreboard tablist;
+    public TablistTeams(Core core) {
         this.core = core;
     }
 
@@ -33,7 +33,7 @@ public class PlayerListTeams {
      */
     public void createTeams() {
 
-        playerListScoreboard = core.getPlayerListScoreboard();
+        tablist = core.getTablistScoreboard();
 
         int i = 0;
 
@@ -68,7 +68,7 @@ public class PlayerListTeams {
 
             if (group == null) return;
 
-            Team team = playerListScoreboard.registerNewTeam(i + "" + group.getName());
+            Team team = tablist.registerNewTeam(i + "" + group.getName());
             Component prefix = LuckPermsManager.getGroupPrefix(group);
             if (!group.getName().equals("default"))
                 team.prefix(prefix.append(Component.text(" ")));
@@ -84,11 +84,11 @@ public class PlayerListTeams {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return;
 
-        playerListScoreboard = core.getPlayerListScoreboard();
+        tablist = core.getTablistScoreboard();
         Group playerGroup = LuckPermsManager.getGroupManager().getGroup(LuckPermsManager.getPlayerPrimaryGroup(uuid));
         if (playerGroup == null) return;
         String stringTeam = groupOrder.get(playerGroup) + playerGroup.getName();
-        Team team = playerListScoreboard.getTeam(stringTeam);
+        Team team = tablist.getTeam(stringTeam);
 
         if (team == null){
             CoreLogger.LOGGER.severe("Scoreboard team " + stringTeam + " wasn't found");
@@ -100,7 +100,7 @@ public class PlayerListTeams {
         if (!stringTeam.contains("default"))
             team.prefix(LuckPermsManager.getPlayerPrefix(uuid).append(Component.text(" ")));
 
-        player.setScoreboard(playerListScoreboard);
+        player.setScoreboard(tablist);
     }
 
     /**
@@ -110,8 +110,8 @@ public class PlayerListTeams {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return;
 
-        playerListScoreboard = core.getPlayerListScoreboard();
-        Team team = playerListScoreboard.getPlayerTeam(player);
+        tablist = core.getTablistScoreboard();
+        Team team = tablist.getPlayerTeam(player);
         if (team != null)
                 team.removePlayer(player);
     }

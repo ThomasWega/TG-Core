@@ -67,7 +67,7 @@ public class ActivityIdCommand implements CommandExecutor {
      * @param id Activity id
      */
     private void printData(CommandSender sender, String id){
-        ActivityQuery activityQuery = new ActivityQuery(core);
+        ActivityFetcher activityQuery = new ActivityFetcher(core);
 
         // get the result set of the given id
         ResultSet resultSet = activityQuery.getActivityByID(id);

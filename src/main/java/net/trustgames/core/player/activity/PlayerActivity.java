@@ -1,9 +1,10 @@
-package net.trustgames.core.player_activity;
+package net.trustgames.core.player.activity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.sql.Timestamp;
+import java.util.UUID;
 
 /**
  * This class is just used as getters, setters and constructors
@@ -13,7 +14,7 @@ import java.sql.Timestamp;
 @Data
 @AllArgsConstructor
 public class PlayerActivity {
-    private final String uuid;
+    private final UUID uuid;
     private String ip;
     private String action;
     private Timestamp time;

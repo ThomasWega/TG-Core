@@ -196,7 +196,7 @@ public class NPCManager {
      * @param npc NPC to hide the name of
      */
     public void hideName(ServerPlayer npc) {
-        Scoreboard scoreboard = core.getPlayerListScoreboard();
+        Scoreboard scoreboard = core.getTablistScoreboard();
         Team team = scoreboard.getTeam("9999NPC");
         if (team == null) {
             team = scoreboard.registerNewTeam("9999NPC");
@@ -290,7 +290,7 @@ public class NPCManager {
     }
 
     public void glow(ServerPlayer npc, TextColor color) {
-        Scoreboard scoreboard = core.getPlayerListScoreboard();
+        Scoreboard scoreboard = core.getTablistScoreboard();
 
         CraftPlayer npcEntity = npc.getBukkitEntity();
         npcEntity.setGlowing(true);

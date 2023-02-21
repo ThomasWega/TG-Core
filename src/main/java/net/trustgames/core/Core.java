@@ -10,16 +10,17 @@ import net.trustgames.core.commands.activity_commands.ActivityIdCommand;
 import net.trustgames.core.commands.messages_commands.MessagesCommandsConfig;
 import net.trustgames.core.database.MariaConfig;
 import net.trustgames.core.database.MariaDB;
-import net.trustgames.core.player_activity.ActivityListener;
-import net.trustgames.core.player_activity.PlayerActivityDB;
+import net.trustgames.core.player.activity.PlayerActivityHandler;
+import net.trustgames.core.player.activity.PlayerActivityDB;
+import net.trustgames.core.player.stats.PlayerStatsDB;
 import net.trustgames.core.protection.CoreGamerulesHandler;
 import net.trustgames.core.announcer.AnnounceHandler;
 import net.trustgames.core.managers.*;
 import net.trustgames.core.chat.ChatDecoration;
 import net.trustgames.core.chat.ChatLimiter;
-import net.trustgames.core.player_list.PlayerListHandler;
-import net.trustgames.core.player_list.PlayerListTeams;
-import net.trustgames.core.stats.level.LevelHandler;
+import net.trustgames.core.player.tablist.TablistHandler;
+import net.trustgames.core.player.tablist.TablistTeams;
+import net.trustgames.core.player.stats.level.PlayerLevelHandler;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
@@ -40,9 +41,10 @@ public final class Core extends JavaPlugin {
     final MariaDB mariaDB = new MariaDB(this);
     private final AnnounceHandler announceHandler = new AnnounceHandler(this);
     private final PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
+    public final PlayerStatsDB playerStatsDB = new PlayerStatsDB(this);
     private final ShutdownManager shutdownManager = new ShutdownManager(this);
     public CooldownManager cooldownManager = new CooldownManager();
-    private Scoreboard playerListScoreboard;
+    private Scoreboard tablistScoreboard;
     public LuckPermsManager luckPermsManager;
 
     private ProtocolManager protocolManager;
@@ -83,6 +85,8 @@ public final class Core extends JavaPlugin {
         // TODO HOLO clickable
         // TODO NPC action - command prints the command in chat
         // TODO NPC protocolib
+        // TODO NPCManager if player leaves before all is set, errors happen
+        // TODO PlayerActivity, can maybe use better inserting if null???
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
@@ -105,7 +109,8 @@ public final class Core extends JavaPlugin {
 
         playerList();
 
-        playerActivityDB.initializePlayerActivityTable();
+        playerActivityDB.initializeTable();
+        playerStatsDB.initializeTable();
 
         CoreGamerulesHandler.setGamerules();
 
@@ -125,15 +130,15 @@ public final class Core extends JavaPlugin {
     private void registerEvents() {
         PluginManager pluginManager = getServer().getPluginManager();
 
-        pluginManager.registerEvents(new ActivityListener(this), this);
+        pluginManager.registerEvents(new PlayerActivityHandler(this), this);
         pluginManager.registerEvents(new CommandManager(), this);
         pluginManager.registerEvents(new CooldownManager(), this);
         pluginManager.registerEvents(new PlayerManager(), this);
         pluginManager.registerEvents(new ChatLimiter(), this);
         pluginManager.registerEvents(new ChatDecoration(), this);
-        pluginManager.registerEvents(new PlayerListHandler(this), this);
+        pluginManager.registerEvents(new TablistHandler(this), this);
         pluginManager.registerEvents(new ActivityCommand(this), this);
-        pluginManager.registerEvents(new LevelHandler(this), this);
+        pluginManager.registerEvents(new PlayerLevelHandler(this), this);
     }
 
     private void registerCommands() {
@@ -176,8 +181,8 @@ public final class Core extends JavaPlugin {
      * with luckperms groups weight support
      */
     private void playerList(){
-        PlayerListTeams playerListTeamsManager = new PlayerListTeams(this);
-        playerListScoreboard = getServer().getScoreboardManager().getNewScoreboard();
+        TablistTeams playerListTeamsManager = new TablistTeams(this);
+        tablistScoreboard = getServer().getScoreboardManager().getNewScoreboard();
         playerListTeamsManager.createTeams();
     }
 
@@ -188,8 +193,8 @@ public final class Core extends JavaPlugin {
      *
      * @return Player-list scoreboard
      */
-    public Scoreboard getPlayerListScoreboard() {
-        return playerListScoreboard;
+    public Scoreboard getTablistScoreboard() {
+        return tablistScoreboard;
     }
 
     public ProtocolManager getProtocolManager(){

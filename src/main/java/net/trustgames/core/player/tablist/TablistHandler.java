@@ -1,4 +1,4 @@
-package net.trustgames.core.player_list;
+package net.trustgames.core.player.tablist;
 
 import net.kyori.adventure.text.Component;
 import net.trustgames.core.Core;
@@ -16,15 +16,15 @@ import java.util.UUID;
 /**
  * Handles the player-list creation
  */
-public class PlayerListHandler implements Listener {
+public class TablistHandler implements Listener {
 
     private final Core core;
 
-    public PlayerListHandler(Core core) {
+    public TablistHandler(Core core) {
         this.core = core;
     }
 
-    private PlayerListTeams playerListTeamsManager;
+    private TablistTeams tablistTeams;
 
     @EventHandler
     private void onPlayerJoin(PlayerJoinEvent event){
@@ -36,9 +36,9 @@ public class PlayerListHandler implements Listener {
 
         player.sendPlayerListHeaderAndFooter(header, footer);
 
-        Scoreboard playerListScoreboard = core.getPlayerListScoreboard();
-        playerListTeamsManager = new PlayerListTeams(core);
-        playerListTeamsManager.addToTeam(uuid);
+        Scoreboard playerListScoreboard = core.getTablistScoreboard();
+        tablistTeams = new TablistTeams(core);
+        tablistTeams.addToTeam(uuid);
         player.setScoreboard(playerListScoreboard);
     }
 
@@ -46,7 +46,7 @@ public class PlayerListHandler implements Listener {
     private void onPlayerQuit(PlayerQuitEvent event){
         UUID uuid = EntityCache.getUUID(event.getPlayer());
 
-        playerListTeamsManager = new PlayerListTeams(core);
-        playerListTeamsManager.removeFromTeam(uuid);
+        tablistTeams = new TablistTeams(core);
+        tablistTeams.removeFromTeam(uuid);
     }
 }
