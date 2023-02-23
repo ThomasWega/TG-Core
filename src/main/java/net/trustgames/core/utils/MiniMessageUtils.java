@@ -5,6 +5,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
+import net.trustgames.core.cache.OfflinePlayerCache;
 import net.trustgames.core.managers.LuckPermsManager;
 import org.bukkit.Bukkit;
 
@@ -32,7 +33,7 @@ public class MiniMessageUtils {
                         .resolver(StandardTags.defaults())
                         .resolver(TagResolver.resolver("prefix", Tag.selfClosingInserting(prefix)))
                         .resolver(TagResolver.resolver("player_name", Tag.selfClosingInserting(Component.text(Objects.requireNonNull(
-                                Bukkit.getOfflinePlayer(uuid).getName())))))
+                                OfflinePlayerCache.getPlayer(uuid).getName())))))
                         .resolver(TagResolver.resolver("player_display_name", Tag.selfClosingInserting(Objects.requireNonNull(
                                 Bukkit.getPlayer(uuid)).displayName())))
                         .build()

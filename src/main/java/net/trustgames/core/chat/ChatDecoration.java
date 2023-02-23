@@ -29,7 +29,6 @@ import java.util.logging.Level;
  */
 public class ChatDecoration implements Listener {
 
-
     private final Sound sound = Sound.sound(Key.key(
             "block.note_block.flute"),
             Sound.Source.AMBIENT,

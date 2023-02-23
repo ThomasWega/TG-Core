@@ -1,4 +1,4 @@
-package net.trustgames.core.player.stats.level;
+package net.trustgames.core.player.data.level;
 
 import net.kyori.adventure.text.Component;
 import net.trustgames.core.Core;
@@ -32,13 +32,14 @@ public class PlayerLevelHandler implements Listener {
                 if (!player.isOnline()) cancel();
 
                 player.sendActionBar(Component.text(
-                        playerLevel.getXp() + "/" + playerLevel.getThreshold(playerLevel.getLevel())
-                                + " - " + playerLevel.getLevel() + " (" + Math.round(playerLevel.getProgress(playerLevel.getLevel()) * 100) + "%)"));
-                playerLevel.addXp(uuid, 10);
+                        playerLevel.getXp() + "/" + playerLevel.getThreshold(playerLevel.getLevel() + 1)
+                                + " - " + playerLevel.getLevel() + " (" + Math.round(playerLevel.getProgress(playerLevel.getXp()) * 100) + "%)"));
 
-                double levelProgress = playerLevel.getProgress(playerLevel.getXp());
-                player.setExp(((float) levelProgress));
+                float levelProgress = playerLevel.getProgress(playerLevel.getXp());
+                player.setExp(levelProgress);
                 player.setLevel(playerLevel.getLevel());
+
+                playerLevel.addXp(uuid, 10);
             }
         }.runTaskTimer(core, 10, 60);
     }

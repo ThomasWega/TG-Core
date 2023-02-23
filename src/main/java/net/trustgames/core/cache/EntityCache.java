@@ -13,21 +13,22 @@ import java.util.concurrent.TimeUnit;
 public class EntityCache {
 
     /**
-     * Cache that holds the players uuid and expires every 6 hours
+     * Cache that holds the uuids by players objects and expires every 6 hours
      */
-    private static final LoadingCache<Entity, UUID> cache = Caffeine.newBuilder()
+    private static final LoadingCache<Entity, UUID> uuidCache = Caffeine.newBuilder()
             .expireAfterWrite(6, TimeUnit.HOURS)
             .build(Entity::getUniqueId);
+
 
     /**
      * Get the UUID of the player from the cache
      *
-     * @param player Player to get uuid for
+     * @param player Player to get uuid from
      * @return UUID of given Player
      */
     public static UUID getUUID(Entity player) {
         try {
-            return cache.get(player);
+            return uuidCache.get(player);
         } catch (RuntimeException e) {
             return player.getUniqueId();
         }

@@ -5,18 +5,18 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.trustgames.core.Core;
 import net.trustgames.core.cache.OfflinePlayerCache;
+import net.trustgames.core.command.TrustCommand;
 import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CorePermissionsConfig;
 import net.trustgames.core.logger.CoreLogger;
 import net.trustgames.core.managers.InventoryManager;
 import net.trustgames.core.managers.ItemManager;
 import net.trustgames.core.utils.ColorUtils;
+import net.trustgames.core.utils.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -27,7 +27,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.NotNull;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -42,11 +41,12 @@ import java.util.*;
  * are differentiated by different Materials. The player can click
  * the item and all the data will be printed in chat.
  */
-public class ActivityCommand implements CommandExecutor, Listener {
+public class ActivityCommand extends TrustCommand implements Listener {
 
     private final Core core;
 
     public ActivityCommand(Core core) {
+        super(CorePermissionsConfig.STAFF.permission);
         this.core = core;
     }
 
@@ -69,77 +69,49 @@ public class ActivityCommand implements CommandExecutor, Listener {
     private static final Component nextPageName = ColorUtils.color("&eNext page");
     private static final Component prevPageName = ColorUtils.color("&ePrevious page");
 
-
-
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (sender instanceof Player) {
-            if (sender.hasPermission(CorePermissionsConfig.STAFF.permission)) {
+    public void execute(CommandSender sender, String[] args) {
 
-                if (core.getMariaDB().isMySQLDisabled()){
-                    sender.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
-                    return true;
-                }
+        Player player = ((Player) sender);
 
-                if (args.length != 1) {
-                    sender.sendMessage(CommandConfig.COMMAND_INVALID_ARG.getText().append(
-                            Component.text(" Use /activity <Player/UUID>", NamedTextColor.DARK_GRAY)));
-                    return true;
-                }
-
-                Player player = ((Player) sender).getPlayer();
-                if (player == null) return true;
-
-
-                String target = args[0];
-
-                /*
-                 check if the supplied target is uuid or a player name by
-                 trying to convert it to uuid. If it succeeds, its uuid and
-                 the target is set the offlinePlayer's name. If it fails
-                 and throws exception, it's the player's name and the target doesn't
-                 need to be changed.
-                */
-                OfflinePlayer offlinePlayer;
-                try {
-                    UUID uuid = UUID.fromString(target);
-                    offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-                    target = offlinePlayer.getName();
-                }
-                catch (IllegalArgumentException e){
-                    offlinePlayer = Bukkit.getOfflinePlayer(target);
-                }
-
-                /*
-                 if the menus were previously opened, all the maps
-                 need to be cleared to avoid the items showing twice.
-                 The int needs to be reset so when the menu is opened a
-                 second time, the pages are reset to the first one
-                */
-                records.clear();
-                inventoryList.clear();
-                actionsMap.clear();
-                pageCount = 0;
-
-                createRecords(offlinePlayer);
-
-                if (records.isEmpty()){
-                    UUID offlineUUID = OfflinePlayerCache.getUUID(offlinePlayer);
-                    sender.sendMessage(CommandConfig.COMMAND_NO_PLAYER_ACT.formatMessage(offlineUUID));
-                    return true;
-                }
-
-                createPages(player, target);
-
-                // open the first inventory (first page) from the list
-                player.openInventory(inventoryList.get(0));
-            } else {
-                sender.sendMessage(CommandConfig.COMMAND_NO_PERM.getText());
-            }
-        } else {
-            CoreLogger.LOGGER.warning(CommandConfig.COMMAND_ONLY_PLAYER.value.toString());
+        if (core.getMariaDB().isMySQLDisabled()){
+            player.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
+            return;
         }
-        return true;
+
+        if (args.length != 1) {
+            player.sendMessage(CommandConfig.COMMAND_INVALID_ARG.getText().append(
+                    Component.text(" Use /activity <Player/UUID>", NamedTextColor.DARK_GRAY)));
+            return;
+        }
+
+        String target = args[0];
+
+        OfflinePlayer offlinePlayer = PlayerUtils.getOfflinePlayer(target);
+
+        /*
+        if the menus were previously opened, all the maps
+        need to be cleared to avoid the items showing twice.
+        The int needs to be reset so when the menu is opened a
+        second time, the pages are reset to the first one
+        */
+        records.clear();
+        inventoryList.clear();
+        actionsMap.clear();
+        pageCount = 0;
+
+        createRecords(offlinePlayer);
+
+        if (records.isEmpty()){
+            UUID offlineUUID = OfflinePlayerCache.getUUID(offlinePlayer);
+            player.sendMessage(CommandConfig.COMMAND_NO_PLAYER_ACT.formatMessage(offlineUUID));
+            return;
+        }
+
+        createPages(player, target);
+
+        // open the first inventory (first page) from the list
+        player.openInventory(inventoryList.get(0));
     }
 
     /**

@@ -4,14 +4,12 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.trustgames.core.Core;
+import net.trustgames.core.cache.OfflinePlayerCache;
+import net.trustgames.core.command.TrustCommand;
 import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CorePermissionsConfig;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.jetbrains.annotations.NotNull;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,35 +26,31 @@ import java.util.UUID;
  * than the player's name. It always prints just one result in the chat,
  * where player can click on each data, and it will be copied to his clipboard.
  */
-public class ActivityIdCommand implements CommandExecutor {
+public class ActivityIdCommand extends TrustCommand {
 
     private final Core core;
 
     public ActivityIdCommand(Core core) {
+        super(CorePermissionsConfig.STAFF.permission);
         this.core = core;
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (sender.hasPermission(CorePermissionsConfig.STAFF.permission)) {
-            
-            if (core.getMariaDB().isMySQLDisabled()){
-                sender.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
-                return true;
-            }
-
-            if (args.length != 1) {
-                sender.sendMessage(CommandConfig.COMMAND_INVALID_ARG.getText().append(
-                        Component.text(" Use /activity-id <ID>", NamedTextColor.DARK_GRAY)));
-                return true;
-            }
-
-            String id = args[0];
-
-            // print the data to the chat
-            printData(sender, id);
+    public void execute(CommandSender sender, String[] args) {
+        if (core.getMariaDB().isMySQLDisabled()){
+            sender.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
+            return;
         }
-        return true;
+        if (args.length != 1) {
+            sender.sendMessage(CommandConfig.COMMAND_INVALID_ARG.getText().append(
+                    Component.text(" Use /activity-id <ID>", NamedTextColor.DARK_GRAY)));
+            return;
+        }
+
+        String id = args[0];
+
+        // print the data to the chat
+        printData(sender, id);
     }
 
     /**
@@ -79,7 +73,7 @@ public class ActivityIdCommand implements CommandExecutor {
                 // get all the data from the resultSet
                 String resultId = activityQuery.encodeId(resultSet.getString("id"));
                 String uuid = resultSet.getString("uuid");
-                String name = Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName();
+                String name = OfflinePlayerCache.getPlayer(UUID.fromString(uuid)).getName();
                 String ip = resultSet.getString("ip");
                 String action = resultSet.getString("action");
                 Timestamp time = resultSet.getTimestamp("time");

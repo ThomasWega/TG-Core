@@ -4,23 +4,23 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
-import net.trustgames.core.commands.messages_commands.MessagesCommands;
+import net.trustgames.core.announcer.AnnounceHandler;
+import net.trustgames.core.chat.ChatDecoration;
+import net.trustgames.core.chat.ChatLimiter;
 import net.trustgames.core.commands.activity_commands.ActivityCommand;
 import net.trustgames.core.commands.activity_commands.ActivityIdCommand;
+import net.trustgames.core.commands.messages_commands.MessagesCommands;
 import net.trustgames.core.commands.messages_commands.MessagesCommandsConfig;
 import net.trustgames.core.database.MariaConfig;
 import net.trustgames.core.database.MariaDB;
-import net.trustgames.core.player.activity.PlayerActivityHandler;
-import net.trustgames.core.player.activity.PlayerActivityDB;
-import net.trustgames.core.player.stats.PlayerStatsDB;
-import net.trustgames.core.protection.CoreGamerulesHandler;
-import net.trustgames.core.announcer.AnnounceHandler;
 import net.trustgames.core.managers.*;
-import net.trustgames.core.chat.ChatDecoration;
-import net.trustgames.core.chat.ChatLimiter;
+import net.trustgames.core.player.activity.PlayerActivityDB;
+import net.trustgames.core.player.activity.PlayerActivityHandler;
+import net.trustgames.core.player.data.PlayerStatsDB;
+import net.trustgames.core.player.data.level.PlayerLevelHandler;
 import net.trustgames.core.player.tablist.TablistHandler;
 import net.trustgames.core.player.tablist.TablistTeams;
-import net.trustgames.core.player.stats.level.PlayerLevelHandler;
+import net.trustgames.core.protection.CoreGamerulesHandler;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
@@ -67,6 +67,7 @@ public final class Core extends JavaPlugin {
         - playtime bonus
         - boosters
         - autorestart (only if no one is online)
+        - menu manager with pagination
         */
 
         /* SIDE ADDITIONS
@@ -84,9 +85,14 @@ public final class Core extends JavaPlugin {
         // TODO test uuid cache
         // TODO HOLO clickable
         // TODO NPC action - command prints the command in chat
-        // TODO NPC protocolib
+        // TODO NPC protocollib
         // TODO NPCManager if player leaves before all is set, errors happen
         // TODO PlayerActivity, can maybe use better inserting if null???
+        // TODO TrustCommand allow console
+        // TODO If possible, don't pass the variable always in the methods, but instead create one outside of methods and always just call this.variable
+        // TODO Player activity there is a previous page arrow on first page and causes error
+        // TODO TrustCommand add arguments
+
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);

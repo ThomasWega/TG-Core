@@ -1,45 +1,41 @@
-package net.trustgames.core.player.stats.level;
+package net.trustgames.core.player.data.level;
 
 import net.trustgames.core.Core;
 
 import java.util.UUID;
 
 public class PlayerLevel {
-    private int xp;
-    private int level;
     private final UUID uuid;
     private final PlayerLevelFetcher playerLevelFetcher;
 
     public int getXp() {
-        return this.xp;
+        return playerLevelFetcher.fetch(uuid);
     }
 
     public void setXp(int xp) {
         playerLevelFetcher.update(uuid, xp);
-        this.xp = xp;
     }
 
     public int getLevel() {
-        return this.level;
+        return getLevelByXp(getXp());
     }
 
     public void setLevel(int level) {
         int xpNeeded = getThreshold(level);
         playerLevelFetcher.update(uuid, xpNeeded);
-        this.level = level;
     }
 
     public PlayerLevel(Core core, UUID uuid) {
         this.uuid = uuid;
         this.playerLevelFetcher = new PlayerLevelFetcher(core);
-        this.xp = playerLevelFetcher.fetch(uuid);
-        this.level = getLevel(xp);
     }
 
-    public void addXp(UUID uuid, int xp) {
-        this.xp += xp;
+    public void addXp(UUID uuid, int xpIncrease) {
+        int xp = getXp();
+        xp += xpIncrease;
+        int level = getLevelByXp(xp);
 
-        if (this.xp >= getThreshold(this.level)) {
+        if (xp >= getThreshold(level)) {
             levelUp(1);
         }
 
@@ -47,15 +43,17 @@ public class PlayerLevel {
     }
 
     public void levelUp(int value) {
-        this.level = level + value;
+        int level = getLevelByXp(getXp());
+        level = level + value;
+        int xp = getThreshold(level);
+        playerLevelFetcher.update(uuid, xp);
     }
 
-    public int getLevel(int xp) {
+    public int getLevelByXp(int xp) {
         int level = 1;
         while (xp >= getThreshold(level)) {
             level++;
         }
-
         return level - 1;
     }
 
@@ -69,10 +67,8 @@ public class PlayerLevel {
     }
 
     public float getProgress(int xp) {
-        int currentLevelThreshold = getThreshold(getLevel(xp));
-        int nextLevelThreshold = getThreshold(getLevel(xp) + 1);
-
-        System.out.println(nextLevelThreshold);
+        int currentLevelThreshold = getThreshold(getLevelByXp(xp));
+        int nextLevelThreshold = getThreshold(getLevelByXp(xp) + 1);
 
         return (float) (xp - currentLevelThreshold) / (float) (nextLevelThreshold - currentLevelThreshold);
     }

@@ -1,4 +1,4 @@
-package net.trustgames.core.player.stats;
+package net.trustgames.core.player.data;
 
 import net.trustgames.core.Core;
 

@@ -1,4 +1,4 @@
-package net.trustgames.core.player.stats.level;
+package net.trustgames.core.player.data.level;
 
 import net.trustgames.core.Core;
 
@@ -17,19 +17,20 @@ public class PlayerLevelFetcher {
 
     private static final String tableName = "player_stats";
 
+    // TODO make async
+
     public int fetch(UUID uuid) {
         try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("SELECT xp FROM " + tableName + " WHERE uuid = ?")) {
             statement.setString(1, uuid.toString());
             try (ResultSet results = statement.executeQuery()) {
                 if (results.next()) {
-                    int xp = results.getInt("xp");
-                    return xp;
+                    return results.getInt("xp");
                 }
-                return 0;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        return 0;
     }
 
     public void update(UUID uuid, int xp) {
