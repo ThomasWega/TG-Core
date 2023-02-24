@@ -18,6 +18,7 @@ import net.trustgames.core.player.activity.PlayerActivityDB;
 import net.trustgames.core.player.activity.PlayerActivityHandler;
 import net.trustgames.core.player.data.PlayerStatsDB;
 import net.trustgames.core.player.data.level.PlayerLevelHandler;
+import net.trustgames.core.player.data.manager.PlayerDataHelpCommand;
 import net.trustgames.core.player.tablist.TablistHandler;
 import net.trustgames.core.player.tablist.TablistTeams;
 import net.trustgames.core.protection.CoreGamerulesHandler;
@@ -153,6 +154,7 @@ public final class Core extends JavaPlugin {
         HashMap<PluginCommand, CommandExecutor> cmdList = new HashMap<>();
         cmdList.put(getCommand("activity"), new ActivityCommand(this));
         cmdList.put(getCommand("activity-id"), new ActivityIdCommand(this));
+        cmdList.put(getCommand("player-manager"), new PlayerDataHelpCommand(this));
 
         // Messages Commands
         for (MessagesCommandsConfig msgCmd : MessagesCommandsConfig.values()){

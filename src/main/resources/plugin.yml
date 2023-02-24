@@ -36,4 +36,7 @@ commands:
     aliases:
       - activityid
 
+  player-manager:
+    aliases:
+      - pm
 

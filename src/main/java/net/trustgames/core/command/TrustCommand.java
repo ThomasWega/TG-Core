@@ -1,6 +1,5 @@
 package net.trustgames.core.command;
 
-import net.kyori.adventure.text.Component;
 import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.logger.CoreLogger;
 import org.bukkit.command.Command;
@@ -22,15 +21,9 @@ import java.lang.reflect.Method;
 public abstract class TrustCommand implements CommandExecutor {
 
     private final String permission;
-    private final Component message;
 
     public TrustCommand(String permission) {
-        this(permission, null);
-    }
-
-    public TrustCommand(String permission, Component message) {
         this.permission = permission;
-        this.message = message;
     }
 
     @Override
@@ -42,7 +35,7 @@ public abstract class TrustCommand implements CommandExecutor {
             Method executeMethod = getClass().getMethod("execute", Player.class, String[].class);
             consoleAllowed = executeMethod.isAnnotationPresent(AllowConsole.class);
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            consoleAllowed = false;
         }
 
         // If not allowed and sender is not a player, send error message
