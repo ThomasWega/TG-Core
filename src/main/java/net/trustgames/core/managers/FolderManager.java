@@ -9,7 +9,8 @@ import java.io.File;
  */
 public class FolderManager {
 
-    /** creates the specified folder
+    /**
+     * creates the specified folder
      *
      * @param folder Folder to create
      */

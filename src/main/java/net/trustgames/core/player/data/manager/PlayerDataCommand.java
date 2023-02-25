@@ -33,14 +33,14 @@ public class PlayerDataCommand extends TrustCommand {
                     }
                     String actionType = args[2];
                     int value;
-                    try{
+                    try {
                         value = Integer.parseInt(args[3]);
-                    } catch (NumberFormatException e){
+                    } catch (NumberFormatException e) {
                         sender.sendMessage("Invalid value!");
                         return;
                     }
                     PlayerLevel playerLevel = new PlayerLevel(core, target.getUniqueId());
-                    switch (actionType){
+                    switch (actionType) {
                         case "set":
                             playerLevel.setLevel(value);
                             sender.sendMessage("set");
@@ -66,7 +66,7 @@ public class PlayerDataCommand extends TrustCommand {
                     break;
                 // Handle other stats types
             }
-        } catch(ArrayIndexOutOfBoundsException e){
+        } catch (ArrayIndexOutOfBoundsException e) {
             sender.sendMessage("Usage: /pm <player> <coins|gems|level|xp|kills|deaths> <add|remove|set> <amount>");
         }
     }

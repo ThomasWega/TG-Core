@@ -45,7 +45,7 @@ public enum ChatConfig {
     /**
      * @return Color with value of enum
      */
-    public TextColor getColor(){
+    public TextColor getColor() {
         return ColorUtils.color(value).color();
     }
 
@@ -55,7 +55,7 @@ public enum ChatConfig {
      * @param seconds Seconds to replace the tag with
      * @return New formatted Component with replaced sec tag
      */
-    public Component addSeconds(double seconds){
+    public Component addSeconds(double seconds) {
         return MiniMessageUtils.addSeconds(seconds).deserialize(value);
     }
 }

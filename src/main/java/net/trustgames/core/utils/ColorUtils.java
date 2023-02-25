@@ -18,7 +18,7 @@ public class ColorUtils {
      * @param component Component text to translate colors on
      * @return Component text with translated colors
      */
-    public static Component color(@NotNull Component component){
+    public static Component color(@NotNull Component component) {
         return LegacyComponentSerializer.legacyAmpersand().deserialize(
                 LegacyComponentSerializer.legacyAmpersand().serialize(component));
     }
@@ -31,17 +31,18 @@ public class ColorUtils {
      * @param string String text to translate colors on
      * @return Component text with translated colors
      */
-    public static Component color(@NotNull String string){
+    public static Component color(@NotNull String string) {
         return LegacyComponentSerializer.legacyAmpersand().deserialize(string);
     }
 
     /**
      * Removes the color from the given Component and returns String
      * with unformatted colors
+     *
      * @param text Component to remove color from
      * @return String with unformatted colors
      */
-    public static String stripColor(@NotNull Component text){
+    public static String stripColor(@NotNull Component text) {
         return PlainTextComponentSerializer.plainText().serialize(
                 LegacyComponentSerializer.legacyAmpersand().deserialize(
                         PlainTextComponentSerializer.plainText().serialize(text)));

@@ -23,9 +23,9 @@ public class MiniMessageUtils {
      * @param uuid UUID of Player to replace the tags with info of
      * @return new MiniMessage with formatter ready
      */
-    public static MiniMessage format(UUID uuid){
+    public static MiniMessage format(UUID uuid) {
         Component prefix = LuckPermsManager.getPlayerPrefix(uuid);
-        if (!prefix.equals(Component.text(""))){
+        if (!prefix.equals(Component.text(""))) {
             prefix = prefix.append(Component.text(" "));
         }
         return MiniMessage.builder()
@@ -48,7 +48,7 @@ public class MiniMessageUtils {
      * @param id ID to replace the tag with
      * @return new MiniMessage with formatter ready
      */
-    public static MiniMessage addId(String id){
+    public static MiniMessage addId(String id) {
         return MiniMessage.builder()
                 .tags(TagResolver.builder()
                         .resolver(StandardTags.defaults())
@@ -66,7 +66,7 @@ public class MiniMessageUtils {
      * @param seconds double to replace the tag with
      * @return new MiniMessage with formatter ready
      */
-    public static MiniMessage addSeconds(double seconds){
+    public static MiniMessage addSeconds(double seconds) {
         // limit the decimal number to 1.
         DecimalFormat df = new DecimalFormat();
         df.setMaximumFractionDigits(1);
@@ -88,7 +88,7 @@ public class MiniMessageUtils {
      * @param name Component to replace the tag with
      * @return new MiniMessage with formatter ready
      */
-    public static MiniMessage addName(Component name){
+    public static MiniMessage addName(Component name) {
         return MiniMessage.builder()
                 .tags(TagResolver.builder()
                         .resolver(StandardTags.defaults())

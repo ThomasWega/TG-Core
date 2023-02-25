@@ -21,9 +21,9 @@ public class HoloManager {
      * Spawns the hologram with the text for the player
      * on the given location
      *
-     * @param player Player to spawn the hologram for
+     * @param player   Player to spawn the hologram for
      * @param location Location to spawn the hologram
-     * @param text Content of the hologram
+     * @param text     Content of the hologram
      * @return List of created armorstands
      */
     public List<ArmorStand> spawn(Player player, Location location, List<String> text) {
@@ -54,9 +54,9 @@ public class HoloManager {
      * Remove the Hologram armorstand entity
      *
      * @param armorStand ArmorStand to remove
-     * @param player Player to remove armorstand from
+     * @param player     Player to remove armorstand from
      */
-    public void remove(ArmorStand armorStand, Player player){
+    public void remove(ArmorStand armorStand, Player player) {
         ClientboundRemoveEntitiesPacket removePacket = new ClientboundRemoveEntitiesPacket(armorStand.getId());
         ((CraftPlayer) player).getHandle().connection.send(removePacket);
     }

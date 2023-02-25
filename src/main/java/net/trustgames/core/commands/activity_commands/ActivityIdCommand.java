@@ -37,7 +37,7 @@ public class ActivityIdCommand extends TrustCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (core.getMariaDB().isMySQLDisabled()){
+        if (core.getMariaDB().isMySQLDisabled()) {
             sender.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
             return;
         }
@@ -58,9 +58,9 @@ public class ActivityIdCommand extends TrustCommand {
      * Then loop through the list and for each one, send the message to the player.
      *
      * @param sender Command sender
-     * @param id Activity id
+     * @param id     Activity id
      */
-    private void printData(CommandSender sender, String id){
+    private void printData(CommandSender sender, String id) {
         ActivityFetcher activityQuery = new ActivityFetcher(core);
 
         // get the result set of the given id

@@ -59,7 +59,7 @@ public abstract class TrustCommand implements CommandExecutor {
      * Annotation can be used on this method
      *
      * @param sender The Console/Player who sent the command
-     * @param args What arguments the command had
+     * @param args   What arguments the command had
      */
     public abstract void execute(CommandSender sender, String[] args);
 

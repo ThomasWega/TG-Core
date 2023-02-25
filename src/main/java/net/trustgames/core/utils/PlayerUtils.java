@@ -17,6 +17,7 @@ public class PlayerUtils {
      * by string name.
      * <p>
      * DOESN'T WORK WITH OFFLINE PLAYERS!
+     *
      * @see PlayerUtils#getOfflinePlayer(String)
      */
     public static Player getPlayer(String uuidOrName) {
@@ -38,6 +39,7 @@ public class PlayerUtils {
      * by string name.
      * <p>
      * Also works with offline player. For online players, refer to "See Also"
+     *
      * @see PlayerUtils#getPlayer(String)
      */
     public static OfflinePlayer getOfflinePlayer(String uuidOrName) {

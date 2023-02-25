@@ -30,14 +30,15 @@ public class AnnounceHandler {
         */
         core.getServer().getScheduler().runTaskTimerAsynchronously(core, new Runnable() {
             int index = 0;
-                    @Override
-                    public void run() {
-                        if (index == msgList.length){
-                            index = 0;
-                        }
-                        core.getServer().broadcast(msgList[index].getMessage());
-                        index++;
-                    }
-                }, AnnouncerDelayConfig.FIRST.value * 20, AnnouncerDelayConfig.DELAY.value * 20);
+
+            @Override
+            public void run() {
+                if (index == msgList.length) {
+                    index = 0;
+                }
+                core.getServer().broadcast(msgList[index].getMessage());
+                index++;
+            }
+        }, AnnouncerDelayConfig.FIRST.value * 20, AnnouncerDelayConfig.DELAY.value * 20);
     }
 }

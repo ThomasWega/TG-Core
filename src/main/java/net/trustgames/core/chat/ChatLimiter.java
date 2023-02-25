@@ -61,8 +61,8 @@ public class ChatLimiter implements Listener {
      * and makes sure to cancel the event, send the proper message to the player
      * or put the player's message to the correct map.
      *
-     * @param player Player who wrote the message
-     * @param event the main AsyncChatEvent
+     * @param player        Player who wrote the message
+     * @param event         the main AsyncChatEvent
      * @param playerMessage Player's chat message
      */
     private void doChecks(Player player, AsyncChatEvent event, String playerMessage) {

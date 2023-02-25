@@ -18,18 +18,18 @@ import java.util.*;
  */
 public class TablistTeams {
 
+    static final HashMap<Group, Integer> groupOrder = new HashMap<>();
     private final Core core;
     private Scoreboard tablist;
+
     public TablistTeams(Core core) {
         this.core = core;
     }
 
-    static final HashMap<Group, Integer> groupOrder = new HashMap<>();
-
-
-    /** Create all the teams by getting all groups from LuckPerms and putting each group in map
-    with its corresponding weight. Then register new team with the first parameter weight, and second
-    parameter the name of the group. Example: "20vip"
+    /**
+     * Create all the teams by getting all groups from LuckPerms and putting each group in map
+     * with its corresponding weight. Then register new team with the first parameter weight, and second
+     * parameter the name of the group. Example: "20vip"
      */
     public void createTeams() {
 
@@ -40,15 +40,14 @@ public class TablistTeams {
         HashMap<Group, Integer> groupWeight = new HashMap<>();
 
         // get the groups and put the name and weight to the map
-        for (Group group : LuckPermsManager.getGroups()){
-            if (group.getWeight().isPresent()){
+        for (Group group : LuckPermsManager.getGroups()) {
+            if (group.getWeight().isPresent()) {
                 groupWeight.put(group, group.getWeight().getAsInt());
-            }
-            else{
+            } else {
                 CoreLogger.LOGGER.severe("LuckPerms group " + group.getName() + " doesn't have any weight! Setting the weight to 1...");
 
                 Objects.requireNonNull(LuckPermsManager.getGroupManager().getGroup(group.getName()),
-                        "Group " + group.getName() + " wasn't found when setting a missing weight")
+                                "Group " + group.getName() + " wasn't found when setting a missing weight")
                         .data().add(Node.builder("weight.1").build());
 
                 LuckPermsManager.getGroupManager().saveGroup(group);
@@ -63,7 +62,7 @@ public class TablistTeams {
         */
         for (Group group : groupWeight.entrySet()
                 .stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .map(Map.Entry::getKey).toList()){
+                .map(Map.Entry::getKey).toList()) {
             groupOrder.put(group, i);
 
             if (group == null) return;
@@ -76,8 +75,10 @@ public class TablistTeams {
         }
     }
 
-    /** Add player to the corresponding team by getting his primary group and its group's weight.
-    set the prefix to team with luckperms cached data.
+    /**
+     * Add player to the corresponding team by getting his primary group and its group's weight.
+     * set the prefix to team with luckperms cached data.
+     *
      * @param uuid UUID of whom to add to the scoreboard team
      */
     public void addToTeam(UUID uuid) {
@@ -90,7 +91,7 @@ public class TablistTeams {
         String stringTeam = groupOrder.get(playerGroup) + playerGroup.getName();
         Team team = tablist.getTeam(stringTeam);
 
-        if (team == null){
+        if (team == null) {
             CoreLogger.LOGGER.severe("Scoreboard team " + stringTeam + " wasn't found");
             return;
         }
@@ -105,7 +106,7 @@ public class TablistTeams {
 
     /**
      * @param uuid UUID of whom to remove from the scoreboard team
-      */
+     */
     public void removeFromTeam(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return;
@@ -113,6 +114,6 @@ public class TablistTeams {
         tablist = core.getTablistScoreboard();
         Team team = tablist.getPlayerTeam(player);
         if (team != null)
-                team.removePlayer(player);
+            team.removePlayer(player);
     }
 }

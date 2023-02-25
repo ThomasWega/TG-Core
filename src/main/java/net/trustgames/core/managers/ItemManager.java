@@ -16,7 +16,7 @@ public class ItemManager {
 
     /**
      * @param material ItemStack Material
-     * @param count What amount
+     * @param count    What amount
      * @return created ItemStack
      */
     public static ItemStack createItemStack(Material material, int count) {
@@ -25,7 +25,7 @@ public class ItemManager {
 
     /**
      * @param itemStack ItemStack to create ItemMeta to
-     * @param name Display name of the ItemStack
+     * @param name      Display name of the ItemStack
      * @param itemFlags What items flags to put on the ItemStack. Can be null
      * @return created ItemMeta of the given ItemStack
      */
@@ -33,7 +33,7 @@ public class ItemManager {
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.displayName(name);
 
-        if (!(itemFlags == null)){
+        if (!(itemFlags == null)) {
             itemMeta.addItemFlags(itemFlags);
         }
 

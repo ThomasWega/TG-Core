@@ -16,7 +16,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
-This class is used for listeners for table player_activity
+ * This class is used for listeners for table player_activity
  */
 public class PlayerActivityHandler implements Listener {
 
@@ -45,7 +45,8 @@ public class PlayerActivityHandler implements Listener {
      * to find player's last activity by his uuid. If the activity is null, meaning the player
      * probably doesn't have any activities saved in the table yet, it creates one with specified values.
      * Calls the provided callback function with the resulting PlayerActivity object.
-     * @param uuid UUID of Player to write activity to
+     *
+     * @param uuid     UUID of Player to write activity to
      * @param callback Callback function to be called with the resulting PlayerActivity object
      */
     private void get(UUID uuid, Consumer<PlayerActivity> callback) {
@@ -73,9 +74,10 @@ public class PlayerActivityHandler implements Listener {
     }
 
     /**
-    writes the values for the newly created player activity to the new PlayerActivity instance.
-    Then it creates the full row.
-     * @param uuid UUID of Player to write activity to
+     * writes the values for the newly created player activity to the new PlayerActivity instance.
+     * Then it creates the full row.
+     *
+     * @param uuid   UUID of Player to write activity to
      * @param action What actions to write
      */
     private void write(UUID uuid, String action) {

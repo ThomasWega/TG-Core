@@ -29,7 +29,7 @@ public enum CommandConfig {
     /**
      * @return double value of the enum
      */
-    public double getDouble(){
+    public double getDouble() {
         return ((double) value);
     }
 
@@ -51,23 +51,23 @@ public enum CommandConfig {
     }
 
     /**
-     {@literal Replace <id> tag with given ID}
+     * {@literal Replace <id> tag with given ID}
      *
      * @param id ID to replace the tag with
      * @return New formatted Component with replaced id tag
      */
-    public Component addID(String id){
+    public Component addID(String id) {
         return MiniMessageUtils.addId(id).deserialize(value.toString());
     }
 
 
     /**
-     {@literal Replace <player_name> tag with given component}
+     * {@literal Replace <player_name> tag with given component}
      *
      * @param component Component to replace the tag with
      * @return New formatted Component with replaced component tag
      */
-    public Component addName(Component component){
+    public Component addName(Component component) {
         return MiniMessageUtils.addName(component).deserialize(value.toString());
     }
 }

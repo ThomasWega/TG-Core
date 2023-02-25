@@ -16,18 +16,17 @@ public class MariaDB {
     private final Core core;
     public HikariDataSource hikariDataSource;
     private Connection connection;
+    private MariaConfig mariaConfig;
 
     public MariaDB(Core core) {
         this.core = core;
     }
 
-    private MariaConfig mariaConfig;
-
     /**
      * Check if table exists
      *
      * @param connection HikariCP connection
-     * @param tableName The name of the table
+     * @param tableName  The name of the table
      * @return if the table already exists
      * @throws SQLException if it can't get the ResultSet
      */
@@ -46,9 +45,9 @@ public class MariaDB {
     }
 
     /**
-     create the specified database if it doesn't exist yet
-     (is run async)
-    */
+     * create the specified database if it doesn't exist yet
+     * (is run async)
+     */
     private void createDatabaseIfNotExists() {
 
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
@@ -73,9 +72,9 @@ public class MariaDB {
     }
 
     /**
-     gets the connection. Checks if the connection isn't null. If it isn't, it will return connection
-     if the connection is null, meaning it probably doesn't exist, it will create a new connection and return it
-    */
+     * gets the connection. Checks if the connection isn't null. If it isn't, it will return connection
+     * if the connection is null, meaning it probably doesn't exist, it will create a new connection and return it
+     */
     public Connection getConnection() {
 
         if (connection != null) {
@@ -110,11 +109,12 @@ public class MariaDB {
     }
 
     /**
-     checks if the table exists, if it doesn't, it creates one using the given SQL statement
-     (is run async)
-     * @param tableName The name of the table
+     * checks if the table exists, if it doesn't, it creates one using the given SQL statement
+     * (is run async)
+     *
+     * @param tableName       The name of the table
      * @param stringStatement The SQL statement in String
-    */
+     */
     public void initializeTable(String tableName, String stringStatement) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             if (isMySQLDisabled()) {

@@ -10,15 +10,12 @@ import java.util.function.IntConsumer;
 
 public class PlayerLevelFetcher {
 
+    private static final String tableName = "player_stats";
     private final Core core;
 
     public PlayerLevelFetcher(Core core) {
         this.core = core;
     }
-
-    private static final String tableName = "player_stats";
-
-    // TODO make async
 
     public void fetch(UUID uuid, IntConsumer callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {

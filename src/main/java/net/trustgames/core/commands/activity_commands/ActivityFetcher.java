@@ -38,7 +38,7 @@ public class ActivityFetcher {
      * @param id Given ID in Base64 encoded or plain (decoded)
      * @return ResultSet of the row with the matching id
      */
-    public ResultSet getActivityByID(String id){
+    public ResultSet getActivityByID(String id) {
 
         // try to decode the id
         String decodedID = decodeID(id);
@@ -75,7 +75,7 @@ public class ActivityFetcher {
     public String decodeID(String encodedId) {
         try {
             return new String(Base64.getDecoder().decode(encodedId));
-        } catch(IllegalArgumentException iae) {
+        } catch (IllegalArgumentException iae) {
             return null;
         }
     }

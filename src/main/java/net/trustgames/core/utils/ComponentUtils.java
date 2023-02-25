@@ -14,7 +14,7 @@ public class ComponentUtils {
      * @param component Component to convert
      * @return String from Component with unformatted color codes and no events
      */
-    public static String toString(Component component){
+    public static String toString(Component component) {
         return LegacyComponentSerializer.legacyAmpersand().serialize(component);
     }
 
@@ -25,7 +25,7 @@ public class ComponentUtils {
      * @param component Component to convert
      * @return JSONElement from Component
      */
-    public static JsonElement toJson(Component component){
+    public static JsonElement toJson(Component component) {
         return GsonComponentSerializer.gson().serializeToTree(component);
     }
 }

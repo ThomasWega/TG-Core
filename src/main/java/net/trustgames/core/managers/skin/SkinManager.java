@@ -41,9 +41,9 @@ public class SkinManager {
      * @return Data of the player's skin
      */
     public static SkinData getSkin(String playerName) {
-        try{
+        try {
             return (skinCache.get(playerName));
-        } catch (ExecutionException e){
+        } catch (ExecutionException e) {
             return new SkinData("", "");
         }
     }
@@ -78,12 +78,10 @@ public class SkinManager {
                     String signature = reply.substring(indexOfSignature + 14, reply.indexOf("\"", indexOfSignature + 14));
 
                     return new SkinData(texture, signature);
-                }
-                else {
+                } else {
                     Bukkit.getConsoleSender().sendMessage("Connection could not be opened when fetching player skin (Response code " + connection.getResponseCode() + ", " + connection.getResponseMessage() + ")");
                 }
-            }
-            else {
+            } else {
                 Bukkit.getConsoleSender().sendMessage("Connection could not be opened when fetching player profile (Response code " + connection.getResponseCode() + ", " + connection.getResponseMessage() + ")");
             }
         } catch (IOException e) {

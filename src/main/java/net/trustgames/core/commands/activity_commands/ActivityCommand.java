@@ -43,6 +43,26 @@ import java.util.*;
  */
 public class ActivityCommand extends TrustCommand implements Listener {
 
+    /**
+     * Stores all ItemStack with the data for each row
+     */
+    private static final List<ItemStack> records = new ArrayList<>();
+    /**
+     * Stores all Inventories
+     */
+    private static final List<Inventory> inventoryList = new ArrayList<>();
+    /**
+     * Stores all the Actions and their corresponding ItemStack
+     */
+    private static final HashMap<String, Material> actionsMap = new HashMap<>();
+    private static final Component nextPageName = ColorUtils.color("&eNext page");
+    private static final Component prevPageName = ColorUtils.color("&ePrevious page");
+    /**
+     * Used for switching pages.
+     * +1 everytime page is switched to next page.
+     * -1 everytime page is switched to previous page.
+     */
+    private static int pageCount = 0;
     private final Core core;
 
     public ActivityCommand(Core core) {
@@ -50,31 +70,12 @@ public class ActivityCommand extends TrustCommand implements Listener {
         this.core = core;
     }
 
-    /** Stores all ItemStack with the data for each row */
-    private static final List<ItemStack> records = new ArrayList<>();
-
-    /** Stores all Inventories */
-    private static final List<Inventory> inventoryList = new ArrayList<>();
-
-    /** Stores all the Actions and their corresponding ItemStack */
-    private static final HashMap<String, Material> actionsMap = new HashMap<>();
-
-    /**
-     * Used for switching pages.
-     * +1 everytime page is switched to next page.
-     * -1 everytime page is switched to previous page.
-     * */
-    private static int pageCount = 0;
-
-    private static final Component nextPageName = ColorUtils.color("&eNext page");
-    private static final Component prevPageName = ColorUtils.color("&ePrevious page");
-
     @Override
     public void execute(CommandSender sender, String[] args) {
 
         Player player = ((Player) sender);
 
-        if (core.getMariaDB().isMySQLDisabled()){
+        if (core.getMariaDB().isMySQLDisabled()) {
             player.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
             return;
         }
@@ -102,7 +103,7 @@ public class ActivityCommand extends TrustCommand implements Listener {
 
         createRecords(offlinePlayer);
 
-        if (records.isEmpty()){
+        if (records.isEmpty()) {
             player.sendMessage(CommandConfig.COMMAND_NO_PLAYER_ACT.addName(Component.text(target)));
             return;
         }
@@ -120,7 +121,7 @@ public class ActivityCommand extends TrustCommand implements Listener {
      *
      * @param offlinePlayer Target player
      */
-    private void createRecords(OfflinePlayer offlinePlayer){
+    private void createRecords(OfflinePlayer offlinePlayer) {
         ActivityFetcher activityQuery = new ActivityFetcher(core);
         UUID offlineUuid = OfflinePlayerCache.getUUID(offlinePlayer);
 
@@ -183,7 +184,7 @@ public class ActivityCommand extends TrustCommand implements Listener {
      *
      * @param recordItem ItemStack from the records list
      */
-    private void setMaterial(ItemStack recordItem){
+    private void setMaterial(ItemStack recordItem) {
         String itemName = ColorUtils.stripColor(recordItem.displayName());
 
         /*
@@ -213,10 +214,10 @@ public class ActivityCommand extends TrustCommand implements Listener {
      * set. All the inventories with all their contents
      * are then put in inventoryList
      *
-     * @param player The command sender
+     * @param player     The command sender
      * @param targetName The target's name
      */
-    private void createPages(Player player, String targetName){
+    private void createPages(Player player, String targetName) {
 
         ItemStack nextPage = ItemManager.createItemStack(Material.ARROW, 1);
         ItemStack prevPage = ItemManager.createItemStack(Material.ARROW, 0);
@@ -231,7 +232,7 @@ public class ActivityCommand extends TrustCommand implements Listener {
          and the max page.
         */
         for (int i = 1; i <= Math.ceil(records.size() / 45d); i++) {
-            Inventory inv = InventoryManager.createInventory(player, 6, targetName  + "'s activity");
+            Inventory inv = InventoryManager.createInventory(player, 6, targetName + "'s activity");
             pageInfo.setItemMeta(ItemManager.createItemMeta(pageInfo, ColorUtils.color("&2Page (" + i + "/" + pagesCount + ")"), new ItemFlag[]{ItemFlag.HIDE_ATTRIBUTES}));
             inv.setItem(49, pageInfo);
             inventoryList.add(inv);
@@ -251,21 +252,21 @@ public class ActivityCommand extends TrustCommand implements Listener {
          The previous arrow will only be set if there is more than 1 inventory. Same for the next page arrow.
          the max int will be increased by 45 (To have 45 slots free for the next page to fill up)
         */
-        for (ItemStack item : records){
+        for (ItemStack item : records) {
 
             // switch to the next inventory and add the nextPage arrow
-            if (slot > max){
+            if (slot > max) {
                 invCount++;
                 nextPage.setItemMeta(ItemManager.createItemMeta(nextPage, nextPageName, null));
 
                 // check to not go over the item limit
-                if (nextPage.getAmount() < 64){
+                if (nextPage.getAmount() < 64) {
                     nextPage.setAmount(nextPage.getAmount() + 1);
                 }
                 inv.setItem(50, nextPage);
 
                 // if the inventory is already a second one, add the previousPage arrow
-                if (invCount > 1){
+                if (invCount > 1) {
                     prevPage.setItemMeta(ItemManager.createItemMeta(prevPage, prevPageName, null));
                     if (prevPage.getAmount() < 64) {
                         prevPage.setAmount(prevPage.getAmount() + 1);
@@ -292,7 +293,7 @@ public class ActivityCommand extends TrustCommand implements Listener {
          */
 
         // check to not go over the item limit
-        if (prevPage.getAmount() < 64){
+        if (prevPage.getAmount() < 64) {
             prevPage.setAmount(prevPage.getAmount() + 1);
         }
         prevPage.setItemMeta(ItemManager.createItemMeta(prevPage, prevPageName, null));
@@ -339,20 +340,17 @@ public class ActivityCommand extends TrustCommand implements Listener {
                      NOTE: read more in createRecords comments
                     */
                     String id = Objects.requireNonNull(Objects.requireNonNull(
-                            item.lore()).get(6).clickEvent(), "Click event on item is null!")
+                                    item.lore()).get(6).clickEvent(), "Click event on item is null!")
                             .value();
 
 
                     Bukkit.dispatchCommand(humanEntity, "activity-id " + id);
 
                     inventory.close();
-                }
-
-                else if (item.getType() == Material.ARROW) {
+                } else if (item.getType() == Material.ARROW) {
                     switchPage(item, humanEntity);
                 }
-            }
-            catch (IndexOutOfBoundsException e){
+            } catch (IndexOutOfBoundsException e) {
                 e.printStackTrace();
             }
         }
@@ -365,11 +363,11 @@ public class ActivityCommand extends TrustCommand implements Listener {
      * is always updated either by -1 or +1 depending on if the
      * page was switched to next or previous.
      *
-     * @param item ItemStack of the record
+     * @param item        ItemStack of the record
      * @param humanEntity Command sender
      */
 
-    private void switchPage(ItemStack item, HumanEntity humanEntity){
+    private void switchPage(ItemStack item, HumanEntity humanEntity) {
         String itemName = ColorUtils.stripColor(item.displayName());
         String nextPageNameString = ColorUtils.stripColor(nextPageName);
         String prevPageNameString = ColorUtils.stripColor(prevPageName);

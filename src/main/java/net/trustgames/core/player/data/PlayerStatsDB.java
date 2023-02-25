@@ -4,13 +4,12 @@ import net.trustgames.core.Core;
 
 public class PlayerStatsDB {
 
+    private static final String tableName = "player_stats";
     private final Core core;
 
     public PlayerStatsDB(Core core) {
         this.core = core;
     }
-
-    private static final String tableName = "player_stats";
 
     /**
      * use external method from MariaDB class

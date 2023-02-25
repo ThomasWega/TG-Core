@@ -11,7 +11,7 @@ public class NMSUtils {
      * @param json JSONElement to convert
      * @return IChatBaseComponent converted from JSON
      */
-    public static Component convertFromJSON(JsonElement json){
+    public static Component convertFromJSON(JsonElement json) {
         return Component.Serializer.fromJson(json);
     }
 }

@@ -27,11 +27,12 @@ public class CooldownManager implements Listener {
      * but that allows certain number of commands per second.
      * This method allows only one execution of the command per given time.
      * It also ensures that the "don't spam" message is not being sent too often to the player.
-     * @param uuid UUID of Player to put in a cooldown
+     *
+     * @param uuid         UUID of Player to put in a cooldown
      * @param cooldownTime Cooldown time in seconds
      * @return True if the player is on cooldown
      */
-    public boolean commandCooldown(UUID uuid, Double cooldownTime){
+    public boolean commandCooldown(UUID uuid, Double cooldownTime) {
         /*
          if the player is not in the cooldown yet, or if his cooldown expired,
          put him in the hashmap with the new time
@@ -46,11 +47,11 @@ public class CooldownManager implements Listener {
     }
 
     /**
-     * @param uuid UUID of Player to check cooldown on
+     * @param uuid         UUID of Player to check cooldown on
      * @param cooldownTime Cooldown time in seconds
      * @return if player is on cooldown
      */
-    private boolean isOnCooldown(UUID uuid, Double cooldownTime){
+    private boolean isOnCooldown(UUID uuid, Double cooldownTime) {
         return !(cooldownTime <= (System.currentTimeMillis() - commandCooldownTime.get(uuid)) / 1000d);
     }
 
@@ -79,7 +80,7 @@ public class CooldownManager implements Listener {
      *
      * @param uuid UUID of Player to send the messages to
      */
-    private void sendMessage(UUID uuid){
+    private void sendMessage(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
 
         if (player == null) return;
@@ -92,7 +93,7 @@ public class CooldownManager implements Listener {
 
     // on player quit, remove player's entries from the hashmaps
     @EventHandler
-    private void onPlayerQuit(PlayerQuitEvent event){
+    private void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         UUID uuid = EntityCache.getUUID(player);
 

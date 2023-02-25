@@ -39,16 +39,18 @@ import java.util.HashMap;
  */
 public final class Core extends JavaPlugin {
 
+    public final PlayerStatsDB playerStatsDB = new PlayerStatsDB(this);
     final MariaDB mariaDB = new MariaDB(this);
     private final AnnounceHandler announceHandler = new AnnounceHandler(this);
     private final PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
-    public final PlayerStatsDB playerStatsDB = new PlayerStatsDB(this);
     public CooldownManager cooldownManager = new CooldownManager();
-    private Scoreboard tablistScoreboard;
     public LuckPermsManager luckPermsManager;
-
+    private Scoreboard tablistScoreboard;
     private ProtocolManager protocolManager;
 
+    public static LuckPerms getLuckPerms() {
+        return LuckPermsProvider.get();
+    }
 
     @Override
     public void onEnable() {
@@ -87,12 +89,9 @@ public final class Core extends JavaPlugin {
         // TODO NPC action - command prints the command in chat
         // TODO NPC protocollib
         // TODO NPCManager if player leaves before all is set, errors happen
-        // TODO PlayerActivity, can maybe use better inserting if null???
         // TODO TrustCommand allow console
-        // TODO If possible, don't pass the variable always in the methods, but instead create one outside of methods and always just call this.variable
         // TODO Player activity there is a previous page arrow on first page and causes error
         // TODO TrustCommand add arguments
-        // TODO PlayerActivity not sure if offlineplayer is supported
 
 
         // luckperms
@@ -129,7 +128,6 @@ public final class Core extends JavaPlugin {
         mariaDB.closeHikari();
     }
 
-
     private void registerEvents() {
         PluginManager pluginManager = getServer().getPluginManager();
 
@@ -153,7 +151,7 @@ public final class Core extends JavaPlugin {
         cmdList.put(getCommand("player-manager"), new PlayerDataCommand(this));
 
         // Messages Commands
-        for (MessagesCommandsConfig msgCmd : MessagesCommandsConfig.values()){
+        for (MessagesCommandsConfig msgCmd : MessagesCommandsConfig.values()) {
             cmdList.put(getCommand(msgCmd.name().toLowerCase()), new MessagesCommands());
         }
 
@@ -175,16 +173,11 @@ public final class Core extends JavaPlugin {
         return mariaDB;
     }
 
-
-    public static LuckPerms getLuckPerms() {
-        return LuckPermsProvider.get();
-    }
-
     /**
      * Create the playlist and create teams for it
      * with luckperms groups weight support
      */
-    private void playerList(){
+    private void playerList() {
         TablistTeams playerListTeamsManager = new TablistTeams(this);
         tablistScoreboard = getServer().getScoreboardManager().getNewScoreboard();
         playerListTeamsManager.createTeams();
@@ -201,7 +194,7 @@ public final class Core extends JavaPlugin {
         return tablistScoreboard;
     }
 
-    public ProtocolManager getProtocolManager(){
+    public ProtocolManager getProtocolManager() {
         return protocolManager;
     }
 

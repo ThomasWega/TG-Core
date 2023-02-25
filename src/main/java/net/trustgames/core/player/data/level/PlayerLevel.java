@@ -9,6 +9,11 @@ public class PlayerLevel {
     private final UUID uuid;
     private final PlayerLevelFetcher playerLevelFetcher;
 
+    public PlayerLevel(Core core, UUID uuid) {
+        this.uuid = uuid;
+        this.playerLevelFetcher = new PlayerLevelFetcher(core);
+    }
+
     public void addXp(int xpIncrease) {
         getXp(xp -> {
             xp += xpIncrease;
@@ -68,11 +73,6 @@ public class PlayerLevel {
 
             playerLevelFetcher.update(uuid, newXP);
         }));
-    }
-
-    public PlayerLevel(Core core, UUID uuid) {
-        this.uuid = uuid;
-        this.playerLevelFetcher = new PlayerLevelFetcher(core);
     }
 
     public int getThreshold(int level) {

@@ -21,10 +21,9 @@ public class MessagesCommands implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
-        if (sender instanceof Player player){
+        if (sender instanceof Player player) {
             player.sendMessage(MessagesCommandsConfig.valueOf(command.getName().toUpperCase()).getValue());
-        }
-        else
+        } else
             CoreLogger.LOGGER.warning(CommandConfig.COMMAND_ONLY_PLAYER.value.toString());
 
         return true;

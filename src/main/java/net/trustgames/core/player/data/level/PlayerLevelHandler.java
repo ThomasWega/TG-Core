@@ -20,7 +20,7 @@ public class PlayerLevelHandler implements Listener {
     }
 
     @EventHandler
-    private void onPlayerJoin(PlayerJoinEvent event){
+    private void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         UUID uuid = EntityCache.getUUID(player);
         PlayerLevel playerLevel = new PlayerLevel(core, uuid);

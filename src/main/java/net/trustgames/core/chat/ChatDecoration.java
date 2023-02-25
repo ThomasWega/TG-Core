@@ -30,7 +30,7 @@ import java.util.logging.Level;
 public class ChatDecoration implements Listener {
 
     private final Sound sound = Sound.sound(Key.key(
-            "block.note_block.flute"),
+                    "block.note_block.flute"),
             Sound.Source.AMBIENT,
             0.75f, 2f);
 
@@ -63,11 +63,11 @@ public class ChatDecoration implements Listener {
      * If the player has the correct permission, it will
      * make his message colored if he wrote any color codes
      *
-     * @param player Player to check on
+     * @param player  Player to check on
      * @param message Message he sent
      * @return Colored message if player has permission
      */
-    private Component setColor(Player player, Component message){
+    private Component setColor(Player player, Component message) {
         TextColor messageColor = ChatConfig.COLOR.getColor();
         message = player.hasPermission(ChatConfig.ALLOW_COLORS_PERM.value)
                 ? ColorUtils.color(message).colorIfAbsent(messageColor)
@@ -80,13 +80,13 @@ public class ChatDecoration implements Listener {
      * that were mentioned. Also send them action bar message
      * and play a sound
      *
-     * @param sender The message sender
-     * @param p Player from the loop
+     * @param sender  The message sender
+     * @param p       Player from the loop
      * @param message Chat message that was sent
-     * @param prefix What prefix the player has
+     * @param prefix  What prefix the player has
      * @return True if mention colors were set
      */
-    private boolean setMention(Player sender, Player p, Component message, Component prefix){
+    private boolean setMention(Player sender, Player p, Component message, Component prefix) {
         Set<Player> mentionedPlayers = new HashSet<>();
 
         message = setColor(sender, message);
@@ -98,7 +98,7 @@ public class ChatDecoration implements Listener {
         List<String> split = Arrays.stream(desMsg.split(" ")).toList();
 
         // check if chat message contains player's name
-        if (split.contains(p.getName())){
+        if (split.contains(p.getName())) {
             mentionedPlayers.add(p);
         }
 
@@ -112,7 +112,7 @@ public class ChatDecoration implements Listener {
             for (String s : split) {
                 if (s.equalsIgnoreCase(p.getName())) {
                     newMsg.add(Component.text(s).color(nameColor));
-                } else{
+                } else {
                     messageColorNew = (ColorUtils.color(s).color() != null) ? ColorUtils.color(s).color() : messageColor;
                     newMsg.add(ColorUtils.color(s).colorIfAbsent(messageColorNew));
                 }
@@ -140,7 +140,7 @@ public class ChatDecoration implements Listener {
      * @param uuid UUID of Player to get prefix on
      * @return Player's prefix
      */
-    private Component setPrefix(UUID uuid){
+    private Component setPrefix(UUID uuid) {
         Component prefix = LuckPermsManager.getPlayerPrefix(uuid);
 
         // if player doesn't have any prefix, make sure there is not a space before his name
@@ -153,12 +153,12 @@ public class ChatDecoration implements Listener {
     /**
      * Get the component message each player will be sent
      *
-     * @param player Player to copy his name on name click
-     * @param prefix Prefix the player has
+     * @param player  Player to copy his name on name click
+     * @param prefix  Prefix the player has
      * @param message Only the last parts change, depending on if player can use color or not
      * @return Complete Component message
      */
-    private Component getMessage(Player player, Component prefix, Component message){
+    private Component getMessage(Player player, Component prefix, Component message) {
         return Component.textOfChildren(prefix)
                 .append(Component.textOfChildren(
                         player.displayName()
@@ -171,11 +171,11 @@ public class ChatDecoration implements Listener {
     /**
      * Log the message in console without the colors
      *
-     * @param prefix Player's prefix
+     * @param prefix     Player's prefix
      * @param playerName Player's name that sent the chat message
-     * @param message Message sent in chat by Player
+     * @param message    Message sent in chat by Player
      */
-    private void logMessage(Component prefix, String playerName, Component message){
+    private void logMessage(Component prefix, String playerName, Component message) {
         CoreLogger.LOGGER.log(Level.INFO, ColorUtils.stripColor(
                 prefix.append(Component.text(playerName)).append(Component.text(" ")).append(message)));
     }

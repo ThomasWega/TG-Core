@@ -12,9 +12,9 @@ import org.bukkit.inventory.Inventory;
 public class InventoryManager {
 
     /**
-     * @param player Owner of the inventory
+     * @param player  Owner of the inventory
      * @param columns Number of columns (max 6)
-     * @param title Title of the inventory
+     * @param title   Title of the inventory
      * @return created Inventory
      */
     public static Inventory createInventory(Player player, int columns, String title) {

@@ -19,15 +19,14 @@ import java.util.UUID;
 public class TablistHandler implements Listener {
 
     private final Core core;
+    private TablistTeams tablistTeams;
 
     public TablistHandler(Core core) {
         this.core = core;
     }
 
-    private TablistTeams tablistTeams;
-
     @EventHandler
-    private void onPlayerJoin(PlayerJoinEvent event){
+    private void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         UUID uuid = EntityCache.getUUID(player);
 
@@ -43,7 +42,7 @@ public class TablistHandler implements Listener {
     }
 
     @EventHandler
-    private void onPlayerQuit(PlayerQuitEvent event){
+    private void onPlayerQuit(PlayerQuitEvent event) {
         UUID uuid = EntityCache.getUUID(event.getPlayer());
 
         tablistTeams = new TablistTeams(core);
