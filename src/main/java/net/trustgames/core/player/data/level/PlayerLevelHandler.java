@@ -31,15 +31,26 @@ public class PlayerLevelHandler implements Listener {
 
                 if (!player.isOnline()) cancel();
 
-                player.sendActionBar(Component.text(
-                        playerLevel.getXp() + "/" + playerLevel.getThreshold(playerLevel.getLevel() + 1)
-                                + " - " + playerLevel.getLevel() + " (" + Math.round(playerLevel.getProgress(playerLevel.getXp()) * 100) + "%)"));
+                playerLevel.getXp(xp -> playerLevel.getLevel(level -> {
+                    int nextLevelThreshold = playerLevel.getThreshold(level + 1);
+                    float progress = playerLevel.getProgress(xp);
+                    Component actionBar = Component.text()
+                            .append(Component.text(xp + "/" + nextLevelThreshold))
+                            .append(Component.text(" - "))
+                            .append(Component.text(level))
+                            .append(Component.text(" ("))
+                            .append(Component.text(Math.round(progress * 100) + "%"))
+                            .append(Component.text(")"))
+                            .build();
 
-                float levelProgress = playerLevel.getProgress(playerLevel.getXp());
-                player.setExp(levelProgress);
-                player.setLevel(playerLevel.getLevel());
+                    player.sendActionBar(actionBar);
 
-                playerLevel.addXp(uuid, 10);
+                    float levelProgress = playerLevel.getProgress(xp);
+                    player.setExp(levelProgress);
+                    player.setLevel(level);
+
+                    playerLevel.addXp(10);
+                }));
             }
         }.runTaskTimer(core, 10, 60);
     }

@@ -18,7 +18,7 @@ import net.trustgames.core.player.activity.PlayerActivityDB;
 import net.trustgames.core.player.activity.PlayerActivityHandler;
 import net.trustgames.core.player.data.PlayerStatsDB;
 import net.trustgames.core.player.data.level.PlayerLevelHandler;
-import net.trustgames.core.player.data.manager.PlayerDataHelpCommand;
+import net.trustgames.core.player.data.manager.PlayerDataCommand;
 import net.trustgames.core.player.tablist.TablistHandler;
 import net.trustgames.core.player.tablist.TablistTeams;
 import net.trustgames.core.protection.CoreGamerulesHandler;
@@ -93,6 +93,7 @@ public final class Core extends JavaPlugin {
         // TODO If possible, don't pass the variable always in the methods, but instead create one outside of methods and always just call this.variable
         // TODO Player activity there is a previous page arrow on first page and causes error
         // TODO TrustCommand add arguments
+        // TODO make all mysql stuff async
 
 
         // luckperms
@@ -154,7 +155,7 @@ public final class Core extends JavaPlugin {
         HashMap<PluginCommand, CommandExecutor> cmdList = new HashMap<>();
         cmdList.put(getCommand("activity"), new ActivityCommand(this));
         cmdList.put(getCommand("activity-id"), new ActivityIdCommand(this));
-        cmdList.put(getCommand("player-manager"), new PlayerDataHelpCommand(this));
+        cmdList.put(getCommand("player-manager"), new PlayerDataCommand(this));
 
         // Messages Commands
         for (MessagesCommandsConfig msgCmd : MessagesCommandsConfig.values()){

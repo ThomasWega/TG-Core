@@ -3,20 +3,21 @@ package net.trustgames.core.player.data.level;
 import net.trustgames.core.Core;
 
 import java.util.UUID;
+import java.util.function.IntConsumer;
 
 public class PlayerLevel {
     private final UUID uuid;
     private final PlayerLevelFetcher playerLevelFetcher;
 
-    public void addXp(UUID uuid, int xpIncrease) {
-        int xp = getXp();
-        xp += xpIncrease;
-
-        playerLevelFetcher.update(uuid, xp);
+    public void addXp(int xpIncrease) {
+        getXp(xp -> {
+            xp += xpIncrease;
+            playerLevelFetcher.update(uuid, xp);
+        });
     }
 
-    public int getXp() {
-        return playerLevelFetcher.fetch(uuid);
+    public void getXp(IntConsumer callback) {
+        playerLevelFetcher.fetch(uuid, callback);
     }
 
     public void setXp(int targetXp) {
@@ -24,18 +25,18 @@ public class PlayerLevel {
     }
 
     public void removeXp(int xpDecrease) {
-        setXp(getXp() - xpDecrease);
+        getXp(xp -> setXp(xp - xpDecrease));
     }
 
     public void addLevel(int levelIncrease) {
-        int currentXp = getXp();
-        int currentLevel = getLevel();
-        int newLevel = currentLevel + levelIncrease;
-        int newThreshold = getThreshold(newLevel);
-        float progress = getProgress(currentXp);
-        int newXP = (int) Math.floor(newThreshold + ((getThreshold(newLevel + 1) - newThreshold) * progress));
+        getXp(currentXp -> getLevel(currentLevel -> {
+            int newLevel = currentLevel + levelIncrease;
+            int newThreshold = getThreshold(newLevel);
+            float progress = getProgress(currentXp);
+            int newXP = (int) Math.floor(newThreshold + ((getThreshold(newLevel + 1) - newThreshold) * progress));
 
-        playerLevelFetcher.update(uuid, newXP);
+            playerLevelFetcher.update(uuid, newXP);
+        }));
     }
 
     public int getLevelByXp(int xp) {
@@ -46,8 +47,11 @@ public class PlayerLevel {
         return level - 1;
     }
 
-    public int getLevel() {
-        return getLevelByXp(getXp());
+    public void getLevel(IntConsumer callback) {
+        getXp(xp -> {
+            int level = getLevelByXp(xp);
+            callback.accept(level);
+        });
     }
 
     public void setLevel(int targetLevel) {
@@ -56,14 +60,14 @@ public class PlayerLevel {
     }
 
     public void removeLevel(int levelDecrease) {
-        int currentXp = getXp();
-        int currentLevel = getLevel();
-        int newLevel = currentLevel - levelDecrease;
-        int newThreshold = getThreshold(newLevel);
-        float progress = getProgress(currentXp);
-        int newXP = (int) Math.floor(newThreshold + ((getThreshold(newLevel + 1) - newThreshold) * progress));
+        getXp(currentXp -> getLevel(currentLevel -> {
+            int newLevel = currentLevel - levelDecrease;
+            int newThreshold = getThreshold(newLevel);
+            float progress = getProgress(currentXp);
+            int newXP = (int) Math.floor(newThreshold + ((getThreshold(newLevel + 1) - newThreshold) * progress));
 
-        playerLevelFetcher.update(uuid, newXP);
+            playerLevelFetcher.update(uuid, newXP);
+        }));
     }
 
     public PlayerLevel(Core core, UUID uuid) {

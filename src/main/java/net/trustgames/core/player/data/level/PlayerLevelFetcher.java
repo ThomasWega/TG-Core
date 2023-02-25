@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
+import java.util.function.IntConsumer;
 
 public class PlayerLevelFetcher {
 
@@ -19,29 +20,37 @@ public class PlayerLevelFetcher {
 
     // TODO make async
 
-    public int fetch(UUID uuid) {
-        try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("SELECT xp FROM " + tableName + " WHERE uuid = ?")) {
-            statement.setString(1, uuid.toString());
-            try (ResultSet results = statement.executeQuery()) {
-                if (results.next()) {
-                    return results.getInt("xp");
+    public void fetch(UUID uuid, IntConsumer callback) {
+        core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
+            try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("SELECT xp FROM " + tableName + " WHERE uuid = ?")) {
+                statement.setString(1, uuid.toString());
+                try (ResultSet results = statement.executeQuery()) {
+                    if (results.next()) {
+                        int xp = results.getInt("xp");
+                        callback.accept(xp);
+                        return;
+                    }
                 }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return 0;
+            callback.accept(0);
+        });
     }
+
 
     public void update(UUID uuid, int xp) {
-        try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement(
-                "INSERT INTO " + tableName + "(uuid, xp) VALUES (?, ?) ON DUPLICATE KEY UPDATE xp = VALUES(xp)")) {
-            statement.setString(1, uuid.toString());
-            statement.setInt(2, xp);
+        core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
+            try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement(
+                    "INSERT INTO " + tableName + "(uuid, xp) VALUES (?, ?) ON DUPLICATE KEY UPDATE xp = VALUES(xp)")) {
+                statement.setString(1, uuid.toString());
+                statement.setInt(2, xp);
 
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
+
 }

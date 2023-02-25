@@ -8,11 +8,11 @@ import net.trustgames.core.utils.PlayerUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
-public class PlayerDataHelpCommand extends TrustCommand {
+public class PlayerDataCommand extends TrustCommand {
 
     private final Core core;
 
-    public PlayerDataHelpCommand(Core core) {
+    public PlayerDataCommand(Core core) {
         super(CorePermissionsConfig.STAFF.permission);
         this.core = core;
     }
