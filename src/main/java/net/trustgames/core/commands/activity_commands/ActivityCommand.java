@@ -191,9 +191,9 @@ public class ActivityCommand extends TrustCommand implements Listener {
          the list of possible actions names.
          If more actions are started logging, they need to be added here
         */
+        actionsMap.put("FIRST JOIN SERVER", Material.WHITE_BED);
         actionsMap.put("JOIN SERVER", Material.GREEN_BED);
         actionsMap.put("QUIT SERVER", Material.RED_BED);
-        actionsMap.put("QUIT SHUTDOWN SERVER", Material.BLACK_BED);
 
         for (String action : actionsMap.keySet()) {
             if (itemName.contains(action)) {
@@ -293,7 +293,7 @@ public class ActivityCommand extends TrustCommand implements Listener {
          */
 
         // check to not go over the item limit
-        if (prevPage.getAmount() < 64) {
+        if (prevPage.getAmount() < 64 && prevPage.getAmount() != 0) {
             prevPage.setAmount(prevPage.getAmount() + 1);
         }
         prevPage.setItemMeta(ItemManager.createItemMeta(prevPage, prevPageName, null));

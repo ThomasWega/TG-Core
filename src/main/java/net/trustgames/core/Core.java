@@ -88,10 +88,9 @@ public final class Core extends JavaPlugin {
         // TODO HOLO clickable
         // TODO NPC action - command prints the command in chat
         // TODO NPC protocollib
-        // TODO NPCManager if player leaves before all is set, errors happen
         // TODO TrustCommand allow console
-        // TODO Player activity there is a previous page arrow on first page and causes error
         // TODO TrustCommand add arguments
+        // TODO Save all players in database with their names - use for player activity (if player never joined the server where the command is executed, his activity can't be searched by his name but only uuid. This should fix that)
 
 
         // luckperms

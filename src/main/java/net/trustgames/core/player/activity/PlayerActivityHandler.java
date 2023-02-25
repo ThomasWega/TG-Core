@@ -62,7 +62,7 @@ public class PlayerActivityHandler implements Listener {
             if (playerActivity == null) {
                 playerActivity = new PlayerActivity(uuid, Objects.requireNonNull(
                                 player.getAddress(), "Player " + uuid + " IP address is null!")
-                        .getHostString(), "FIRST JOIN PORT " + Bukkit.getServer().getPort(),
+                        .getHostString(), "FIRST JOIN SERVER " + Bukkit.getServer().getName(),
                         new Timestamp(Instant.now().toEpochMilli()));
 
                 playerActivityDB.add(playerActivity);
