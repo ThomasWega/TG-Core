@@ -1,4 +1,4 @@
-package net.trustgames.core.player.data.manager;
+package net.trustgames.core.player.manager;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.command.TrustCommand;

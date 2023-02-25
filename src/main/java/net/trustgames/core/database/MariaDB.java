@@ -88,6 +88,7 @@ public class MariaDB {
             String ip = config.getString("mariadb.ip");
             String port = config.getString("mariadb.port");
             String database = config.getString("mariadb.database");
+            int poolSize = config.getInt("hikaricp.pool-size");
 
             try {
                 hikariDataSource = new HikariDataSource();
@@ -96,7 +97,7 @@ public class MariaDB {
                 ds.setJdbcUrl("jdbc:mariadb://" + ip + ":" + port + "/" + database);
                 ds.addDataSourceProperty("user", user);
                 ds.addDataSourceProperty("password", password);
-                ds.setMaximumPoolSize(5);
+                ds.setMaximumPoolSize(poolSize);
                 ds.setPoolName("HikariCP-Core");
 
                 connection = ds.getConnection();

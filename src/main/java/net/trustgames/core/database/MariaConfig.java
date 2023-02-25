@@ -31,6 +31,7 @@ public class MariaConfig {
         config.addDefault("mariadb.port", "3306");
         config.addDefault("mariadb.database", "database");
         config.addDefault("delay.database-table-creation", 60L);
+        config.addDefault("hikaricp.pool-size", 100);
         try {
             config.options().copyDefaults(true);
             config.save(getMariaFile());

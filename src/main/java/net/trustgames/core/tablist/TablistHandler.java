@@ -1,4 +1,4 @@
-package net.trustgames.core.player.tablist;
+package net.trustgames.core.tablist;
 
 import net.kyori.adventure.text.Component;
 import net.trustgames.core.Core;

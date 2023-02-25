@@ -16,12 +16,12 @@ import net.trustgames.core.database.MariaDB;
 import net.trustgames.core.managers.*;
 import net.trustgames.core.player.activity.PlayerActivityDB;
 import net.trustgames.core.player.activity.PlayerActivityHandler;
-import net.trustgames.core.player.data.PlayerStatsDB;
-import net.trustgames.core.player.data.level.PlayerLevelHandler;
-import net.trustgames.core.player.data.manager.PlayerDataCommand;
-import net.trustgames.core.player.tablist.TablistHandler;
-import net.trustgames.core.player.tablist.TablistTeams;
+import net.trustgames.core.player.data.PlayerDataDB;
+import net.trustgames.core.player.data.name.PlayerNameDBHandler;
+import net.trustgames.core.player.manager.PlayerDataCommand;
 import net.trustgames.core.protection.CoreGamerulesHandler;
+import net.trustgames.core.tablist.TablistHandler;
+import net.trustgames.core.tablist.TablistTeams;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
@@ -39,7 +39,7 @@ import java.util.HashMap;
  */
 public final class Core extends JavaPlugin {
 
-    public final PlayerStatsDB playerStatsDB = new PlayerStatsDB(this);
+    public final PlayerDataDB playerStatsDB = new PlayerDataDB(this);
     final MariaDB mariaDB = new MariaDB(this);
     private final AnnounceHandler announceHandler = new AnnounceHandler(this);
     private final PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
@@ -88,10 +88,15 @@ public final class Core extends JavaPlugin {
         // TODO HOLO clickable
         // TODO NPC action - command prints the command in chat
         // TODO NPC protocollib
-        // TODO TrustCommand allow console
         // TODO TrustCommand add arguments
-        // TODO Save all players in database with their names - use for player activity (if player never joined the server where the command is executed, his activity can't be searched by his name but only uuid. This should fix that)
+        // TODO Save all players in database with their names - use for player activity (if player never joined the server where the command is executed, his activity can't be searched by his name but only uuid. This should fix that. Also when the player first joins (is not in the table), set his coins to 100)
+        // TODO Comment everything that is not yet commented
+        // TODO Add caching for player data database
+        // TODO add remaining player data
+        // TODO finish player data command (even with aliases like /coins, /rubies, ...)
+        // TODO move PlayerLevelHandler to Lobby plugin!
 
+        // FIX ME When restarting, the database connections don't close properly or more are created!
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
@@ -138,7 +143,7 @@ public final class Core extends JavaPlugin {
         pluginManager.registerEvents(new ChatDecoration(), this);
         pluginManager.registerEvents(new TablistHandler(this), this);
         pluginManager.registerEvents(new ActivityCommand(this), this);
-        pluginManager.registerEvents(new PlayerLevelHandler(this), this);
+        pluginManager.registerEvents(new PlayerNameDBHandler(this), this);
     }
 
     private void registerCommands() {

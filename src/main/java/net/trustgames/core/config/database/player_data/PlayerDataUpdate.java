@@ -1,0 +1,18 @@
+package net.trustgames.core.config.database.player_data;
+
+public enum PlayerDataUpdate {
+    INTERVAL(5000); // in milliseconds
+
+    private final long value;
+
+    PlayerDataUpdate(long value) {
+        this.value = value;
+    }
+
+    /**
+     * @return Converted milliseconds to ticks
+     */
+    public long getTicks() {
+        return value / 50;
+    }
+}
