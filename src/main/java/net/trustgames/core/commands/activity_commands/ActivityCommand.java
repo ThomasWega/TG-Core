@@ -103,12 +103,11 @@ public class ActivityCommand extends TrustCommand implements Listener {
         createRecords(offlinePlayer);
 
         if (records.isEmpty()){
-            UUID offlineUUID = OfflinePlayerCache.getUUID(offlinePlayer);
-            player.sendMessage(CommandConfig.COMMAND_NO_PLAYER_ACT.formatMessage(offlineUUID));
+            player.sendMessage(CommandConfig.COMMAND_NO_PLAYER_ACT.addName(Component.text(target)));
             return;
         }
 
-        createPages(player, target);
+        createPages(player, offlinePlayer.getName());
 
         // open the first inventory (first page) from the list
         player.openInventory(inventoryList.get(0));

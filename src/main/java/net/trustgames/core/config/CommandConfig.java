@@ -17,7 +17,7 @@ public enum CommandConfig {
     COMMAND_SPAM(PREFIX.value + "<dark_gray>Please don't spam the command!"),
     COMMAND_INVALID_ARG(PREFIX.value + "<dark_gray>You need to specify a valid argument!"),
     COMMAND_INVALID_PLAYER(PREFIX.value + "<dark_gray>The player <white><player_name><dark_gray> isn't online on this server!"),
-    COMMAND_NO_PLAYER_ACT(PREFIX_DB.value + "<dark_gray>No activity data for player <white><player>"),
+    COMMAND_NO_PLAYER_ACT(PREFIX_DB.value + "<dark_gray>No activity data for player <white><player_name>"),
     COMMAND_NO_ID_ACT(PREFIX_DB.value + "<dark_gray>No activity data for ID <white><id>");
 
     public final Object value;
@@ -51,7 +51,7 @@ public enum CommandConfig {
     }
 
     /**
-     * Replace id tag with given ID
+     {@literal Replace <id> tag with given ID}
      *
      * @param id ID to replace the tag with
      * @return New formatted Component with replaced id tag
@@ -62,7 +62,7 @@ public enum CommandConfig {
 
 
     /**
-     * Replace component tag with given component
+     {@literal Replace <player_name> tag with given component}
      *
      * @param component Component to replace the tag with
      * @return New formatted Component with replaced component tag

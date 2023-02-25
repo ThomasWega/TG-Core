@@ -92,7 +92,6 @@ public final class Core extends JavaPlugin {
         // TODO If possible, don't pass the variable always in the methods, but instead create one outside of methods and always just call this.variable
         // TODO Player activity there is a previous page arrow on first page and causes error
         // TODO TrustCommand add arguments
-        // TODO make all mysql stuff async
         // TODO PlayerActivity not sure if offlineplayer is supported
 
 

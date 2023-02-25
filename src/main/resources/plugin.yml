@@ -33,8 +33,6 @@ commands:
     usage: /activity-id <ID>
     description: Get the activity by it's ID from the database
     permission: core.staff
-    aliases:
-      - activityid
 
   player-manager:
     aliases:
