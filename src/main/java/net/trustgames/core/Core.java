@@ -43,7 +43,6 @@ public final class Core extends JavaPlugin {
     private final AnnounceHandler announceHandler = new AnnounceHandler(this);
     private final PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
     public final PlayerStatsDB playerStatsDB = new PlayerStatsDB(this);
-    private final ShutdownManager shutdownManager = new ShutdownManager(this);
     public CooldownManager cooldownManager = new CooldownManager();
     private Scoreboard tablistScoreboard;
     public LuckPermsManager luckPermsManager;
@@ -94,6 +93,7 @@ public final class Core extends JavaPlugin {
         // TODO Player activity there is a previous page arrow on first page and causes error
         // TODO TrustCommand add arguments
         // TODO make all mysql stuff async
+        // TODO PlayerActivity not sure if offlineplayer is supported
 
 
         // luckperms
@@ -127,10 +127,6 @@ public final class Core extends JavaPlugin {
 
     @Override
     public void onDisable() {
-
-        // run the server shutdown manager (kick players, write activity, ...)
-        shutdownManager.kickPlayers();
-
         mariaDB.closeHikari();
     }
 

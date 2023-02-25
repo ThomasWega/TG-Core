@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
 This class is used to handle the database table for player activity
@@ -40,39 +41,36 @@ public class PlayerActivityDB {
 
      * @param uuid Player's String uuid
     */
-    public PlayerActivity fetchByUUID(UUID uuid) {
-
-        try {
+    public void fetchByUUID(UUID uuid, Consumer<PlayerActivity> callback) {
+        core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement(
                     "SELECT * FROM " + tableName + " WHERE uuid = ? ORDER BY id DESC LIMIT 1")) {
                 statement.setString(1, uuid.toString());
                 try (ResultSet results = statement.executeQuery()) {
                     if (results.next()) {
-
                         String ip = results.getString("ip");
                         String action = results.getString("action");
                         Timestamp time = results.getTimestamp("time");
-
-                        return new PlayerActivity(uuid, ip, action, time);
+                        PlayerActivity activity = new PlayerActivity(uuid, ip, action, time);
+                        callback.accept(activity);
+                    } else {
+                        callback.accept(null);
                     }
                 }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return null;
+        });
     }
+
 
     /**
     creates a new row with the new player activity.
     values from playerActivity are set for each index
     (is run async)
      * @param playerActivity Player activity instance
-     * @param runAsync Should the method be run Async
      */
-    public void add(PlayerActivity playerActivity, boolean runAsync) {
-
-        if (runAsync) {
+    public void add(PlayerActivity playerActivity) {
             core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
                 try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement(
                         "INSERT INTO " + tableName + "(uuid, ip, action, time) VALUES (?, ?, ?, ?)")) {
@@ -86,18 +84,5 @@ public class PlayerActivityDB {
                     throw new RuntimeException(e);
                 }
             });
-        } else {
-            try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement(
-                    "INSERT INTO " + tableName + "(uuid, ip, action, time) VALUES (?, ?, ?, ?)")) {
-                statement.setString(1, playerActivity.getUuid().toString());
-                statement.setString(2, playerActivity.getIp());
-                statement.setString(3, playerActivity.getAction());
-                statement.setTimestamp(4, playerActivity.getTime());
-
-                statement.executeUpdate();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 }
