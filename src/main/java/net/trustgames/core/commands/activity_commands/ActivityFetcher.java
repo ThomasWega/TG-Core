@@ -2,6 +2,7 @@ package net.trustgames.core.commands.activity_commands;
 
 import net.trustgames.core.Core;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,14 +25,14 @@ public class ActivityFetcher {
      * @return ResultSet of all rows which matches
      */
     public ResultSet getActivityByUUID(String uuid) {
-        try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("SELECT * FROM player_activity WHERE uuid = ? ORDER BY id DESC")) {
+        try (Connection connection = core.getMariaDB().getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM player_activity WHERE uuid = ? ORDER BY id DESC")) {
             statement.setString(1, uuid);
-            try (ResultSet results = statement.executeQuery()) {
-                return results;
-            }
+            return statement.executeQuery();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
     }
 
     /**
@@ -43,14 +44,15 @@ public class ActivityFetcher {
         // try to decode the id
         String decodedID = decodeID(id);
 
-        /*
-         if decode fails, it returns null.
-         if it's null it's already in decoded format
-        */
+    /*
+     if decode fails, it returns null.
+     if it's null it's already in decoded format
+    */
         if (decodedID == null)
             decodedID = id;
 
-        try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("SELECT * FROM player_activity WHERE id = ?")) {
+        try (Connection conn = core.getMariaDB().getConnection();
+             PreparedStatement statement = conn.prepareStatement("SELECT * FROM player_activity WHERE id = ?")) {
             statement.setString(1, decodedID);
             try (ResultSet results = statement.executeQuery()) {
                 return results;

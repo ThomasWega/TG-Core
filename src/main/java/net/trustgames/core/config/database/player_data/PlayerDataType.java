@@ -4,7 +4,7 @@ package net.trustgames.core.config.database.player_data;
  * Stores all the PlayerData types and their column names
  * which are saved in the player data table.
  */
-public enum PlayerDataTypes {
+public enum PlayerDataType {
     UUID("uuid", "VARCHAR(36) primary key"),
     PLAYER_NAME("name", "VARCHAR(16)"),
     KILLS("kills", "INT signed"),
@@ -18,7 +18,7 @@ public enum PlayerDataTypes {
     private final String columnName;
     private final String columnType;
 
-    PlayerDataTypes(String columnName, String columnType) {
+    PlayerDataType(String columnName, String columnType) {
         this.columnName = columnName;
         this.columnType = columnType;
     }

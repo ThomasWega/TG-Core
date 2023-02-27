@@ -1,8 +1,8 @@
-package net.trustgames.core.player.data.name;
+package net.trustgames.core.player.data.data.name;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.cache.EntityCache;
-import net.trustgames.core.config.database.player_data.PlayerDataTypes;
+import net.trustgames.core.config.database.player_data.PlayerDataType;
 import net.trustgames.core.player.data.PlayerDataFetcher;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,6 +28,6 @@ public class PlayerNameDBHandler implements Listener {
         UUID uuid = EntityCache.getUUID(player);
         PlayerDataFetcher playerDataFetcher = new PlayerDataFetcher(core, uuid);
 
-        playerDataFetcher.update(PlayerDataTypes.PLAYER_NAME, player.getName());
+        playerDataFetcher.update(PlayerDataType.PLAYER_NAME, player.getName());
     }
 }

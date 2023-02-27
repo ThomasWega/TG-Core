@@ -1,5 +1,6 @@
 package net.trustgames.core.database;
 
+import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import net.trustgames.core.Core;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -14,8 +15,7 @@ import java.sql.*;
 public class MariaDB {
 
     private final Core core;
-    public HikariDataSource hikariDataSource;
-    private Connection connection;
+    public HikariDataSource dataSource;
     private MariaConfig mariaConfig;
 
     public MariaDB(Core core) {
@@ -41,6 +41,7 @@ public class MariaDB {
                 }
             }
         }
+        connection.close();
         return tExists;
     }
 
@@ -61,7 +62,8 @@ public class MariaDB {
 
             try {
                 Class.forName("org.mariadb.jdbc.Driver");
-                try (Connection connection = DriverManager.getConnection("jdbc:mariadb://" + ip + ":" + port + "/", user, password); PreparedStatement statement = connection.prepareStatement("CREATE DATABASE IF NOT EXISTS " + database)) {
+                try (Connection connection = DriverManager.getConnection("jdbc:mariadb://" + ip + ":" + port + "/", user, password);
+                     PreparedStatement statement = connection.prepareStatement("CREATE DATABASE IF NOT EXISTS " + database)) {
                     statement.executeUpdate();
                 }
             } catch (SQLException | ClassNotFoundException e) {
@@ -72,41 +74,36 @@ public class MariaDB {
     }
 
     /**
-     * gets the connection. Checks if the connection isn't null. If it isn't, it will return connection
-     * if the connection is null, meaning it probably doesn't exist, it will create a new connection and return it
-     */
+     * gets a new connection from the hikaricp pool
+     * */
     public Connection getConnection() {
-
-        if (connection != null) {
-            return connection;
-
-        } else {
-
-            YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
-            String user = config.getString("mariadb.user");
-            String password = config.getString("mariadb.password");
-            String ip = config.getString("mariadb.ip");
-            String port = config.getString("mariadb.port");
-            String database = config.getString("mariadb.database");
-            int poolSize = config.getInt("hikaricp.pool-size");
-
-            try {
-                hikariDataSource = new HikariDataSource();
-                HikariDataSource ds = hikariDataSource;
-                ds.setDriverClassName("org.mariadb.jdbc.Driver");
-                ds.setJdbcUrl("jdbc:mariadb://" + ip + ":" + port + "/" + database);
-                ds.addDataSourceProperty("user", user);
-                ds.addDataSourceProperty("password", password);
-                ds.setMaximumPoolSize(poolSize);
-                ds.setPoolName("HikariCP-Core");
-
-                connection = ds.getConnection();
-                return connection;
-            } catch (SQLException e) {
-                core.getLogger().severe("Connecting to the database using HikariCP");
-                throw new RuntimeException(e);
-            }
+        try {
+            return dataSource.getConnection();
+        } catch (SQLException e) {
+            core.getLogger().severe("Getting a new connection from HikariCP");
+            throw new RuntimeException(e);
         }
+    }
+
+    public void initializePool() {
+        mariaConfig = new MariaConfig(core);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
+        String user = config.getString("mariadb.user");
+        String password = config.getString("mariadb.password");
+        String ip = config.getString("mariadb.ip");
+        String port = config.getString("mariadb.port");
+        String database = config.getString("mariadb.database");
+        int poolSize = config.getInt("hikaricp.pool-size");
+
+        HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setDriverClassName("org.mariadb.jdbc.Driver");
+        hikariConfig.setJdbcUrl("jdbc:mariadb://" + ip + ":" + port + "/" + database);
+        hikariConfig.addDataSourceProperty("user", user);
+        hikariConfig.addDataSourceProperty("password", password);
+        hikariConfig.setMaximumPoolSize(poolSize);
+        hikariConfig.setPoolName("HikariCP-Core");
+
+        dataSource = new HikariDataSource(hikariConfig);
     }
 
     /**
@@ -125,13 +122,13 @@ public class MariaDB {
             createDatabaseIfNotExists();
 
             core.getServer().getScheduler().runTaskLaterAsynchronously(core, () -> {
-                try {
-                    if (getConnection() == null) return;
-                    if (tableExist(getConnection(), tableName)) return;
+                try (Connection connection = getConnection()) {
+                    if (connection == null) return;
+                    if (tableExist(connection, tableName)) return;
                     core.getLogger().info("Database table " + tableName + " doesn't exist, creating...");
-                    try (PreparedStatement statement = getConnection().prepareStatement(stringStatement)) {
+                    try (PreparedStatement statement = connection.prepareStatement(stringStatement)) {
                         statement.executeUpdate();
-                        if (tableExist(getConnection(), tableName)) {
+                        if (tableExist(connection, tableName)) {
                             core.getLogger().finest("Successfully created the table " + tableName);
                         }
                     }
@@ -147,13 +144,12 @@ public class MariaDB {
      * @return true if mysql is disabled
      */
     public boolean isMySQLDisabled() {
-        mariaConfig = new MariaConfig(core);
         YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
         return !Boolean.parseBoolean(config.getString("mariadb.enable"));
     }
 
     public void closeHikari() {
         if (isMySQLDisabled()) return;
-        hikariDataSource.close();
+        dataSource.close();
     }
 }

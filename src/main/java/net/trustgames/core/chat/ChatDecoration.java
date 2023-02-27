@@ -11,7 +11,6 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
 import net.trustgames.core.cache.EntityCache;
 import net.trustgames.core.chat.config.ChatConfig;
-import net.trustgames.core.logger.CoreLogger;
 import net.trustgames.core.managers.LuckPermsManager;
 import net.trustgames.core.utils.ColorUtils;
 import net.trustgames.core.utils.ComponentUtils;
@@ -176,7 +175,7 @@ public class ChatDecoration implements Listener {
      * @param message    Message sent in chat by Player
      */
     private void logMessage(Component prefix, String playerName, Component message) {
-        CoreLogger.LOGGER.log(Level.INFO, ColorUtils.stripColor(
+        Bukkit.getLogger().log(Level.INFO, ColorUtils.stripColor(
                 prefix.append(Component.text(playerName)).append(Component.text(" ")).append(message)));
     }
 }

@@ -17,7 +17,7 @@ import net.trustgames.core.managers.*;
 import net.trustgames.core.player.activity.PlayerActivityDB;
 import net.trustgames.core.player.activity.PlayerActivityHandler;
 import net.trustgames.core.player.data.PlayerDataDB;
-import net.trustgames.core.player.data.name.PlayerNameDBHandler;
+import net.trustgames.core.player.data.data.name.PlayerNameDBHandler;
 import net.trustgames.core.player.manager.PlayerDataCommand;
 import net.trustgames.core.protection.CoreGamerulesHandler;
 import net.trustgames.core.tablist.TablistHandler;
@@ -91,12 +91,18 @@ public final class Core extends JavaPlugin {
         // TODO TrustCommand add arguments
         // TODO Save all players in database with their names - use for player activity (if player never joined the server where the command is executed, his activity can't be searched by his name but only uuid. This should fix that. Also when the player first joins (is not in the table), set his coins to 100)
         // TODO Comment everything that is not yet commented
-        // TODO Add caching for player data database
+        // TODO Add caching for player data database that updates every time database data changes
         // TODO add remaining player data
         // TODO finish player data command (even with aliases like /coins, /rubies, ...)
-        // TODO move PlayerLevelHandler to Lobby plugin!
+        // TODO check for main thread runnables
+        // TODO convert all connection types to hikaricp (or mariadb) one (WITH IMPORTS!)
 
         // FIX ME When restarting, the database connections don't close properly or more are created!
+
+        // database
+        mariaDB.initializePool();
+        playerActivityDB.initializeTable();
+        playerStatsDB.initializeTable();
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
@@ -118,9 +124,6 @@ public final class Core extends JavaPlugin {
         registerCommands();
 
         playerList();
-
-        playerActivityDB.initializeTable();
-        playerStatsDB.initializeTable();
 
         CoreGamerulesHandler.setGamerules();
 

@@ -3,7 +3,7 @@ package net.trustgames.core.player.manager;
 import net.trustgames.core.Core;
 import net.trustgames.core.command.TrustCommand;
 import net.trustgames.core.config.CorePermissionsConfig;
-import net.trustgames.core.player.data.level.PlayerLevel;
+import net.trustgames.core.player.data.data.level.PlayerLevel;
 import net.trustgames.core.utils.PlayerUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;

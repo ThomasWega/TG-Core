@@ -1,8 +1,9 @@
 package net.trustgames.core.player.data;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.config.database.player_data.PlayerDataTypes;
+import net.trustgames.core.config.database.player_data.PlayerDataType;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,10 +33,11 @@ public class PlayerDataFetcher {
      * @param playerDataType DataType which will be used to get the column name
      * @param callback       Callback where the result will be saved
      */
-    public void fetch(PlayerDataTypes playerDataType, Consumer<Object> callback) {
+    public void fetch(PlayerDataType playerDataType, Consumer<Object> callback) {
         String label = playerDataType.getColumnName();
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
-            try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement("SELECT " + label + " FROM " + tableName + " WHERE uuid = ?")) {
+            try (Connection connection = core.getMariaDB().getConnection();
+                 PreparedStatement statement = connection.prepareStatement("SELECT " + label + " FROM " + tableName + " WHERE uuid = ?")) {
                 statement.setString(1, uuid.toString());
                 try (ResultSet results = statement.executeQuery()) {
                     if (results.next()) {
@@ -57,18 +59,20 @@ public class PlayerDataFetcher {
      * @param playerDataType DataType which will be updated with the Object
      * @param object         Object to update the DataType with
      */
-    public void update(PlayerDataTypes playerDataType, Object object) {
+    public void update(PlayerDataType playerDataType, Object object) {
         String label = playerDataType.getColumnName();
-        core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
-            try (PreparedStatement statement = core.getMariaDB().getConnection().prepareStatement(
-                    "INSERT INTO " + tableName + "(uuid, " + label + ") VALUES (?, ?) ON DUPLICATE KEY UPDATE " + label + " = VALUES(" + label + ")")) {
-                statement.setString(1, uuid.toString());
-                statement.setObject(2, object);
 
-                statement.executeUpdate();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        try (Connection connection = core.getMariaDB().getConnection();
+             PreparedStatement statement = connection.prepareStatement(
+                     "INSERT INTO " + tableName + "(uuid, " + label + ") VALUES (?, ?) ON DUPLICATE KEY UPDATE " + label + " = VALUES(" + label + ")")) {
+            connection.setAutoCommit(false);
+            statement.setString(1, uuid.toString());
+            statement.setObject(2, object);
+            statement.executeUpdate();
+            connection.commit();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
+
 }

@@ -1,7 +1,7 @@
 package net.trustgames.core.player.data;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.config.database.player_data.PlayerDataTypes;
+import net.trustgames.core.config.database.player_data.PlayerDataType;
 
 /**
  * This class handles the creation of the data database table
@@ -25,7 +25,7 @@ public class PlayerDataDB {
                 .append(tableName)
                 .append("(");
 
-        for (PlayerDataTypes dataType : PlayerDataTypes.values()) {
+        for (PlayerDataType dataType : PlayerDataType.values()) {
             statement.append(dataType.getColumnName())
                     .append(" ")
                     .append(dataType.getColumnType())
