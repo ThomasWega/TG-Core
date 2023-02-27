@@ -46,34 +46,6 @@ public class MariaDB {
     }
 
     /**
-     * create the specified database if it doesn't exist yet
-     * (is run async)
-     */
-    private void createDatabaseIfNotExists() {
-
-        core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
-
-            YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
-            String user = config.getString("mariadb.user");
-            String password = config.getString("mariadb.password");
-            String ip = config.getString("mariadb.ip");
-            String port = config.getString("mariadb.port");
-            String database = config.getString("mariadb.database");
-
-            try {
-                Class.forName("org.mariadb.jdbc.Driver");
-                try (Connection connection = DriverManager.getConnection("jdbc:mariadb://" + ip + ":" + port + "/", user, password);
-                     PreparedStatement statement = connection.prepareStatement("CREATE DATABASE IF NOT EXISTS " + database)) {
-                    statement.executeUpdate();
-                }
-            } catch (SQLException | ClassNotFoundException e) {
-                core.getLogger().severe("Unable to create " + database + " database!");
-                throw new RuntimeException(e);
-            }
-        });
-    }
-
-    /**
      * gets a new connection from the hikaricp pool
      * */
     public Connection getConnection() {
@@ -119,7 +91,6 @@ public class MariaDB {
                 core.getLogger().warning("MySQL is turned off. Not initializing table " + tableName);
                 return;
             }
-            createDatabaseIfNotExists();
 
             core.getServer().getScheduler().runTaskLaterAsynchronously(core, () -> {
                 try (Connection connection = getConnection()) {

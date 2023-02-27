@@ -90,14 +90,11 @@ public final class Core extends JavaPlugin {
         // TODO NPC protocollib
         // TODO TrustCommand add arguments
         // TODO Save all players in database with their names - use for player activity (if player never joined the server where the command is executed, his activity can't be searched by his name but only uuid. This should fix that. Also when the player first joins (is not in the table), set his coins to 100)
-        // TODO Comment everything that is not yet commented
         // TODO Add caching for player data database that updates every time database data changes
-        // TODO add remaining player data
         // TODO finish player data command (even with aliases like /coins, /rubies, ...)
-        // TODO check for main thread runnables
         // TODO convert all connection types to hikaricp (or mariadb) one (WITH IMPORTS!)
 
-        // FIX ME When restarting, the database connections don't close properly or more are created!
+        // FIXME When restarting, the database connections don't close properly or more are created!
 
         // database
         mariaDB.initializePool();
