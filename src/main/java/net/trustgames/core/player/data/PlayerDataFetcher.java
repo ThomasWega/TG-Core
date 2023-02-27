@@ -54,7 +54,9 @@ public class PlayerDataFetcher {
     }
 
     /**
-     * Updates the given DataType column with the given object
+     * Updates the given DataType column with the given object.
+     * It uses transactions, to ensure that other updates don't interfere
+     * with each other.
      *
      * @param playerDataType DataType which will be updated with the Object
      * @param object         Object to update the DataType with
@@ -62,17 +64,22 @@ public class PlayerDataFetcher {
     public void update(PlayerDataType playerDataType, Object object) {
         String label = playerDataType.getColumnName();
 
-        try (Connection connection = core.getMariaDB().getConnection();
-             PreparedStatement statement = connection.prepareStatement(
-                     "INSERT INTO " + tableName + "(uuid, " + label + ") VALUES (?, ?) ON DUPLICATE KEY UPDATE " + label + " = VALUES(" + label + ")")) {
-            connection.setAutoCommit(false);
+        Connection connection = core.getMariaDB().getConnection();
+        try (PreparedStatement statement = connection.prepareStatement(
+                "INSERT INTO " + tableName + "(uuid, " + label + ") VALUES (?, ?) " +
+                        "ON DUPLICATE KEY UPDATE " + label + " = VALUES(" + label + ")")) {
             statement.setString(1, uuid.toString());
             statement.setObject(2, object);
+            connection.setAutoCommit(false); // disable auto-commit mode to start a transaction
             statement.executeUpdate();
             connection.commit();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            try {
+                connection.rollback();
+                connection.close();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
-
 }

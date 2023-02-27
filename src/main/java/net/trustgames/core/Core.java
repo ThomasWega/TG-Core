@@ -89,12 +89,12 @@ public final class Core extends JavaPlugin {
         // TODO NPC action - command prints the command in chat
         // TODO NPC protocollib
         // TODO TrustCommand add arguments
-        // TODO Save all players in database with their names - use for player activity (if player never joined the server where the command is executed, his activity can't be searched by his name but only uuid. This should fix that. Also when the player first joins (is not in the table), set his coins to 100)
+        // TODO player activity (if player never joined the server where the command is executed, his activity can't be searched by his name but only uuid. Use a database to fix that.
         // TODO Add caching for player data database that updates every time database data changes
         // TODO finish player data command (even with aliases like /coins, /rubies, ...)
-        // TODO convert all connection types to hikaricp (or mariadb) one (WITH IMPORTS!)
 
-        // FIXME When restarting, the database connections don't close properly or more are created!
+        // FIXME TEST: When restarting, the database connections don't close properly or more are created!
+        // FIXME TEST: Is there correct amount of connections?
 
         // database
         mariaDB.initializePool();

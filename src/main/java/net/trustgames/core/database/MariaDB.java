@@ -23,7 +23,9 @@ public class MariaDB {
     }
 
     /**
-     * Check if table exists
+     * Check if table exists.
+     *
+     * @implNote The connection isn't closed by this method
      *
      * @param connection HikariCP connection
      * @param tableName  The name of the table
@@ -41,7 +43,6 @@ public class MariaDB {
                 }
             }
         }
-        connection.close();
         return tExists;
     }
 
@@ -94,7 +95,6 @@ public class MariaDB {
 
             core.getServer().getScheduler().runTaskLaterAsynchronously(core, () -> {
                 try (Connection connection = getConnection()) {
-                    if (connection == null) return;
                     if (tableExist(connection, tableName)) return;
                     core.getLogger().info("Database table " + tableName + " doesn't exist, creating...");
                     try (PreparedStatement statement = connection.prepareStatement(stringStatement)) {

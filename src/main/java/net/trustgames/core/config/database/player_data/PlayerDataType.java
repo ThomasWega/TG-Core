@@ -7,13 +7,13 @@ package net.trustgames.core.config.database.player_data;
 public enum PlayerDataType {
     UUID("uuid", "VARCHAR(36) primary key"),
     PLAYER_NAME("name", "VARCHAR(16)"),
-    KILLS("kills", "INT signed"),
-    DEATHS("deaths", "INT signed"),
-    GAMES_PLAYED("games_played", "INT signed"),
-    PLAYTIME("playtime", "INT signed"),
-    LEVEL_EXP("level_exp", "INT signed"),
-    GOLD("gold", "INT signed"),
-    RUBIES("rubies", "INT signed");
+    KILLS("kills", "INT signed DEFAULT 0"),
+    DEATHS("deaths", "INT DEFAULT 0"),
+    GAMES_PLAYED("games_played", "INT DEFAULT 0"),
+    PLAYTIME("playtime", "INT DEFAULT 0"),
+    LEVEL_EXP("level_exp", "INT DEFAULT 0"),
+    GOLD("gold", "INT DEFAULT 100"),
+    RUBIES("rubies", "INT DEFAULT 0");
 
     private final String columnName;
     private final String columnType;
