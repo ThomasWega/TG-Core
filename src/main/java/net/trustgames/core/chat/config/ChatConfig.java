@@ -28,7 +28,7 @@ public enum ChatConfig {
     /**
      * @return Formatted component message
      */
-    public Component getText() {
+    public final Component getText() {
         return MiniMessage.miniMessage().deserialize(value);
     }
 
@@ -38,14 +38,14 @@ public enum ChatConfig {
      * @param uuid UUID of Player to replace the tags with info of
      * @return New formatted Component message with replaced tags
      */
-    public Component formatMessage(UUID uuid) {
+    public final Component formatMessage(UUID uuid) {
         return MiniMessageUtils.format(uuid).deserialize(value);
     }
 
     /**
      * @return Color with value of enum
      */
-    public TextColor getColor() {
+    public final TextColor getColor() {
         return ColorUtils.color(value).color();
     }
 
@@ -55,7 +55,7 @@ public enum ChatConfig {
      * @param seconds Seconds to replace the tag with
      * @return New formatted Component with replaced sec tag
      */
-    public Component addSeconds(double seconds) {
+    public final Component addSeconds(double seconds) {
         return MiniMessageUtils.addSeconds(seconds).deserialize(value);
     }
 }

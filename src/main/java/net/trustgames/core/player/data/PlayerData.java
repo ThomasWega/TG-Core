@@ -1,13 +1,12 @@
-package net.trustgames.core.player.data.data;
+package net.trustgames.core.player.data;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.config.database.player_data.PlayerDataType;
-import net.trustgames.core.player.data.PlayerDataFetcher;
 
 import java.util.UUID;
 import java.util.function.IntConsumer;
 
-public class PlayerData {
+public final class PlayerData {
     private final PlayerDataFetcher playerDataFetcher;
     private final PlayerDataType dataType;
 
@@ -35,6 +34,10 @@ public class PlayerData {
      */
     public void getData(IntConsumer callback) {
         playerDataFetcher.fetch(dataType, data -> {
+            if (data == null){
+                callback.accept(-1);
+                return;
+            }
             int dataInt = ((int) data);
             callback.accept(dataInt);
         });
@@ -48,9 +51,17 @@ public class PlayerData {
     }
 
     /**
-     * @param decrease The amount of Data to remove from the total amount
+     * Removes the amount from the total data.
+     * Makes sure that the data will not be set to less than 0
+     * @param decrease The amount of Data to remove from the total amount.
      */
     public void removeData(int decrease) {
-        getData(data -> setData(data - decrease));
+        getData(data -> {
+            if (decrease >= data){
+                setData(0);
+                return;
+            }
+            setData(data - decrease);
+        });
     }
 }

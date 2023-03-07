@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public class NPCManager {
+public final class NPCManager {
 
     private static CooldownManager cooldownManager;
     private final Core core;

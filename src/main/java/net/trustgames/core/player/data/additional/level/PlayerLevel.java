@@ -1,14 +1,14 @@
-package net.trustgames.core.player.data.data.level;
+package net.trustgames.core.player.data.additional.level;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.config.database.player_data.PlayerDataType;
-import net.trustgames.core.player.data.data.PlayerData;
+import net.trustgames.core.player.data.PlayerData;
 import net.trustgames.core.player.data.PlayerDataFetcher;
 
 import java.util.UUID;
 import java.util.function.IntConsumer;
 
-public class PlayerLevel {
+public final class PlayerLevel {
     private final PlayerDataFetcher playerDataFetcher;
     private final PlayerData playerData;
 
@@ -17,7 +17,7 @@ public class PlayerLevel {
         this.playerData = new PlayerData(core, uuid, dataType);
     }
 
-    private final PlayerDataType dataType = PlayerDataType.LEVEL_EXP;
+    private final PlayerDataType dataType = PlayerDataType.XP;
 
     /**
      * @param levelIncrease The amount of levels to add to the current level

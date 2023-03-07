@@ -7,7 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public class PlayerManager implements Listener {
+public final class PlayerManager implements Listener {
 
     /**
      * Changes the display name color of the player to

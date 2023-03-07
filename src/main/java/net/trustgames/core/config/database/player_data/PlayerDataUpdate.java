@@ -12,7 +12,7 @@ public enum PlayerDataUpdate {
     /**
      * @return Converted milliseconds to ticks
      */
-    public long getTicks() {
+    public final long getTicks() {
         return value / 50;
     }
 }

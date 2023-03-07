@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  * Handles getting the skin texture and signature from the mojang servers
  * and also caching it to save mojang api calls.
  */
-public class SkinManager {
+public final class SkinManager {
 
     /**
      * Cache that holds the SkinData. It expires after 3 days.

@@ -16,7 +16,7 @@ import java.util.UUID;
 /**
  * Handles the player-list creation
  */
-public class TablistHandler implements Listener {
+public final class TablistHandler implements Listener {
 
     private final Core core;
     private TablistTeams tablistTeams;

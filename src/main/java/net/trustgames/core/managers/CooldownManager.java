@@ -16,7 +16,7 @@ import java.util.UUID;
  * Handles cooldowns for chat and commands messages.
  * Can be used by external classes
  */
-public class CooldownManager implements Listener {
+public final class CooldownManager implements Listener {
 
     private final HashMap<UUID, Long> commandCooldownTime = new HashMap<>();
     private final HashMap<UUID, Long> cooldownMessageTime = new HashMap<>();

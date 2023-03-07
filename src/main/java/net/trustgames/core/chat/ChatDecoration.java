@@ -26,7 +26,7 @@ import java.util.logging.Level;
 /**
  * Handles the addition of prefix and colors in the chat
  */
-public class ChatDecoration implements Listener {
+public final class ChatDecoration implements Listener {
 
     private final Sound sound = Sound.sound(Key.key(
                     "block.note_block.flute"),

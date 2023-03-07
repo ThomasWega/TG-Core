@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class PlayerUtils {
+public final class PlayerUtils {
 
     /**
      * check if the supplied string is uuid or a player name by

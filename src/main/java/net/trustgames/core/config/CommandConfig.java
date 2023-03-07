@@ -13,10 +13,11 @@ public enum CommandConfig {
     MAX_PER_SEC(5d),
     COMMAND_NO_PERM(PREFIX.value + "<dark_gray>You don't have permission to perform this action!"),
     COMMAND_DATABASE_OFF(PREFIX_DB.value + "<dark_gray>Database is disabled!"),
-    COMMAND_ONLY_PLAYER("This command can be executed by in-game players only!"),
+    COMMAND_PLAYER_ONLY("This command can be executed by in-game players only!"),
     COMMAND_SPAM(PREFIX.value + "<dark_gray>Please don't spam the command!"),
     COMMAND_INVALID_ARG(PREFIX.value + "<dark_gray>You need to specify a valid argument!"),
-    COMMAND_INVALID_PLAYER(PREFIX.value + "<dark_gray>The player <white><player_name><dark_gray> isn't online on this server!"),
+    COMMAND_PLAYER_OFFLINE(PREFIX.value + "<dark_gray>The player <white><player_name><dark_gray> isn't online on this server!"),
+    COMMAND_PLAYER_UNKNOWN(PREFIX.value + "<dark_gray>The player <white><player_name><dark_gray> never joined the network!"),
     COMMAND_NO_PLAYER_ACT(PREFIX_DB.value + "<dark_gray>No activity data for player <white><player_name>"),
     COMMAND_NO_ID_ACT(PREFIX_DB.value + "<dark_gray>No activity data for ID <white><id>");
 
@@ -29,14 +30,14 @@ public enum CommandConfig {
     /**
      * @return double value of the enum
      */
-    public double getDouble() {
+    public final double getDouble() {
         return ((double) value);
     }
 
     /**
      * @return Formatted component message
      */
-    public Component getText() {
+    public final Component getText() {
         return MiniMessage.miniMessage().deserialize(value.toString());
     }
 
@@ -46,7 +47,7 @@ public enum CommandConfig {
      * @param uuid UUID of Player to replace the tags with info of
      * @return New formatted Component message with replaced tags
      */
-    public Component formatMessage(UUID uuid) {
+    public final Component formatMessage(UUID uuid) {
         return MiniMessageUtils.format(uuid).deserialize(value.toString());
     }
 
@@ -56,7 +57,7 @@ public enum CommandConfig {
      * @param id ID to replace the tag with
      * @return New formatted Component with replaced id tag
      */
-    public Component addID(String id) {
+    public final Component addID(String id) {
         return MiniMessageUtils.addId(id).deserialize(value.toString());
     }
 
@@ -67,7 +68,7 @@ public enum CommandConfig {
      * @param component Component to replace the tag with
      * @return New formatted Component with replaced component tag
      */
-    public Component addName(Component component) {
+    public final Component addName(Component component) {
         return MiniMessageUtils.addName(component).deserialize(value.toString());
     }
 }

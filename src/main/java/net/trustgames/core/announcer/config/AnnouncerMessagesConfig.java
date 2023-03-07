@@ -32,7 +32,7 @@ public enum AnnouncerMessagesConfig {
     /**
      * @return Formatted component message
      */
-    public Component getMessage() {
+    public final Component getMessage() {
         return MiniMessage.miniMessage().deserialize(value);
     }
 }

@@ -14,7 +14,7 @@ import java.util.UUID;
 /**
  * Handles the command cooldowns
  */
-public class CommandManager implements Listener {
+public final class CommandManager implements Listener {
 
     private final HashMap<UUID, Long> commandCooldown = new HashMap<>();
 

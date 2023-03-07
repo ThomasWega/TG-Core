@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Handles the converting of colors
  */
-public class ColorUtils {
+public final class ColorUtils {
 
     /**
      * Translates the colors of the given Component text

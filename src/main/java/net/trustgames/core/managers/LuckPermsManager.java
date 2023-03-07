@@ -21,7 +21,7 @@ import java.util.UUID;
 /**
  * Handles the various LuckPerms checks and events
  */
-public class LuckPermsManager {
+public final class LuckPermsManager {
 
     static final LuckPerms luckPerms = Core.getLuckPerms();
     private final Core core;

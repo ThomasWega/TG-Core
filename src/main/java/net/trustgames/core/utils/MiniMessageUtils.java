@@ -6,6 +6,7 @@ import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import net.trustgames.core.cache.OfflinePlayerCache;
+import net.trustgames.core.config.database.player_data.PlayerDataType;
 import net.trustgames.core.managers.LuckPermsManager;
 import org.bukkit.Bukkit;
 
@@ -13,7 +14,7 @@ import java.text.DecimalFormat;
 import java.util.Objects;
 import java.util.UUID;
 
-public class MiniMessageUtils {
+public final class MiniMessageUtils {
 
     /**
      * MiniMessage instance, which replaces
@@ -93,6 +94,28 @@ public class MiniMessageUtils {
                 .tags(TagResolver.builder()
                         .resolver(StandardTags.defaults())
                         .resolver(TagResolver.resolver("player_name", Tag.selfClosingInserting(name)))
+                        .build()
+                )
+                .build();
+    }
+
+    /**
+     * MiniMessage instance, which replaces
+     * various currency tags in the message with
+     * data values of the player
+     *
+     * @param uuid UUID of Player to replace the tags with info of
+     * @return new MiniMessage with formatter ready
+     */
+    public static MiniMessage playerData(UUID uuid, PlayerDataType dataType, String value) {
+        return MiniMessage.builder()
+                .tags(TagResolver.builder()
+                        .resolver(StandardTags.defaults())
+                        .resolver(TagResolver.resolver("player_name", Tag.selfClosingInserting(Component.text(Objects.requireNonNull(
+                                OfflinePlayerCache.getPlayer(uuid).getName())))))
+                        .resolver(TagResolver.resolver("player_data", Tag.selfClosingInserting(
+                                Component.text(dataType.name().toLowerCase()))))
+                        .resolver(TagResolver.resolver("value", Tag.selfClosingInserting(Component.text(value))))
                         .build()
                 )
                 .build();

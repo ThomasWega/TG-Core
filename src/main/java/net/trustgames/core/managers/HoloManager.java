@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HoloManager {
+public final class HoloManager {
 
     /**
      * Spawns the hologram with the text for the player

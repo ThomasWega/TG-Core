@@ -23,7 +23,7 @@ public enum ServerConfig {
     /**
      * @return Formatted component text
      */
-    public Component getText() {
+    public final Component getText() {
         return MiniMessage.miniMessage().deserialize(value);
     }
 }

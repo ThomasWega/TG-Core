@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 /**
  * This class is used for listeners for table player_activity
  */
-public class PlayerActivityHandler implements Listener {
+public final class PlayerActivityHandler implements Listener {
 
     private final Core core;
 

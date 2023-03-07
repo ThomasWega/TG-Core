@@ -8,7 +8,7 @@ import java.io.IOException;
 /**
  * Handles the creation of custom configs
  */
-public class ConfigManager {
+public final class ConfigManager {
 
     /**
      * creates a specified file (config)

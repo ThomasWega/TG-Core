@@ -16,7 +16,7 @@ import java.util.*;
 /**
  * Handles the priority sorting of groups and players in the player-list
  */
-public class TablistTeams {
+public final class TablistTeams {
 
     static final HashMap<Group, Integer> groupOrder = new HashMap<>();
     private final Core core;

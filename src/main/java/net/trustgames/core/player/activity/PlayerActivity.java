@@ -13,7 +13,7 @@ import java.util.UUID;
  */
 @Data
 @AllArgsConstructor
-public class PlayerActivity {
+public final class PlayerActivity {
     private final UUID uuid;
     private String ip;
     private String action;

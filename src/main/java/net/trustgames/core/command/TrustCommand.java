@@ -40,7 +40,7 @@ public abstract class TrustCommand implements CommandExecutor {
 
         // If not allowed and sender is not a player, send error message
         if (!consoleAllowed && !(sender instanceof Player)) {
-            CoreLogger.LOGGER.warning(CommandConfig.COMMAND_ONLY_PLAYER.value.toString());
+            CoreLogger.LOGGER.warning(CommandConfig.COMMAND_PLAYER_ONLY.value.toString());
             return true;
         }
 
@@ -50,7 +50,7 @@ public abstract class TrustCommand implements CommandExecutor {
             return true;
         }
 
-        execute(sender, args);
+        execute(sender, args, label);
         return true;
     }
 
@@ -60,8 +60,9 @@ public abstract class TrustCommand implements CommandExecutor {
      *
      * @param sender The Console/Player who sent the command
      * @param args   What arguments the command had
+     * @param label  Alias of the command used
      */
-    public abstract void execute(CommandSender sender, String[] args);
+    public abstract void execute(CommandSender sender, String[] args, String label);
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
@@ -69,8 +70,10 @@ public abstract class TrustCommand implements CommandExecutor {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.METHOD)
-    public @interface ArgsSize {
+    @Target(ElementType.PARAMETER)
+    public @interface Complete {
+        String[] value();
     }
+
 }
 

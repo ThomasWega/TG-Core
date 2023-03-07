@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
  * Handles the creation of the ItemStack,
  * their flags and ItemMeta
  */
-public class ItemManager {
+public final class ItemManager {
 
     /**
      * @param material ItemStack Material

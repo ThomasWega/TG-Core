@@ -26,7 +26,7 @@ import java.util.UUID;
  * than the player's name. It always prints just one result in the chat,
  * where player can click on each data, and it will be copied to his clipboard.
  */
-public class ActivityIdCommand extends TrustCommand {
+public final class ActivityIdCommand extends TrustCommand {
 
     private final Core core;
 
@@ -36,7 +36,7 @@ public class ActivityIdCommand extends TrustCommand {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args, String label) {
         if (core.getMariaDB().isMySQLDisabled()) {
             sender.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
             return;

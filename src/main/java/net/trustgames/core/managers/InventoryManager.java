@@ -9,7 +9,7 @@ import org.bukkit.inventory.Inventory;
 /**
  * Handles the creation of the inventory (gui)
  */
-public class InventoryManager {
+public final class InventoryManager {
 
     /**
      * @param player  Owner of the inventory

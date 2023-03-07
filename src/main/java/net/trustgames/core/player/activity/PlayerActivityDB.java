@@ -10,7 +10,7 @@ import java.util.function.Consumer;
  * This class is used to handle the database table for player activity
  * including its methods, functions etc.
  */
-public class PlayerActivityDB {
+public final class PlayerActivityDB {
 
     private static final String tableName = "player_activity";
 

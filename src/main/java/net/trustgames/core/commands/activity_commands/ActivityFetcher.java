@@ -13,7 +13,7 @@ import java.util.Base64;
  * Used to get the player's activity by uuid,
  * or get activity by id.
  */
-public class ActivityFetcher {
+public final class ActivityFetcher {
 
     private final Core core;
 

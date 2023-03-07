@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * Sets the config defaults for MariaDB (mariadb.yml)
  */
-public class MariaConfig {
+public final class MariaConfig {
 
     private final Core core;
 

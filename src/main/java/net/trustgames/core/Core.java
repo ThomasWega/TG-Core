@@ -17,8 +17,8 @@ import net.trustgames.core.managers.*;
 import net.trustgames.core.player.activity.PlayerActivityDB;
 import net.trustgames.core.player.activity.PlayerActivityHandler;
 import net.trustgames.core.player.data.PlayerDataDB;
-import net.trustgames.core.player.data.data.name.PlayerNameDBHandler;
-import net.trustgames.core.player.manager.PlayerDataCommand;
+import net.trustgames.core.player.data.commands.DataCommand;
+import net.trustgames.core.player.manager.commands.PlayerManagerCommand;
 import net.trustgames.core.protection.CoreGamerulesHandler;
 import net.trustgames.core.tablist.TablistHandler;
 import net.trustgames.core.tablist.TablistTeams;
@@ -91,7 +91,11 @@ public final class Core extends JavaPlugin {
         // TODO TrustCommand add arguments
         // TODO player activity (if player never joined the server where the command is executed, his activity can't be searched by his name but only uuid. Use a database to fix that.
         // TODO Add caching for player data database that updates every time database data changes
-        // TODO finish player data command (even with aliases like /coins, /rubies, ...)
+        // TODO add tab completion for playerdata command
+        // TODO set cache sizes
+        // TODO playerdata commands add message for the player who got set/added/removed the data
+        // TODO playerdata - when player doesn't exist in the database, throws null error
+
 
         // FIXME TEST: When restarting, the database connections don't close properly or more are created!
         // FIXME TEST: Is there correct amount of connections?
@@ -143,7 +147,6 @@ public final class Core extends JavaPlugin {
         pluginManager.registerEvents(new ChatDecoration(), this);
         pluginManager.registerEvents(new TablistHandler(this), this);
         pluginManager.registerEvents(new ActivityCommand(this), this);
-        pluginManager.registerEvents(new PlayerNameDBHandler(this), this);
     }
 
     private void registerCommands() {
@@ -152,7 +155,8 @@ public final class Core extends JavaPlugin {
         HashMap<PluginCommand, CommandExecutor> cmdList = new HashMap<>();
         cmdList.put(getCommand("activity"), new ActivityCommand(this));
         cmdList.put(getCommand("activity-id"), new ActivityIdCommand(this));
-        cmdList.put(getCommand("player-manager"), new PlayerDataCommand(this));
+        cmdList.put(getCommand("player-manager"), new PlayerManagerCommand(this));
+        cmdList.put(getCommand("kills"), new DataCommand(this));
 
         // Messages Commands
         for (MessagesCommandsConfig msgCmd : MessagesCommandsConfig.values()) {

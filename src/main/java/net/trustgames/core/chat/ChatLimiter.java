@@ -22,7 +22,7 @@ import java.util.*;
  * too many cooldown messages to not spam the player's chat.
  */
 
-public class ChatLimiter implements Listener {
+public final class ChatLimiter implements Listener {
     private final HashMap<UUID, Long> cooldownTime = new HashMap<>();
     private final Map<String, Double> ranksChatCooldown = new HashMap<>();
     private final Map<String, Double> ranksSameChatCooldown = new HashMap<>();

@@ -12,7 +12,7 @@ import java.util.UUID;
 /**
  * Handles the Skull ItemStack creation and texture
  */
-public class SkullManager {
+public final class SkullManager {
 
     /**
      * gets the player skull by his url. Use mineskin.org for url

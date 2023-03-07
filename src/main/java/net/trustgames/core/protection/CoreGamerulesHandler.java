@@ -7,7 +7,7 @@ import org.bukkit.World;
 /**
  * Handles the gamerules of world
  */
-public class CoreGamerulesHandler {
+public final class CoreGamerulesHandler {
 
     public static void setGamerules() {
 

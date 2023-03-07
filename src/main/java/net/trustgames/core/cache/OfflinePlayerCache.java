@@ -8,7 +8,7 @@ import org.bukkit.OfflinePlayer;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class OfflinePlayerCache {
+public final class OfflinePlayerCache {
 
     /**
      * Cache that holds the uuids by players objects and expires every 6 hours

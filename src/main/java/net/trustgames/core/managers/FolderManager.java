@@ -7,7 +7,7 @@ import java.io.File;
 /**
  * Handles the creation of folders
  */
-public class FolderManager {
+public final class FolderManager {
 
     /**
      * creates the specified folder

@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  * Just string or list of strings from a config
  * sent to the player on a given command
  */
-public class MessagesCommands implements CommandExecutor {
+public final class MessagesCommands implements CommandExecutor {
 
     /*
     There are multiple commands in the config file (extendable). It is possible to specify custom messages that are sent
@@ -24,7 +24,7 @@ public class MessagesCommands implements CommandExecutor {
         if (sender instanceof Player player) {
             player.sendMessage(MessagesCommandsConfig.valueOf(command.getName().toUpperCase()).getValue());
         } else
-            CoreLogger.LOGGER.warning(CommandConfig.COMMAND_ONLY_PLAYER.value.toString());
+            CoreLogger.LOGGER.warning(CommandConfig.COMMAND_PLAYER_ONLY.value.toString());
 
         return true;
     }

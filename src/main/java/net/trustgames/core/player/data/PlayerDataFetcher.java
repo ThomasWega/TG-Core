@@ -15,7 +15,7 @@ import static net.trustgames.core.player.data.PlayerDataDB.tableName;
 /**
  * This class is used to fetch and update the player data database table
  */
-public class PlayerDataFetcher {
+public final class PlayerDataFetcher {
 
     private final Core core;
     private final UUID uuid;
@@ -28,7 +28,7 @@ public class PlayerDataFetcher {
     /**
      * Get the player data Object from the column "label" that corresponds
      * to the given uuid. This whole operation is run async, and the result is saved
-     * in the callback
+     * in the callback. If no result is found, int "0" is returned
      *
      * @param playerDataType DataType which will be used to get the column name
      * @param callback       Callback where the result will be saved

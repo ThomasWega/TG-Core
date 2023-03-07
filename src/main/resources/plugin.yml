@@ -35,6 +35,22 @@ commands:
     permission: core.staff
 
   player-manager:
+    description: Manager of player
+    permission: core.staff
     aliases:
       - pm
+
+
+  kills:
+    description: Get personal or targets coins
+    aliases:
+      - deaths
+      - games
+      - playtime
+      - xp
+      - level
+      - gems
+      - rubies
+
+
 

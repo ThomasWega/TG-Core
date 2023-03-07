@@ -6,7 +6,7 @@ import net.trustgames.core.config.database.player_data.PlayerDataType;
 /**
  * This class handles the creation of the data database table
  */
-public class PlayerDataDB {
+public final class PlayerDataDB {
 
     public static final String tableName = "player_data";
     private final Core core;
@@ -26,10 +26,12 @@ public class PlayerDataDB {
                 .append("(");
 
         for (PlayerDataType dataType : PlayerDataType.values()) {
-            statement.append(dataType.getColumnName())
-                    .append(" ")
-                    .append(dataType.getColumnType())
-                    .append(",");
+            if (dataType != PlayerDataType.LEVEL) {
+                statement.append(dataType.getColumnName())
+                        .append(" ")
+                        .append(dataType.getColumnType())
+                        .append(",");
+            }
 
         }
         statement.deleteCharAt(statement.length() - 1);

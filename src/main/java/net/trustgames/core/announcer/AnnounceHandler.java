@@ -8,7 +8,7 @@ import net.trustgames.core.announcer.config.AnnouncerMessagesConfig;
  * Chat messages which are announced to all online players
  * on the server.
  */
-public class AnnounceHandler {
+public final class AnnounceHandler {
 
     private final Core core;
 

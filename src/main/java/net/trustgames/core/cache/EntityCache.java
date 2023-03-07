@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Handles the player's uuids and caching with expiration
  */
-public class EntityCache {
+public final class EntityCache {
 
     /**
      * Cache that holds the uuids by players objects and expires every 6 hours

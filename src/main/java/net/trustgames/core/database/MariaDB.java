@@ -12,7 +12,7 @@ import java.sql.*;
  * creating the database, table (if not exists) and closing the hikari connection. Note that the
  * plugin#getLogger is used instead of Bukkit#getLogger, because async methods should not access Bukkit API
  */
-public class MariaDB {
+public final class MariaDB {
 
     private final Core core;
     public HikariDataSource dataSource;

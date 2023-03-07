@@ -4,7 +4,7 @@ import com.destroystokyo.paper.utils.PaperPluginLogger;
 
 import java.util.logging.Logger;
 
-public class CoreLogger {
+public final class CoreLogger {
 
     public static final Logger LOGGER = PaperPluginLogger.getLogger("Core");
 }

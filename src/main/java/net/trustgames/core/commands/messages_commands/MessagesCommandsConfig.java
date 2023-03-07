@@ -26,7 +26,7 @@ public enum MessagesCommandsConfig {
     /**
      * @return Formatted component message
      */
-    public Component getValue() {
+    public final Component getValue() {
         return MiniMessage.miniMessage().deserialize(value);
     }
 }

@@ -41,7 +41,7 @@ import java.util.*;
  * are differentiated by different Materials. The player can click
  * the item and all the data will be printed in chat.
  */
-public class ActivityCommand extends TrustCommand implements Listener {
+public final class ActivityCommand extends TrustCommand implements Listener {
 
     /**
      * Stores all ItemStack with the data for each row
@@ -71,7 +71,7 @@ public class ActivityCommand extends TrustCommand implements Listener {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String[] args, String label) {
 
         Player player = ((Player) sender);
 
