@@ -11,8 +11,7 @@ import net.trustgames.core.commands.activity_commands.ActivityCommand;
 import net.trustgames.core.commands.activity_commands.ActivityIdCommand;
 import net.trustgames.core.commands.messages_commands.MessagesCommands;
 import net.trustgames.core.commands.messages_commands.MessagesCommandsConfig;
-import net.trustgames.core.database.MariaConfig;
-import net.trustgames.core.database.MariaDB;
+import net.trustgames.core.managers.database.DatabaseManager;
 import net.trustgames.core.managers.*;
 import net.trustgames.core.player.activity.PlayerActivityDB;
 import net.trustgames.core.player.activity.PlayerActivityHandler;
@@ -20,13 +19,15 @@ import net.trustgames.core.player.data.PlayerDataDB;
 import net.trustgames.core.player.data.commands.DataCommand;
 import net.trustgames.core.player.manager.commands.PlayerManagerCommand;
 import net.trustgames.core.protection.CoreGamerulesHandler;
-import net.trustgames.core.tablist.TablistHandler;
-import net.trustgames.core.tablist.TablistTeams;
+import net.trustgames.core.player.list.TablistHandler;
+import net.trustgames.core.player.list.TablistTeams;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 import java.io.File;
 import java.util.HashMap;
@@ -38,9 +39,9 @@ import java.util.HashMap;
  * to be able to access them from external plugins
  */
 public final class Core extends JavaPlugin {
-
+    public static JedisPool pool;
     public final PlayerDataDB playerStatsDB = new PlayerDataDB(this);
-    final MariaDB mariaDB = new MariaDB(this);
+    final DatabaseManager databaseManager = new DatabaseManager(this);
     private final AnnounceHandler announceHandler = new AnnounceHandler(this);
     private final PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
     public CooldownManager cooldownManager = new CooldownManager();
@@ -95,15 +96,36 @@ public final class Core extends JavaPlugin {
         // TODO set cache sizes
         // TODO playerdata commands add message for the player who got set/added/removed the data
         // TODO playerdata - when player doesn't exist in the database, throws null error
-
+        // TODO also cache level to prevent calculating it everytime - add timer for recalculation or update it on the database column update
+        // TODO and also have the level in the database?? NOT SURE
+        // TODO make player activity async with callbacks
+        // TODO move luckperms listeners to different class
 
         // FIXME TEST: When restarting, the database connections don't close properly or more are created!
         // FIXME TEST: Is there correct amount of connections?
 
-        // database
-        mariaDB.initializePool();
-        playerActivityDB.initializeTable();
-        playerStatsDB.initializeTable();
+
+        // create a data folder
+        if (getDataFolder().mkdirs()) {
+            getLogger().warning("Created main plugin folder");
+        }
+
+        createConfigs();
+
+        // REDIS
+        String redisPassword = "XyvMYvvj7eWLBIIHhR6cMkO4t3C3OyTvWvs5p01EhYEiG/o+TVzjKw1fI6XRhp685RIil39fuk8tJV1I";
+        pool = new JedisPool(new JedisPoolConfig(), "localhost", 6379, 2000, redisPassword);
+
+        // DATABASE
+        databaseManager.initializePool();
+        getServer().getScheduler().runTaskLaterAsynchronously(this, () -> {
+            /*
+            initialize database tables.
+            This needs to have a delay, to prevent the DataSource being null
+            */
+            playerActivityDB.initializeTable();
+            playerStatsDB.initializeTable();
+        }, 20);
 
         // luckperms
         luckPermsManager = new LuckPermsManager(this);
@@ -111,15 +133,6 @@ public final class Core extends JavaPlugin {
 
         // protocollib
         protocolManager = ProtocolLibrary.getProtocolManager();
-
-        // create a data folder
-        if (getDataFolder().mkdirs()) {
-            getLogger().warning("Created main plugin folder");
-        }
-        //  FolderManager.createFolder(new File(getDataFolder() + File.separator + "data"));
-
-        createConfigs();
-        createConfigsDefaults();
 
         registerEvents();
         registerCommands();
@@ -133,7 +146,7 @@ public final class Core extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        mariaDB.closeHikari();
+        databaseManager.closeHikari();
     }
 
     private void registerEvents() {
@@ -169,16 +182,17 @@ public final class Core extends JavaPlugin {
     }
 
     private void createConfigs() {
-        ConfigManager.createConfig(new File(getDataFolder(), "mariadb.yml"));
+        File[] configs = new File[]{
+                new File(getDataFolder(), "mariadb.yml"),
+        };
+
+        for (File file : configs){
+            FileManager.createFile(this, file);
+        }
     }
 
-    private void createConfigsDefaults() {
-        MariaConfig mariaConfig = new MariaConfig(this);
-        mariaConfig.createDefaults();
-    }
-
-    public MariaDB getMariaDB() {
-        return mariaDB;
+    public DatabaseManager getMariaDB() {
+        return databaseManager;
     }
 
     /**
@@ -186,9 +200,9 @@ public final class Core extends JavaPlugin {
      * with luckperms groups weight support
      */
     private void playerList() {
-        TablistTeams playerListTeamsManager = new TablistTeams(this);
+        TablistTeams tablistTeams = new TablistTeams(this);
         tablistScoreboard = getServer().getScoreboardManager().getNewScoreboard();
-        playerListTeamsManager.createTeams();
+        tablistTeams.createTeams();
     }
 
     /**

@@ -24,7 +24,7 @@ public final class ActivityFetcher {
     /**
      * @return ResultSet of all rows which matches
      */
-    public ResultSet getActivityByUUID(String uuid) {
+    public ResultSet getActivityByUuid(String uuid) {
         try (Connection connection = core.getMariaDB().getConnection();
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM player_activity WHERE uuid = ? ORDER BY id DESC")) {
             statement.setString(1, uuid);

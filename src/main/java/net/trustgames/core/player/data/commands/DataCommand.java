@@ -1,16 +1,14 @@
 package net.trustgames.core.player.data.commands;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.cache.EntityCache;
-import net.trustgames.core.cache.OfflinePlayerCache;
+import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.command.TrustCommand;
 import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CorePermissionsConfig;
 import net.trustgames.core.config.database.player_data.PlayerDataType;
-import net.trustgames.core.player.data.PlayerDataConfig;
 import net.trustgames.core.player.data.PlayerData;
+import net.trustgames.core.player.data.PlayerDataConfig;
 import net.trustgames.core.utils.PlayerUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
@@ -33,7 +31,7 @@ public final class DataCommand extends TrustCommand {
 
         dataType = PlayerDataType.valueOf(label.toUpperCase());
 
-        UUID uuid = EntityCache.getUUID(Bukkit.getPlayer(sender.getName()));
+        UUID uuid = UUIDCache.get(sender.getName());
         if (args.length == 0) {
             PlayerData playerData = new PlayerData(core, uuid, dataType);
             playerData.getData(data -> sender.sendMessage(PlayerDataConfig.GET_PERSONAL.formatMessage(uuid, dataType, String.valueOf(data))));
@@ -41,7 +39,7 @@ public final class DataCommand extends TrustCommand {
         }
 
         OfflinePlayer target = PlayerUtils.getOfflinePlayer(args[0]);
-        UUID targetUUID = OfflinePlayerCache.getUUID(target);
+        UUID targetUUID = UUIDCache.get(target.getName());
         if (args.length == 1) {
             PlayerData playerData = new PlayerData(core, targetUUID, dataType);
             playerData.getData(data -> {
@@ -74,7 +72,7 @@ public final class DataCommand extends TrustCommand {
     }
 
     private void handleAction(CommandSender sender, OfflinePlayer target, String actionType, int value) {
-        UUID uuid = OfflinePlayerCache.getUUID(target);
+        UUID uuid = UUIDCache.get(target.getName());
         PlayerData playerData = new PlayerData(core, uuid, dataType);
         switch (actionType) {
             case "set" -> {

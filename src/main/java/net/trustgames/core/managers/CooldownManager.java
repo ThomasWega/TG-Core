@@ -1,6 +1,6 @@
 package net.trustgames.core.managers;
 
-import net.trustgames.core.cache.EntityCache;
+import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CooldownConfig;
 import org.bukkit.Bukkit;
@@ -95,7 +95,7 @@ public final class CooldownManager implements Listener {
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        UUID uuid = EntityCache.getUUID(player);
+        UUID uuid = UUIDCache.get(player.getName());
 
         commandCooldownTime.remove(uuid);
         cooldownMessageTime.remove(uuid);

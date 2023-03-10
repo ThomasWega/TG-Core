@@ -1,7 +1,7 @@
 package net.trustgames.core.player.activity;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.cache.EntityCache;
+import net.trustgames.core.cache.UUIDCache;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,14 +28,14 @@ public final class PlayerActivityHandler implements Listener {
 
     @EventHandler
     private void onPlayerJoin(PlayerJoinEvent event) {
-        UUID uuid = EntityCache.getUUID(event.getPlayer());
+        UUID uuid = UUIDCache.get(event.getPlayer().getName());
 
         write(uuid, "JOIN SERVER " + Bukkit.getServer().getName() + " (" + Bukkit.getServer().getPort() + ")");
     }
 
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent event) {
-        UUID uuid = EntityCache.getUUID(event.getPlayer());
+        UUID uuid = UUIDCache.get(event.getPlayer().getName());
 
         write(uuid, "QUIT SERVER " + Bukkit.getServer().getName() + " (" + Bukkit.getServer().getPort() + ")");
     }
@@ -58,7 +58,7 @@ public final class PlayerActivityHandler implements Listener {
             return;
         }
 
-        playerActivityDB.fetchByUUID(uuid, playerActivity -> {
+        playerActivityDB.fetchByUuid(uuid, playerActivity -> {
             if (playerActivity == null) {
                 playerActivity = new PlayerActivity(uuid, Objects.requireNonNull(
                                 player.getAddress(), "Player " + uuid + " IP address is null!")

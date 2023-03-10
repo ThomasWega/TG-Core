@@ -1,7 +1,9 @@
 package net.trustgames.core.player.data;
 
 import net.trustgames.core.Core;
+import net.trustgames.core.cache.PlayerDataCache;
 import net.trustgames.core.config.database.player_data.PlayerDataType;
+import net.trustgames.core.player.data.additional.level.PlayerLevel;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,10 +21,12 @@ public final class PlayerDataFetcher {
 
     private final Core core;
     private final UUID uuid;
+    private final PlayerDataCache playerDataCache;
 
     public PlayerDataFetcher(Core core, UUID uuid) {
         this.core = core;
         this.uuid = uuid;
+        this.playerDataCache = new PlayerDataCache(core, uuid);
     }
 
     /**
@@ -34,34 +38,55 @@ public final class PlayerDataFetcher {
      * @param callback       Callback where the result will be saved
      */
     public void fetch(PlayerDataType playerDataType, Consumer<Object> callback) {
-        String label = playerDataType.getColumnName();
-        core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
-            try (Connection connection = core.getMariaDB().getConnection();
-                 PreparedStatement statement = connection.prepareStatement("SELECT " + label + " FROM " + tableName + " WHERE uuid = ?")) {
-                statement.setString(1, uuid.toString());
-                try (ResultSet results = statement.executeQuery()) {
-                    if (results.next()) {
-                        Object object = results.getObject(label);
-                        callback.accept(object);
-                        return;
+        core.getServer().getScheduler().runTaskAsynchronously(core, () ->
+                playerDataCache.fetch(playerDataType, data -> {
+                    if (data != null) {
+                        callback.accept(data);
+                    } else {
+                        if (playerDataType == PlayerDataType.LEVEL) {
+                            PlayerLevel playerLevel = new PlayerLevel(core, uuid);
+                            playerLevel.getLevel(callback::accept);
+                            return;
+                        }
+
+                        String label = playerDataType.getColumnName();
+                        try (Connection connection = core.getMariaDB().getConnection();
+                             PreparedStatement statement = connection.prepareStatement("SELECT " + label + " FROM " + tableName + " WHERE uuid = ?")) {
+                            statement.setString(1, uuid.toString());
+                            try (ResultSet results = statement.executeQuery()) {
+                                if (results.next()) {
+                                    Object object = results.getObject(label);
+                                    callback.accept(object);
+                                    playerDataCache.update(playerDataType, object.toString());
+                                    return;
+                                }
+                                callback.accept(null);
+                            }
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-            callback.accept(null);
-        });
+                }));
     }
 
     /**
-     * Updates the given DataType column with the given object.
+     * Updates the given DataType column with the given object
      * It uses transactions, to ensure that other updates don't interfere
      * with each other.
+     * Data is also updated in the redis cache.
      *
      * @param playerDataType DataType which will be updated with the Object
      * @param object         Object to update the DataType with
      */
     public void update(PlayerDataType playerDataType, Object object) {
+        playerDataCache.update(playerDataType, object.toString());
+
+        if (playerDataType == PlayerDataType.LEVEL) {
+            PlayerLevel playerLevel = new PlayerLevel(core, uuid);
+            playerLevel.setLevel(Integer.parseInt(object.toString()));
+            return;
+        }
+
         String label = playerDataType.getColumnName();
 
         Connection connection = core.getMariaDB().getConnection();

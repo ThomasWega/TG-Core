@@ -1,25 +1,30 @@
-package net.trustgames.core.database;
+package net.trustgames.core.managers.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import net.trustgames.core.Core;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.sql.*;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * This class handles the basic MariaDB and HikariCP methods such as getting connection,
  * creating the database, table (if not exists) and closing the hikari connection. Note that the
  * plugin#getLogger is used instead of Bukkit#getLogger, because async methods should not access Bukkit API
  */
-public final class MariaDB {
+public final class DatabaseManager {
 
     private final Core core;
     public HikariDataSource dataSource;
-    private MariaConfig mariaConfig;
+    private final YamlConfiguration config;
 
-    public MariaDB(Core core) {
+    public DatabaseManager(Core core) {
         this.core = core;
+        this.config = YamlConfiguration.loadConfiguration(new File(core.getDataFolder(), "mariadb.yml"));
     }
 
     /**
@@ -58,25 +63,34 @@ public final class MariaDB {
         }
     }
 
+    /**
+     * Gets the mariadb credentials from the config file and sets parameters for the pool.
+     * Then it creates the new pool
+     * (is run async)
+     */
     public void initializePool() {
-        mariaConfig = new MariaConfig(core);
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
-        String user = config.getString("mariadb.user");
-        String password = config.getString("mariadb.password");
-        String ip = config.getString("mariadb.ip");
-        String port = config.getString("mariadb.port");
-        String database = config.getString("mariadb.database");
-        int poolSize = config.getInt("hikaricp.pool-size");
+        core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
+            if (isMySQLDisabled()) {
+                core.getLogger().warning("MySQL is turned off. Not initializing HikariCP pool");
+                return;
+            }
+            String user = config.getString("mariadb.user");
+            String password = config.getString("mariadb.password");
+            String ip = config.getString("mariadb.ip");
+            String port = config.getString("mariadb.port");
+            String database = config.getString("mariadb.database");
+            int poolSize = config.getInt("hikaricp.pool-size");
 
-        HikariConfig hikariConfig = new HikariConfig();
-        hikariConfig.setDriverClassName("org.mariadb.jdbc.Driver");
-        hikariConfig.setJdbcUrl("jdbc:mariadb://" + ip + ":" + port + "/" + database);
-        hikariConfig.addDataSourceProperty("user", user);
-        hikariConfig.addDataSourceProperty("password", password);
-        hikariConfig.setMaximumPoolSize(poolSize);
-        hikariConfig.setPoolName("HikariCP-Core");
+            HikariConfig hikariConfig = new HikariConfig();
+            hikariConfig.setDriverClassName("org.mariadb.jdbc.Driver");
+            hikariConfig.setJdbcUrl("jdbc:mariadb://" + ip + ":" + port + "/" + database);
+            hikariConfig.addDataSourceProperty("user", user);
+            hikariConfig.addDataSourceProperty("password", password);
+            hikariConfig.setMaximumPoolSize(poolSize);
+            hikariConfig.setPoolName("HikariCP-Core");
 
-        dataSource = new HikariDataSource(hikariConfig);
+            dataSource = new HikariDataSource(hikariConfig);
+        });
     }
 
     /**
@@ -107,7 +121,7 @@ public final class MariaDB {
                     core.getLogger().severe("Unable to create " + tableName + " table in the database!");
                     throw new RuntimeException(e);
                 }
-            }, YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile()).getLong("delay.database-table-creation"));
+            }, config.getLong("delay.database-table-creation"));
         });
     }
 
@@ -115,8 +129,7 @@ public final class MariaDB {
      * @return true if mysql is disabled
      */
     public boolean isMySQLDisabled() {
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(mariaConfig.getMariaFile());
-        return !Boolean.parseBoolean(config.getString("mariadb.enable"));
+        return !config.getBoolean("mariadb.enable");
     }
 
     public void closeHikari() {

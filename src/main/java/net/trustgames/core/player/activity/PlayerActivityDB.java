@@ -30,7 +30,7 @@ public final class PlayerActivityDB {
         core.getMariaDB().initializeTable(tableName, statement);
     }
 
-    public void fetchByUUID(UUID uuid, Consumer<PlayerActivity> callback) {
+    public void fetchByUuid(UUID uuid, Consumer<PlayerActivity> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             try (Connection connection = core.getMariaDB().getConnection();
                  PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE uuid = ? ORDER BY id DESC LIMIT 1")) {

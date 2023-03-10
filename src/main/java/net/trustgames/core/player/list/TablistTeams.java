@@ -1,4 +1,4 @@
-package net.trustgames.core.tablist;
+package net.trustgames.core.player.list;
 
 import net.kyori.adventure.text.Component;
 import net.luckperms.api.model.group.Group;

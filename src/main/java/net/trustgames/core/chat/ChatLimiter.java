@@ -1,7 +1,7 @@
 package net.trustgames.core.chat;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
-import net.trustgames.core.cache.EntityCache;
+import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.chat.config.ChatConfig;
 import net.trustgames.core.chat.config.ChatLimitConfig;
 import net.trustgames.core.config.CooldownConfig;
@@ -66,7 +66,7 @@ public final class ChatLimiter implements Listener {
      * @param playerMessage Player's chat message
      */
     private void doChecks(Player player, AsyncChatEvent event, String playerMessage) {
-        UUID uuid = EntityCache.getUUID(player);
+        UUID uuid = UUIDCache.get(player.getName());
 
         // gets the highest rank player has permission to
         String rank = getPermission(player);
@@ -135,7 +135,7 @@ public final class ChatLimiter implements Listener {
      * @return is Player on Cooldown
      */
     private boolean isOnCooldown(Player player, String rank, boolean sameMessage) {
-        UUID uuid = EntityCache.getUUID(player);
+        UUID uuid = UUIDCache.get(player.getName());
 
         /*
         Check if the message is same as the last time. In case it is, it will use a completely different
@@ -167,7 +167,7 @@ public final class ChatLimiter implements Listener {
      * @return is the same message as the last time
      */
     private boolean isSameMessage(Player player, String playerMessage) {
-        UUID uuid = EntityCache.getUUID(player);
+        UUID uuid = UUIDCache.get(player.getName());
         if (playerMessage.replaceAll("[^\\p{Alnum}]", "").equalsIgnoreCase(lastPlayerMessage.get(uuid).replaceAll("[^\\p{Alnum}]", ""))) {
             return true;
         } else {
@@ -184,7 +184,7 @@ public final class ChatLimiter implements Listener {
      * @param sameMessage is it the same message as the last time
      */
     private void sendMessage(Player player, String rank, boolean sameMessage) {
-        UUID uuid = EntityCache.getUUID(player);
+        UUID uuid = UUIDCache.get(player.getName());
         /*
          checks if the message print wouldn't be too spammy. Meaning, if the player used
          the chat 10 times a second, he would get the wait message only sometimes. The message
@@ -210,7 +210,7 @@ public final class ChatLimiter implements Listener {
      * @return The time remaining until the player can write again
      */
     private double getWaitTime(Player player, double time) {
-        UUID uuid = EntityCache.getUUID(player);
+        UUID uuid = UUIDCache.get(player.getName());
         return (time - ((System.currentTimeMillis() - cooldownTime.get(uuid)) / 1000d));
     }
 
@@ -221,7 +221,7 @@ public final class ChatLimiter implements Listener {
      * @return is the cooldown message being sent too often
      */
     private boolean isSpam(Player player) {
-        UUID uuid = EntityCache.getUUID(player);
+        UUID uuid = UUIDCache.get(player.getName());
         /*
          if he has any last wait message, get the time and make sure the
          current time - the last time of wait message is larger than the min value configured
@@ -238,7 +238,7 @@ public final class ChatLimiter implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        UUID uuid = EntityCache.getUUID(player);
+        UUID uuid = UUIDCache.get(player.getName());
 
         lastWaitMessage.remove(uuid);
         cooldownTime.remove(uuid);

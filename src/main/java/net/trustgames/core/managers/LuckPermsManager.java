@@ -8,7 +8,7 @@ import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.group.GroupManager;
 import net.luckperms.api.model.user.User;
 import net.trustgames.core.Core;
-import net.trustgames.core.tablist.TablistTeams;
+import net.trustgames.core.player.list.TablistTeams;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;

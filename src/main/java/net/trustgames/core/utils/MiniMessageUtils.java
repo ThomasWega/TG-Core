@@ -5,7 +5,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
-import net.trustgames.core.cache.OfflinePlayerCache;
 import net.trustgames.core.config.database.player_data.PlayerDataType;
 import net.trustgames.core.managers.LuckPermsManager;
 import org.bukkit.Bukkit;
@@ -34,7 +33,7 @@ public final class MiniMessageUtils {
                         .resolver(StandardTags.defaults())
                         .resolver(TagResolver.resolver("prefix", Tag.selfClosingInserting(prefix)))
                         .resolver(TagResolver.resolver("player_name", Tag.selfClosingInserting(Component.text(Objects.requireNonNull(
-                                OfflinePlayerCache.getPlayer(uuid).getName())))))
+                                Bukkit.getOfflinePlayer(uuid).getName())))))
                         .resolver(TagResolver.resolver("player_display_name", Tag.selfClosingInserting(Objects.requireNonNull(
                                 Bukkit.getPlayer(uuid)).displayName())))
                         .build()
@@ -112,7 +111,7 @@ public final class MiniMessageUtils {
                 .tags(TagResolver.builder()
                         .resolver(StandardTags.defaults())
                         .resolver(TagResolver.resolver("player_name", Tag.selfClosingInserting(Component.text(Objects.requireNonNull(
-                                OfflinePlayerCache.getPlayer(uuid).getName())))))
+                                Bukkit.getOfflinePlayer(uuid).getName())))))
                         .resolver(TagResolver.resolver("player_data", Tag.selfClosingInserting(
                                 Component.text(dataType.name().toLowerCase()))))
                         .resolver(TagResolver.resolver("value", Tag.selfClosingInserting(Component.text(value))))

@@ -1,4 +1,4 @@
-package net.trustgames.core.managers;
+package net.trustgames.core.managers.packets;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
@@ -22,7 +22,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.Entity;
 import net.trustgames.core.Core;
-import net.trustgames.core.cache.EntityCache;
+import net.trustgames.core.cache.UUIDCache;
+import net.trustgames.core.managers.CooldownManager;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -270,7 +271,7 @@ public final class NPCManager {
             public void onPacketReceiving(PacketEvent event) {
                 PacketContainer packet = event.getPacket();
                 Player player = event.getPlayer();
-                UUID uuid = EntityCache.getUUID(player);
+                UUID uuid = UUIDCache.get(player.getName());
                 int entityId = packet.getIntegers().read(0);
 
                 for (ServerPlayer npc : npcs) {

@@ -3,7 +3,7 @@ package net.trustgames.core.utils;
 import com.google.gson.JsonElement;
 import net.minecraft.network.chat.Component;
 
-public final class NMSUtils {
+public final class JsonUtils {
 
     /**
      * Convert JSON to IChatBaseComponent

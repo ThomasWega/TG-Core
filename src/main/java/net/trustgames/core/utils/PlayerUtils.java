@@ -1,6 +1,6 @@
 package net.trustgames.core.utils;
 
-import net.trustgames.core.cache.OfflinePlayerCache;
+import net.trustgames.core.cache.UUIDCache;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -46,9 +46,9 @@ public final class PlayerUtils {
         OfflinePlayer offlinePlayer;
         try {
             UUID uuid = UUID.fromString(uuidOrName);
-            offlinePlayer = OfflinePlayerCache.getPlayer(uuid);
+            offlinePlayer = Bukkit.getOfflinePlayer(uuid);
         } catch (IllegalArgumentException e) {
-            offlinePlayer = OfflinePlayerCache.getPlayer(uuidOrName);
+            offlinePlayer = Bukkit.getOfflinePlayer(UUIDCache.get(uuidOrName));
         }
         return offlinePlayer;
     }

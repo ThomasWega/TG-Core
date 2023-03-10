@@ -4,10 +4,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.trustgames.core.Core;
-import net.trustgames.core.cache.OfflinePlayerCache;
 import net.trustgames.core.command.TrustCommand;
 import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CorePermissionsConfig;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -19,7 +19,6 @@ import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 
 /**
  * Is used to get the logged player's activity by the activity id, rather
@@ -73,7 +72,7 @@ public final class ActivityIdCommand extends TrustCommand {
                 // get all the data from the resultSet
                 String resultId = activityQuery.encodeId(resultSet.getString("id"));
                 String uuid = resultSet.getString("uuid");
-                String name = OfflinePlayerCache.getPlayer(UUID.fromString(uuid)).getName();
+                String name = Bukkit.getOfflinePlayer(uuid).getName();
                 String ip = resultSet.getString("ip");
                 String action = resultSet.getString("action");
                 Timestamp time = resultSet.getTimestamp("time");

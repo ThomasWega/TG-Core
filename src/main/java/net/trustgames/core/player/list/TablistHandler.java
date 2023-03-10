@@ -1,8 +1,8 @@
-package net.trustgames.core.tablist;
+package net.trustgames.core.player.list;
 
 import net.kyori.adventure.text.Component;
 import net.trustgames.core.Core;
-import net.trustgames.core.cache.EntityCache;
+import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.config.ServerConfig;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,7 +28,7 @@ public final class TablistHandler implements Listener {
     @EventHandler
     private void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        UUID uuid = EntityCache.getUUID(player);
+        UUID uuid = UUIDCache.get(player.getName());
 
         Component header = ServerConfig.TABLIST_HEADER.getText();
         Component footer = ServerConfig.TABLIST_FOOTER.getText();
@@ -43,7 +43,7 @@ public final class TablistHandler implements Listener {
 
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent event) {
-        UUID uuid = EntityCache.getUUID(event.getPlayer());
+        UUID uuid = UUIDCache.get(event.getPlayer().getName());
 
         tablistTeams = new TablistTeams(core);
         tablistTeams.removeFromTeam(uuid);

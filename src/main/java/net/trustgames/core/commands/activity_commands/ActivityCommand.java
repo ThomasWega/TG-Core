@@ -4,7 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.trustgames.core.Core;
-import net.trustgames.core.cache.OfflinePlayerCache;
+import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.command.TrustCommand;
 import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CorePermissionsConfig;
@@ -123,9 +123,9 @@ public final class ActivityCommand extends TrustCommand implements Listener {
      */
     private void createRecords(OfflinePlayer offlinePlayer) {
         ActivityFetcher activityQuery = new ActivityFetcher(core);
-        UUID offlineUuid = OfflinePlayerCache.getUUID(offlinePlayer);
+        UUID offlineUuid = UUIDCache.get(offlinePlayer.getName());
 
-        ResultSet resultSet = activityQuery.getActivityByUUID(offlineUuid.toString());
+        ResultSet resultSet = activityQuery.getActivityByUuid(offlineUuid.toString());
         ItemStack targetHead = ItemManager.createItemStack(Material.PAINTING, 1);
 
         /*

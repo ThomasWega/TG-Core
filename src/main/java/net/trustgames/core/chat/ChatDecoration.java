@@ -9,7 +9,7 @@ import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
-import net.trustgames.core.cache.EntityCache;
+import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.chat.config.ChatConfig;
 import net.trustgames.core.managers.LuckPermsManager;
 import net.trustgames.core.utils.ColorUtils;
@@ -42,7 +42,7 @@ public final class ChatDecoration implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void decorate(AsyncChatEvent event) {
         Player sender = event.getPlayer();
-        UUID uuid = EntityCache.getUUID(sender);
+        UUID uuid = UUIDCache.get(sender.getName());
         Component message = setColor(sender, event.originalMessage());
 
         Component prefix = setPrefix(uuid);
@@ -87,6 +87,7 @@ public final class ChatDecoration implements Listener {
      */
     private boolean setMention(Player sender, Player p, Component message, Component prefix) {
         Set<Player> mentionedPlayers = new HashSet<>();
+        UUID senderUuid = UUIDCache.get(sender.getName());
 
         message = setColor(sender, message);
 
@@ -124,7 +125,7 @@ public final class ChatDecoration implements Listener {
 
             logMessage(prefix, sender.getName(), msg);
 
-            p.sendActionBar(ChatConfig.MENTION_ACTIONBAR.formatMessage(EntityCache.getUUID(sender)));
+            p.sendActionBar(ChatConfig.MENTION_ACTIONBAR.formatMessage(senderUuid));
             Audience.audience(p).playSound(sound, Sound.Emitter.self());
 
             return true;

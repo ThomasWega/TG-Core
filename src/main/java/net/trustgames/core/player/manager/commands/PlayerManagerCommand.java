@@ -1,13 +1,13 @@
 package net.trustgames.core.player.manager.commands;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.cache.OfflinePlayerCache;
+import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.command.TrustCommand;
 import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CorePermissionsConfig;
 import net.trustgames.core.config.database.player_data.PlayerDataType;
-import net.trustgames.core.player.data.PlayerDataConfig;
 import net.trustgames.core.player.data.PlayerData;
+import net.trustgames.core.player.data.PlayerDataConfig;
 import net.trustgames.core.player.data.additional.level.PlayerLevel;
 import net.trustgames.core.utils.PlayerUtils;
 import org.bukkit.OfflinePlayer;
@@ -50,7 +50,7 @@ public final class PlayerManagerCommand extends TrustCommand {
         }
 
         OfflinePlayer target = PlayerUtils.getOfflinePlayer(args[0]);
-        UUID uuid = OfflinePlayerCache.getUUID(target);
+        UUID uuid = UUIDCache.get(target.getName());
 
         int value = 0;
         if (!actionType.equals("get")) {
@@ -71,7 +71,7 @@ public final class PlayerManagerCommand extends TrustCommand {
     }
 
     private void handlePlayerData(CommandSender sender, OfflinePlayer target, PlayerDataType dataType, String actionType, int value) {
-        UUID uuid = OfflinePlayerCache.getUUID(target);
+        UUID uuid = UUIDCache.get(target.getName());
         PlayerData playerData = new PlayerData(core, uuid, dataType);
         switch (actionType) {
             case "set" -> {
@@ -100,7 +100,7 @@ public final class PlayerManagerCommand extends TrustCommand {
     }
 
     private void handlePlayerLevel(CommandSender sender, OfflinePlayer target, String actionType, int value) {
-        UUID uuid = OfflinePlayerCache.getUUID(target);
+        UUID uuid = UUIDCache.get(target.getName());
         PlayerDataType dataType = PlayerDataType.LEVEL;
         PlayerLevel playerLevel = new PlayerLevel(core, uuid);
         switch (actionType) {
