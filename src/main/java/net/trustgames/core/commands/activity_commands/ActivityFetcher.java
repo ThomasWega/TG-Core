@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Base64;
+import java.util.function.Consumer;
 
 /**
  * Query methods for activity commands.
@@ -22,44 +23,50 @@ public final class ActivityFetcher {
     }
 
     /**
-     * @return ResultSet of all rows which matches
+     * Returns the ResultSet of all rows which matches in an async callback
+     * @param uuid UUID of the player to get the Activity for
+     * @param callback Callback where the result will be saved
      */
-    public ResultSet getActivityByUuid(String uuid) {
-        try (Connection connection = core.getMariaDB().getConnection();
-             PreparedStatement statement = connection.prepareStatement("SELECT * FROM player_activity WHERE uuid = ? ORDER BY id DESC")) {
-            statement.setString(1, uuid);
-            return statement.executeQuery();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
+    public void getActivityByUUID(String uuid, Consumer<ResultSet> callback) {
+        core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
+            try (Connection connection = core.getMariaDB().getConnection();
+                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM player_activity WHERE uuid = ? ORDER BY id DESC")) {
+                statement.setString(1, uuid);
+                ResultSet result = statement.executeQuery();
+                callback.accept(result);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     /**
+     * Returns the ResultSet of the row with the matching id in async callback
+     *
      * @param id Given ID in Base64 encoded or plain (decoded)
-     * @return ResultSet of the row with the matching id
+     * @param callback Callback where the result will be saved
      */
-    public ResultSet getActivityByID(String id) {
+    public void getActivityByID(String id, Consumer<ResultSet> callback) {
+        core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
+            // try to decode the id
+            String decodedID = decodeID(id);
+            /*
+            if decode fails, it returns null.
+            if it's null it's already in decoded format
+            */
+            if (decodedID == null)
+                decodedID = id;
 
-        // try to decode the id
-        String decodedID = decodeID(id);
-
-    /*
-     if decode fails, it returns null.
-     if it's null it's already in decoded format
-    */
-        if (decodedID == null)
-            decodedID = id;
-
-        try (Connection conn = core.getMariaDB().getConnection();
-             PreparedStatement statement = conn.prepareStatement("SELECT * FROM player_activity WHERE id = ?")) {
-            statement.setString(1, decodedID);
-            try (ResultSet results = statement.executeQuery()) {
-                return results;
+            try (Connection conn = core.getMariaDB().getConnection();
+                 PreparedStatement statement = conn.prepareStatement("SELECT * FROM player_activity WHERE id = ?")) {
+                statement.setString(1, decodedID);
+                try (ResultSet result = statement.executeQuery()) {
+                    callback.accept(result);
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
 
     /**

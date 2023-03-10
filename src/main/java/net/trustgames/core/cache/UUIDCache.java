@@ -1,6 +1,7 @@
 package net.trustgames.core.cache;
 
 import net.trustgames.core.Core;
+import net.trustgames.core.config.database.player_data.PlayerDataType;
 import org.bukkit.Bukkit;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -8,6 +9,8 @@ import redis.clients.jedis.JedisPool;
 import java.util.UUID;
 
 public final class UUIDCache {
+
+    private static final String field = PlayerDataType.UUID.getColumnName();
 
     private static final JedisPool pool = Core.pool;
 
@@ -19,7 +22,7 @@ public final class UUIDCache {
      */
     public static UUID get(String playerName){
         try (Jedis jedis = pool.getResource()) {
-            String uuidString = jedis.hget(playerName, "uuid");
+            String uuidString = jedis.hget(playerName, field);
             if (uuidString == null) {
                 UUID uuid = Bukkit.getOfflinePlayer(playerName).getUniqueId();
                 UUIDCache.put(playerName, uuid);
@@ -37,8 +40,7 @@ public final class UUIDCache {
      */
     public static void put(String playerName, UUID uuid) {
         try (Jedis jedis = pool.getResource()) {
-            jedis.hset(playerName,"uuid", uuid.toString());
-            jedis.expire(playerName, 1800); // expire after 30 minutes (in seconds)
+            jedis.hset(playerName, field, uuid.toString());
         }
     }
 }

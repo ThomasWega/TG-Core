@@ -38,7 +38,7 @@ public final class PlayerData {
                 callback.accept(-1);
                 return;
             }
-            int dataInt = ((int) data);
+            int dataInt = (Integer.parseInt(data));
             callback.accept(dataInt);
         });
     }

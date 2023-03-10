@@ -10,6 +10,10 @@ import java.util.function.IntConsumer;
 
 import static net.trustgames.core.utils.LevelUtils.*;
 
+/**
+ * Additional class to PlayerData, which is used to get, calculate or modify
+ * player's level by amount of xp he holds
+ */
 public final class PlayerLevel {
     private final PlayerDataFetcher playerDataFetcher;
     private final PlayerData playerData;

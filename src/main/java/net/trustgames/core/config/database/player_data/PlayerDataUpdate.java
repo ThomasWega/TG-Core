@@ -15,4 +15,8 @@ public enum PlayerDataUpdate {
     public final long getTicks() {
         return value / 50;
     }
+
+    public final long getSeconds(){
+        return value / 1000;
+    }
 }

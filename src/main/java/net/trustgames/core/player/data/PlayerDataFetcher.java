@@ -37,7 +37,7 @@ public final class PlayerDataFetcher {
      * @param playerDataType DataType which will be used to get the column name
      * @param callback       Callback where the result will be saved
      */
-    public void fetch(PlayerDataType playerDataType, Consumer<Object> callback) {
+    public void fetch(PlayerDataType playerDataType, Consumer<String> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () ->
                 playerDataCache.fetch(playerDataType, data -> {
                     if (data != null) {
@@ -45,7 +45,7 @@ public final class PlayerDataFetcher {
                     } else {
                         if (playerDataType == PlayerDataType.LEVEL) {
                             PlayerLevel playerLevel = new PlayerLevel(core, uuid);
-                            playerLevel.getLevel(callback::accept);
+                            playerLevel.getLevel(level -> callback.accept(String.valueOf(level)));
                             return;
                         }
 
@@ -56,8 +56,9 @@ public final class PlayerDataFetcher {
                             try (ResultSet results = statement.executeQuery()) {
                                 if (results.next()) {
                                     Object object = results.getObject(label);
-                                    callback.accept(object);
-                                    playerDataCache.update(playerDataType, object.toString());
+                                    callback.accept(object.toString());
+                                    if (!(playerDataType == PlayerDataType.UUID)) // don't update the uuid
+                                       playerDataCache.update(playerDataType, object.toString());
                                     return;
                                 }
                                 callback.accept(null);

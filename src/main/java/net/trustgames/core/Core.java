@@ -91,15 +91,16 @@ public final class Core extends JavaPlugin {
         // TODO NPC protocollib
         // TODO TrustCommand add arguments
         // TODO player activity (if player never joined the server where the command is executed, his activity can't be searched by his name but only uuid. Use a database to fix that.
-        // TODO Add caching for player data database that updates every time database data changes
         // TODO add tab completion for playerdata command
-        // TODO set cache sizes
         // TODO playerdata commands add message for the player who got set/added/removed the data
         // TODO playerdata - when player doesn't exist in the database, throws null error
         // TODO also cache level to prevent calculating it everytime - add timer for recalculation or update it on the database column update
         // TODO and also have the level in the database?? NOT SURE
-        // TODO make player activity async with callbacks
+        // TODO try to make a better reformat for player and commands package
+        // TODO add config time for uuid cache expiry - will expire on player leave of proxy
+        // TODO try to limit the use of uuid cache - same for lobby and proxy plugin
         // TODO move luckperms listeners to different class
+        // TODO add comments where missing
 
         // FIXME TEST: When restarting, the database connections don't close properly or more are created!
         // FIXME TEST: Is there correct amount of connections?
@@ -113,8 +114,7 @@ public final class Core extends JavaPlugin {
         createConfigs();
 
         // REDIS
-        String redisPassword = "XyvMYvvj7eWLBIIHhR6cMkO4t3C3OyTvWvs5p01EhYEiG/o+TVzjKw1fI6XRhp685RIil39fuk8tJV1I";
-        pool = new JedisPool(new JedisPoolConfig(), "localhost", 6379, 2000, redisPassword);
+        pool = new JedisPool(new JedisPoolConfig(), "localhost", 6379);
 
         // DATABASE
         databaseManager.initializePool();

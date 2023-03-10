@@ -28,7 +28,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.ZoneId;
@@ -124,9 +123,9 @@ public final class ActivityCommand extends TrustCommand implements Listener {
     private void createRecords(OfflinePlayer offlinePlayer) {
         ActivityFetcher activityQuery = new ActivityFetcher(core);
         UUID offlineUuid = UUIDCache.get(offlinePlayer.getName());
-
-        ResultSet resultSet = activityQuery.getActivityByUuid(offlineUuid.toString());
-        ItemStack targetHead = ItemManager.createItemStack(Material.PAINTING, 1);
+        
+        activityQuery.getActivityByUUID(offlineUuid.toString(), activity -> {
+            ItemStack targetHead = ItemManager.createItemStack(Material.PAINTING, 1);
 
         /*
         loop through all the results and for each one, set the corresponding
@@ -134,16 +133,16 @@ public final class ActivityCommand extends TrustCommand implements Listener {
         Also set the correct Material by using setMaterial method.
         Then add a clone of the ItemStack to the records list
          */
-        try {
-            while (resultSet.next()) {
+            try {
+                while (activity.next()) {
 
-                // results
-                String id = resultSet.getString("id");
-                String uuid = resultSet.getString("uuid");
-                String ip = resultSet.getString("ip");
-                String action = resultSet.getString("action");
-                Timestamp time = resultSet.getTimestamp("time");
-                String encodedId = activityQuery.encodeId(id);
+                    // results
+                    String id = activity.getString("id");
+                    String uuid = activity.getString("uuid");
+                    String ip = activity.getString("ip");
+                    String action = activity.getString("action");
+                    Timestamp time = activity.getTimestamp("time");
+                    String encodedId = activityQuery.encodeId(id);
 
                 /*
                 One of the lore lines needs to have a click event with the value of the encodedID. This is
@@ -152,28 +151,29 @@ public final class ActivityCommand extends TrustCommand implements Listener {
                 on the ItemStack, but the click event value is still present in the ItemStack's lore and can be retrieved.
                 That's how I get the encodedId from the ItemStack later on.
                  */
-                List<Component> loreList = new ArrayList<>();
-                loreList.add(Component.text(ChatColor.WHITE + "Date: " + ChatColor.YELLOW + time.toLocalDateTime().toLocalDate()));
-                loreList.add(Component.text(ChatColor.WHITE + "Time: " + ChatColor.GOLD + time.toLocalDateTime().toLocalTime() + " " + ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT)));
-                loreList.add(Component.text(""));
-                loreList.add(Component.text(ChatColor.WHITE + "UUID: " + ChatColor.GRAY + uuid));
-                loreList.add(Component.text(ChatColor.WHITE + "IP: " + ChatColor.GREEN + ip));
-                loreList.add(Component.text(""));
-                loreList.add(Component.text(ChatColor.LIGHT_PURPLE + "Click to print").clickEvent(ClickEvent.suggestCommand(encodedId)));
+                    List<Component> loreList = new ArrayList<>();
+                    loreList.add(Component.text(ChatColor.WHITE + "Date: " + ChatColor.YELLOW + time.toLocalDateTime().toLocalDate()));
+                    loreList.add(Component.text(ChatColor.WHITE + "Time: " + ChatColor.GOLD + time.toLocalDateTime().toLocalTime() + " " + ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT)));
+                    loreList.add(Component.text(""));
+                    loreList.add(Component.text(ChatColor.WHITE + "UUID: " + ChatColor.GRAY + uuid));
+                    loreList.add(Component.text(ChatColor.WHITE + "IP: " + ChatColor.GREEN + ip));
+                    loreList.add(Component.text(""));
+                    loreList.add(Component.text(ChatColor.LIGHT_PURPLE + "Click to print").clickEvent(ClickEvent.suggestCommand(encodedId)));
 
-                ItemMeta targetHeadMeta = targetHead.getItemMeta();
-                targetHeadMeta.displayName(Component.text(ChatColor.BOLD + "" + ChatColor.DARK_PURPLE + action));
-                targetHeadMeta.lore(loreList);
-                targetHead.setItemMeta(targetHeadMeta);
+                    ItemMeta targetHeadMeta = targetHead.getItemMeta();
+                    targetHeadMeta.displayName(Component.text(ChatColor.BOLD + "" + ChatColor.DARK_PURPLE + action));
+                    targetHeadMeta.lore(loreList);
+                    targetHead.setItemMeta(targetHeadMeta);
 
-                setMaterial(targetHead);
+                    setMaterial(targetHead);
 
-                records.add(targetHead.clone());
+                    records.add(targetHead.clone());
+                }
+            } catch (SQLException e) {
+                CoreLogger.LOGGER.severe("Trying loop through ResultSet in ActivityCommand class");
+                throw new RuntimeException(e);
             }
-        } catch (SQLException e) {
-            CoreLogger.LOGGER.severe("Trying loop through ResultSet in ActivityCommand class");
-            throw new RuntimeException(e);
-        }
+        });
     }
 
     /**

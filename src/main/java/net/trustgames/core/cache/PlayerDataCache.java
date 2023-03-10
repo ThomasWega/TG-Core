@@ -2,6 +2,7 @@ package net.trustgames.core.cache;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.config.database.player_data.PlayerDataType;
+import net.trustgames.core.player.data.PlayerDataFetcher;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import redis.clients.jedis.Jedis;
@@ -13,20 +14,22 @@ import java.util.function.Consumer;
 public class PlayerDataCache {
 
     private final Core core;
+    private final UUID uuid;
     private final OfflinePlayer player;
 
     private static final JedisPool pool = Core.pool;
 
     public PlayerDataCache(Core core, UUID uuid) {
         this.core = core;
+        this.uuid = uuid;
         this.player = Bukkit.getOfflinePlayer(uuid);
     }
 
     public void update(PlayerDataType dataType, String value) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             try (Jedis jedis = pool.getResource()) {
-                jedis.hset(player.getName(), dataType.getColumnName(), value);
-                jedis.expire(player.getName(), 60); // expire every 60 seconds
+                String column = dataType.getColumnName();
+                jedis.hset(player.getName(), column, value);
             }
         });
     }
@@ -36,6 +39,10 @@ public class PlayerDataCache {
             String playerName = player.getName();
             try (Jedis jedis = pool.getResource()) {
                 String result = jedis.hget(playerName, dataType.getColumnName());
+                if (result == null){
+                    PlayerDataFetcher dataFetcher = new PlayerDataFetcher(core, uuid);
+                    dataFetcher.fetch(dataType, data -> update(dataType, data));
+                }
                 callback.accept(result);
             }
         });

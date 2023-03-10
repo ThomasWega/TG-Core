@@ -58,7 +58,7 @@ public final class PlayerActivityHandler implements Listener {
             return;
         }
 
-        playerActivityDB.fetchByUuid(uuid, playerActivity -> {
+        playerActivityDB.fetchByUUID(uuid, playerActivity -> {
             if (playerActivity == null) {
                 playerActivity = new PlayerActivity(uuid, Objects.requireNonNull(
                                 player.getAddress(), "Player " + uuid + " IP address is null!")
