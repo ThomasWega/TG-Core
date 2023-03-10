@@ -22,7 +22,7 @@ public class PlayerDataCache {
     public PlayerDataCache(Core core, UUID uuid) {
         this.core = core;
         this.uuid = uuid;
-        this.player = Bukkit.getOfflinePlayer(uuid);
+        this.player = Bukkit.getServer().getOfflinePlayer(uuid);
     }
 
     public void update(PlayerDataType dataType, String value) {

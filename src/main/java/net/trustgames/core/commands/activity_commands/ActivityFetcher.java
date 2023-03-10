@@ -2,11 +2,9 @@ package net.trustgames.core.commands.activity_commands;
 
 import net.trustgames.core.Core;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Base64;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
@@ -26,14 +24,15 @@ public final class ActivityFetcher {
      * Returns the ResultSet of all rows which matches in an async callback
      * @param uuid UUID of the player to get the Activity for
      * @param callback Callback where the result will be saved
+     * @see ActivityFetcher#fetchActivityByID(String, Consumer)
      */
-    public void getActivityByUUID(String uuid, Consumer<ResultSet> callback) {
+    public void fetchActivityByUUID(UUID uuid, Consumer<ResultSet> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             try (Connection connection = core.getMariaDB().getConnection();
                  PreparedStatement statement = connection.prepareStatement("SELECT * FROM player_activity WHERE uuid = ? ORDER BY id DESC")) {
-                statement.setString(1, uuid);
-                ResultSet result = statement.executeQuery();
-                callback.accept(result);
+                statement.setString(1, uuid.toString());
+                ResultSet results = statement.executeQuery();
+                callback.accept(results);
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -45,8 +44,9 @@ public final class ActivityFetcher {
      *
      * @param id Given ID in Base64 encoded or plain (decoded)
      * @param callback Callback where the result will be saved
+     * @see ActivityFetcher#fetchActivityByUUID(UUID, Consumer)
      */
-    public void getActivityByID(String id, Consumer<ResultSet> callback) {
+    public void fetchActivityByID(String id, Consumer<ResultSet> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             // try to decode the id
             String decodedID = decodeID(id);
@@ -60,8 +60,8 @@ public final class ActivityFetcher {
             try (Connection conn = core.getMariaDB().getConnection();
                  PreparedStatement statement = conn.prepareStatement("SELECT * FROM player_activity WHERE id = ?")) {
                 statement.setString(1, decodedID);
-                try (ResultSet result = statement.executeQuery()) {
-                    callback.accept(result);
+                try (ResultSet results = statement.executeQuery()) {
+                    callback.accept(results);
                 }
             } catch (SQLException e) {
                 throw new RuntimeException(e);

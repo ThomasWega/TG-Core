@@ -18,6 +18,8 @@ import net.trustgames.core.player.activity.PlayerActivityHandler;
 import net.trustgames.core.player.data.PlayerDataDB;
 import net.trustgames.core.player.data.commands.DataCommand;
 import net.trustgames.core.player.manager.commands.PlayerManagerCommand;
+import net.trustgames.core.player.uuid.PlayerUUIDDB;
+import net.trustgames.core.player.uuid.PlayerUUIDHandler;
 import net.trustgames.core.protection.CoreGamerulesHandler;
 import net.trustgames.core.player.list.TablistHandler;
 import net.trustgames.core.player.list.TablistTeams;
@@ -40,10 +42,12 @@ import java.util.HashMap;
  */
 public final class Core extends JavaPlugin {
     public static JedisPool pool;
-    public final PlayerDataDB playerStatsDB = new PlayerDataDB(this);
     final DatabaseManager databaseManager = new DatabaseManager(this);
-    private final AnnounceHandler announceHandler = new AnnounceHandler(this);
+    public final PlayerDataDB playerDataDB = new PlayerDataDB(this);
+    public final PlayerUUIDDB playerUUIDDB = new PlayerUUIDDB(this);
     private final PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
+    private final AnnounceHandler announceHandler = new AnnounceHandler(this);
+
     public CooldownManager cooldownManager = new CooldownManager();
     public LuckPermsManager luckPermsManager;
     private Scoreboard tablistScoreboard;
@@ -91,6 +95,9 @@ public final class Core extends JavaPlugin {
         // TODO NPC protocollib
         // TODO TrustCommand add arguments
         // TODO player activity (if player never joined the server where the command is executed, his activity can't be searched by his name but only uuid. Use a database to fix that.
+        // TODO improve player activity (add filters and /activity-ip command)
+        // TODO PlayerActivity handler and command have pretty much the same method to fetch by uuid
+        // TODO set expiry for the whole hashset of player in redis and add it as configurable value
         // TODO add tab completion for playerdata command
         // TODO playerdata commands add message for the player who got set/added/removed the data
         // TODO playerdata - when player doesn't exist in the database, throws null error
@@ -101,6 +108,9 @@ public final class Core extends JavaPlugin {
         // TODO try to limit the use of uuid cache - same for lobby and proxy plugin
         // TODO move luckperms listeners to different class
         // TODO add comments where missing
+        // TODO maybe use JavaPlugin.getPlugin somewhere?
+        // TODO fix shading
+        // TODO activity fetcher add string to specify table name for all
 
         // FIXME TEST: When restarting, the database connections don't close properly or more are created!
         // FIXME TEST: Is there correct amount of connections?
@@ -124,7 +134,8 @@ public final class Core extends JavaPlugin {
             This needs to have a delay, to prevent the DataSource being null
             */
             playerActivityDB.initializeTable();
-            playerStatsDB.initializeTable();
+            playerDataDB.initializeTable();
+            playerUUIDDB.initializeTable();
         }, 20);
 
         // luckperms
@@ -160,6 +171,7 @@ public final class Core extends JavaPlugin {
         pluginManager.registerEvents(new ChatDecoration(), this);
         pluginManager.registerEvents(new TablistHandler(this), this);
         pluginManager.registerEvents(new ActivityCommand(this), this);
+        pluginManager.registerEvents(new PlayerUUIDHandler(this), this);
     }
 
     private void registerCommands() {

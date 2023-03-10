@@ -49,7 +49,7 @@ public final class PlayerActivityHandler implements Listener {
      * @param uuid     UUID of Player to write activity to
      * @param callback Callback function to be called with the resulting PlayerActivity object
      */
-    private void get(UUID uuid, Consumer<PlayerActivity> callback) {
+    private void fetch(UUID uuid, Consumer<PlayerActivity> callback) {
         PlayerActivityDB playerActivityDB = new PlayerActivityDB(core);
         Player player = Bukkit.getPlayer(uuid);
 
@@ -86,7 +86,7 @@ public final class PlayerActivityHandler implements Listener {
         if (player == null) return;
         if (core.getMariaDB().isMySQLDisabled()) return;
 
-        get(uuid, playerActivity -> {
+        fetch(uuid, playerActivity -> {
             if (playerActivity != null) {
                 PlayerActivityDB playerActivityDB = new PlayerActivityDB(core);
 

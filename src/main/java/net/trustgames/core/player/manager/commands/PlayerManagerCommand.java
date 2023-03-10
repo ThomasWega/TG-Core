@@ -9,7 +9,7 @@ import net.trustgames.core.config.database.player_data.PlayerDataType;
 import net.trustgames.core.player.data.PlayerData;
 import net.trustgames.core.player.data.PlayerDataConfig;
 import net.trustgames.core.player.data.additional.level.PlayerLevel;
-import net.trustgames.core.utils.PlayerUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
@@ -49,7 +49,7 @@ public final class PlayerManagerCommand extends TrustCommand {
             actionType = args[2];
         }
 
-        OfflinePlayer target = PlayerUtils.getOfflinePlayer(args[0]);
+        OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
         UUID uuid = UUIDCache.get(target.getName());
 
         int value = 0;

@@ -33,7 +33,7 @@ public final class MiniMessageUtils {
                         .resolver(StandardTags.defaults())
                         .resolver(TagResolver.resolver("prefix", Tag.selfClosingInserting(prefix)))
                         .resolver(TagResolver.resolver("player_name", Tag.selfClosingInserting(Component.text(Objects.requireNonNull(
-                                Bukkit.getOfflinePlayer(uuid).getName())))))
+                                Bukkit.getServer().getOfflinePlayer(uuid).getName())))))
                         .resolver(TagResolver.resolver("player_display_name", Tag.selfClosingInserting(Objects.requireNonNull(
                                 Bukkit.getPlayer(uuid)).displayName())))
                         .build()
@@ -111,7 +111,7 @@ public final class MiniMessageUtils {
                 .tags(TagResolver.builder()
                         .resolver(StandardTags.defaults())
                         .resolver(TagResolver.resolver("player_name", Tag.selfClosingInserting(Component.text(Objects.requireNonNull(
-                                Bukkit.getOfflinePlayer(uuid).getName())))))
+                                Bukkit.getServer().getOfflinePlayer(uuid).getName())))))
                         .resolver(TagResolver.resolver("player_data", Tag.selfClosingInserting(
                                 Component.text(dataType.name().toLowerCase()))))
                         .resolver(TagResolver.resolver("value", Tag.selfClosingInserting(Component.text(value))))

@@ -3,6 +3,7 @@ package net.trustgames.core.cache;
 import net.trustgames.core.Core;
 import net.trustgames.core.config.database.player_data.PlayerDataType;
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -20,11 +21,11 @@ public final class UUIDCache {
      * @param playerName Name of the player to get UUID for.
      * @return UUID of the player, or null if not found in cache.
      */
-    public static UUID get(String playerName){
+    public static UUID get(@NotNull String playerName){
         try (Jedis jedis = pool.getResource()) {
             String uuidString = jedis.hget(playerName, field);
             if (uuidString == null) {
-                UUID uuid = Bukkit.getOfflinePlayer(playerName).getUniqueId();
+                UUID uuid = Bukkit.getServer().getOfflinePlayer(playerName).getUniqueId();
                 UUIDCache.put(playerName, uuid);
                 return uuid;
             }
@@ -38,7 +39,7 @@ public final class UUIDCache {
      * @param playerName Name of the player.
      * @param uuid       UUID of the player.
      */
-    public static void put(String playerName, UUID uuid) {
+    public static void put(@NotNull String playerName, @NotNull UUID uuid) {
         try (Jedis jedis = pool.getResource()) {
             jedis.hset(playerName, field, uuid.toString());
         }

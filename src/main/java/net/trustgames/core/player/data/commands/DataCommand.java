@@ -8,7 +8,7 @@ import net.trustgames.core.config.CorePermissionsConfig;
 import net.trustgames.core.config.database.player_data.PlayerDataType;
 import net.trustgames.core.player.data.PlayerData;
 import net.trustgames.core.player.data.PlayerDataConfig;
-import net.trustgames.core.utils.PlayerUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
@@ -38,7 +38,7 @@ public final class DataCommand extends TrustCommand {
             return;
         }
 
-        OfflinePlayer target = PlayerUtils.getOfflinePlayer(args[0]);
+        OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
         UUID targetUUID = UUIDCache.get(target.getName());
         if (args.length == 1) {
             PlayerData playerData = new PlayerData(core, targetUUID, dataType);

@@ -12,7 +12,6 @@ import net.trustgames.core.logger.CoreLogger;
 import net.trustgames.core.managers.InventoryManager;
 import net.trustgames.core.managers.ItemManager;
 import net.trustgames.core.utils.ColorUtils;
-import net.trustgames.core.utils.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -87,7 +86,7 @@ public final class ActivityCommand extends TrustCommand implements Listener {
 
         String target = args[0];
 
-        OfflinePlayer offlinePlayer = PlayerUtils.getOfflinePlayer(target);
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(target);
 
         /*
         if the menus were previously opened, all the maps
@@ -100,17 +99,17 @@ public final class ActivityCommand extends TrustCommand implements Listener {
         actionsMap.clear();
         pageCount = 0;
 
-        createRecords(offlinePlayer);
+        createRecords(target, () -> {
+            if (records.isEmpty()) {
+                player.sendMessage(CommandConfig.COMMAND_NO_PLAYER_ACT.addName(Component.text(target)));
+                return;
+            }
 
-        if (records.isEmpty()) {
-            player.sendMessage(CommandConfig.COMMAND_NO_PLAYER_ACT.addName(Component.text(target)));
-            return;
-        }
+            createPages(player, offlinePlayer.getName());
 
-        createPages(player, offlinePlayer.getName());
-
-        // open the first inventory (first page) from the list
-        player.openInventory(inventoryList.get(0));
+            // open the first inventory (first page) from the list on the main server thread
+            Bukkit.getScheduler().runTask(core, () -> player.openInventory(inventoryList.get(0)));
+        });
     }
 
     /**
@@ -118,24 +117,24 @@ public final class ActivityCommand extends TrustCommand implements Listener {
      * and for each result, it creates and ItemStack with display name
      * and lore with the corresponding data
      *
-     * @param offlinePlayer Target player
+     * @param targetName Name of the targeted player
      */
-    private void createRecords(OfflinePlayer offlinePlayer) {
+    private void createRecords(String targetName, Runnable callback) {
         ActivityFetcher activityQuery = new ActivityFetcher(core);
-        UUID offlineUuid = UUIDCache.get(offlinePlayer.getName());
-        
-        activityQuery.getActivityByUUID(offlineUuid.toString(), activity -> {
+        UUID offlineUuid = UUIDCache.get(targetName);
+
+        activityQuery.fetchActivityByUUID(offlineUuid, activity -> {
+
             ItemStack targetHead = ItemManager.createItemStack(Material.PAINTING, 1);
 
-        /*
-        loop through all the results and for each one, set the corresponding
-        id, uuid, ip, and time to the lore and set action as the display name.
-        Also set the correct Material by using setMaterial method.
-        Then add a clone of the ItemStack to the records list
-         */
+            /*
+             loop through all the results and for each one, set the corresponding
+             id, uuid, ip, and time to the lore and set action as the display name.
+             Also set the correct Material by using setMaterial method.
+             Then add a clone of the ItemStack to the records list
+             */
             try {
                 while (activity.next()) {
-
                     // results
                     String id = activity.getString("id");
                     String uuid = activity.getString("uuid");
@@ -144,13 +143,13 @@ public final class ActivityCommand extends TrustCommand implements Listener {
                     Timestamp time = activity.getTimestamp("time");
                     String encodedId = activityQuery.encodeId(id);
 
-                /*
-                One of the lore lines needs to have a click event with the value of the encodedID. This is
-                because in other methods it's required to retrieve the encodedId by just clicking on the item.
-                The click event is technically never being executed, as the player doesn't click on the lore, but
-                on the ItemStack, but the click event value is still present in the ItemStack's lore and can be retrieved.
-                That's how I get the encodedId from the ItemStack later on.
-                 */
+                    /*
+                    One of the lore lines needs to have a click event with the value of the encodedID. This is
+                    because in other methods it's required to retrieve the encodedId by just clicking on the item.
+                    The click event is technically never being executed, as the player doesn't click on the lore, but
+                    on the ItemStack, but the click event value is still present in the ItemStack's lore and can be retrieved.
+                    That's how I get the encodedId from the ItemStack later on.
+                    */
                     List<Component> loreList = new ArrayList<>();
                     loreList.add(Component.text(ChatColor.WHITE + "Date: " + ChatColor.YELLOW + time.toLocalDateTime().toLocalDate()));
                     loreList.add(Component.text(ChatColor.WHITE + "Time: " + ChatColor.GOLD + time.toLocalDateTime().toLocalTime() + " " + ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT)));
@@ -173,6 +172,7 @@ public final class ActivityCommand extends TrustCommand implements Listener {
                 CoreLogger.LOGGER.severe("Trying loop through ResultSet in ActivityCommand class");
                 throw new RuntimeException(e);
             }
+            callback.run();
         });
     }
 
