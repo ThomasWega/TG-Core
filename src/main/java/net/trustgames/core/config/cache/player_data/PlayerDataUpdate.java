@@ -1,7 +1,8 @@
-package net.trustgames.core.config.database.player_data;
+package net.trustgames.core.config.cache.player_data;
 
 public enum PlayerDataUpdate {
     INTERVAL(5000); // in milliseconds
+
 
     private final long value;
 

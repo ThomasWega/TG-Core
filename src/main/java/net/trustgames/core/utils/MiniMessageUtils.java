@@ -5,7 +5,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
-import net.trustgames.core.config.database.player_data.PlayerDataType;
+import net.trustgames.core.config.cache.player_data.PlayerDataType;
 import net.trustgames.core.managers.LuckPermsManager;
 import org.bukkit.Bukkit;
 

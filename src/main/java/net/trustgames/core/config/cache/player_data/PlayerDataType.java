@@ -1,4 +1,4 @@
-package net.trustgames.core.config.database.player_data;
+package net.trustgames.core.config.cache.player_data;
 
 /**
  * Stores all the PlayerData types and their column names

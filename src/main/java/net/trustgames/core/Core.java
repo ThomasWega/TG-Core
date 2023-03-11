@@ -109,9 +109,6 @@ public final class Core extends JavaPlugin {
         // TODO move luckperms listeners to different class
         // TODO add comments where missing
         // TODO maybe use JavaPlugin.getPlugin somewhere?
-        // TODO fix shading
-        // TODO activity fetcher add string to specify table name for all
-        // TODO add expiry for uuid -> name caching
         // TODO make uuidCache async
 
         // FIXME TEST: When restarting, the database connections don't close properly or more are created!

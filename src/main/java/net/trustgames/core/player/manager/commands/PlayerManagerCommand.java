@@ -5,7 +5,7 @@ import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.command.TrustCommand;
 import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CorePermissionsConfig;
-import net.trustgames.core.config.database.player_data.PlayerDataType;
+import net.trustgames.core.config.cache.player_data.PlayerDataType;
 import net.trustgames.core.player.data.PlayerData;
 import net.trustgames.core.player.data.PlayerDataConfig;
 import net.trustgames.core.player.data.additional.level.PlayerLevel;

@@ -7,6 +7,8 @@ import java.util.Base64;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import static net.trustgames.core.player.activity.PlayerActivityDB.tableName;
+
 /**
  * Query methods for activity commands.
  * Used to get the player's activity by uuid,
@@ -29,7 +31,7 @@ public final class ActivityFetcher {
     public void fetchActivityByUUID(UUID uuid, Consumer<ResultSet> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             try (Connection connection = core.getMariaDB().getConnection();
-                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM player_activity WHERE uuid = ? ORDER BY id DESC")) {
+                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE uuid = ? ORDER BY id DESC")) {
                 statement.setString(1, uuid.toString());
                 ResultSet results = statement.executeQuery();
                 callback.accept(results);
@@ -58,7 +60,7 @@ public final class ActivityFetcher {
                 decodedID = id;
 
             try (Connection conn = core.getMariaDB().getConnection();
-                 PreparedStatement statement = conn.prepareStatement("SELECT * FROM player_activity WHERE id = ?")) {
+                 PreparedStatement statement = conn.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?")) {
                 statement.setString(1, decodedID);
                 try (ResultSet results = statement.executeQuery()) {
                     callback.accept(results);

@@ -1,7 +1,7 @@
 package net.trustgames.core.cache;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.config.database.player_data.PlayerDataType;
+import net.trustgames.core.config.cache.player_data.PlayerDataType;
 import net.trustgames.core.player.data.PlayerDataFetcher;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;

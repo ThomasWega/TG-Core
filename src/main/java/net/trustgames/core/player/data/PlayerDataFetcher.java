@@ -2,7 +2,7 @@ package net.trustgames.core.player.data;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.cache.DataCache;
-import net.trustgames.core.config.database.player_data.PlayerDataType;
+import net.trustgames.core.config.cache.player_data.PlayerDataType;
 import net.trustgames.core.player.data.additional.level.PlayerLevel;
 
 import java.sql.Connection;

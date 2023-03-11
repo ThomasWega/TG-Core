@@ -45,7 +45,10 @@
                             <transformers>
                                 <!-- Add a transformer to exclude any other manifest files (possibly from dependencies). -->
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
-                                    <resource>MANIFEST.MF</resource>
+                                    <resources>
+                                        <resource>MANIFEST.MF</resource>
+                                        <resource>META-INF/LICENSE.txt</resource>
+                                    </resources>
                                 </transformer>
                             </transformers>
                             <filters>

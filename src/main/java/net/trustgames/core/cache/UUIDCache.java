@@ -1,7 +1,8 @@
 package net.trustgames.core.cache;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.config.database.player_data.PlayerDataType;
+import net.trustgames.core.config.cache.player_data.PlayerDataType;
+import net.trustgames.core.config.cache.player_uuid.PlayerUUIDUpdate;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import redis.clients.jedis.Jedis;
@@ -42,6 +43,7 @@ public final class UUIDCache {
     public static void put(@NotNull String playerName, @NotNull UUID uuid) {
         try (Jedis jedis = pool.getResource()) {
             jedis.hset(playerName, field, uuid.toString());
+            jedis.expire(playerName, PlayerUUIDUpdate.INTERVAL.value);
         }
     }
 }
