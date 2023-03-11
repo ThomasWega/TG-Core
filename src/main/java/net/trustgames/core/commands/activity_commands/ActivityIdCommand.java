@@ -4,10 +4,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.trustgames.core.Core;
+import net.trustgames.core.cache.NameCache;
 import net.trustgames.core.command.TrustCommand;
 import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CorePermissionsConfig;
-import net.trustgames.core.player.uuid.PlayerUUIDHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -74,8 +74,8 @@ public final class ActivityIdCommand extends TrustCommand {
                     String action = activity.getString("action");
                     Timestamp time = activity.getTimestamp("time");
 
-                    PlayerUUIDHandler uuidHandler = new PlayerUUIDHandler(core);
-                    uuidHandler.getName(UUID.fromString(uuid), name -> {
+                    NameCache nameCache = new NameCache(core);
+                    nameCache.get(UUID.fromString(uuid), name -> {
 
                         // list of component messages
                         List<Component> chatMessage = new ArrayList<>();

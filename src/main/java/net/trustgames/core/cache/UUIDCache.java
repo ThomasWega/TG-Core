@@ -13,7 +13,7 @@ public final class UUIDCache {
 
     private static final String field = PlayerDataType.UUID.getColumnName();
 
-    private static final JedisPool pool = Core.pool;
+    private static final JedisPool pool = Core.jedisPool;
 
     /**
      * Get the UUID of the player from the cache.

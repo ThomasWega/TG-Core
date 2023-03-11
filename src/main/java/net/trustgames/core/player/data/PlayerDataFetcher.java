@@ -1,7 +1,7 @@
 package net.trustgames.core.player.data;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.cache.PlayerDataCache;
+import net.trustgames.core.cache.DataCache;
 import net.trustgames.core.config.database.player_data.PlayerDataType;
 import net.trustgames.core.player.data.additional.level.PlayerLevel;
 
@@ -21,12 +21,12 @@ public final class PlayerDataFetcher {
 
     private final Core core;
     private final UUID uuid;
-    private final PlayerDataCache playerDataCache;
+    private final DataCache dataCache;
 
     public PlayerDataFetcher(Core core, UUID uuid) {
         this.core = core;
         this.uuid = uuid;
-        this.playerDataCache = new PlayerDataCache(core, uuid);
+        this.dataCache = new DataCache(core, uuid);
     }
 
     /**
@@ -39,7 +39,7 @@ public final class PlayerDataFetcher {
      */
     public void fetch(PlayerDataType playerDataType, Consumer<String> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () ->
-                playerDataCache.fetch(playerDataType, data -> {
+                dataCache.fetch(playerDataType, data -> {
                     if (data != null) {
                         callback.accept(data);
                     } else {
@@ -58,7 +58,7 @@ public final class PlayerDataFetcher {
                                     Object object = results.getObject(label);
                                     callback.accept(object.toString());
                                     if (!(playerDataType == PlayerDataType.UUID)) // don't update the uuid
-                                       playerDataCache.update(playerDataType, object.toString());
+                                       dataCache.update(playerDataType, object.toString());
                                     return;
                                 }
                                 callback.accept(null);
@@ -80,7 +80,7 @@ public final class PlayerDataFetcher {
      * @param object         Object to update the DataType with
      */
     public void update(PlayerDataType playerDataType, Object object) {
-        playerDataCache.update(playerDataType, object.toString());
+        dataCache.update(playerDataType, object.toString());
 
         if (playerDataType == PlayerDataType.LEVEL) {
             PlayerLevel playerLevel = new PlayerLevel(core, uuid);

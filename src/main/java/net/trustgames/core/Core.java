@@ -11,18 +11,18 @@ import net.trustgames.core.commands.activity_commands.ActivityCommand;
 import net.trustgames.core.commands.activity_commands.ActivityIdCommand;
 import net.trustgames.core.commands.messages_commands.MessagesCommands;
 import net.trustgames.core.commands.messages_commands.MessagesCommandsConfig;
-import net.trustgames.core.managers.database.DatabaseManager;
 import net.trustgames.core.managers.*;
+import net.trustgames.core.managers.database.DatabaseManager;
 import net.trustgames.core.player.activity.PlayerActivityDB;
 import net.trustgames.core.player.activity.PlayerActivityHandler;
 import net.trustgames.core.player.data.PlayerDataDB;
 import net.trustgames.core.player.data.commands.DataCommand;
+import net.trustgames.core.player.list.TablistHandler;
+import net.trustgames.core.player.list.TablistTeams;
 import net.trustgames.core.player.manager.commands.PlayerManagerCommand;
 import net.trustgames.core.player.uuid.PlayerUUIDDB;
 import net.trustgames.core.player.uuid.PlayerUUIDHandler;
 import net.trustgames.core.protection.CoreGamerulesHandler;
-import net.trustgames.core.player.list.TablistHandler;
-import net.trustgames.core.player.list.TablistTeams;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
@@ -41,7 +41,8 @@ import java.util.HashMap;
  * to be able to access them from external plugins
  */
 public final class Core extends JavaPlugin {
-    public static JedisPool pool;
+
+    public static JedisPool jedisPool;
     final DatabaseManager databaseManager = new DatabaseManager(this);
     public final PlayerDataDB playerDataDB = new PlayerDataDB(this);
     public final PlayerUUIDDB playerUUIDDB = new PlayerUUIDDB(this);
@@ -94,7 +95,6 @@ public final class Core extends JavaPlugin {
         // TODO NPC action - command prints the command in chat
         // TODO NPC protocollib
         // TODO TrustCommand add arguments
-        // TODO player activity (if player never joined the server where the command is executed, his activity can't be searched by his name but only uuid. Use a database to fix that.
         // TODO improve player activity (add filters and /activity-ip command)
         // TODO PlayerActivity handler and command have pretty much the same method to fetch by uuid
         // TODO set expiry for the whole hashset of player in redis and add it as configurable value
@@ -111,6 +111,8 @@ public final class Core extends JavaPlugin {
         // TODO maybe use JavaPlugin.getPlugin somewhere?
         // TODO fix shading
         // TODO activity fetcher add string to specify table name for all
+        // TODO add expiry for uuid -> name caching
+        // TODO make uuidCache async
 
         // FIXME TEST: When restarting, the database connections don't close properly or more are created!
         // FIXME TEST: Is there correct amount of connections?
@@ -124,7 +126,7 @@ public final class Core extends JavaPlugin {
         createConfigs();
 
         // REDIS
-        pool = new JedisPool(new JedisPoolConfig(), "localhost", 6379);
+        jedisPool = new JedisPool(new JedisPoolConfig(), "localhost", 6379);
 
         // DATABASE
         databaseManager.initializePool();

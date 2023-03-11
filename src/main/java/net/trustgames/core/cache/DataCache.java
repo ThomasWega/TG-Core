@@ -11,18 +11,20 @@ import redis.clients.jedis.JedisPool;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public class PlayerDataCache {
+public class DataCache {
 
     private final Core core;
-    private final UUID uuid;
     private final OfflinePlayer player;
 
-    private static final JedisPool pool = Core.pool;
+    private final JedisPool pool = Core.jedisPool;
 
-    public PlayerDataCache(Core core, UUID uuid) {
+    private final PlayerDataFetcher dataFetcher;
+
+
+    public DataCache(Core core, UUID uuid) {
         this.core = core;
-        this.uuid = uuid;
         this.player = Bukkit.getServer().getOfflinePlayer(uuid);
+        this.dataFetcher = new PlayerDataFetcher(core, uuid);
     }
 
     public void update(PlayerDataType dataType, String value) {
@@ -40,7 +42,6 @@ public class PlayerDataCache {
             try (Jedis jedis = pool.getResource()) {
                 String result = jedis.hget(playerName, dataType.getColumnName());
                 if (result == null){
-                    PlayerDataFetcher dataFetcher = new PlayerDataFetcher(core, uuid);
                     dataFetcher.fetch(dataType, data -> update(dataType, data));
                 }
                 callback.accept(result);
