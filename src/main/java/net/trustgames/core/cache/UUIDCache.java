@@ -20,7 +20,7 @@ public final class UUIDCache {
     private final Core core;
     private final String playerName;
 
-    public UUIDCache(Core core, String playerName) {
+    public UUIDCache(@NotNull Core core, @NotNull String playerName) {
         this.core = core;
         this.pool = core.getJedisPool();
         this.playerName = playerName;

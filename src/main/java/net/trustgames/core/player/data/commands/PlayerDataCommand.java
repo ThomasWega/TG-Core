@@ -31,6 +31,7 @@ public final class PlayerDataCommand extends TrustCommand {
         if (args.length == 0) {
             UUIDCache uuidCache = new UUIDCache(core, senderName);
             uuidCache.get(uuid -> {
+                assert uuid != null; // never null here
                 PlayerDataCache dataCache = new PlayerDataCache(core, uuid, dataType);
                 dataCache.get(data -> sender.sendMessage(PlayerDataConfig.GET_PERSONAL.formatMessage(senderName, dataType, String.valueOf(data))));
             });
@@ -43,14 +44,12 @@ public final class PlayerDataCommand extends TrustCommand {
         if (args.length == 1) {
             UUIDCache uuidCache = new UUIDCache(core, targetName);
             uuidCache.get(targetUuid -> {
-                PlayerDataCache dataCache = new PlayerDataCache(core, targetUuid, dataType);
-                dataCache.get(data -> {
-                    if (data == null) {
-                        sender.sendMessage(CommandConfig.COMMAND_PLAYER_UNKNOWN.addName(targetName));
-                        return;
-                    }
-                    sender.sendMessage(PlayerDataConfig.GET_OTHER.formatMessage(targetName, dataType, data));
-                });
+                if (targetUuid != null) {
+                    PlayerDataCache dataCache = new PlayerDataCache(core, targetUuid, dataType);
+                    dataCache.get(data -> sender.sendMessage(PlayerDataConfig.GET_OTHER.formatMessage(targetName, dataType, data)));
+                } else {
+                    sender.sendMessage(CommandConfig.COMMAND_PLAYER_UNKNOWN.addName(targetName));
+                }
             });
             return;
         }
@@ -77,6 +76,11 @@ public final class PlayerDataCommand extends TrustCommand {
     private void handleAction(CommandSender sender, String targetName, String actionType, int value) {
         UUIDCache uuidCache = new UUIDCache(core, targetName);
         uuidCache.get(targetUuid -> {
+            if (targetUuid == null) {
+                sender.sendMessage(CommandConfig.COMMAND_PLAYER_UNKNOWN.addName(targetName));
+                return;
+            }
+
             PlayerData playerData = new PlayerData(core, targetUuid, dataType);
             switch (actionType) {
                 case "set" -> {

@@ -3,6 +3,7 @@ package net.trustgames.core.cache;
 import net.trustgames.core.Core;
 import net.trustgames.core.config.player_data.PlayerDataType;
 import net.trustgames.core.player.data.PlayerDataFetcher;
+import org.jetbrains.annotations.NotNull;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -18,7 +19,7 @@ public class PlayerDataCache {
 
 
 
-    public PlayerDataCache(Core core, UUID uuid, PlayerDataType dataType) {
+    public PlayerDataCache(@NotNull Core core, @NotNull UUID uuid, @NotNull PlayerDataType dataType) {
         this.core = core;
         this.uuid = uuid;
         this.pool = core.getJedisPool();

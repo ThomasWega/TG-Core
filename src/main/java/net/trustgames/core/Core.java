@@ -122,6 +122,7 @@ public final class Core extends JavaPlugin {
         // TODO move LOGGER TO Core. Same for Lobby
         // TODO create an event when a data in database updates
         // TODO make classes final and create getters here in CORE
+        // TODO activity add ability to check by uuid
 
 
         // FIXME TEST: When restarting, the database connections don't close properly or more are created!

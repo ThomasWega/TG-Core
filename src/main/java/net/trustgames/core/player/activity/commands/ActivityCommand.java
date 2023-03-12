@@ -121,7 +121,10 @@ public final class ActivityCommand extends TrustCommand implements Listener {
         uuidCache.get(uuid -> {
             ActivityFetcher activityQuery = new ActivityFetcher(core);
             activityQuery.fetchActivityByUUID(uuid, activity -> {
-                if (activity == null) return;
+                if (activity == null) {
+                    callback.run();
+                    return;
+                }
 
                 ItemStack targetHead = ItemManager.createItemStack(Material.PAINTING, 1);
 
