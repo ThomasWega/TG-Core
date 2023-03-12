@@ -4,10 +4,11 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.trustgames.core.Core;
-import net.trustgames.core.cache.NameCache;
+import net.trustgames.core.cache.PlayerDataCache;
 import net.trustgames.core.command.TrustCommand;
 import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CorePermissionsConfig;
+import net.trustgames.core.config.player_data.PlayerDataType;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -15,7 +16,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.format.TextStyle;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -74,23 +74,33 @@ public final class ActivityIdCommand extends TrustCommand {
                     String action = activity.getString("action");
                     Timestamp time = activity.getTimestamp("time");
 
-                    NameCache nameCache = new NameCache(core);
-                    nameCache.get(UUID.fromString(uuid), name -> {
-
+                    PlayerDataCache playerDataCache = new PlayerDataCache(core, UUID.fromString(uuid), PlayerDataType.NAME);
+                    playerDataCache.get(name -> {
                         // list of component messages
-                        List<Component> chatMessage = new ArrayList<>();
-                        chatMessage.add(Component.text(ChatColor.DARK_GRAY + "------------------------"));
-                        chatMessage.add(Component.text(ChatColor.WHITE + "Name: " + ChatColor.RED + name).clickEvent(ClickEvent.copyToClipboard(name)));
-                        chatMessage.add(Component.text(ChatColor.WHITE + "IP: " + ChatColor.YELLOW + ip).clickEvent(ClickEvent.copyToClipboard(ip)));
-                        chatMessage.add(Component.text(ChatColor.WHITE + "UUID: " + ChatColor.GRAY + uuid).clickEvent(ClickEvent.copyToClipboard(uuid)));
-                        chatMessage.add(Component.text(""));
-                        chatMessage.add(Component.text(ChatColor.WHITE + "Action: " + ChatColor.GOLD + action).clickEvent(ClickEvent.copyToClipboard(action)));
-                        chatMessage.add(Component.text(ChatColor.WHITE + "Date: " + ChatColor.GREEN + time.toLocalDateTime().toLocalDate()).clickEvent(ClickEvent.copyToClipboard(time.toLocalDateTime().toLocalDate().toString())));
-                        chatMessage.add(Component.text(ChatColor.WHITE + "Time: " + ChatColor.DARK_GREEN + time.toLocalDateTime().toLocalTime() + " " + ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT)).clickEvent(ClickEvent.copyToClipboard(time.toLocalDateTime().toLocalTime() + " " + ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT))));
-                        chatMessage.add(Component.text(""));
-                        chatMessage.add(Component.text(ChatColor.WHITE + "ID: " + ChatColor.DARK_PURPLE + resultId).clickEvent(ClickEvent.copyToClipboard(resultId)));
-                        chatMessage.add(Component.text(ChatColor.DARK_GRAY + "------------------------"));
-
+                        List<Component> chatMessage = List.of(
+                                Component.text(ChatColor.DARK_GRAY + "------------------------"),
+                                Component.text(ChatColor.WHITE + "Name: " +
+                                        ChatColor.RED + name).clickEvent(ClickEvent.copyToClipboard(name)),
+                                Component.text(ChatColor.WHITE + "IP: " +
+                                        ChatColor.YELLOW + ip).clickEvent(ClickEvent.copyToClipboard(ip)),
+                                Component.text(ChatColor.WHITE + "UUID: " +
+                                        ChatColor.GRAY + uuid).clickEvent(ClickEvent.copyToClipboard(uuid)),
+                                Component.text(""),
+                                Component.text(ChatColor.WHITE + "Action: " +
+                                        ChatColor.GOLD + action).clickEvent(ClickEvent.copyToClipboard(action)),
+                                Component.text(ChatColor.WHITE + "Date: " +
+                                        ChatColor.GREEN + time.toLocalDateTime().toLocalDate())
+                                        .clickEvent(ClickEvent.copyToClipboard(time.toLocalDateTime().toLocalDate().toString())),
+                                Component.text(ChatColor.WHITE + "Time: " +
+                                        ChatColor.DARK_GREEN + time.toLocalDateTime().toLocalTime() + " " +
+                                        ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT))
+                                        .clickEvent(ClickEvent.copyToClipboard(time.toLocalDateTime().toLocalTime() + " " +
+                                                ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT))),
+                                Component.text(""),
+                                Component.text(ChatColor.WHITE + "ID: " +
+                                        ChatColor.DARK_PURPLE + resultId).clickEvent(ClickEvent.copyToClipboard(resultId)),
+                                Component.text(ChatColor.DARK_GRAY + "------------------------")
+                        );
                         // loop through the list and for each, send a message
                         for (Component s : chatMessage) {
                             sender.sendMessage(s);

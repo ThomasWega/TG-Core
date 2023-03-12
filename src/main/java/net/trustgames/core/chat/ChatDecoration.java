@@ -9,8 +9,6 @@ import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
-import net.trustgames.core.Core;
-import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.chat.config.ChatConfig;
 import net.trustgames.core.managers.LuckPermsManager;
 import net.trustgames.core.utils.ColorUtils;
@@ -34,12 +32,6 @@ public final class ChatDecoration implements Listener {
             Sound.Source.AMBIENT,
             0.75f, 2f);
 
-    private final UUIDCache uuidCache;
-
-    public ChatDecoration(Core core) {
-        this.uuidCache = core.getUuidCache();
-    }
-
     /**
      * Adds the player a prefix and makes sure that the Minecraft new
      * report feature doesn't work and doesn't produce the symbols next to the
@@ -49,10 +41,9 @@ public final class ChatDecoration implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void decorate(AsyncChatEvent event) {
         Player sender = event.getPlayer();
-        uuidCache.get(sender.getName(), uuid -> {
             Component message = setColor(sender, event.originalMessage());
 
-            Component prefix = setPrefix(uuid);
+            Component prefix = setPrefix(sender);
 
             for (Player p : Bukkit.getOnlinePlayers()) {
                 // if the player is not mentioned, send him the normal message without colored name
@@ -63,7 +54,6 @@ public final class ChatDecoration implements Listener {
                 }
             }
             event.setCancelled(true);
-        });
     }
 
     /**
@@ -132,10 +122,8 @@ public final class ChatDecoration implements Listener {
 
             logMessage(prefix, sender.getName(), msg);
 
-            uuidCache.get(sender.getName(), senderUuid -> {
-                p.sendActionBar(ChatConfig.MENTION_ACTIONBAR.formatMessage(senderUuid));
+                p.sendActionBar(ChatConfig.MENTION_ACTIONBAR.formatMessage(sender));
                 Audience.audience(p).playSound(sound, Sound.Emitter.self());
-            });
             return true;
         }
         return false;
@@ -145,11 +133,11 @@ public final class ChatDecoration implements Listener {
      * Gets and formats the correct prefix for the player.
      * If player has no prefix, null will be replaced with ""
      *
-     * @param uuid UUID of Player to get prefix on
+     * @param player Player to get prefix on
      * @return Player's prefix
      */
-    private Component setPrefix(UUID uuid) {
-        Component prefix = LuckPermsManager.getPlayerPrefix(uuid);
+    private Component setPrefix(Player player) {
+        Component prefix = LuckPermsManager.getPlayerPrefix(player);
 
         // if player doesn't have any prefix, make sure there is not a space before his name
         if (!prefix.equals(Component.text(""))) {

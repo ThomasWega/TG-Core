@@ -13,21 +13,27 @@ import org.bukkit.event.player.PlayerQuitEvent;
  */
 public final class PlayerActivityHandler implements Listener {
 
+    private final Core core;
     private final PlayerActivityFetcher activityFetcher;
-    private final UUIDCache uuidCache;
 
     public PlayerActivityHandler(Core core) {
+        this.core = core;
         this.activityFetcher = new PlayerActivityFetcher(core);
-        this.uuidCache = core.getUuidCache();
     }
 
     @EventHandler
     private void onPlayerJoin(PlayerJoinEvent event) {
-        uuidCache.get(event.getPlayer().getName(), uuid -> activityFetcher.add(uuid, "JOIN SERVER " + Bukkit.getServer().getName() + " (" + Bukkit.getServer().getPort() + ")"));
+        UUIDCache uuidCache = new UUIDCache(core, event.getPlayer().getName());
+        uuidCache.get(uuid -> activityFetcher.add(uuid,
+                "JOIN SERVER " + Bukkit.getServer().getName() +
+                        " (" + Bukkit.getServer().getPort() + ")"));
     }
 
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent event) {
-        uuidCache.get(event.getPlayer().getName(), uuid -> activityFetcher.add(uuid, "QUIT SERVER " + Bukkit.getServer().getName() + " (" + Bukkit.getServer().getPort() + ")"));
+        UUIDCache uuidCache = new UUIDCache(core, event.getPlayer().getName());
+        uuidCache.get(uuid -> activityFetcher.add(uuid,
+                "QUIT SERVER " + Bukkit.getServer().getName() +
+                        " (" + Bukkit.getServer().getPort() + ")"));
     }
 }

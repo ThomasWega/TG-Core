@@ -15,7 +15,6 @@ import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -62,12 +61,10 @@ public final class ActivityCommand extends TrustCommand implements Listener {
      */
     private static int pageCount = 0;
     private final Core core;
-    private final UUIDCache uuidCache;
 
     public ActivityCommand(Core core) {
         super(CorePermissionsConfig.STAFF.permission);
         this.core = core;
-        this.uuidCache = core.getUuidCache();
     }
 
     @Override
@@ -88,8 +85,6 @@ public final class ActivityCommand extends TrustCommand implements Listener {
 
         String target = args[0];
 
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(target);
-
         /*
         if the menus were previously opened, all the maps
         need to be cleared to avoid the items showing twice.
@@ -103,11 +98,11 @@ public final class ActivityCommand extends TrustCommand implements Listener {
 
         createRecords(target, () -> {
             if (records.isEmpty()) {
-                player.sendMessage(CommandConfig.COMMAND_NO_PLAYER_ACT.addName(Component.text(target)));
+                player.sendMessage(CommandConfig.COMMAND_NO_PLAYER_ACT.addName(target));
                 return;
             }
 
-            createPages(player, offlinePlayer.getName());
+            createPages(player, target);
 
             // open the first inventory (first page) from the list on the main server thread
             Bukkit.getScheduler().runTask(core, () -> player.openInventory(inventoryList.get(0)));
@@ -122,9 +117,11 @@ public final class ActivityCommand extends TrustCommand implements Listener {
      * @param targetName Name of the targeted player
      */
     private void createRecords(String targetName, Runnable callback) {
-        uuidCache.get(targetName, uuid -> {
+        UUIDCache uuidCache = new UUIDCache(core, targetName);
+        uuidCache.get(uuid -> {
             ActivityFetcher activityQuery = new ActivityFetcher(core);
             activityQuery.fetchActivityByUUID(uuid, activity -> {
+                if (activity == null) return;
 
                 ItemStack targetHead = ItemManager.createItemStack(Material.PAINTING, 1);
 
@@ -136,7 +133,6 @@ public final class ActivityCommand extends TrustCommand implements Listener {
              */
                 try {
                     while (activity.next()) {
-                        // results
                         String id = activity.getString("id");
                         String stringUuid = activity.getString("uuid");
                         String ip = activity.getString("ip");

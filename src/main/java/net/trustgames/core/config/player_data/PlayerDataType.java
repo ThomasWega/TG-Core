@@ -6,6 +6,7 @@ package net.trustgames.core.config.player_data;
  */
 public enum PlayerDataType {
     UUID("uuid", "VARCHAR(36) primary key"),
+    NAME("name", "VARCHAR(16)"),
     KILLS("kills", "INT signed DEFAULT 0"),
     DEATHS("deaths", "INT DEFAULT 0"),
     GAMES("games_played", "INT DEFAULT 0"),

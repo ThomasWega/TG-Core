@@ -3,47 +3,50 @@ package net.trustgames.core.cache;
 import net.trustgames.core.Core;
 import net.trustgames.core.config.player_data.PlayerDataType;
 import net.trustgames.core.player.data.PlayerDataFetcher;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public class DataCache {
+public class PlayerDataCache {
 
     private final Core core;
-    private final OfflinePlayer player;
-    private final UUID uuid;
-
     private final JedisPool pool;
+    private final UUID uuid;
+    private final PlayerDataType dataType;
 
 
-    public DataCache(Core core, UUID uuid) {
+
+    public PlayerDataCache(Core core, UUID uuid, PlayerDataType dataType) {
         this.core = core;
         this.uuid = uuid;
         this.pool = core.getJedisPool();
-        this.player = Bukkit.getServer().getOfflinePlayer(uuid);
+        this.dataType = dataType;
     }
 
-    public void update(PlayerDataType dataType, String value) {
+    public void update(String value) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             try (Jedis jedis = pool.getResource()) {
                 String column = dataType.getColumnName();
-                jedis.hset(player.getName(), column, value);
+                jedis.hset(uuid.toString(), column, value);
             }
         });
     }
 
-    public void fetch(PlayerDataType dataType, Consumer<String> callback) {
+    public void get(Consumer<String> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
-            String playerName = player.getName();
             try (Jedis jedis = pool.getResource()) {
-                String result = jedis.hget(playerName, dataType.getColumnName());
+                String result = jedis.hget(uuid.toString(), dataType.getColumnName());
                 if (result == null){
-                    PlayerDataFetcher dataFetcher = new PlayerDataFetcher(core, uuid);
-                    dataFetcher.fetch(dataType, data -> update(dataType, data));
+                    PlayerDataFetcher dataFetcher = new PlayerDataFetcher(core, dataType);
+                    dataFetcher.fetch(uuid, data -> {
+                        // if still null, there is no data on the player even in the database
+                        if (data != null)
+                            update(data);
+                        callback.accept(data);
+                    });
+                    return;
                 }
                 callback.accept(result);
             }

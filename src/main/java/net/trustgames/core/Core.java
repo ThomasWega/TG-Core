@@ -6,7 +6,6 @@ import lombok.Getter;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.trustgames.core.announcer.AnnounceHandler;
-import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.chat.ChatDecoration;
 import net.trustgames.core.chat.ChatLimiter;
 import net.trustgames.core.chat.commands.TextCommands;
@@ -18,10 +17,8 @@ import net.trustgames.core.player.activity.PlayerActivityHandler;
 import net.trustgames.core.player.activity.commands.ActivityCommand;
 import net.trustgames.core.player.activity.commands.ActivityIdCommand;
 import net.trustgames.core.player.data.PlayerDataDB;
-import net.trustgames.core.player.data.commands.DataCommand;
-import net.trustgames.core.player.manager.commands.PlayerManagerCommand;
-import net.trustgames.core.player.uuid_name.PlayerIDDB;
-import net.trustgames.core.player.uuid_name.PlayerIDHandler;
+import net.trustgames.core.player.data.PlayerDataHandler;
+import net.trustgames.core.player.data.commands.PlayerDataCommand;
 import net.trustgames.core.protection.CoreGamerulesHandler;
 import net.trustgames.core.tablist.TablistHandler;
 import net.trustgames.core.tablist.TablistTeams;
@@ -48,11 +45,8 @@ public final class Core extends JavaPlugin {
     @Getter
     private final JedisPool jedisPool = new JedisPool(new JedisPoolConfig(), "localhost", 6379);
     @Getter
-    private final UUIDCache uuidCache = new UUIDCache(this);
-    @Getter
     private final DatabaseManager databaseManager = new DatabaseManager(this);
     public final PlayerDataDB playerDataDB = new PlayerDataDB(this);
-    public final PlayerIDDB playerIDDB = new PlayerIDDB(this);
     private final PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
     private final AnnounceHandler announceHandler = new AnnounceHandler(this);
     public CooldownManager cooldownManager = new CooldownManager();
@@ -106,26 +100,28 @@ public final class Core extends JavaPlugin {
         // TODO TrustCommand add arguments
         // TODO improve player activity (add filters and /activity-ip command)
         // TODO PlayerActivity handler and command have pretty much the same method to fetch by uuid
-        // TODO set expiry for the whole hashset of player in redis and add it as configurable value
         // TODO add tab completion for playerdata command
         // TODO playerdata commands add message for the player who got set/added/removed the data
-        // TODO playerdata - when player doesn't exist in the database, throws null error
         // TODO also cache level to prevent calculating it everytime - add timer for recalculation or update it on the database column update
         // TODO and also have the level in the database?? NOT SURE
-        // TODO try to make a better reformat for player and commands package
         // TODO add config time for uuid cache expiry - will expire on player leave of proxy
-        // TODO try to limit the use of uuid cache - same for lobby and proxy plugin
         // TODO move luckperms listeners to different class
         // TODO add comments where missing
-        // TODO nameCache add expiry
-        // TODO move PlayerIDHandler to proxy
+        // TODO Caches add expiry
+        // TODO move PlayerDataHandler to proxy
         // TODO figure out if to use the Bukkit.getOffline player or Bukkit.getServer.getOfflinePlayer
         // TODO check command manager if not a bullshit
-        // TODO check if uuid is required only later (in if statement or cache for example)
         // TODO add every possible instance of something to core and just make getter
-        // TODO maybe change MessageUtils and LuckPerms to Player instead of UUID?
         // TODO merge join listeners which use uuid to one
-        // TODO dont format messages by player UUID!!!!
+        // TODO annotate all things correctly
+        // TODO move data commands to proxy ?? MAYBE
+        // TODO move tablist to proxy
+        // TODO check if things can be taken in constructor instead of methods
+        // TODO dont use (int) (long) (float) instead use like Integer.parseInt
+        // TODO dont allow to set any data if player never joined!
+        // TODO move LOGGER TO Core. Same for Lobby
+        // TODO create an event when a data in database updates
+        // TODO make classes final and create getters here in CORE
 
 
         // FIXME TEST: When restarting, the database connections don't close properly or more are created!
@@ -148,7 +144,6 @@ public final class Core extends JavaPlugin {
             */
             playerActivityDB.initializeTable();
             playerDataDB.initializeTable();
-            playerIDDB.initializeTable();
         }, 20);
 
         // luckperms
@@ -181,10 +176,10 @@ public final class Core extends JavaPlugin {
         pluginManager.registerEvents(new CooldownManager(), this);
         pluginManager.registerEvents(new PlayerManager(), this);
         pluginManager.registerEvents(new ChatLimiter(), this);
-        pluginManager.registerEvents(new ChatDecoration(this), this);
+        pluginManager.registerEvents(new ChatDecoration(), this);
         pluginManager.registerEvents(new TablistHandler(this), this);
         pluginManager.registerEvents(new ActivityCommand(this), this);
-        pluginManager.registerEvents(new PlayerIDHandler(this), this);
+        pluginManager.registerEvents(new PlayerDataHandler(this), this);
     }
 
     private void registerCommands() {
@@ -193,8 +188,7 @@ public final class Core extends JavaPlugin {
         HashMap<PluginCommand, CommandExecutor> cmdList = new HashMap<>();
         cmdList.put(getCommand("activity"), new ActivityCommand(this));
         cmdList.put(getCommand("activity-id"), new ActivityIdCommand(this));
-        cmdList.put(getCommand("player-manager"), new PlayerManagerCommand(this));
-        cmdList.put(getCommand("kills"), new DataCommand(this));
+        cmdList.put(getCommand("kills"), new PlayerDataCommand(this));
 
         // Messages Commands
         for (TextCommandsConfig msgCmd : TextCommandsConfig.values()) {
@@ -221,7 +215,6 @@ public final class Core extends JavaPlugin {
      * with luckperms groups weight support
      */
     private void playerList() {
-       // tablistScoreboard = getServer().getScoreboardManager().getNewScoreboard();
         TablistTeams tablistTeams = new TablistTeams(tablistScoreboard);
         tablistTeams.createTeams();
     }

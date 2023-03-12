@@ -7,12 +7,9 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import net.trustgames.core.config.player_data.PlayerDataType;
 import net.trustgames.core.managers.LuckPermsManager;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 import java.text.DecimalFormat;
-import java.util.Objects;
-import java.util.UUID;
 
 public final class MiniMessageUtils {
 
@@ -21,16 +18,12 @@ public final class MiniMessageUtils {
      * various tags in the message with values of the player
      * Some tags work only for offline players or online players!
      *
-     * @param uuid UUID of Player to replace the tags with info of
+     * @param player Player to replace the tags with info of
      * @return new MiniMessage with formatter ready
      */
-    public static MiniMessage format(UUID uuid) {
-        OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+    public static MiniMessage format(Player player) {
         String playerName = player.getName();
-        if (playerName == null){
-            playerName = "ERROR";
-        }
-        Component prefix = LuckPermsManager.getPlayerPrefix(uuid);
+        Component prefix = LuckPermsManager.getPlayerPrefix(player);
         if (!prefix.equals(Component.text(""))) {
             prefix = prefix.append(Component.text(" "));
         }
@@ -48,7 +41,7 @@ public final class MiniMessageUtils {
 
     /**
      * MiniMessage instance, which replaces
-     * the id tag in the message with the string ID
+     * {@literal the <id> tag in the message with the string ID}
      *
      * @param id ID to replace the tag with
      * @return new MiniMessage with formatter ready
@@ -57,7 +50,7 @@ public final class MiniMessageUtils {
         return MiniMessage.builder()
                 .tags(TagResolver.builder()
                         .resolver(StandardTags.defaults())
-                        .resolver(TagResolver.resolver("int", Tag.selfClosingInserting(Component.text(id))))
+                        .resolver(TagResolver.resolver("id", Tag.selfClosingInserting(Component.text(id))))
                         .build()
                 )
                 .build();
@@ -93,11 +86,12 @@ public final class MiniMessageUtils {
      * @param name Component to replace the tag with
      * @return new MiniMessage with formatter ready
      */
-    public static MiniMessage addName(Component name) {
+    public static MiniMessage addName(String name) {
         return MiniMessage.builder()
                 .tags(TagResolver.builder()
                         .resolver(StandardTags.defaults())
-                        .resolver(TagResolver.resolver("player_name", Tag.selfClosingInserting(name)))
+                        .resolver(TagResolver.resolver("player_name", Tag.selfClosingInserting(
+                                Component.text(name))))
                         .build()
                 )
                 .build();
@@ -108,15 +102,15 @@ public final class MiniMessageUtils {
      * various currency tags in the message with
      * data values of the player
      *
-     * @param uuid UUID of Player to replace the tags with info of
+     * @param playerName Name of the Player to replace the tags with info of
      * @return new MiniMessage with formatter ready
      */
-    public static MiniMessage playerData(UUID uuid, PlayerDataType dataType, String value) {
+    public static MiniMessage playerData(String playerName, PlayerDataType dataType, String value) {
         return MiniMessage.builder()
                 .tags(TagResolver.builder()
                         .resolver(StandardTags.defaults())
-                        .resolver(TagResolver.resolver("player_name", Tag.selfClosingInserting(Component.text(Objects.requireNonNull(
-                                Bukkit.getServer().getOfflinePlayer(uuid).getName())))))
+                        .resolver(TagResolver.resolver("player_name", Tag.selfClosingInserting(Component.text(
+                                playerName))))
                         .resolver(TagResolver.resolver("player_data", Tag.selfClosingInserting(
                                 Component.text(dataType.name().toLowerCase()))))
                         .resolver(TagResolver.resolver("value", Tag.selfClosingInserting(Component.text(value))))

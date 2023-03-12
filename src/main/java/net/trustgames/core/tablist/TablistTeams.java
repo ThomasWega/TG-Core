@@ -5,12 +5,14 @@ import net.luckperms.api.model.group.Group;
 import net.luckperms.api.node.Node;
 import net.trustgames.core.logger.CoreLogger;
 import net.trustgames.core.managers.LuckPermsManager;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Handles the priority sorting of groups and players in the player-list
@@ -74,13 +76,10 @@ public final class TablistTeams {
      * Add player to the corresponding team by getting his primary group and its group's weight.
      * set the prefix to team with luckperms cached data.
      *
-     * @param uuid UUID of whom to add to the scoreboard team
+     * @param player Player to add to the scoreboard team
      */
-    public void addToTeam(UUID uuid) {
-        Player player = Bukkit.getPlayer(uuid);
-        if (player == null) return;
-
-        Group playerGroup = LuckPermsManager.getGroupManager().getGroup(LuckPermsManager.getPlayerPrimaryGroup(uuid));
+    public void addToTeam(Player player) {
+        Group playerGroup = LuckPermsManager.getGroupManager().getGroup(LuckPermsManager.getPlayerPrimaryGroup(player));
         if (playerGroup == null) return;
         String stringTeam = groupOrder.get(playerGroup) + playerGroup.getName();
         Team team = tablist.getTeam(stringTeam);
@@ -93,18 +92,16 @@ public final class TablistTeams {
         team.addPlayer(player);
 
         if (!stringTeam.contains("default"))
-            team.prefix(LuckPermsManager.getPlayerPrefix(uuid).append(Component.text(" ")));
+            team.prefix(LuckPermsManager.getPlayerPrefix(player).append(Component.text(" ")));
 
         player.setScoreboard(tablist);
     }
 
     /**
-     * @param uuid UUID of whom to remove from the scoreboard team
+     * @param player Player to remove from the scoreboard team
      */
-    public void removeFromTeam(UUID uuid) {
-        Player player = Bukkit.getPlayer(uuid);
+    public void removeFromTeam(Player player) {
         if (player == null) return;
-
         Team team = tablist.getPlayerTeam(player);
         if (team != null)
             team.removePlayer(player);

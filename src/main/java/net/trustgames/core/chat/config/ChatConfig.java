@@ -6,8 +6,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.trustgames.core.config.CorePermissionsConfig;
 import net.trustgames.core.utils.ColorUtils;
 import net.trustgames.core.utils.MiniMessageUtils;
-
-import java.util.UUID;
+import org.bukkit.entity.Player;
 
 public enum ChatConfig {
     PREFIX("<color:#00adc4>Chat | </color>"),
@@ -35,11 +34,11 @@ public enum ChatConfig {
     /**
      * Replace tags with player info
      *
-     * @param uuid UUID of Player to replace the tags with info of
+     * @param player Player to replace the tags with info of
      * @return New formatted Component message with replaced tags
      */
-    public final Component formatMessage(UUID uuid) {
-        return MiniMessageUtils.format(uuid).deserialize(value);
+    public final Component formatMessage(Player player) {
+        return MiniMessageUtils.format(player).deserialize(value);
     }
 
     /**

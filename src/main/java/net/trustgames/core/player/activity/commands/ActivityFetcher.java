@@ -1,5 +1,6 @@
 package net.trustgames.core.player.activity.commands;
 
+import jline.internal.Nullable;
 import net.trustgames.core.Core;
 
 import java.sql.*;
@@ -28,7 +29,11 @@ public final class ActivityFetcher {
      * @param callback Callback where the result will be saved
      * @see ActivityFetcher#fetchActivityByID(String, Consumer)
      */
-    public void fetchActivityByUUID(UUID uuid, Consumer<ResultSet> callback) {
+    public void fetchActivityByUUID(@Nullable UUID uuid, @Nullable Consumer<ResultSet> callback) {
+        if (uuid == null) {
+            callback.accept(null);
+            return;
+        }
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             try (Connection connection = core.getDatabaseManager().getConnection();
                  PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE uuid = ? ORDER BY id DESC")) {

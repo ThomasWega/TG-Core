@@ -1,7 +1,8 @@
 package net.trustgames.core.player.data;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.cache.DataCache;
+import net.trustgames.core.cache.PlayerDataCache;
+import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.config.player_data.PlayerDataType;
 import net.trustgames.core.player.data.additional.level.PlayerLevel;
 
@@ -20,13 +21,11 @@ import static net.trustgames.core.player.data.PlayerDataDB.tableName;
 public final class PlayerDataFetcher {
 
     private final Core core;
-    private final UUID uuid;
-    private final DataCache dataCache;
+    private final PlayerDataType dataType;
 
-    public PlayerDataFetcher(Core core, UUID uuid) {
+    public PlayerDataFetcher(Core core, PlayerDataType dataType) {
         this.core = core;
-        this.uuid = uuid;
-        this.dataCache = new DataCache(core, uuid);
+        this.dataType = dataType;
     }
 
     /**
@@ -34,40 +33,72 @@ public final class PlayerDataFetcher {
      * to the given uuid. This whole operation is run async, and the result is saved
      * in the callback. If no result is found, int "0" is returned
      *
-     * @param playerDataType DataType which will be used to get the column name
-     * @param callback       Callback where the result will be saved
+     * @param callback Callback where the result will be saved
+     * @implNote Can't fetch player's UUID!
+     * @see PlayerDataFetcher#fetchUUID(String, Consumer)
      */
-    public void fetch(PlayerDataType playerDataType, Consumer<String> callback) {
-        core.getServer().getScheduler().runTaskAsynchronously(core, () ->
-                dataCache.fetch(playerDataType, data -> {
-                    if (data != null) {
-                        callback.accept(data);
-                    } else {
-                        if (playerDataType == PlayerDataType.LEVEL) {
-                            PlayerLevel playerLevel = new PlayerLevel(core, uuid);
-                            playerLevel.getLevel(level -> callback.accept(String.valueOf(level)));
-                            return;
-                        }
+    public void fetch(UUID uuid, Consumer<String> callback) {
 
-                        String label = playerDataType.getColumnName();
-                        try (Connection connection = core.getDatabaseManager().getConnection();
-                             PreparedStatement statement = connection.prepareStatement("SELECT " + label + " FROM " + tableName + " WHERE uuid = ?")) {
-                            statement.setString(1, uuid.toString());
-                            try (ResultSet results = statement.executeQuery()) {
-                                if (results.next()) {
-                                    Object object = results.getObject(label);
-                                    callback.accept(object.toString());
-                                    if (!(playerDataType == PlayerDataType.UUID)) // don't update the uuid
-                                       dataCache.update(playerDataType, object.toString());
-                                    return;
-                                }
-                                callback.accept(null);
-                            }
-                        } catch (SQLException e) {
-                            throw new RuntimeException(e);
-                        }
+        if (dataType == PlayerDataType.UUID) {
+            throw new RuntimeException(this.getClass().getName() + " can't be used to retrieve UUID. " +
+                    "Use the " + UUIDCache.class.getName() + " instead!");
+        }
+
+        core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
+            if (dataType == PlayerDataType.LEVEL) {
+                PlayerLevel playerLevel = new PlayerLevel(core, uuid);
+                playerLevel.getLevel(level -> callback.accept(String.valueOf(level)));
+                return;
+            }
+
+            String label = dataType.getColumnName();
+            try (Connection connection = core.getDatabaseManager().getConnection();
+                 PreparedStatement statement = connection.prepareStatement("SELECT " + label + " FROM " + tableName + " WHERE uuid = ?")) {
+                statement.setString(1, uuid.toString());
+                try (ResultSet results = statement.executeQuery()) {
+                    if (results.next()) {
+                        Object object = results.getObject(label);
+                        callback.accept(object.toString());
+                        return;
                     }
-                }));
+                    callback.accept(null);
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+
+    /**
+     * Gets specifically only the Player's uuid by his name from the database.
+     * This whole operation is run async, and the result is saved
+     * in the callback. If no result is found, int "0" is returned
+     *
+     * @param callback Callback where the result will be saved
+     * @implNote Can't fetch anything other that Player's UUID!
+     * @see PlayerDataFetcher#fetch(UUID, Consumer)
+     */
+    public void fetchUUID(String playerName, Consumer<UUID> callback) {
+        core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
+            try (Connection connection = core.getDatabaseManager().getConnection();
+                 PreparedStatement statement = connection.prepareStatement("SELECT uuid FROM " + tableName + " WHERE name = ?")) {
+                statement.setString(1, playerName);
+                ResultSet result = statement.executeQuery();
+                if (result.next()) {
+                    String stringUuid = result.getString("uuid");
+                    try {
+                        callback.accept(UUID.fromString(stringUuid));
+                        return;
+                    } catch (IllegalArgumentException e) {
+                        throw new RuntimeException("INVALID UUID FOR: " + stringUuid, e);
+                    }
+                }
+                callback.accept(null);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     /**
@@ -76,19 +107,16 @@ public final class PlayerDataFetcher {
      * with each other.
      * Data is also updated in the redis cache.
      *
-     * @param playerDataType DataType which will be updated with the Object
-     * @param object         Object to update the DataType with
+     * @param object Object to update the DataType with
      */
-    public void update(PlayerDataType playerDataType, Object object) {
-        dataCache.update(playerDataType, object.toString());
-
-        if (playerDataType == PlayerDataType.LEVEL) {
+    public void update(UUID uuid, Object object) {
+        if (dataType == PlayerDataType.LEVEL) {
             PlayerLevel playerLevel = new PlayerLevel(core, uuid);
             playerLevel.setLevel(Integer.parseInt(object.toString()));
             return;
         }
 
-        String label = playerDataType.getColumnName();
+        String label = dataType.getColumnName();
 
         Connection connection = core.getDatabaseManager().getConnection();
         try (PreparedStatement statement = connection.prepareStatement(
@@ -99,6 +127,10 @@ public final class PlayerDataFetcher {
             connection.setAutoCommit(false); // disable auto-commit mode to start a transaction
             statement.executeUpdate();
             connection.commit();
+
+            // update the cache
+            PlayerDataCache playerDataCache = new PlayerDataCache(core, uuid, dataType);
+            playerDataCache.update(object.toString());
         } catch (SQLException e) {
             try {
                 connection.rollback();

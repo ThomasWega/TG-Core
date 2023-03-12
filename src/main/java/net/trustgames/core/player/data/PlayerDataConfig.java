@@ -4,8 +4,6 @@ import net.kyori.adventure.text.Component;
 import net.trustgames.core.config.player_data.PlayerDataType;
 import net.trustgames.core.utils.MiniMessageUtils;
 
-import java.util.UUID;
-
 /**
  * All configurable messages for PlayerDataCommand
  */
@@ -29,10 +27,10 @@ public enum PlayerDataConfig {
     /**
      * Replace player data tags with player data
      *
-     * @param uuid UUID of Player to replace the tags with value of
+     * @param playerName Name of the Player to replace the tags with value of
      * @return New formatted Component message with replaced tags
      */
-    public final Component formatMessage(UUID uuid, PlayerDataType dataType, String value) {
-        return MiniMessageUtils.playerData(uuid, dataType, value).deserialize(message);
+    public final Component formatMessage(String playerName, PlayerDataType dataType, String value) {
+        return MiniMessageUtils.playerData(playerName, dataType, value).deserialize(message);
     }
 }

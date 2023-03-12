@@ -10,13 +10,13 @@ import net.luckperms.api.model.user.User;
 import net.trustgames.core.Core;
 import net.trustgames.core.tablist.TablistTeams;
 import net.trustgames.core.utils.ColorUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Handles the various LuckPerms checks and events
@@ -25,9 +25,11 @@ public final class LuckPermsManager {
 
     static final LuckPerms luckPerms = Core.getLuckPerms();
     private final Core core;
+    private final TablistTeams tablistTeams;
 
     public LuckPermsManager(Core core) {
         this.core = core;
+        this.tablistTeams = new TablistTeams(core.getTablistScoreboard());
     }
 
     /**
@@ -63,13 +65,12 @@ public final class LuckPermsManager {
     }
 
     /**
-     * @param uuid UUID of Player to check primary group for
+     * @param player Player to check primary group for
      * @return Primary group of the given player
      */
-    public static String getPlayerPrimaryGroup(UUID uuid) {
-        return Objects.requireNonNull(luckPerms.getUserManager().getUser(uuid),
-                        "Player UUID was null when getting his primary group")
-                .getPrimaryGroup();
+    public static String getPlayerPrimaryGroup(Player player) {
+        User user = getUser(player);
+        return user.getPrimaryGroup();
     }
 
     /**
@@ -85,17 +86,14 @@ public final class LuckPermsManager {
      * Get the player's prefix. If the prefix is null,
      * it will be set to ""
      *
-     * @param uuid UUID of Player to get prefix for
+     * @param player Player to get prefix for
      * @return Player prefix String
      */
-    public static @NotNull Component getPlayerPrefix(UUID uuid) {
-        User user = luckPerms.getUserManager().getUser(uuid);
-        Component prefix = Component.text("");
-        if (user != null) {
-            String prefixString = user.getCachedData().getMetaData().getPrefix();
-            prefix = ColorUtils.color(Objects.requireNonNullElse(prefixString, ""));
-        }
-        return prefix;
+    public static @NotNull Component getPlayerPrefix(Player player) {
+        User user = getUser(player);
+        String prefixString = user.getCachedData().getMetaData().getPrefix();
+
+        return ColorUtils.color(Objects.requireNonNullElse(prefixString, ""));
     }
 
     /**
@@ -129,11 +127,11 @@ public final class LuckPermsManager {
      */
     private void onUserDataRecalculate(UserDataRecalculateEvent event) {
         core.getServer().getScheduler().runTask(core, () -> {
-            UUID uuid = event.getUser().getUniqueId();
+            Player player = Bukkit.getPlayer(event.getUser().getUniqueId());
+            if (player == null) return;
 
             // add player to player-list team to sort priority
-            TablistTeams playerListTeamsManager = new TablistTeams(core.getTablistScoreboard());
-            playerListTeamsManager.addToTeam(uuid);
+            tablistTeams.addToTeam(player);
         });
     }
 }
