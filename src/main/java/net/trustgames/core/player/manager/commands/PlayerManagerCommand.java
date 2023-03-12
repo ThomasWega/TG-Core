@@ -5,7 +5,7 @@ import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.command.TrustCommand;
 import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CorePermissionsConfig;
-import net.trustgames.core.config.cache.player_data.PlayerDataType;
+import net.trustgames.core.config.player_data.PlayerDataType;
 import net.trustgames.core.player.data.PlayerData;
 import net.trustgames.core.player.data.PlayerDataConfig;
 import net.trustgames.core.player.data.additional.level.PlayerLevel;
@@ -18,10 +18,12 @@ import java.util.UUID;
 public final class PlayerManagerCommand extends TrustCommand {
 
     private final Core core;
+    private final UUIDCache uuidCache;
 
     public PlayerManagerCommand(Core core) {
         super(CorePermissionsConfig.STAFF.permission);
         this.core = core;
+        this.uuidCache = core.getUuidCache();
     }
 
     @Override
@@ -50,14 +52,16 @@ public final class PlayerManagerCommand extends TrustCommand {
         }
 
         OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
-        UUID uuid = UUIDCache.get(target.getName());
 
         int value = 0;
         if (!actionType.equals("get")) {
             try {
                 value = Integer.parseInt(args[3]);
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-                sender.sendMessage(PlayerDataConfig.INVALID_VALUE.formatMessage(uuid, PlayerDataType.GEMS, String.valueOf(value))); // gold is dummy type
+                int finalValue = value;
+                uuidCache.get(target.getName(), uuid -> {
+                    sender.sendMessage(PlayerDataConfig.INVALID_VALUE.formatMessage(uuid, PlayerDataType.GEMS, String.valueOf(finalValue))); // gold is dummy type
+                });
                 return;
             }
         }
@@ -71,55 +75,57 @@ public final class PlayerManagerCommand extends TrustCommand {
     }
 
     private void handlePlayerData(CommandSender sender, OfflinePlayer target, PlayerDataType dataType, String actionType, int value) {
-        UUID uuid = UUIDCache.get(target.getName());
-        PlayerData playerData = new PlayerData(core, uuid, dataType);
-        switch (actionType) {
-            case "set" -> {
-                playerData.setData(value);
-                sender.sendMessage(PlayerDataConfig.SET.formatMessage(uuid, dataType, String.valueOf(value)));
-            }
-            case "add" -> {
-                playerData.addData(value);
-                sender.sendMessage(PlayerDataConfig.ADD.formatMessage(uuid, dataType, String.valueOf(value)));
-            }
-            case "remove" -> {
-                playerData.removeData(value);
-                sender.sendMessage(PlayerDataConfig.REMOVE.formatMessage(uuid, dataType, String.valueOf(value)));
-            }
-            case "get" -> playerData.getData(data -> {
-                // if there is no data for the player, the value will be "-1"
-                if (data == -1){
-                    sender.sendMessage(CommandConfig.COMMAND_PLAYER_UNKNOWN.formatMessage(uuid));
-                    return;
+        uuidCache.get(target.getName(), uuid -> {
+            PlayerData playerData = new PlayerData(core, uuid, dataType);
+            switch (actionType) {
+                case "set" -> {
+                    playerData.setData(value);
+                    sender.sendMessage(PlayerDataConfig.SET.formatMessage(uuid, dataType, String.valueOf(value)));
                 }
-                sender.sendMessage(PlayerDataConfig.GET_OTHER.formatMessage(uuid, dataType, String.valueOf(value)));
-            });
-            default -> sender.sendMessage(PlayerDataConfig.INVALID_ACTION
-                    .formatMessage(uuid, dataType, String.valueOf(value)));
-        }
+                case "add" -> {
+                    playerData.addData(value);
+                    sender.sendMessage(PlayerDataConfig.ADD.formatMessage(uuid, dataType, String.valueOf(value)));
+                }
+                case "remove" -> {
+                    playerData.removeData(value);
+                    sender.sendMessage(PlayerDataConfig.REMOVE.formatMessage(uuid, dataType, String.valueOf(value)));
+                }
+                case "get" -> playerData.getData(data -> {
+                    // if there is no data for the player, the value will be "-1"
+                    if (data == -1){
+                        sender.sendMessage(CommandConfig.COMMAND_PLAYER_UNKNOWN.formatMessage(uuid));
+                        return;
+                    }
+                    sender.sendMessage(PlayerDataConfig.GET_OTHER.formatMessage(uuid, dataType, String.valueOf(value)));
+                });
+                default -> sender.sendMessage(PlayerDataConfig.INVALID_ACTION
+                        .formatMessage(uuid, dataType, String.valueOf(value)));
+            }
+        });
     }
 
     private void handlePlayerLevel(CommandSender sender, OfflinePlayer target, String actionType, int value) {
-        UUID uuid = UUIDCache.get(target.getName());
-        PlayerDataType dataType = PlayerDataType.LEVEL;
-        PlayerLevel playerLevel = new PlayerLevel(core, uuid);
-        switch (actionType) {
-            case "set" -> {
-                playerLevel.setLevel(value);
-                sender.sendMessage(PlayerDataConfig.SET.formatMessage(uuid, dataType, String.valueOf(value)));
+        uuidCache.get(target.getName(), uuid -> {
+            PlayerDataType dataType = PlayerDataType.LEVEL;
+            PlayerLevel playerLevel = new PlayerLevel(core, uuid);
+            switch (actionType) {
+                case "set" -> {
+                    playerLevel.setLevel(value);
+                    sender.sendMessage(PlayerDataConfig.SET.formatMessage(uuid, dataType, String.valueOf(value)));
+                }
+                case "add" -> {
+                    playerLevel.addLevel(value);
+                    sender.sendMessage(PlayerDataConfig.ADD.formatMessage(uuid, dataType, String.valueOf(value)));
+                }
+                case "remove" -> {
+                    playerLevel.removeLevel(value);
+                    sender.sendMessage(PlayerDataConfig.REMOVE.formatMessage(uuid, dataType, String.valueOf(value)));
+                }
+                case "get" -> playerLevel.getLevel(level ->
+                        sender.sendMessage(PlayerDataConfig.GET_OTHER.formatMessage(uuid, dataType, String.valueOf(value))));
+                default -> sender.sendMessage(PlayerDataConfig.INVALID_ACTION
+                        .formatMessage(uuid, dataType, String.valueOf(value)));
             }
-            case "add" -> {
-                playerLevel.addLevel(value);
-                sender.sendMessage(PlayerDataConfig.ADD.formatMessage(uuid, dataType, String.valueOf(value)));
-            }
-            case "remove" -> {
-                playerLevel.removeLevel(value);
-                sender.sendMessage(PlayerDataConfig.REMOVE.formatMessage(uuid, dataType, String.valueOf(value)));
-            }
-            case "get" -> playerLevel.getLevel(level ->
-                    sender.sendMessage(PlayerDataConfig.GET_OTHER.formatMessage(uuid, dataType, String.valueOf(value))));
-            default -> sender.sendMessage(PlayerDataConfig.INVALID_ACTION
-                    .formatMessage(uuid, dataType, String.valueOf(value)));
-        }
+        });
     }
 }

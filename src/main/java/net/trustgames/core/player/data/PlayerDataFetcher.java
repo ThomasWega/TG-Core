@@ -2,7 +2,7 @@ package net.trustgames.core.player.data;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.cache.DataCache;
-import net.trustgames.core.config.cache.player_data.PlayerDataType;
+import net.trustgames.core.config.player_data.PlayerDataType;
 import net.trustgames.core.player.data.additional.level.PlayerLevel;
 
 import java.sql.Connection;
@@ -50,7 +50,7 @@ public final class PlayerDataFetcher {
                         }
 
                         String label = playerDataType.getColumnName();
-                        try (Connection connection = core.getMariaDB().getConnection();
+                        try (Connection connection = core.getDatabaseManager().getConnection();
                              PreparedStatement statement = connection.prepareStatement("SELECT " + label + " FROM " + tableName + " WHERE uuid = ?")) {
                             statement.setString(1, uuid.toString());
                             try (ResultSet results = statement.executeQuery()) {
@@ -90,7 +90,7 @@ public final class PlayerDataFetcher {
 
         String label = playerDataType.getColumnName();
 
-        Connection connection = core.getMariaDB().getConnection();
+        Connection connection = core.getDatabaseManager().getConnection();
         try (PreparedStatement statement = connection.prepareStatement(
                 "INSERT INTO " + tableName + "(uuid, " + label + ") VALUES (?, ?) " +
                         "ON DUPLICATE KEY UPDATE " + label + " = VALUES(" + label + ")")) {

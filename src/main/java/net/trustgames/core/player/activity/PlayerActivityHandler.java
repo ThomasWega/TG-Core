@@ -8,30 +8,26 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.UUID;
-
 /**
  * This class is used for listeners for table player_activity
  */
 public final class PlayerActivityHandler implements Listener {
 
     private final PlayerActivityFetcher activityFetcher;
+    private final UUIDCache uuidCache;
 
     public PlayerActivityHandler(Core core) {
         this.activityFetcher = new PlayerActivityFetcher(core);
+        this.uuidCache = core.getUuidCache();
     }
 
     @EventHandler
     private void onPlayerJoin(PlayerJoinEvent event) {
-        UUID uuid = UUIDCache.get(event.getPlayer().getName());
-
-        activityFetcher.add(uuid, "JOIN SERVER " + Bukkit.getServer().getName() + " (" + Bukkit.getServer().getPort() + ")");
+        uuidCache.get(event.getPlayer().getName(), uuid -> activityFetcher.add(uuid, "JOIN SERVER " + Bukkit.getServer().getName() + " (" + Bukkit.getServer().getPort() + ")"));
     }
 
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent event) {
-        UUID uuid = UUIDCache.get(event.getPlayer().getName());
-
-        activityFetcher.add(uuid, "QUIT SERVER " + Bukkit.getServer().getName() + " (" + Bukkit.getServer().getPort() + ")");
+        uuidCache.get(event.getPlayer().getName(), uuid -> activityFetcher.add(uuid, "QUIT SERVER " + Bukkit.getServer().getName() + " (" + Bukkit.getServer().getPort() + ")"));
     }
 }

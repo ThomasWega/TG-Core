@@ -1,16 +1,13 @@
 package net.trustgames.core.managers;
 
-import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CooldownConfig;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 /**
  * Handles cooldowns for chat and commands messages.
@@ -18,8 +15,8 @@ import java.util.UUID;
  */
 public final class CooldownManager implements Listener {
 
-    private final HashMap<UUID, Long> commandCooldownTime = new HashMap<>();
-    private final HashMap<UUID, Long> cooldownMessageTime = new HashMap<>();
+    private final HashMap<String, Long> commandCooldownTime = new HashMap<>();
+    private final HashMap<String, Long> cooldownMessageTime = new HashMap<>();
 
     /**
      * Ensures, that the command is not being spammed too much.
@@ -28,48 +25,49 @@ public final class CooldownManager implements Listener {
      * This method allows only one execution of the command per given time.
      * It also ensures that the "don't spam" message is not being sent too often to the player.
      *
-     * @param uuid         UUID of Player to put in a cooldown
+     * @param player   Player to put a cooldown on
      * @param cooldownTime Cooldown time in seconds
      * @return True if the player is on cooldown
      */
-    public boolean commandCooldown(UUID uuid, Double cooldownTime) {
+    public boolean commandCooldown(Player player, Double cooldownTime) {
+        String playerName = player.getName();
         /*
          if the player is not in the cooldown yet, or if his cooldown expired,
          put him in the hashmap with the new time
         */
-        if (!commandCooldownTime.containsKey(uuid) || !isOnCooldown(uuid, cooldownTime)) {
-            commandCooldownTime.put(uuid, System.currentTimeMillis());
-        } else if (isOnCooldown(uuid, cooldownTime)) {
-            sendMessage(uuid);
+        if (!commandCooldownTime.containsKey(playerName) || !isOnCooldown(playerName, cooldownTime)) {
+            commandCooldownTime.put(playerName, System.currentTimeMillis());
+        } else if (isOnCooldown(playerName, cooldownTime)) {
+            sendMessage(player);
             return true;
         }
         return false;
     }
 
     /**
-     * @param uuid         UUID of Player to check cooldown on
+     * @param playerName   Name of the Player to check cooldown on
      * @param cooldownTime Cooldown time in seconds
      * @return if player is on cooldown
      */
-    private boolean isOnCooldown(UUID uuid, Double cooldownTime) {
-        return !(cooldownTime <= (System.currentTimeMillis() - commandCooldownTime.get(uuid)) / 1000d);
+    private boolean isOnCooldown(String playerName, Double cooldownTime) {
+        return !(cooldownTime <= (System.currentTimeMillis() - commandCooldownTime.get(playerName)) / 1000d);
     }
 
     /**
      * check if the wait message isn't being sent too often to avoid it being too spammy
      *
-     * @param uuid UUID of Player which the cooldown messages are being sent to
+     * @param playerName Name of the Player which the cooldown messages are being sent to
      * @return if the cooldown message is too spammy
      */
-    private boolean isSpam(UUID uuid) {
+    private boolean isSpam(String playerName) {
         /*
          if he has any last wait message, get the time and make sure the
          current time - the last time of wait message is larger than the min value in config
         */
-        if (cooldownMessageTime.containsKey(uuid)) {
-            return !(CooldownConfig.WARN_MESSAGES_LIMIT_SEC.value <= (System.currentTimeMillis() - cooldownMessageTime.get(uuid)) / 1000d);
+        if (cooldownMessageTime.containsKey(playerName)) {
+            return !(CooldownConfig.WARN_MESSAGES_LIMIT_SEC.value <= (System.currentTimeMillis() - cooldownMessageTime.get(playerName)) / 1000d);
         } else {
-            cooldownMessageTime.put(uuid, System.currentTimeMillis());
+            cooldownMessageTime.put(playerName, System.currentTimeMillis());
             return false;
         }
     }
@@ -78,26 +76,23 @@ public final class CooldownManager implements Listener {
     /**
      * Send the cooldown messages
      *
-     * @param uuid UUID of Player to send the messages to
+     * @param player Player to send the messages to
      */
-    private void sendMessage(UUID uuid) {
-        Player player = Bukkit.getPlayer(uuid);
-
+    private void sendMessage(Player player) {
         if (player == null) return;
-        if (isSpam(uuid)) return;
+        String playerName = player.getName();
+        if (isSpam(playerName)) return;
 
         player.sendMessage(CommandConfig.COMMAND_SPAM.getText());
 
-        cooldownMessageTime.put(uuid, System.currentTimeMillis());
+        cooldownMessageTime.put(playerName, System.currentTimeMillis());
     }
 
     // on player quit, remove player's entries from the hashmaps
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
-        UUID uuid = UUIDCache.get(player.getName());
-
-        commandCooldownTime.remove(uuid);
-        cooldownMessageTime.remove(uuid);
+        String playerName = event.getPlayer().getName();
+        commandCooldownTime.remove(playerName);
+        cooldownMessageTime.remove(playerName);
     }
 }

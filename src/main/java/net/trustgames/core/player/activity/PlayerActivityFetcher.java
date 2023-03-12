@@ -30,7 +30,7 @@ public class PlayerActivityFetcher {
      */
     public void fetchByUUID(UUID uuid, Consumer<PlayerActivity> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
-            try (Connection connection = core.getMariaDB().getConnection();
+            try (Connection connection = core.getDatabaseManager().getConnection();
                  PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE uuid = ? ORDER BY id DESC LIMIT 1")) {
                 statement.setString(1, uuid.toString());
                 try (ResultSet results = statement.executeQuery()) {
@@ -60,7 +60,7 @@ public class PlayerActivityFetcher {
      */
     public void insert(PlayerActivity playerActivity) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
-            try (Connection connection = core.getMariaDB().getConnection();
+            try (Connection connection = core.getDatabaseManager().getConnection();
                  PreparedStatement statement = connection.prepareStatement("INSERT INTO " + tableName + "(uuid, ip, action, time) VALUES (?, ?, ?, ?)")) {
                 statement.setString(1, playerActivity.getUuid().toString());
                 statement.setString(2, playerActivity.getIp());
@@ -117,7 +117,7 @@ public class PlayerActivityFetcher {
         Player player = Bukkit.getPlayer(uuid);
 
         if (player == null) return;
-        if (core.getMariaDB().isMySQLDisabled()) return;
+        if (core.getDatabaseManager().isMySQLDisabled()) return;
 
         get(uuid, playerActivity -> {
             if (playerActivity != null) {

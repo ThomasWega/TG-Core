@@ -1,7 +1,7 @@
 package net.trustgames.core.cache;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.config.cache.player_data.PlayerDataType;
+import net.trustgames.core.config.player_data.PlayerDataType;
 import net.trustgames.core.player.data.PlayerDataFetcher;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -15,16 +15,16 @@ public class DataCache {
 
     private final Core core;
     private final OfflinePlayer player;
+    private final UUID uuid;
 
-    private final JedisPool pool = Core.jedisPool;
-
-    private final PlayerDataFetcher dataFetcher;
+    private final JedisPool pool;
 
 
     public DataCache(Core core, UUID uuid) {
         this.core = core;
+        this.uuid = uuid;
+        this.pool = core.getJedisPool();
         this.player = Bukkit.getServer().getOfflinePlayer(uuid);
-        this.dataFetcher = new PlayerDataFetcher(core, uuid);
     }
 
     public void update(PlayerDataType dataType, String value) {
@@ -42,6 +42,7 @@ public class DataCache {
             try (Jedis jedis = pool.getResource()) {
                 String result = jedis.hget(playerName, dataType.getColumnName());
                 if (result == null){
+                    PlayerDataFetcher dataFetcher = new PlayerDataFetcher(core, uuid);
                     dataFetcher.fetch(dataType, data -> update(dataType, data));
                 }
                 callback.accept(result);

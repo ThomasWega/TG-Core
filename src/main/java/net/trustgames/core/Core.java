@@ -2,27 +2,30 @@ package net.trustgames.core;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import lombok.Getter;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.trustgames.core.announcer.AnnounceHandler;
+import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.chat.ChatDecoration;
 import net.trustgames.core.chat.ChatLimiter;
-import net.trustgames.core.commands.activity_commands.ActivityCommand;
-import net.trustgames.core.commands.activity_commands.ActivityIdCommand;
-import net.trustgames.core.commands.messages_commands.MessagesCommands;
-import net.trustgames.core.commands.messages_commands.MessagesCommandsConfig;
+import net.trustgames.core.chat.commands.TextCommands;
+import net.trustgames.core.chat.commands.TextCommandsConfig;
 import net.trustgames.core.managers.*;
 import net.trustgames.core.managers.database.DatabaseManager;
 import net.trustgames.core.player.activity.PlayerActivityDB;
 import net.trustgames.core.player.activity.PlayerActivityHandler;
+import net.trustgames.core.player.activity.commands.ActivityCommand;
+import net.trustgames.core.player.activity.commands.ActivityIdCommand;
 import net.trustgames.core.player.data.PlayerDataDB;
 import net.trustgames.core.player.data.commands.DataCommand;
-import net.trustgames.core.player.list.TablistHandler;
-import net.trustgames.core.player.list.TablistTeams;
 import net.trustgames.core.player.manager.commands.PlayerManagerCommand;
-import net.trustgames.core.player.uuid.PlayerUUIDDB;
-import net.trustgames.core.player.uuid.PlayerUUIDHandler;
+import net.trustgames.core.player.uuid_name.PlayerIDDB;
+import net.trustgames.core.player.uuid_name.PlayerIDHandler;
 import net.trustgames.core.protection.CoreGamerulesHandler;
+import net.trustgames.core.tablist.TablistHandler;
+import net.trustgames.core.tablist.TablistTeams;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
@@ -42,16 +45,22 @@ import java.util.HashMap;
  */
 public final class Core extends JavaPlugin {
 
-    public static JedisPool jedisPool;
-    final DatabaseManager databaseManager = new DatabaseManager(this);
+    @Getter
+    private final JedisPool jedisPool = new JedisPool(new JedisPoolConfig(), "localhost", 6379);
+    @Getter
+    private final UUIDCache uuidCache = new UUIDCache(this);
+    @Getter
+    private final DatabaseManager databaseManager = new DatabaseManager(this);
     public final PlayerDataDB playerDataDB = new PlayerDataDB(this);
-    public final PlayerUUIDDB playerUUIDDB = new PlayerUUIDDB(this);
+    public final PlayerIDDB playerIDDB = new PlayerIDDB(this);
     private final PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
     private final AnnounceHandler announceHandler = new AnnounceHandler(this);
-
     public CooldownManager cooldownManager = new CooldownManager();
     public LuckPermsManager luckPermsManager;
-    private Scoreboard tablistScoreboard;
+
+    @Getter
+    private final Scoreboard tablistScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+    @Getter
     private ProtocolManager protocolManager;
 
     public static LuckPerms getLuckPerms() {
@@ -108,8 +117,16 @@ public final class Core extends JavaPlugin {
         // TODO try to limit the use of uuid cache - same for lobby and proxy plugin
         // TODO move luckperms listeners to different class
         // TODO add comments where missing
-        // TODO maybe use JavaPlugin.getPlugin somewhere?
-        // TODO make uuidCache async
+        // TODO nameCache add expiry
+        // TODO move PlayerIDHandler to proxy
+        // TODO figure out if to use the Bukkit.getOffline player or Bukkit.getServer.getOfflinePlayer
+        // TODO check command manager if not a bullshit
+        // TODO check if uuid is required only later (in if statement or cache for example)
+        // TODO add every possible instance of something to core and just make getter
+        // TODO maybe change MessageUtils and LuckPerms to Player instead of UUID?
+        // TODO merge join listeners which use uuid to one
+        // TODO dont format messages by player UUID!!!!
+
 
         // FIXME TEST: When restarting, the database connections don't close properly or more are created!
         // FIXME TEST: Is there correct amount of connections?
@@ -122,9 +139,6 @@ public final class Core extends JavaPlugin {
 
         createConfigs();
 
-        // REDIS
-        jedisPool = new JedisPool(new JedisPoolConfig(), "localhost", 6379);
-
         // DATABASE
         databaseManager.initializePool();
         getServer().getScheduler().runTaskLaterAsynchronously(this, () -> {
@@ -134,7 +148,7 @@ public final class Core extends JavaPlugin {
             */
             playerActivityDB.initializeTable();
             playerDataDB.initializeTable();
-            playerUUIDDB.initializeTable();
+            playerIDDB.initializeTable();
         }, 20);
 
         // luckperms
@@ -144,10 +158,10 @@ public final class Core extends JavaPlugin {
         // protocollib
         protocolManager = ProtocolLibrary.getProtocolManager();
 
+        playerList();
+
         registerEvents();
         registerCommands();
-
-        playerList();
 
         CoreGamerulesHandler.setGamerules();
 
@@ -167,10 +181,10 @@ public final class Core extends JavaPlugin {
         pluginManager.registerEvents(new CooldownManager(), this);
         pluginManager.registerEvents(new PlayerManager(), this);
         pluginManager.registerEvents(new ChatLimiter(), this);
-        pluginManager.registerEvents(new ChatDecoration(), this);
+        pluginManager.registerEvents(new ChatDecoration(this), this);
         pluginManager.registerEvents(new TablistHandler(this), this);
         pluginManager.registerEvents(new ActivityCommand(this), this);
-        pluginManager.registerEvents(new PlayerUUIDHandler(this), this);
+        pluginManager.registerEvents(new PlayerIDHandler(this), this);
     }
 
     private void registerCommands() {
@@ -183,8 +197,8 @@ public final class Core extends JavaPlugin {
         cmdList.put(getCommand("kills"), new DataCommand(this));
 
         // Messages Commands
-        for (MessagesCommandsConfig msgCmd : MessagesCommandsConfig.values()) {
-            cmdList.put(getCommand(msgCmd.name().toLowerCase()), new MessagesCommands());
+        for (TextCommandsConfig msgCmd : TextCommandsConfig.values()) {
+            cmdList.put(getCommand(msgCmd.name().toLowerCase()), new TextCommands());
         }
 
         for (PluginCommand cmd : cmdList.keySet()) {
@@ -202,33 +216,13 @@ public final class Core extends JavaPlugin {
         }
     }
 
-    public DatabaseManager getMariaDB() {
-        return databaseManager;
-    }
-
     /**
      * Create the playlist and create teams for it
      * with luckperms groups weight support
      */
     private void playerList() {
-        TablistTeams tablistTeams = new TablistTeams(this);
-        tablistScoreboard = getServer().getScoreboardManager().getNewScoreboard();
+       // tablistScoreboard = getServer().getScoreboardManager().getNewScoreboard();
+        TablistTeams tablistTeams = new TablistTeams(tablistScoreboard);
         tablistTeams.createTeams();
     }
-
-    /**
-     * Get the player-list scoreboard. The scoreboard needs to be created in
-     * the main method, as it needs to be created only once and be same for
-     * every player on the server.
-     *
-     * @return Player-list scoreboard
-     */
-    public Scoreboard getTablistScoreboard() {
-        return tablistScoreboard;
-    }
-
-    public ProtocolManager getProtocolManager() {
-        return protocolManager;
-    }
-
 }

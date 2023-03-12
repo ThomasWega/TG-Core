@@ -22,7 +22,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.Entity;
 import net.trustgames.core.Core;
-import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.managers.CooldownManager;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
@@ -43,14 +42,14 @@ import java.util.UUID;
 
 public final class NPCManager {
 
-    private static CooldownManager cooldownManager;
+    private final CooldownManager cooldownManager;
     private final Core core;
     private final ProtocolManager manager;
 
     public NPCManager(Core core) {
         this.core = core;
-        manager = core.getProtocolManager();
-        cooldownManager = new CooldownManager();
+        this.manager = core.getProtocolManager();
+        this.cooldownManager = new CooldownManager();
     }
 
     /**
@@ -271,35 +270,34 @@ public final class NPCManager {
             public void onPacketReceiving(PacketEvent event) {
                 PacketContainer packet = event.getPacket();
                 Player player = event.getPlayer();
-                UUID uuid = UUIDCache.get(player.getName());
-                int entityId = packet.getIntegers().read(0);
+                    int entityId = packet.getIntegers().read(0);
 
-                for (ServerPlayer npc : npcs) {
+                    for (ServerPlayer npc : npcs) {
 
-                    if (npc.getId() == entityId) {
+                        if (npc.getId() == entityId) {
 
-                        boolean isPresent = Objects.requireNonNull(
-                                config.getConfigurationSection("npcs")).getKeys(false).contains(npc.displayName);
-                        if (!isPresent) return;
+                            boolean isPresent = Objects.requireNonNull(
+                                    config.getConfigurationSection("npcs")).getKeys(false).contains(npc.displayName);
+                            if (!isPresent) return;
 
-                        double cooldown = config.getDouble("npcs." + npc.displayName + ".action.cooldown");
-                        if (cooldownManager.commandCooldown(uuid, cooldown)) return;
+                            double cooldown = config.getDouble("npcs." + npc.displayName + ".action.cooldown");
+                            if (cooldownManager.commandCooldown(player, cooldown)) return;
 
-                        String action = config.getString("npcs." + npc.displayName + ".action.type");
-                        List<String> value = config.getStringList("npcs." + npc.displayName + ".action.value");
-                        ActionType actionType = ActionType.valueOf(action);
+                            String action = config.getString("npcs." + npc.displayName + ".action.type");
+                            List<String> value = config.getStringList("npcs." + npc.displayName + ".action.value");
+                            ActionType actionType = ActionType.valueOf(action);
 
-                        switch (actionType) {
-                            case COMMAND:
-                                core.getServer().getScheduler().runTask(core, () -> value.forEach(player::performCommand));
-                            case MESSAGE:
-                                for (String s : value) {
-                                    player.sendMessage(MiniMessage.miniMessage().deserialize(s));
-                                }
+                            switch (actionType) {
+                                case COMMAND:
+                                    core.getServer().getScheduler().runTask(core, () -> value.forEach(player::performCommand));
+                                case MESSAGE:
+                                    for (String s : value) {
+                                        player.sendMessage(MiniMessage.miniMessage().deserialize(s));
+                                    }
+                            }
+                            break;
                         }
-                        break;
                     }
-                }
             }
         });
     }

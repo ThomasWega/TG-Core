@@ -1,4 +1,4 @@
-package net.trustgames.core.player.list;
+package net.trustgames.core.tablist;
 
 import net.kyori.adventure.text.Component;
 import net.trustgames.core.Core;
@@ -11,41 +11,38 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scoreboard.Scoreboard;
 
-import java.util.UUID;
-
 /**
  * Handles the player-list creation
  */
 public final class TablistHandler implements Listener {
 
     private final Core core;
-    private TablistTeams tablistTeams;
+    private final TablistTeams tablistTeams;
+    private final UUIDCache uuidCache;
 
     public TablistHandler(Core core) {
         this.core = core;
+        this.tablistTeams = new TablistTeams(core.getTablistScoreboard());
+        this.uuidCache = core.getUuidCache();
     }
 
     @EventHandler
     private void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        UUID uuid = UUIDCache.get(player.getName());
+        uuidCache.get(player.getName(), uuid -> {
+            Component header = ServerConfig.TABLIST_HEADER.getText();
+            Component footer = ServerConfig.TABLIST_FOOTER.getText();
 
-        Component header = ServerConfig.TABLIST_HEADER.getText();
-        Component footer = ServerConfig.TABLIST_FOOTER.getText();
+            player.sendPlayerListHeaderAndFooter(header, footer);
 
-        player.sendPlayerListHeaderAndFooter(header, footer);
-
-        Scoreboard playerListScoreboard = core.getTablistScoreboard();
-        tablistTeams = new TablistTeams(core);
-        tablistTeams.addToTeam(uuid);
-        player.setScoreboard(playerListScoreboard);
+            Scoreboard playerListScoreboard = core.getTablistScoreboard();
+            tablistTeams.addToTeam(uuid);
+            player.setScoreboard(playerListScoreboard);
+        });
     }
 
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent event) {
-        UUID uuid = UUIDCache.get(event.getPlayer().getName());
-
-        tablistTeams = new TablistTeams(core);
-        tablistTeams.removeFromTeam(uuid);
+        uuidCache.get(event.getPlayer().getName(), tablistTeams::removeFromTeam);
     }
 }

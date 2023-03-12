@@ -1,12 +1,12 @@
-package net.trustgames.core.player.uuid;
+package net.trustgames.core.player.uuid_name;
 
 import net.trustgames.core.Core;
 
-public class PlayerUUIDDB {
+public class PlayerIDDB {
     public static final String tableName = "player_uuid";
     private final Core core;
 
-    public PlayerUUIDDB(Core core) {
+    public PlayerIDDB(Core core) {
         this.core = core;
     }
 
@@ -17,6 +17,6 @@ public class PlayerUUIDDB {
      */
     public void initializeTable() {
         String statement = "CREATE TABLE IF NOT EXISTS " + tableName + "(uuid VARCHAR(36) primary key, name VARCHAR(16))";
-        core.getMariaDB().initializeTable(tableName, statement);
+        core.getDatabaseManager().initializeTable(tableName, statement);
     }
 }

@@ -1,37 +1,49 @@
 package net.trustgames.core.cache;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.config.cache.player_data.PlayerDataType;
-import net.trustgames.core.config.cache.player_uuid.PlayerUUIDUpdate;
-import org.bukkit.Bukkit;
+import net.trustgames.core.config.player_data.PlayerDataType;
+import net.trustgames.core.player.uuid_name.PlayerIDFetcher;
 import org.jetbrains.annotations.NotNull;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public final class UUIDCache {
 
     private static final String field = PlayerDataType.UUID.getColumnName();
 
-    private static final JedisPool pool = Core.jedisPool;
+    private final JedisPool pool;
+
+    private final Core core;
+
+    public UUIDCache(Core core) {
+        this.core = core;
+        this.pool = core.getJedisPool();
+    }
 
     /**
      * Get the UUID of the player from the cache.
      *
      * @param playerName Name of the player to get UUID for.
-     * @return UUID of the player, or null if not found in cache.
+     * @param callback Where the UUID of the player, or null will be saved
      */
-    public static UUID get(@NotNull String playerName){
-        try (Jedis jedis = pool.getResource()) {
-            String uuidString = jedis.hget(playerName, field);
-            if (uuidString == null) {
-                UUID uuid = Bukkit.getServer().getOfflinePlayer(playerName).getUniqueId();
-                UUIDCache.put(playerName, uuid);
-                return uuid;
+    public void get(@NotNull String playerName, Consumer<UUID> callback){
+        core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
+            try (Jedis jedis = pool.getResource()) {
+                String uuidString = jedis.hget(playerName, field);
+                if (uuidString == null) {
+                    PlayerIDFetcher idFetcher = new PlayerIDFetcher(core);
+                    idFetcher.fetchUUID(playerName, uuid -> {
+                        put(playerName, uuid);
+                        callback.accept(uuid);
+                    });
+                    return;
+                }
+                callback.accept(UUID.fromString(uuidString));
             }
-            return UUID.fromString(uuidString);
-        }
+        });
     }
 
     /**
@@ -40,10 +52,9 @@ public final class UUIDCache {
      * @param playerName Name of the player.
      * @param uuid       UUID of the player.
      */
-    public static void put(@NotNull String playerName, @NotNull UUID uuid) {
+    public void put(@NotNull String playerName, @NotNull UUID uuid) {
         try (Jedis jedis = pool.getResource()) {
             jedis.hset(playerName, field, uuid.toString());
-            jedis.expire(playerName, PlayerUUIDUpdate.INTERVAL.value);
         }
     }
 }

@@ -1,7 +1,7 @@
 package net.trustgames.core.player.data;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.config.cache.player_data.PlayerDataType;
+import net.trustgames.core.config.player_data.PlayerDataType;
 
 /**
  * This class handles the creation of the data database table
@@ -37,6 +37,6 @@ public final class PlayerDataDB {
         statement.deleteCharAt(statement.length() - 1);
         statement.append(")");
 
-        core.getMariaDB().initializeTable(tableName, statement.toString());
+        core.getDatabaseManager().initializeTable(tableName, statement.toString());
     }
 }

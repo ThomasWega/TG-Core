@@ -1,4 +1,4 @@
-package net.trustgames.core.commands.activity_commands;
+package net.trustgames.core.player.activity.commands;
 
 import net.trustgames.core.Core;
 
@@ -30,7 +30,7 @@ public final class ActivityFetcher {
      */
     public void fetchActivityByUUID(UUID uuid, Consumer<ResultSet> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
-            try (Connection connection = core.getMariaDB().getConnection();
+            try (Connection connection = core.getDatabaseManager().getConnection();
                  PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE uuid = ? ORDER BY id DESC")) {
                 statement.setString(1, uuid.toString());
                 ResultSet results = statement.executeQuery();
@@ -59,7 +59,7 @@ public final class ActivityFetcher {
             if (decodedID == null)
                 decodedID = id;
 
-            try (Connection conn = core.getMariaDB().getConnection();
+            try (Connection conn = core.getDatabaseManager().getConnection();
                  PreparedStatement statement = conn.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?")) {
                 statement.setString(1, decodedID);
                 try (ResultSet results = statement.executeQuery()) {

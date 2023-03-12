@@ -1,9 +1,8 @@
-package net.trustgames.core.player.list;
+package net.trustgames.core.tablist;
 
 import net.kyori.adventure.text.Component;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.node.Node;
-import net.trustgames.core.Core;
 import net.trustgames.core.logger.CoreLogger;
 import net.trustgames.core.managers.LuckPermsManager;
 import org.bukkit.Bukkit;
@@ -19,11 +18,10 @@ import java.util.*;
 public final class TablistTeams {
 
     static final HashMap<Group, Integer> groupOrder = new HashMap<>();
-    private final Core core;
-    private Scoreboard tablist;
+    private final Scoreboard tablist;
 
-    public TablistTeams(Core core) {
-        this.core = core;
+    public TablistTeams(Scoreboard tablist) {
+        this.tablist = tablist;
     }
 
     /**
@@ -32,9 +30,6 @@ public final class TablistTeams {
      * parameter the name of the group. Example: "20vip"
      */
     public void createTeams() {
-
-        tablist = core.getTablistScoreboard();
-
         int i = 0;
 
         HashMap<Group, Integer> groupWeight = new HashMap<>();
@@ -85,7 +80,6 @@ public final class TablistTeams {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return;
 
-        tablist = core.getTablistScoreboard();
         Group playerGroup = LuckPermsManager.getGroupManager().getGroup(LuckPermsManager.getPlayerPrimaryGroup(uuid));
         if (playerGroup == null) return;
         String stringTeam = groupOrder.get(playerGroup) + playerGroup.getName();
@@ -111,7 +105,6 @@ public final class TablistTeams {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return;
 
-        tablist = core.getTablistScoreboard();
         Team team = tablist.getPlayerTeam(player);
         if (team != null)
             team.removePlayer(player);

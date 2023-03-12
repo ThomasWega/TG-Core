@@ -1,9 +1,9 @@
-package net.trustgames.core.commands.messages_commands;
+package net.trustgames.core.chat.commands;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
-public enum MessagesCommandsConfig {
+public enum TextCommandsConfig {
     WEBSITE("<newline>" +
             "<color:#5757cf>You can visit our website by clicking </color><hover:show_text:'<yellow>Click to join</yellow>'><click:open_url:'http://www.trustgames.net'><color:#ffda73>HERE</color></hover>" +
             "<newline>"
@@ -19,7 +19,7 @@ public enum MessagesCommandsConfig {
 
     private final String value;
 
-    MessagesCommandsConfig(String value) {
+    TextCommandsConfig(String value) {
         this.value = value;
     }
 

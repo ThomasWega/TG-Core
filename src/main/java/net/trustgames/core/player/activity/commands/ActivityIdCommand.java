@@ -1,4 +1,4 @@
-package net.trustgames.core.commands.activity_commands;
+package net.trustgames.core.player.activity.commands;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -36,7 +36,7 @@ public final class ActivityIdCommand extends TrustCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args, String label) {
-        if (core.getMariaDB().isMySQLDisabled()) {
+        if (core.getDatabaseManager().isMySQLDisabled()) {
             sender.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
             return;
         }

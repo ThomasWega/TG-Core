@@ -23,6 +23,6 @@ public final class PlayerActivityDB {
      */
     public void initializeTable() {
         String statement = "CREATE TABLE IF NOT EXISTS " + tableName + "(id BIGINT unsigned primary key AUTO_INCREMENT, uuid VARCHAR(36), ip VARCHAR(15), action TINYTEXT, time DATETIME)";
-        core.getMariaDB().initializeTable(tableName, statement);
+        core.getDatabaseManager().initializeTable(tableName, statement);
     }
 }

@@ -1,4 +1,4 @@
-package net.trustgames.core.commands.activity_commands;
+package net.trustgames.core.player.activity.commands;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -62,10 +62,12 @@ public final class ActivityCommand extends TrustCommand implements Listener {
      */
     private static int pageCount = 0;
     private final Core core;
+    private final UUIDCache uuidCache;
 
     public ActivityCommand(Core core) {
         super(CorePermissionsConfig.STAFF.permission);
         this.core = core;
+        this.uuidCache = core.getUuidCache();
     }
 
     @Override
@@ -73,7 +75,7 @@ public final class ActivityCommand extends TrustCommand implements Listener {
 
         Player player = ((Player) sender);
 
-        if (core.getMariaDB().isMySQLDisabled()) {
+        if (core.getDatabaseManager().isMySQLDisabled()) {
             player.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
             return;
         }
@@ -120,12 +122,11 @@ public final class ActivityCommand extends TrustCommand implements Listener {
      * @param targetName Name of the targeted player
      */
     private void createRecords(String targetName, Runnable callback) {
-        ActivityFetcher activityQuery = new ActivityFetcher(core);
-        UUID offlineUuid = UUIDCache.get(targetName);
+        uuidCache.get(targetName, uuid -> {
+            ActivityFetcher activityQuery = new ActivityFetcher(core);
+            activityQuery.fetchActivityByUUID(uuid, activity -> {
 
-        activityQuery.fetchActivityByUUID(offlineUuid, activity -> {
-
-            ItemStack targetHead = ItemManager.createItemStack(Material.PAINTING, 1);
+                ItemStack targetHead = ItemManager.createItemStack(Material.PAINTING, 1);
 
             /*
              loop through all the results and for each one, set the corresponding
@@ -133,15 +134,15 @@ public final class ActivityCommand extends TrustCommand implements Listener {
              Also set the correct Material by using setMaterial method.
              Then add a clone of the ItemStack to the records list
              */
-            try {
-                while (activity.next()) {
-                    // results
-                    String id = activity.getString("id");
-                    String uuid = activity.getString("uuid");
-                    String ip = activity.getString("ip");
-                    String action = activity.getString("action");
-                    Timestamp time = activity.getTimestamp("time");
-                    String encodedId = activityQuery.encodeId(id);
+                try {
+                    while (activity.next()) {
+                        // results
+                        String id = activity.getString("id");
+                        String stringUuid = activity.getString("uuid");
+                        String ip = activity.getString("ip");
+                        String action = activity.getString("action");
+                        Timestamp time = activity.getTimestamp("time");
+                        String encodedId = activityQuery.encodeId(id);
 
                     /*
                     One of the lore lines needs to have a click event with the value of the encodedID. This is
@@ -150,29 +151,30 @@ public final class ActivityCommand extends TrustCommand implements Listener {
                     on the ItemStack, but the click event value is still present in the ItemStack's lore and can be retrieved.
                     That's how I get the encodedId from the ItemStack later on.
                     */
-                    List<Component> loreList = new ArrayList<>();
-                    loreList.add(Component.text(ChatColor.WHITE + "Date: " + ChatColor.YELLOW + time.toLocalDateTime().toLocalDate()));
-                    loreList.add(Component.text(ChatColor.WHITE + "Time: " + ChatColor.GOLD + time.toLocalDateTime().toLocalTime() + " " + ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT)));
-                    loreList.add(Component.text(""));
-                    loreList.add(Component.text(ChatColor.WHITE + "UUID: " + ChatColor.GRAY + uuid));
-                    loreList.add(Component.text(ChatColor.WHITE + "IP: " + ChatColor.GREEN + ip));
-                    loreList.add(Component.text(""));
-                    loreList.add(Component.text(ChatColor.LIGHT_PURPLE + "Click to print").clickEvent(ClickEvent.suggestCommand(encodedId)));
+                        List<Component> loreList = new ArrayList<>();
+                        loreList.add(Component.text(ChatColor.WHITE + "Date: " + ChatColor.YELLOW + time.toLocalDateTime().toLocalDate()));
+                        loreList.add(Component.text(ChatColor.WHITE + "Time: " + ChatColor.GOLD + time.toLocalDateTime().toLocalTime() + " " + ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT)));
+                        loreList.add(Component.text(""));
+                        loreList.add(Component.text(ChatColor.WHITE + "UUID: " + ChatColor.GRAY + stringUuid));
+                        loreList.add(Component.text(ChatColor.WHITE + "IP: " + ChatColor.GREEN + ip));
+                        loreList.add(Component.text(""));
+                        loreList.add(Component.text(ChatColor.LIGHT_PURPLE + "Click to print").clickEvent(ClickEvent.suggestCommand(encodedId)));
 
-                    ItemMeta targetHeadMeta = targetHead.getItemMeta();
-                    targetHeadMeta.displayName(Component.text(ChatColor.BOLD + "" + ChatColor.DARK_PURPLE + action));
-                    targetHeadMeta.lore(loreList);
-                    targetHead.setItemMeta(targetHeadMeta);
+                        ItemMeta targetHeadMeta = targetHead.getItemMeta();
+                        targetHeadMeta.displayName(Component.text(ChatColor.BOLD + "" + ChatColor.DARK_PURPLE + action));
+                        targetHeadMeta.lore(loreList);
+                        targetHead.setItemMeta(targetHeadMeta);
 
-                    setMaterial(targetHead);
+                        setMaterial(targetHead);
 
-                    records.add(targetHead.clone());
+                        records.add(targetHead.clone());
+                    }
+                } catch (SQLException e) {
+                    CoreLogger.LOGGER.severe("Trying loop through ResultSet in ActivityCommand class");
+                    throw new RuntimeException(e);
                 }
-            } catch (SQLException e) {
-                CoreLogger.LOGGER.severe("Trying loop through ResultSet in ActivityCommand class");
-                throw new RuntimeException(e);
-            }
-            callback.run();
+                callback.run();
+            });
         });
     }
 

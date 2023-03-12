@@ -9,6 +9,7 @@ import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
+import net.trustgames.core.Core;
 import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.chat.config.ChatConfig;
 import net.trustgames.core.managers.LuckPermsManager;
@@ -33,6 +34,12 @@ public final class ChatDecoration implements Listener {
             Sound.Source.AMBIENT,
             0.75f, 2f);
 
+    private final UUIDCache uuidCache;
+
+    public ChatDecoration(Core core) {
+        this.uuidCache = core.getUuidCache();
+    }
+
     /**
      * Adds the player a prefix and makes sure that the Minecraft new
      * report feature doesn't work and doesn't produce the symbols next to the
@@ -42,20 +49,21 @@ public final class ChatDecoration implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void decorate(AsyncChatEvent event) {
         Player sender = event.getPlayer();
-        UUID uuid = UUIDCache.get(sender.getName());
-        Component message = setColor(sender, event.originalMessage());
+        uuidCache.get(sender.getName(), uuid -> {
+            Component message = setColor(sender, event.originalMessage());
 
-        Component prefix = setPrefix(uuid);
+            Component prefix = setPrefix(uuid);
 
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            // if the player is not mentioned, send him the normal message without colored name
-            if (!setMention(sender, p, message, prefix)) {
-                p.sendMessage(getMessage(sender, prefix, message));
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                // if the player is not mentioned, send him the normal message without colored name
+                if (!setMention(sender, p, message, prefix)) {
+                    p.sendMessage(getMessage(sender, prefix, message));
 
-                logMessage(prefix, sender.getName(), message);
+                    logMessage(prefix, sender.getName(), message);
+                }
             }
-        }
-        event.setCancelled(true);
+            event.setCancelled(true);
+        });
     }
 
     /**
@@ -87,7 +95,6 @@ public final class ChatDecoration implements Listener {
      */
     private boolean setMention(Player sender, Player p, Component message, Component prefix) {
         Set<Player> mentionedPlayers = new HashSet<>();
-        UUID senderUuid = UUIDCache.get(sender.getName());
 
         message = setColor(sender, message);
 
@@ -125,9 +132,10 @@ public final class ChatDecoration implements Listener {
 
             logMessage(prefix, sender.getName(), msg);
 
-            p.sendActionBar(ChatConfig.MENTION_ACTIONBAR.formatMessage(senderUuid));
-            Audience.audience(p).playSound(sound, Sound.Emitter.self());
-
+            uuidCache.get(sender.getName(), senderUuid -> {
+                p.sendActionBar(ChatConfig.MENTION_ACTIONBAR.formatMessage(senderUuid));
+                Audience.audience(p).playSound(sound, Sound.Emitter.self());
+            });
             return true;
         }
         return false;

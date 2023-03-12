@@ -1,7 +1,7 @@
 package net.trustgames.core.cache;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.player.uuid.PlayerUUIDFetcher;
+import net.trustgames.core.player.uuid_name.PlayerIDFetcher;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -12,13 +12,11 @@ public class NameCache {
 
     private final Core core;
 
-    private static final JedisPool pool = Core.jedisPool;
-    private final PlayerUUIDFetcher uuidHandler;
-
+    private final JedisPool pool;
 
     public NameCache(Core core) {
         this.core = core;
-        this.uuidHandler = new PlayerUUIDFetcher(core);
+        this.pool = core.getJedisPool();
     }
 
     public void update(UUID uuid, String playerName) {
@@ -34,7 +32,8 @@ public class NameCache {
             try (Jedis jedis = pool.getResource()) {
                 String name = jedis.get(uuid.toString());
                 if (name == null){
-                    uuidHandler.fetch(uuid, fetchName -> {
+                    PlayerIDFetcher uuidFetcher = new PlayerIDFetcher(core);
+                    uuidFetcher.fetchName(uuid, fetchName -> {
                         callback.accept(fetchName);
                         update(uuid, fetchName);
                     });
