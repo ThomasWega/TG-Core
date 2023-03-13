@@ -21,7 +21,7 @@ public final class PlayerLevel {
 
     public PlayerLevel(Core core, UUID uuid) {
         this.uuid = uuid;
-        this.dataFetcher = new PlayerDataFetcher(core, PlayerDataType.LEVEL);
+        this.dataFetcher = new PlayerDataFetcher(core, PlayerDataType.XP);
         this.dataCache = new PlayerDataCache(core, uuid, PlayerDataType.XP);
     }
 

@@ -1,9 +1,10 @@
 package net.trustgames.core.managers;
 
-import net.trustgames.core.logger.CoreLogger;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
+
+import static net.trustgames.core.Core.LOGGER;
 
 /**
  * Handles the creation of custom configs
@@ -18,15 +19,15 @@ public final class FileManager {
      */
     public static void createFile(Plugin plugin, File file) {
         if (!file.exists()){
-            CoreLogger.LOGGER.warning(file.getName() + " not found, creating...");
+            LOGGER.warning(file.getName() + " not found, creating...");
             if (file.getParentFile().mkdirs()){
-             CoreLogger.LOGGER.info("Created directory paths for " + file.getName());
+             LOGGER.info("Created directory paths for " + file.getName());
             }
             plugin.saveResource(file.getName(), false);
             if (file.exists()){
-                CoreLogger.LOGGER.warning("Done creating " + file.getName());
+                LOGGER.warning("Done creating " + file.getName());
             } else {
-                CoreLogger.LOGGER.severe("Couldn't create " + file.getName());
+                LOGGER.severe("Couldn't create " + file.getName());
             }
         }
     }

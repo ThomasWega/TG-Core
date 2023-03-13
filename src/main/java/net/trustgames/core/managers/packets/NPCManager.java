@@ -1,6 +1,7 @@
 package net.trustgames.core.managers.packets;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
@@ -48,7 +49,7 @@ public final class NPCManager {
 
     public NPCManager(Core core) {
         this.core = core;
-        this.manager = core.getProtocolManager();
+        this.manager = ProtocolLibrary.getProtocolManager();
         this.cooldownManager = new CooldownManager();
     }
 
@@ -263,7 +264,7 @@ public final class NPCManager {
      * @param config Config where the NPCs are specified
      */
     public void interact(List<ServerPlayer> npcs, YamlConfiguration config) {
-        ProtocolManager manager = core.getProtocolManager();
+        ProtocolManager manager = ProtocolLibrary.getProtocolManager();
 
         manager.addPacketListener(new PacketAdapter(core, PacketType.Play.Client.USE_ENTITY) {
             @Override

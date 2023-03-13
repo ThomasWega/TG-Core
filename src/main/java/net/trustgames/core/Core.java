@@ -1,10 +1,7 @@
 package net.trustgames.core;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
+import com.destroystokyo.paper.utils.PaperPluginLogger;
 import lombok.Getter;
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.LuckPermsProvider;
 import net.trustgames.core.announcer.AnnounceHandler;
 import net.trustgames.core.chat.ChatDecoration;
 import net.trustgames.core.chat.ChatLimiter;
@@ -33,6 +30,7 @@ import redis.clients.jedis.JedisPoolConfig;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 /**
  * Main class of the Core plugin, which registers all the events and commands.
@@ -42,27 +40,20 @@ import java.util.HashMap;
  */
 public final class Core extends JavaPlugin {
 
+    public static final Logger LOGGER = PaperPluginLogger.getLogger("Core");
     @Getter
     private final JedisPool jedisPool = new JedisPool(new JedisPoolConfig(), "localhost", 6379);
     @Getter
     private final DatabaseManager databaseManager = new DatabaseManager(this);
-    public final PlayerDataDB playerDataDB = new PlayerDataDB(this);
-    private final PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
-    private final AnnounceHandler announceHandler = new AnnounceHandler(this);
-    public CooldownManager cooldownManager = new CooldownManager();
-    public LuckPermsManager luckPermsManager;
-
     @Getter
     private final Scoreboard tablistScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-    @Getter
-    private ProtocolManager protocolManager;
-
-    public static LuckPerms getLuckPerms() {
-        return LuckPermsProvider.get();
-    }
 
     @Override
     public void onEnable() {
+        final PlayerDataDB playerDataDB = new PlayerDataDB(this);
+        final PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
+        final AnnounceHandler announceHandler = new AnnounceHandler(this);
+        final LuckPermsManager luckPermsManager = new LuckPermsManager(this);
 
         /* ADD
         - chat system - add level
@@ -91,9 +82,8 @@ public final class Core extends JavaPlugin {
         - disable pvp on lobbies
          */
 
-        // TODO register commands without plugin.yml
-        // TODO test skin cache
-        // TODO test uuid cache
+        // TODO register commands without plugin.yml -- can set aliases
+        // TODO test skin cache (maybe move to redis?)
         // TODO HOLO clickable
         // TODO NPC action - command prints the command in chat
         // TODO NPC protocollib
@@ -103,26 +93,23 @@ public final class Core extends JavaPlugin {
         // TODO add tab completion for playerdata command
         // TODO playerdata commands add message for the player who got set/added/removed the data
         // TODO also cache level to prevent calculating it everytime - add timer for recalculation or update it on the database column update
-        // TODO and also have the level in the database?? NOT SURE
-        // TODO add config time for uuid cache expiry - will expire on player leave of proxy
-        // TODO move luckperms listeners to different class
         // TODO add comments where missing
-        // TODO Caches add expiry
         // TODO move PlayerDataHandler to proxy
         // TODO figure out if to use the Bukkit.getOffline player or Bukkit.getServer.getOfflinePlayer
         // TODO check command manager if not a bullshit
-        // TODO add every possible instance of something to core and just make getter
         // TODO merge join listeners which use uuid to one
         // TODO annotate all things correctly
         // TODO move data commands to proxy ?? MAYBE
         // TODO move tablist to proxy
         // TODO check if things can be taken in constructor instead of methods
-        // TODO dont use (int) (long) (float) instead use like Integer.parseInt
         // TODO dont allow to set any data if player never joined!
-        // TODO move LOGGER TO Core. Same for Lobby
         // TODO create an event when a data in database updates
-        // TODO make classes final and create getters here in CORE
         // TODO activity add ability to check by uuid
+        // TODO make luckperms async
+
+        // FIXME scoreboard null on first start
+        // FIXME datasource null on first/second time
+        // FIXME @AllowConsole doesn't work
 
 
         // FIXME TEST: When restarting, the database connections don't close properly or more are created!
@@ -148,11 +135,7 @@ public final class Core extends JavaPlugin {
         }, 20);
 
         // luckperms
-        luckPermsManager = new LuckPermsManager(this);
         luckPermsManager.registerListeners();
-
-        // protocollib
-        protocolManager = ProtocolLibrary.getProtocolManager();
 
         playerList();
 

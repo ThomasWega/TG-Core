@@ -8,7 +8,6 @@ import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.command.TrustCommand;
 import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CorePermissionsConfig;
-import net.trustgames.core.logger.CoreLogger;
 import net.trustgames.core.managers.InventoryManager;
 import net.trustgames.core.managers.ItemManager;
 import net.trustgames.core.utils.ColorUtils;
@@ -31,6 +30,8 @@ import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.format.TextStyle;
 import java.util.*;
+
+import static net.trustgames.core.Core.LOGGER;
 
 /**
  * Opens up a menu with all the given target's logged activity.
@@ -169,7 +170,7 @@ public final class ActivityCommand extends TrustCommand implements Listener {
                         records.add(targetHead.clone());
                     }
                 } catch (SQLException e) {
-                    CoreLogger.LOGGER.severe("Trying loop through ResultSet in ActivityCommand class");
+                    LOGGER.severe("Trying loop through ResultSet in ActivityCommand class");
                     throw new RuntimeException(e);
                 }
                 callback.run();

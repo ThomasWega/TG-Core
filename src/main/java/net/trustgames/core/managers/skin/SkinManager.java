@@ -22,10 +22,10 @@ import java.util.concurrent.TimeUnit;
 public final class SkinManager {
 
     /**
-     * Cache that holds the SkinData. It expires after 3 days.
+     * Cache that holds the SkinData. It expires after 12 hours.
      */
     private static final LoadingCache<String, SkinData> skinCache = CacheBuilder.newBuilder()
-            .expireAfterWrite(3, TimeUnit.DAYS)
+            .expireAfterWrite(12, TimeUnit.HOURS)
             .build(new CacheLoader<>() {
                 @Override
                 public @NotNull SkinData load(@NotNull String playerName) {

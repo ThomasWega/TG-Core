@@ -1,12 +1,13 @@
 package net.trustgames.core.chat.commands;
 
 import net.trustgames.core.config.CommandConfig;
-import net.trustgames.core.logger.CoreLogger;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import static net.trustgames.core.Core.LOGGER;
 
 /**
  * Just string or list of strings from a config
@@ -24,7 +25,7 @@ public final class TextCommands implements CommandExecutor {
         if (sender instanceof Player player) {
             player.sendMessage(TextCommandsConfig.valueOf(command.getName().toUpperCase()).getValue());
         } else
-            CoreLogger.LOGGER.warning(CommandConfig.COMMAND_PLAYER_ONLY.value.toString());
+            LOGGER.warning(CommandConfig.COMMAND_PLAYER_ONLY.value.toString());
 
         return true;
     }

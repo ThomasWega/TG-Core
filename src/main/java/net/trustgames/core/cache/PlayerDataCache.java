@@ -1,6 +1,7 @@
 package net.trustgames.core.cache;
 
 import net.trustgames.core.Core;
+import net.trustgames.core.config.player_data.PlayerDataConfig;
 import net.trustgames.core.config.player_data.PlayerDataType;
 import net.trustgames.core.player.data.PlayerDataFetcher;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +40,7 @@ public class PlayerDataCache {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             try (Jedis jedis = pool.getResource()) {
                 String result = jedis.hget(uuid.toString(), dataType.getColumnName());
+                jedis.expire(uuid.toString(), PlayerDataConfig.DATA_EXPIRY.getSeconds());
                 if (result == null){
                     PlayerDataFetcher dataFetcher = new PlayerDataFetcher(core, dataType);
                     dataFetcher.fetch(uuid, data -> {

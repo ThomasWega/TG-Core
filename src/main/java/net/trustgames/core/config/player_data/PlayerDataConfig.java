@@ -1,12 +1,16 @@
 package net.trustgames.core.config.player_data;
 
-public enum PlayerDataUpdate {
-    INTERVAL(5000); // in milliseconds
+public enum PlayerDataConfig {
+
+    // in milliseconds
+    UPDATE_INTERVAL(5000),
+    DATA_EXPIRY(1800000);
+
 
 
     private final long value;
 
-    PlayerDataUpdate(long value) {
+    PlayerDataConfig(long value) {
         this.value = value;
     }
 

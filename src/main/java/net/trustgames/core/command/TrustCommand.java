@@ -1,7 +1,6 @@
 package net.trustgames.core.command;
 
 import net.trustgames.core.config.CommandConfig;
-import net.trustgames.core.logger.CoreLogger;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,6 +12,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
+
+import static net.trustgames.core.Core.LOGGER;
 
 /**
  * Custom command implementation, which checks for the supplied permission and by default
@@ -40,7 +41,7 @@ public abstract class TrustCommand implements CommandExecutor {
 
         // If not allowed and sender is not a player, send error message
         if (!consoleAllowed && !(sender instanceof Player)) {
-            CoreLogger.LOGGER.warning(CommandConfig.COMMAND_PLAYER_ONLY.value.toString());
+            LOGGER.warning(CommandConfig.COMMAND_PLAYER_ONLY.value.toString());
             return true;
         }
 

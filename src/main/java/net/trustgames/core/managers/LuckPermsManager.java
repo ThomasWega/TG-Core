@@ -2,6 +2,7 @@ package net.trustgames.core.managers;
 
 import net.kyori.adventure.text.Component;
 import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.EventBus;
 import net.luckperms.api.event.user.UserDataRecalculateEvent;
 import net.luckperms.api.model.group.Group;
@@ -23,7 +24,6 @@ import java.util.Set;
  */
 public final class LuckPermsManager {
 
-    static final LuckPerms luckPerms = Core.getLuckPerms();
     private final Core core;
     private final TablistTeams tablistTeams;
 
@@ -45,6 +45,7 @@ public final class LuckPermsManager {
      * @return Set of all loaded groups
      */
     public static Set<Group> getGroups() {
+        LuckPerms luckPerms = LuckPermsProvider.get();
         return luckPerms.getGroupManager().getLoadedGroups();
     }
 
@@ -79,6 +80,7 @@ public final class LuckPermsManager {
      * @return LuckPerms GroupManager
      */
     public static GroupManager getGroupManager() {
+        LuckPerms luckPerms = LuckPermsProvider.get();
         return luckPerms.getGroupManager();
     }
 
@@ -113,11 +115,12 @@ public final class LuckPermsManager {
      * @return User from the given Player
      */
     public static User getUser(Player player) {
+        LuckPerms luckPerms = LuckPermsProvider.get();
         return luckPerms.getPlayerAdapter(Player.class).getUser(player);
     }
 
     public void registerListeners() {
-        EventBus eventBus = Core.getLuckPerms().getEventBus();
+        EventBus eventBus = LuckPermsProvider.get().getEventBus();
 
         eventBus.subscribe(core, UserDataRecalculateEvent.class, this::onUserDataRecalculate);
     }

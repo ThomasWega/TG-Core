@@ -3,7 +3,6 @@ package net.trustgames.core.tablist;
 import net.kyori.adventure.text.Component;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.node.Node;
-import net.trustgames.core.logger.CoreLogger;
 import net.trustgames.core.managers.LuckPermsManager;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
@@ -13,6 +12,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import static net.trustgames.core.Core.LOGGER;
 
 /**
  * Handles the priority sorting of groups and players in the player-list
@@ -41,7 +42,7 @@ public final class TablistTeams {
             if (group.getWeight().isPresent()) {
                 groupWeight.put(group, group.getWeight().getAsInt());
             } else {
-                CoreLogger.LOGGER.severe("LuckPerms group " + group.getName() + " doesn't have any weight! Setting the weight to 1...");
+                LOGGER.severe("LuckPerms group " + group.getName() + " doesn't have any weight! Setting the weight to 1...");
 
                 Objects.requireNonNull(LuckPermsManager.getGroupManager().getGroup(group.getName()),
                                 "Group " + group.getName() + " wasn't found when setting a missing weight")
@@ -85,7 +86,7 @@ public final class TablistTeams {
         Team team = tablist.getTeam(stringTeam);
 
         if (team == null) {
-            CoreLogger.LOGGER.severe("Scoreboard team " + stringTeam + " wasn't found");
+            LOGGER.severe("Scoreboard team " + stringTeam + " wasn't found");
             return;
         }
 

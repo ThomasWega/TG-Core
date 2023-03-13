@@ -1,6 +1,7 @@
 package net.trustgames.core.cache;
 
 import net.trustgames.core.Core;
+import net.trustgames.core.config.player_data.PlayerDataConfig;
 import net.trustgames.core.config.player_data.PlayerDataType;
 import net.trustgames.core.player.data.PlayerDataFetcher;
 import org.jetbrains.annotations.NotNull;
@@ -38,6 +39,7 @@ public final class UUIDCache {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             try (Jedis jedis = pool.getResource()) {
                 String uuidString = jedis.hget(playerName, field);
+                jedis.expire(playerName, PlayerDataConfig.DATA_EXPIRY.getSeconds());
                 if (uuidString == null) {
                     PlayerDataFetcher dataFetcher = new PlayerDataFetcher(core, PlayerDataType.UUID);
                     dataFetcher.fetchUUID(playerName, uuid -> {
