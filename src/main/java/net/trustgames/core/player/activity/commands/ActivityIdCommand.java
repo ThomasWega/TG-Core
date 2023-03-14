@@ -9,10 +9,12 @@ import net.trustgames.core.command.TrustCommand;
 import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CorePermissionsConfig;
 import net.trustgames.core.config.player_data.PlayerDataType;
+import net.trustgames.core.managers.database.DatabaseManager;
+import net.trustgames.core.player.activity.PlayerActivityFetcher;
+import net.trustgames.core.utils.Base64Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.format.TextStyle;
@@ -28,15 +30,18 @@ import java.util.UUID;
 public final class ActivityIdCommand extends TrustCommand {
 
     private final Core core;
+    private final DatabaseManager databaseManager;
+
 
     public ActivityIdCommand(Core core) {
         super(CorePermissionsConfig.STAFF.permission);
         this.core = core;
+        this.databaseManager = core.getDatabaseManager();
     }
 
     @Override
     public void execute(CommandSender sender, String[] args, String label) {
-        if (core.getDatabaseManager().isMySQLDisabled()) {
+        if (databaseManager.isMySQLDisabled()) {
             sender.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
             return;
         }
@@ -60,58 +65,52 @@ public final class ActivityIdCommand extends TrustCommand {
      * @param id     Activity id
      */
     private void printData(CommandSender sender, String id) {
-        ActivityFetcher activityQuery = new ActivityFetcher(core);
+        PlayerActivityFetcher activityFetcher = new PlayerActivityFetcher(core);
+        activityFetcher.fetchByID(id, activity -> {
+            if (activity == null) {
+                sender.sendMessage(CommandConfig.COMMAND_NO_ID_ACT.addID(id));
+                return;
+            }
 
-        activityQuery.fetchActivityByID(id, activity -> {
-            try {
-                // only one resultSet
-                if (activity.next()) {
+            // get all the data from the resultSet
+            String resultId = Base64Utils.encode(String.valueOf(activity.getId()));
+            UUID uuid = activity.getUuid();
+            String ip = activity.getIp();
+            String action = activity.getAction();
+            Timestamp time = activity.getTime();
 
-                    // get all the data from the resultSet
-                    String resultId = activityQuery.encodeId(activity.getString("id"));
-                    String uuid = activity.getString("uuid");
-                    String ip = activity.getString("ip");
-                    String action = activity.getString("action");
-                    Timestamp time = activity.getTimestamp("time");
-
-                    PlayerDataCache playerDataCache = new PlayerDataCache(core, UUID.fromString(uuid), PlayerDataType.NAME);
-                    playerDataCache.get(name -> {
-                        // list of component messages
-                        List<Component> chatMessage = List.of(
-                                Component.text(ChatColor.DARK_GRAY + "------------------------"),
-                                Component.text(ChatColor.WHITE + "Name: " +
-                                        ChatColor.RED + name).clickEvent(ClickEvent.copyToClipboard(name)),
-                                Component.text(ChatColor.WHITE + "IP: " +
-                                        ChatColor.YELLOW + ip).clickEvent(ClickEvent.copyToClipboard(ip)),
-                                Component.text(ChatColor.WHITE + "UUID: " +
-                                        ChatColor.GRAY + uuid).clickEvent(ClickEvent.copyToClipboard(uuid)),
-                                Component.text(""),
-                                Component.text(ChatColor.WHITE + "Action: " +
-                                        ChatColor.GOLD + action).clickEvent(ClickEvent.copyToClipboard(action)),
-                                Component.text(ChatColor.WHITE + "Date: " +
+            PlayerDataCache playerDataCache = new PlayerDataCache(core, uuid, PlayerDataType.NAME);
+            playerDataCache.get(name -> {
+                // list of component messages
+                List<Component> chatMessage = List.of(
+                        Component.text(ChatColor.DARK_GRAY + "------------------------"),
+                        Component.text(ChatColor.WHITE + "Name: " +
+                                ChatColor.RED + name).clickEvent(ClickEvent.copyToClipboard(name)),
+                        Component.text(ChatColor.WHITE + "IP: " +
+                                ChatColor.YELLOW + ip).clickEvent(ClickEvent.copyToClipboard(ip)),
+                        Component.text(ChatColor.WHITE + "UUID: " +
+                                ChatColor.GRAY + uuid).clickEvent(ClickEvent.copyToClipboard(uuid.toString())),
+                        Component.text(""),
+                        Component.text(ChatColor.WHITE + "Action: " +
+                                ChatColor.GOLD + action).clickEvent(ClickEvent.copyToClipboard(action)),
+                        Component.text(ChatColor.WHITE + "Date: " +
                                         ChatColor.GREEN + time.toLocalDateTime().toLocalDate())
-                                        .clickEvent(ClickEvent.copyToClipboard(time.toLocalDateTime().toLocalDate().toString())),
-                                Component.text(ChatColor.WHITE + "Time: " +
+                                .clickEvent(ClickEvent.copyToClipboard(time.toLocalDateTime().toLocalDate().toString())),
+                        Component.text(ChatColor.WHITE + "Time: " +
                                         ChatColor.DARK_GREEN + time.toLocalDateTime().toLocalTime() + " " +
                                         ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT))
-                                        .clickEvent(ClickEvent.copyToClipboard(time.toLocalDateTime().toLocalTime() + " " +
-                                                ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT))),
-                                Component.text(""),
-                                Component.text(ChatColor.WHITE + "ID: " +
-                                        ChatColor.DARK_PURPLE + resultId).clickEvent(ClickEvent.copyToClipboard(resultId)),
-                                Component.text(ChatColor.DARK_GRAY + "------------------------")
-                        );
-                        // loop through the list and for each, send a message
-                        for (Component s : chatMessage) {
-                            sender.sendMessage(s);
-                        }
-                    });
-                } else {
-                    sender.sendMessage(CommandConfig.COMMAND_NO_ID_ACT.addID(id));
+                                .clickEvent(ClickEvent.copyToClipboard(time.toLocalDateTime().toLocalTime() + " " +
+                                        ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT))),
+                        Component.text(""),
+                        Component.text(ChatColor.WHITE + "ID: " +
+                                ChatColor.DARK_PURPLE + resultId).clickEvent(ClickEvent.copyToClipboard(resultId)),
+                        Component.text(ChatColor.DARK_GRAY + "------------------------")
+                );
+                // loop through the list and for each, send a message
+                for (Component s : chatMessage) {
+                    sender.sendMessage(s);
                 }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+            });
         });
     }
 }

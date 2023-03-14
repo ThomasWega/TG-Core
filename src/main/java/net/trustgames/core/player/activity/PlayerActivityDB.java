@@ -1,6 +1,7 @@
 package net.trustgames.core.player.activity;
 
 import net.trustgames.core.Core;
+import net.trustgames.core.managers.database.DatabaseManager;
 
 /**
  * This class is used to handle the database table for player activity
@@ -10,10 +11,10 @@ public final class PlayerActivityDB {
 
     public static final String tableName = "player_activity";
 
-    private final Core core;
+    private final DatabaseManager databaseManager;
 
     public PlayerActivityDB(Core core) {
-        this.core = core;
+        this.databaseManager = core.getDatabaseManager();
         initializeTable();
     }
 
@@ -24,6 +25,6 @@ public final class PlayerActivityDB {
      */
     public void initializeTable() {
         String statement = "CREATE TABLE IF NOT EXISTS " + tableName + "(id BIGINT unsigned primary key AUTO_INCREMENT, uuid VARCHAR(36), ip VARCHAR(15), action TINYTEXT, time DATETIME)";
-        core.getDatabaseManager().initializeTable(tableName, statement);
+        databaseManager.initializeTable(tableName, statement);
     }
 }

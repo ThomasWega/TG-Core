@@ -11,7 +11,7 @@ import redis.clients.jedis.JedisPool;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public class PlayerDataCache {
+public final class PlayerDataCache {
 
     private final Core core;
     private final JedisPool pool;

@@ -1,28 +1,29 @@
 package net.trustgames.core.player.activity;
 
 import net.trustgames.core.Core;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import net.trustgames.core.managers.database.DatabaseManager;
+import net.trustgames.core.utils.Base64Utils;
 
 import java.sql.*;
-import java.time.Instant;
-import java.util.Objects;
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 import static net.trustgames.core.player.activity.PlayerActivityDB.tableName;
 
-public class PlayerActivityFetcher {
+public final class PlayerActivityFetcher {
 
     private final Core core;
+    private final DatabaseManager databaseManager;
 
     public PlayerActivityFetcher(Core core) {
         this.core = core;
+        this.databaseManager = core.getDatabaseManager();
     }
 
     /**
-     * Gets the latest player's activity by his uuid and returns the result
-     * as new PlayerActivity instance, which is saved in the callback. This
+     * Gets the player's activity by his uuid and returns the result
+     * as new list of Activities, which is saved in the callback. This
      * whole operation is run async.
      *
      * @param uuid UUID of Player to get the activity for
@@ -30,18 +31,55 @@ public class PlayerActivityFetcher {
      */
     public void fetchByUUID(UUID uuid, Consumer<PlayerActivity> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
-            try (Connection connection = core.getDatabaseManager().getConnection();
-                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE uuid = ? ORDER BY id DESC LIMIT 1")) {
+            try (Connection connection = databaseManager.getConnection();
+                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE uuid = ? ORDER BY id DESC")) {
                 statement.setString(1, uuid.toString());
                 try (ResultSet results = statement.executeQuery()) {
-                    if (results.next()) {
+                    PlayerActivity activity = new PlayerActivity(uuid, new ArrayList<>());
+                    while (results.next()) {
+                        long id = results.getLong("id");
                         String ip = results.getString("ip");
                         String action = results.getString("action");
                         Timestamp time = results.getTimestamp("time");
-                        PlayerActivity activity = new PlayerActivity(uuid, ip, action, time);
+                        activity.add(id, ip, action, time);
+                    }
+                    callback.accept(activity);
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    /**
+     * Returns only one Activity with the matching id in async callback
+     *
+     * @param id Given ID in Base64 encoded or Plain String (decoded)
+     * @param callback Callback where the result will be saved
+     */
+    public void fetchByID(String id, Consumer<PlayerActivity.Activity> callback) {
+        core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
+            // try to decode the id
+            String decodedID = Base64Utils.decode(id);
+            /*
+            if decode fails, it returns null.
+            if it's null it's already in decoded format
+            */
+            if (decodedID == null)
+                decodedID = id;
+
+            try (Connection conn = databaseManager.getConnection();
+                 PreparedStatement statement = conn.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?")) {
+                statement.setString(1, decodedID);
+                try (ResultSet results = statement.executeQuery()) {
+                    if (results.next()) {
+                        long resultId = results.getLong("id");
+                        UUID uuid = UUID.fromString(results.getString("uuid"));
+                        String ip = results.getString("ip");
+                        String action = results.getString("action");
+                        Timestamp time = results.getTimestamp("time");
+                        PlayerActivity.Activity activity = new PlayerActivity.Activity(resultId, uuid, ip, action, time);
                         callback.accept(activity);
-                    } else {
-                        callback.accept(null);
                     }
                 }
             } catch (SQLException e) {
@@ -50,84 +88,32 @@ public class PlayerActivityFetcher {
         });
     }
 
-
     /**
      * creates a new row with the new player activity.
      * values from playerActivity are set for each index
      * (is run async)
      *
-     * @param playerActivity Player activity instance
+     * @param activity Only one Activity with the corresponding data
      */
-    public void insert(PlayerActivity playerActivity) {
-        core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
-            try (Connection connection = core.getDatabaseManager().getConnection();
-                 PreparedStatement statement = connection.prepareStatement("INSERT INTO " + tableName + "(uuid, ip, action, time) VALUES (?, ?, ?, ?)")) {
-                statement.setString(1, playerActivity.getUuid().toString());
-                statement.setString(2, playerActivity.getIp());
-                statement.setString(3, playerActivity.getAction());
-                statement.setTimestamp(4, playerActivity.getTime());
-
+    public void insertNew(PlayerActivity.Activity activity) {
+        try (Connection connection = databaseManager.getConnection()) {
+            String query = "INSERT INTO " + tableName + " (uuid, ip, action, time) VALUES (?, ?, ?, ?)";
+            try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+                statement.setString(1, activity.getUuid().toString());
+                statement.setString(2, activity.getIp());
+                statement.setString(3, activity.getAction());
+                statement.setTimestamp(4, activity.getTime());
                 statement.executeUpdate();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+                try (ResultSet result = statement.getGeneratedKeys()) {
+                    if (result.next()) {
+                        long id = result.getLong(1);
+                        System.out.println(id);
+                        activity.setId(id);
+                    }
+                }
             }
-        });
-    }
-
-    /**
-     * Gets the player's last activity by using external method from PlayerActivityDB
-     * to find player's last activity by his uuid. If the activity is null, meaning the player
-     * probably doesn't have any activities saved in the table yet, it creates one with specified values.
-     * Calls the provided callback function with the resulting PlayerActivity object.
-     *
-     * @param uuid     UUID of Player to write activity to
-     * @param callback Callback function to be called with the resulting PlayerActivity object
-     */
-    private void get(UUID uuid, Consumer<PlayerActivity> callback) {
-        Player player = Bukkit.getPlayer(uuid);
-
-        if (player == null) {
-            callback.accept(null);
-            return;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error inserting player activity into database", e);
         }
-
-        fetchByUUID(uuid, playerActivity -> {
-            if (playerActivity == null) {
-                playerActivity = new PlayerActivity(uuid, Objects.requireNonNull(
-                                player.getAddress(), "Player " + uuid + " IP address is null!")
-                        .getHostString(), "FIRST JOIN SERVER " + Bukkit.getServer().getName(),
-                        new Timestamp(Instant.now().toEpochMilli()));
-
-                insert(playerActivity);
-                callback.accept(null);
-            } else {
-                callback.accept(playerActivity);
-            }
-        });
-    }
-
-    /**
-     * writes the values for the newly created player activity to the new PlayerActivity instance.
-     * Then it creates the full row.
-     *
-     * @param uuid   UUID of Player to write activity to
-     * @param action What actions to write
-     */
-    public void add(UUID uuid, String action) {
-        Player player = Bukkit.getPlayer(uuid);
-
-        if (player == null) return;
-        if (core.getDatabaseManager().isMySQLDisabled()) return;
-
-        get(uuid, playerActivity -> {
-            if (playerActivity != null) {
-                playerActivity.setIp(Objects.requireNonNull(player.getAddress()).getHostString());
-
-                playerActivity.setAction(action);
-                playerActivity.setTime(new Timestamp(Instant.now().toEpochMilli()));
-
-                insert(playerActivity);
-            }
-        });
     }
 }

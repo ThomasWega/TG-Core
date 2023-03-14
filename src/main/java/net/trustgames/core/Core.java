@@ -105,10 +105,12 @@ public final class Core extends JavaPlugin {
         // TODO don't allow to set any data if player never joined!
         // TODO create an event when a data in database updates
         // TODO activity add ability to check by uuid
-        // TODO make luckperms async
+        // ADD: make luckperms async
+        // TODO playerActivity menu add config for different materials
+        // TODO activity-id disallow similar ids to the one inserted
 
         // FIXME @AllowConsole doesn't work
-
+        // FIXME this.datasource still null
 
         // FIXME TEST: When restarting, the database connections don't close properly or more are created!
         // FIXME TEST: Is there correct amount of connections?

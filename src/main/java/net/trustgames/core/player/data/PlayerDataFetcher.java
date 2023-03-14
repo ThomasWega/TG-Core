@@ -4,6 +4,7 @@ import net.trustgames.core.Core;
 import net.trustgames.core.cache.PlayerDataCache;
 import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.config.player_data.PlayerDataType;
+import net.trustgames.core.managers.database.DatabaseManager;
 import net.trustgames.core.player.data.additional.level.PlayerLevel;
 
 import java.sql.Connection;
@@ -22,10 +23,13 @@ public final class PlayerDataFetcher {
 
     private final Core core;
     private final PlayerDataType dataType;
+    private final DatabaseManager databaseManager;
+
 
     public PlayerDataFetcher(Core core, PlayerDataType dataType) {
         this.core = core;
         this.dataType = dataType;
+        this.databaseManager = core.getDatabaseManager();
     }
 
     /**
@@ -52,7 +56,7 @@ public final class PlayerDataFetcher {
             }
 
             String label = dataType.getColumnName();
-            try (Connection connection = core.getDatabaseManager().getConnection();
+            try (Connection connection = databaseManager.getConnection();
                  PreparedStatement statement = connection.prepareStatement("SELECT " + label + " FROM " + tableName + " WHERE uuid = ?")) {
                 statement.setString(1, uuid.toString());
                 try (ResultSet results = statement.executeQuery()) {
@@ -81,7 +85,7 @@ public final class PlayerDataFetcher {
      */
     public void fetchUUID(String playerName, Consumer<UUID> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
-            try (Connection connection = core.getDatabaseManager().getConnection();
+            try (Connection connection = databaseManager.getConnection();
                  PreparedStatement statement = connection.prepareStatement("SELECT uuid FROM " + tableName + " WHERE name = ?")) {
                 statement.setString(1, playerName);
                 ResultSet result = statement.executeQuery();
@@ -121,7 +125,7 @@ public final class PlayerDataFetcher {
 
         String label = dataType.getColumnName();
 
-        Connection connection = core.getDatabaseManager().getConnection();
+        Connection connection = databaseManager.getConnection();
         try (PreparedStatement statement = connection.prepareStatement(
                 "INSERT INTO " + tableName + "(uuid, " + label + ") VALUES (?, ?) " +
                         "ON DUPLICATE KEY UPDATE " + label + " = VALUES(" + label + ")")) {

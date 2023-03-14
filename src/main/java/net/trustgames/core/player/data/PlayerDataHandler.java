@@ -8,7 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public class PlayerDataHandler implements Listener {
+public final class PlayerDataHandler implements Listener {
 
     private final Core core;
 

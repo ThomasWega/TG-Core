@@ -3,7 +3,6 @@ package net.trustgames.core.managers;
 import net.kyori.adventure.text.Component;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
-import net.luckperms.api.event.EventBus;
 import net.luckperms.api.event.user.UserDataRecalculateEvent;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.group.GroupManager;
@@ -28,7 +27,8 @@ public final class LuckPermsManager {
 
     public LuckPermsManager(Core core) {
         this.core = core;
-        registerListeners();
+        LuckPermsProvider.get().getEventBus().subscribe(core,
+                UserDataRecalculateEvent.class, this::onUserDataRecalculate);
     }
 
     /**
@@ -116,12 +116,6 @@ public final class LuckPermsManager {
     public static User getUser(Player player) {
         LuckPerms luckPerms = LuckPermsProvider.get();
         return luckPerms.getPlayerAdapter(Player.class).getUser(player);
-    }
-
-    public void registerListeners() {
-        EventBus eventBus = LuckPermsProvider.get().getEventBus();
-
-        eventBus.subscribe(core, UserDataRecalculateEvent.class, this::onUserDataRecalculate);
     }
 
     /**
