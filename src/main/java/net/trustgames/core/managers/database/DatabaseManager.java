@@ -25,6 +25,7 @@ public final class DatabaseManager {
     public DatabaseManager(Core core) {
         this.core = core;
         this.config = YamlConfiguration.loadConfiguration(new File(core.getDataFolder(), "mariadb.yml"));
+        initializePool();
     }
 
     /**

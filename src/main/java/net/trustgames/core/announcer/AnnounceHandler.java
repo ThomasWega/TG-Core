@@ -14,6 +14,7 @@ public final class AnnounceHandler {
 
     public AnnounceHandler(Core core) {
         this.core = core;
+        announceMessages();
     }
 
     /**
@@ -22,13 +23,12 @@ public final class AnnounceHandler {
      * in the announcer.yml config
      */
     public void announceMessages() {
-        AnnouncerMessagesConfig[] msgList = AnnouncerMessagesConfig.values();
-
         /*
          run every X seconds, every loop, it increases the index by 1, to move to the next message
          if the index is same as the number of messages, go back to the start by setting the index to 0
         */
         core.getServer().getScheduler().runTaskTimerAsynchronously(core, new Runnable() {
+            final AnnouncerMessagesConfig[] msgList = AnnouncerMessagesConfig.values();
             int index = 0;
 
             @Override

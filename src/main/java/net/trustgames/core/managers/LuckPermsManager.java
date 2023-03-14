@@ -25,11 +25,10 @@ import java.util.Set;
 public final class LuckPermsManager {
 
     private final Core core;
-    private final TablistTeams tablistTeams;
 
     public LuckPermsManager(Core core) {
         this.core = core;
-        this.tablistTeams = new TablistTeams(core.getTablistScoreboard());
+        registerListeners();
     }
 
     /**
@@ -134,7 +133,7 @@ public final class LuckPermsManager {
             if (player == null) return;
 
             // add player to player-list team to sort priority
-            tablistTeams.addToTeam(player);
+            TablistTeams.addToTeam(player);
         });
     }
 }

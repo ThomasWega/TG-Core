@@ -24,6 +24,7 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.Entity;
 import net.trustgames.core.Core;
 import net.trustgames.core.managers.CooldownManager;
+import net.trustgames.core.tablist.TablistTeams;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -212,7 +213,7 @@ public final class NPCManager {
      * @param npc NPC to hide the name of
      */
     public void hideName(ServerPlayer npc) {
-        Scoreboard scoreboard = core.getTablistScoreboard();
+        Scoreboard scoreboard = TablistTeams.getTablist();
         Team team = scoreboard.getTeam("9999NPC");
         if (team == null) {
             team = scoreboard.registerNewTeam("9999NPC");
@@ -312,7 +313,7 @@ public final class NPCManager {
      * @param color Which color to set to the NPC
      */
     public void glow(ServerPlayer npc, TextColor color) {
-        Scoreboard scoreboard = core.getTablistScoreboard();
+        Scoreboard scoreboard = TablistTeams.getTablist();
 
         CraftPlayer npcEntity = npc.getBukkitEntity();
         npcEntity.setGlowing(true);

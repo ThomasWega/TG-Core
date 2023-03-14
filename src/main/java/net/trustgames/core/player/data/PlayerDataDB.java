@@ -13,6 +13,7 @@ public final class PlayerDataDB {
 
     public PlayerDataDB(Core core) {
         this.core = core;
+        initializeTable();
     }
 
     /**

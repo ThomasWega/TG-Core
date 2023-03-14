@@ -9,7 +9,11 @@ import org.bukkit.World;
  */
 public final class CoreGamerulesHandler {
 
-    public static void setGamerules() {
+    public CoreGamerulesHandler() {
+        setGamerules();
+    }
+
+    private void setGamerules() {
 
         for (World world : Bukkit.getServer().getWorlds()) {
 

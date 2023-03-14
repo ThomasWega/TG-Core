@@ -19,12 +19,10 @@ import net.trustgames.core.player.data.commands.PlayerDataCommand;
 import net.trustgames.core.protection.CoreGamerulesHandler;
 import net.trustgames.core.tablist.TablistHandler;
 import net.trustgames.core.tablist.TablistTeams;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scoreboard.Scoreboard;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -44,16 +42,19 @@ public final class Core extends JavaPlugin {
     @Getter
     private final JedisPool jedisPool = new JedisPool(new JedisPoolConfig(), "localhost", 6379);
     @Getter
-    private final DatabaseManager databaseManager = new DatabaseManager(this);
-    @Getter
-    private final Scoreboard tablistScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+    private DatabaseManager databaseManager;
 
     @Override
     public void onEnable() {
-        final PlayerDataDB playerDataDB = new PlayerDataDB(this);
-        final PlayerActivityDB playerActivityDB = new PlayerActivityDB(this);
-        final AnnounceHandler announceHandler = new AnnounceHandler(this);
-        final LuckPermsManager luckPermsManager = new LuckPermsManager(this);
+        databaseManager = new DatabaseManager(this);
+        getServer().getScheduler().runTaskLater(this, () -> {
+            new PlayerDataDB(this);
+            new PlayerActivityDB(this);
+        }, 10);
+        new AnnounceHandler(this);
+        new LuckPermsManager(this);
+        new CoreGamerulesHandler();
+        TablistTeams.createTeams();
 
         /* ADD
         - chat system - add level
@@ -92,7 +93,6 @@ public final class Core extends JavaPlugin {
         // TODO PlayerActivity handler and command have pretty much the same method to fetch by uuid
         // TODO add tab completion for playerdata command
         // TODO playerdata commands add message for the player who got set/added/removed the data
-        // TODO also cache level to prevent calculating it everytime - add timer for recalculation or update it on the database column update
         // TODO add comments where missing
         // TODO move PlayerDataHandler to proxy
         // TODO figure out if to use the Bukkit.getOffline player or Bukkit.getServer.getOfflinePlayer
@@ -102,13 +102,11 @@ public final class Core extends JavaPlugin {
         // TODO move data commands to proxy ?? MAYBE
         // TODO move tablist to proxy
         // TODO check if things can be taken in constructor instead of methods
-        // TODO dont allow to set any data if player never joined!
+        // TODO don't allow to set any data if player never joined!
         // TODO create an event when a data in database updates
         // TODO activity add ability to check by uuid
         // TODO make luckperms async
 
-        // FIXME scoreboard null on first start
-        // FIXME datasource null on first/second time
         // FIXME @AllowConsole doesn't work
 
 
@@ -123,28 +121,8 @@ public final class Core extends JavaPlugin {
 
         createConfigs();
 
-        // DATABASE
-        databaseManager.initializePool();
-        getServer().getScheduler().runTaskLaterAsynchronously(this, () -> {
-            /*
-            initialize database tables.
-            This needs to have a delay, to prevent the DataSource being null
-            */
-            playerActivityDB.initializeTable();
-            playerDataDB.initializeTable();
-        }, 20);
-
-        // luckperms
-        luckPermsManager.registerListeners();
-
-        playerList();
-
         registerEvents();
         registerCommands();
-
-        CoreGamerulesHandler.setGamerules();
-
-        announceHandler.announceMessages();
     }
 
     @Override
@@ -161,7 +139,7 @@ public final class Core extends JavaPlugin {
         pluginManager.registerEvents(new PlayerManager(), this);
         pluginManager.registerEvents(new ChatLimiter(), this);
         pluginManager.registerEvents(new ChatDecoration(), this);
-        pluginManager.registerEvents(new TablistHandler(this), this);
+        pluginManager.registerEvents(new TablistHandler(), this);
         pluginManager.registerEvents(new ActivityCommand(this), this);
         pluginManager.registerEvents(new PlayerDataHandler(this), this);
     }
@@ -192,14 +170,5 @@ public final class Core extends JavaPlugin {
         for (File file : configs){
             FileManager.createFile(this, file);
         }
-    }
-
-    /**
-     * Create the playlist and create teams for it
-     * with luckperms groups weight support
-     */
-    private void playerList() {
-        TablistTeams tablistTeams = new TablistTeams(tablistScoreboard);
-        tablistTeams.createTeams();
     }
 }

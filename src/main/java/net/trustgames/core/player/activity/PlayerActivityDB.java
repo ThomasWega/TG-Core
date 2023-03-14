@@ -14,6 +14,7 @@ public final class PlayerActivityDB {
 
     public PlayerActivityDB(Core core) {
         this.core = core;
+        initializeTable();
     }
 
     /**

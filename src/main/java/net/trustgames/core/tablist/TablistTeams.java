@@ -1,9 +1,11 @@
 package net.trustgames.core.tablist;
 
+import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.node.Node;
 import net.trustgames.core.managers.LuckPermsManager;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -21,18 +23,15 @@ import static net.trustgames.core.Core.LOGGER;
 public final class TablistTeams {
 
     static final HashMap<Group, Integer> groupOrder = new HashMap<>();
-    private final Scoreboard tablist;
-
-    public TablistTeams(Scoreboard tablist) {
-        this.tablist = tablist;
-    }
+    @Getter
+    private static final Scoreboard tablist = Bukkit.getScoreboardManager().getNewScoreboard();
 
     /**
      * Create all the teams by getting all groups from LuckPerms and putting each group in map
      * with its corresponding weight. Then register new team with the first parameter weight, and second
      * parameter the name of the group. Example: "20vip"
      */
-    public void createTeams() {
+    public static void createTeams() {
         int i = 0;
 
         HashMap<Group, Integer> groupWeight = new HashMap<>();
@@ -79,7 +78,7 @@ public final class TablistTeams {
      *
      * @param player Player to add to the scoreboard team
      */
-    public void addToTeam(Player player) {
+    public static void addToTeam(Player player) {
         Group playerGroup = LuckPermsManager.getGroupManager().getGroup(LuckPermsManager.getPlayerPrimaryGroup(player));
         if (playerGroup == null) return;
         String stringTeam = groupOrder.get(playerGroup) + playerGroup.getName();
@@ -101,7 +100,7 @@ public final class TablistTeams {
     /**
      * @param player Player to remove from the scoreboard team
      */
-    public void removeFromTeam(Player player) {
+    public static void removeFromTeam(Player player) {
         if (player == null) return;
         Team team = tablist.getPlayerTeam(player);
         if (team != null)
