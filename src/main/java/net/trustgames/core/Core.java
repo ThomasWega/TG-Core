@@ -50,7 +50,7 @@ public final class Core extends JavaPlugin {
         getServer().getScheduler().runTaskLater(this, () -> {
             new PlayerDataDB(databaseManager);
             new PlayerActivityDB(databaseManager);
-        }, 10);
+        }, 40);
         new AnnounceHandler(this);
         new LuckPermsManager(this);
         new CoreGamerulesHandler();
@@ -108,7 +108,6 @@ public final class Core extends JavaPlugin {
         // TODO menu/gui/pages manager
 
         // FIXME @AllowConsole doesn't work
-        // FIXME this.datasource still null
 
         // FIXME TEST: When restarting, the database connections don't close properly or more are created!
         // FIXME TEST: Is there correct amount of connections?
