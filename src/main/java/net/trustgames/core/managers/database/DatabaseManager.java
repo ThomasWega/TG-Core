@@ -93,6 +93,17 @@ public final class DatabaseManager {
         });
     }
 
+    public void onDataSourceInitialized(Runnable callback) {
+        if (isMySQLDisabled()) return;
+        if (dataSource != null) {
+            callback.run();
+        } else {
+            // if dataSource is null, schedule the callback to be run when it is initialized
+            core.getServer().getScheduler().runTaskLaterAsynchronously(core, () ->
+                    onDataSourceInitialized(callback), 10L);
+        }
+    }
+
     /**
      * checks if the table exists, if it doesn't, it creates one using the given SQL statement
      * (is run async)

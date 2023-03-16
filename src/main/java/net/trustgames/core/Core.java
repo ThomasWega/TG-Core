@@ -47,10 +47,10 @@ public final class Core extends JavaPlugin {
     @Override
     public void onEnable() {
         databaseManager = new DatabaseManager(this);
-        getServer().getScheduler().runTaskLater(this, () -> {
+        databaseManager.onDataSourceInitialized(() -> {
             new PlayerDataDB(databaseManager);
             new PlayerActivityDB(databaseManager);
-        }, 100);
+        });
         new AnnounceHandler(this);
         new LuckPermsManager(this);
         new CoreGamerulesHandler();
@@ -108,6 +108,8 @@ public final class Core extends JavaPlugin {
         // TODO menu/gui/pages manager
 
         // FIXME @AllowConsole doesn't work
+        // FIXME this.datasource still null
+        // FIXME QuitPacket still error
 
         // FIXME TEST: When restarting, the database connections don't close properly or more are created!
         // FIXME TEST: Is there correct amount of connections?
@@ -126,10 +128,10 @@ public final class Core extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // at the end of onDisable!!
+        // the hikari doesn't have enough time to close
         try {
-            Thread.sleep(5000);
             databaseManager.closeHikari();
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
