@@ -1,6 +1,5 @@
 package net.trustgames.core.player.activity;
 
-import net.trustgames.core.Core;
 import net.trustgames.core.managers.database.DatabaseManager;
 
 /**
@@ -13,8 +12,8 @@ public final class PlayerActivityDB {
 
     private final DatabaseManager databaseManager;
 
-    public PlayerActivityDB(Core core) {
-        this.databaseManager = core.getDatabaseManager();
+    public PlayerActivityDB(DatabaseManager databaseManager) {
+        this.databaseManager = databaseManager;
         initializeTable();
     }
 
