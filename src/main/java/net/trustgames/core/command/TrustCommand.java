@@ -31,13 +31,17 @@ public abstract class TrustCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
 
         // Check for @AllowConsole annotation
-        boolean consoleAllowed;
+        boolean consoleAllowed = false;
         try {
-            Method executeMethod = getClass().getMethod("execute", Player.class, String[].class);
-            consoleAllowed = executeMethod.isAnnotationPresent(AllowConsole.class);
+            Method executeMethod = getClass().getMethod("execute", CommandSender.class, String[].class, String.class);
+            AllowConsole allowConsoleAnnotation = executeMethod.getAnnotation(AllowConsole.class);
+            if (allowConsoleAnnotation != null) {
+                consoleAllowed = true;
+            }
         } catch (NoSuchMethodException e) {
             consoleAllowed = false;
         }
+
 
         // If not allowed and sender is not a player, send error message
         if (!consoleAllowed && !(sender instanceof Player)) {

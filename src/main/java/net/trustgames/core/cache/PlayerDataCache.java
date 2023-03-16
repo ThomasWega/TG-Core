@@ -1,10 +1,11 @@
 package net.trustgames.core.cache;
 
 import net.trustgames.core.Core;
+import net.trustgames.core.player.data.PlayerDataFetcher;
 import net.trustgames.core.player.data.config.PlayerDataConfig;
 import net.trustgames.core.player.data.config.PlayerDataType;
-import net.trustgames.core.player.data.PlayerDataFetcher;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -30,12 +31,13 @@ public final class PlayerDataCache {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             try (Jedis jedis = pool.getResource()) {
                 String column = dataType.getColumnName();
+                System.out.println();
                 jedis.hset(uuid.toString(), column, value);
             }
         });
     }
 
-    public void get(Consumer<String> callback) {
+    public void get(Consumer<@Nullable String> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             try (Jedis jedis = pool.getResource()) {
                 String result = jedis.hget(uuid.toString(), dataType.getColumnName());

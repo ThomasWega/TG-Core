@@ -3,9 +3,10 @@ package net.trustgames.core.player.data;
 import net.trustgames.core.Core;
 import net.trustgames.core.cache.PlayerDataCache;
 import net.trustgames.core.cache.UUIDCache;
-import net.trustgames.core.player.data.config.PlayerDataType;
 import net.trustgames.core.managers.database.DatabaseManager;
+import net.trustgames.core.player.data.config.PlayerDataType;
 import net.trustgames.core.player.data.level.PlayerLevel;
+import net.trustgames.core.utils.LevelUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,7 +23,7 @@ import static net.trustgames.core.player.data.PlayerDataDB.tableName;
 public final class PlayerDataFetcher {
 
     private final Core core;
-    private final PlayerDataType dataType;
+    private PlayerDataType dataType;
     private final DatabaseManager databaseManager;
 
 
@@ -114,13 +115,19 @@ public final class PlayerDataFetcher {
      * @param object Object to update the DataType with
      */
     public void update(UUID uuid, Object object) {
+        // if XP, the level also needs to be recalculated and updated
+        if (dataType == PlayerDataType.XP) {
+            int level = LevelUtils.getLevelByXp(Integer.parseInt(object.toString()));
+            PlayerDataCache levelCache = new PlayerDataCache(core, uuid, PlayerDataType.LEVEL);
+            levelCache.update(String.valueOf(level));
+        }
+
         // if LEVEL, it needs to be recalculated to XP and updated in the cache
         if (dataType == PlayerDataType.LEVEL) {
-            PlayerLevel playerLevel = new PlayerLevel(core, uuid);
-            playerLevel.setLevel(Integer.parseInt(object.toString()));
             PlayerDataCache levelCache = new PlayerDataCache(core, uuid, PlayerDataType.LEVEL);
             levelCache.update(object.toString());
-            return;
+            object = LevelUtils.getThreshold(Integer.parseInt(object.toString()));
+            dataType = PlayerDataType.XP;
         }
 
         String label = dataType.getColumnName();
@@ -138,15 +145,6 @@ public final class PlayerDataFetcher {
             // update the cache
             PlayerDataCache playerDataCache = new PlayerDataCache(core, uuid, dataType);
             playerDataCache.update(object.toString());
-
-            // if XP, the level also needs to be recalculated and updated
-            if (dataType == PlayerDataType.XP) {
-                PlayerLevel playerLevel = new PlayerLevel(core, uuid);
-                playerLevel.getLevel(level -> {
-                    PlayerDataCache levelCache = new PlayerDataCache(core, uuid, PlayerDataType.LEVEL);
-                    levelCache.update(String.valueOf(level));
-                });
-            }
         } catch (SQLException e) {
             try {
                 connection.rollback();

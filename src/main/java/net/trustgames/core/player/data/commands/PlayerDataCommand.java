@@ -97,8 +97,7 @@ public final class PlayerDataCommand extends TrustCommand {
                 case "get" -> {
                     PlayerDataCache dataCache = new PlayerDataCache(core, targetUuid, dataType);
                     dataCache.get(data -> {
-                        int intData = Integer.parseInt(data);
-                        if (intData == -1) {
+                        if(data == null) {
                             sender.sendMessage(CommandConfig.COMMAND_PLAYER_UNKNOWN.addName(targetName));
                             return;
                         }

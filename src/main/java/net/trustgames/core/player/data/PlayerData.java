@@ -26,8 +26,9 @@ public final class PlayerData {
      */
     public void addData(int increase) {
         dataFetcher.fetch(uuid, data -> {
-            data += increase;
-            dataFetcher.update(uuid, data);
+            int intData = Integer.parseInt(data);
+            intData += increase;
+            dataFetcher.update(uuid, intData);
         });
     }
 
