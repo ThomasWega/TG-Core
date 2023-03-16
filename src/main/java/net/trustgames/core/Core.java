@@ -50,7 +50,7 @@ public final class Core extends JavaPlugin {
         getServer().getScheduler().runTaskLater(this, () -> {
             new PlayerDataDB(databaseManager);
             new PlayerActivityDB(databaseManager);
-        }, 40);
+        }, 50);
         new AnnounceHandler(this);
         new LuckPermsManager(this);
         new CoreGamerulesHandler();
@@ -126,7 +126,13 @@ public final class Core extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        databaseManager.closeHikari();
+        // at the end of onDisable!!
+        try {
+            Thread.sleep(2000);
+            databaseManager.closeHikari();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void registerEvents() {

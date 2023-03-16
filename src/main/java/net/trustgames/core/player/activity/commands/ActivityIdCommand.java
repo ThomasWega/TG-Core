@@ -39,6 +39,7 @@ public final class ActivityIdCommand extends TrustCommand {
     }
 
     @Override
+    @AllowConsole
     public void execute(CommandSender sender, String[] args, String label) {
         if (databaseManager.isMySQLDisabled()) {
             sender.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
