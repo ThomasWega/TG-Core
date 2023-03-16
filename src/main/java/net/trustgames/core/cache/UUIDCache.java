@@ -1,8 +1,8 @@
 package net.trustgames.core.cache;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.config.player_data.PlayerDataConfig;
-import net.trustgames.core.config.player_data.PlayerDataType;
+import net.trustgames.core.player.data.config.PlayerDataConfig;
+import net.trustgames.core.player.data.config.PlayerDataType;
 import net.trustgames.core.player.data.PlayerDataFetcher;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +35,7 @@ public final class UUIDCache {
      *
      * @param callback Where the UUID of the player, or null will be saved
      */
-    public void get(Consumer<@Nullable UUID> callback){
+    public void get(Consumer<@Nullable UUID> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             try (Jedis jedis = pool.getResource()) {
                 String uuidString = jedis.hget(playerName, field);
@@ -58,7 +58,7 @@ public final class UUIDCache {
     /**
      * Updates the player's UUID in the cache.
      *
-     * @param uuid       UUID of the player.
+     * @param uuid UUID of the player.
      */
     public void update(@NotNull UUID uuid) {
         try (Jedis jedis = pool.getResource()) {

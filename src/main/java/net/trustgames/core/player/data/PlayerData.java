@@ -2,7 +2,7 @@ package net.trustgames.core.player.data;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.cache.UUIDCache;
-import net.trustgames.core.config.player_data.PlayerDataType;
+import net.trustgames.core.player.data.config.PlayerDataType;
 
 import java.util.UUID;
 
@@ -41,12 +41,13 @@ public final class PlayerData {
     /**
      * Removes the amount from the total data.
      * Makes sure that the data will not be set to less than 0
+     *
      * @param decrease The amount of Data to remove from the total amount.
      */
     public void removeData(int decrease) {
         dataFetcher.fetch(uuid, data -> {
             int intData = Integer.parseInt(data);
-            if (decrease >= intData){
+            if (decrease >= intData) {
                 setData(0);
                 return;
             }

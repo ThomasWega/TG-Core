@@ -2,7 +2,6 @@ package net.trustgames.core.player.activity;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.managers.database.DatabaseManager;
-import net.trustgames.core.utils.Base64Utils;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ public final class PlayerActivityFetcher {
      * as new list of Activities, which is saved in the callback. This
      * whole operation is run async.
      *
-     * @param uuid UUID of Player to get the activity for
+     * @param uuid     UUID of Player to get the activity for
      * @param callback Callback where the result will be saved
      */
     public void fetchByUUID(UUID uuid, Consumer<PlayerActivity> callback) {
@@ -54,23 +53,15 @@ public final class PlayerActivityFetcher {
     /**
      * Returns only one Activity with the matching id in async callback
      *
-     * @param id Given ID in Base64 encoded or Plain String (decoded)
+     * @param id       Given ID
      * @param callback Callback where the result will be saved
      */
-    public void fetchByID(String id, Consumer<PlayerActivity.Activity> callback) {
+    public void fetchByID(long id, Consumer<PlayerActivity.Activity> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
-            // try to decode the id
-            String decodedID = Base64Utils.decode(id);
-            /*
-            if decode fails, it returns null.
-            if it's null it's already in decoded format
-            */
-            if (decodedID == null)
-                decodedID = id;
 
             try (Connection conn = databaseManager.getConnection();
                  PreparedStatement statement = conn.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?")) {
-                statement.setString(1, decodedID);
+                statement.setString(1, String.valueOf(id));
                 try (ResultSet results = statement.executeQuery()) {
                     if (results.next()) {
                         long resultId = results.getLong("id");
@@ -107,7 +98,6 @@ public final class PlayerActivityFetcher {
                 try (ResultSet result = statement.getGeneratedKeys()) {
                     if (result.next()) {
                         long id = result.getLong(1);
-                        System.out.println(id);
                         activity.setId(id);
                     }
                 }

@@ -3,9 +3,9 @@ package net.trustgames.core.player.data;
 import net.trustgames.core.Core;
 import net.trustgames.core.cache.PlayerDataCache;
 import net.trustgames.core.cache.UUIDCache;
-import net.trustgames.core.config.player_data.PlayerDataType;
+import net.trustgames.core.player.data.config.PlayerDataType;
 import net.trustgames.core.managers.database.DatabaseManager;
-import net.trustgames.core.player.data.additional.level.PlayerLevel;
+import net.trustgames.core.player.data.level.PlayerLevel;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -140,7 +140,7 @@ public final class PlayerDataFetcher {
             playerDataCache.update(object.toString());
 
             // if XP, the level also needs to be recalculated and updated
-            if (dataType == PlayerDataType.XP){
+            if (dataType == PlayerDataType.XP) {
                 PlayerLevel playerLevel = new PlayerLevel(core, uuid);
                 playerLevel.getLevel(level -> {
                     PlayerDataCache levelCache = new PlayerDataCache(core, uuid, PlayerDataType.LEVEL);

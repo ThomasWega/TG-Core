@@ -205,7 +205,7 @@ public final class ChatLimiter implements Listener {
      * get the time player needs to wait until using the chat again
      *
      * @param playerName Player who wrote the message
-     * @param time   Time of the cooldown
+     * @param time       Time of the cooldown
      * @return The time remaining until the player can write again
      */
     private double getWaitTime(String playerName, double time) {

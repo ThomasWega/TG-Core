@@ -48,8 +48,8 @@ public final class Core extends JavaPlugin {
     public void onEnable() {
         databaseManager = new DatabaseManager(this);
         getServer().getScheduler().runTaskLater(this, () -> {
-            new PlayerDataDB(this);
-            new PlayerActivityDB(this);
+            new PlayerDataDB(databaseManager);
+            new PlayerActivityDB(databaseManager);
         }, 10);
         new AnnounceHandler(this);
         new LuckPermsManager(this);
@@ -90,7 +90,6 @@ public final class Core extends JavaPlugin {
         // TODO NPC protocollib
         // TODO TrustCommand add arguments
         // TODO improve player activity (add filters and /activity-ip command)
-        // TODO PlayerActivity handler and command have pretty much the same method to fetch by uuid
         // TODO add tab completion for playerdata command
         // TODO playerdata commands add message for the player who got set/added/removed the data
         // TODO add comments where missing
@@ -99,15 +98,14 @@ public final class Core extends JavaPlugin {
         // TODO check command manager if not a bullshit
         // TODO merge join listeners which use uuid to one
         // TODO annotate all things correctly
-        // TODO move data commands to proxy ?? MAYBE
         // TODO move tablist to proxy
         // TODO check if things can be taken in constructor instead of methods
         // TODO don't allow to set any data if player never joined!
         // TODO create an event when a data in database updates
         // TODO activity add ability to check by uuid
-        // ADD: make luckperms async
-        // TODO playerActivity menu add config for different materials
-        // TODO activity-id disallow similar ids to the one inserted
+        // ADD?: make luckperms async
+        // TODO DataCommand invalid value message not sure if correct value
+        // TODO menu/gui/pages manager
 
         // FIXME @AllowConsole doesn't work
         // FIXME this.datasource still null
@@ -169,7 +167,7 @@ public final class Core extends JavaPlugin {
                 new File(getDataFolder(), "mariadb.yml"),
         };
 
-        for (File file : configs){
+        for (File file : configs) {
             FileManager.createFile(this, file);
         }
     }

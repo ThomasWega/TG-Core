@@ -8,10 +8,9 @@ import net.trustgames.core.cache.PlayerDataCache;
 import net.trustgames.core.command.TrustCommand;
 import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CorePermissionsConfig;
-import net.trustgames.core.config.player_data.PlayerDataType;
+import net.trustgames.core.player.data.config.PlayerDataType;
 import net.trustgames.core.managers.database.DatabaseManager;
 import net.trustgames.core.player.activity.PlayerActivityFetcher;
-import net.trustgames.core.utils.Base64Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -51,7 +50,14 @@ public final class ActivityIdCommand extends TrustCommand {
             return;
         }
 
-        String id = args[0];
+        String stringId = args[0];
+        long id;
+        try {
+            id = Long.parseLong(stringId);
+        } catch (NumberFormatException e) {
+            sender.sendMessage(CommandConfig.COMMAND_INVALID_ID.addID(stringId));
+            return;
+        }
 
         // print the data to the chat
         printData(sender, id);
@@ -64,16 +70,16 @@ public final class ActivityIdCommand extends TrustCommand {
      * @param sender Command sender
      * @param id     Activity id
      */
-    private void printData(CommandSender sender, String id) {
+    private void printData(CommandSender sender, long id) {
         PlayerActivityFetcher activityFetcher = new PlayerActivityFetcher(core);
         activityFetcher.fetchByID(id, activity -> {
             if (activity == null) {
-                sender.sendMessage(CommandConfig.COMMAND_NO_ID_ACT.addID(id));
+                sender.sendMessage(CommandConfig.COMMAND_NO_ID_ACT.addID(String.valueOf(id)));
                 return;
             }
 
             // get all the data from the resultSet
-            String resultId = Base64Utils.encode(String.valueOf(activity.getId()));
+            long resultId = activity.getId();
             UUID uuid = activity.getUuid();
             String ip = activity.getIp();
             String action = activity.getAction();
@@ -103,7 +109,7 @@ public final class ActivityIdCommand extends TrustCommand {
                                         ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT))),
                         Component.text(""),
                         Component.text(ChatColor.WHITE + "ID: " +
-                                ChatColor.DARK_PURPLE + resultId).clickEvent(ClickEvent.copyToClipboard(resultId)),
+                                ChatColor.DARK_PURPLE + resultId).clickEvent(ClickEvent.copyToClipboard(String.valueOf(resultId))),
                         Component.text(ChatColor.DARK_GRAY + "------------------------")
                 );
                 // loop through the list and for each, send a message

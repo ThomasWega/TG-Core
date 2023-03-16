@@ -41,19 +41,19 @@ public final class ChatDecoration implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void decorate(AsyncChatEvent event) {
         Player sender = event.getPlayer();
-            Component message = setColor(sender, event.originalMessage());
+        Component message = setColor(sender, event.originalMessage());
 
-            Component prefix = setPrefix(sender);
+        Component prefix = setPrefix(sender);
 
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                // if the player is not mentioned, send him the normal message without colored name
-                if (!setMention(sender, p, message, prefix)) {
-                    p.sendMessage(getMessage(sender, prefix, message));
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            // if the player is not mentioned, send him the normal message without colored name
+            if (!setMention(sender, p, message, prefix)) {
+                p.sendMessage(getMessage(sender, prefix, message));
 
-                    logMessage(prefix, sender.getName(), message);
-                }
+                logMessage(prefix, sender.getName(), message);
             }
-            event.setCancelled(true);
+        }
+        event.setCancelled(true);
     }
 
     /**
@@ -122,8 +122,8 @@ public final class ChatDecoration implements Listener {
 
             logMessage(prefix, sender.getName(), msg);
 
-                p.sendActionBar(ChatConfig.MENTION_ACTIONBAR.formatMessage(sender));
-                Audience.audience(p).playSound(sound, Sound.Emitter.self());
+            p.sendActionBar(ChatConfig.MENTION_ACTIONBAR.formatMessage(sender));
+            Audience.audience(p).playSound(sound, Sound.Emitter.self());
             return true;
         }
         return false;

@@ -34,10 +34,10 @@ public final class PlayerActivityHandler implements Listener {
         uuidCache.get(uuid -> activityFetcher.insertNew(new PlayerActivity.Activity(
                 uuid,
                 playerIpString,
-                "JOIN SERVER " + Bukkit.getServer().getName() +
+                "JOIN " + Bukkit.getServer().getName() +
                         " (" + Bukkit.getServer().getPort() + ")",
                 new Timestamp(System.currentTimeMillis())
-                )));
+        )));
     }
 
     @EventHandler
@@ -49,7 +49,7 @@ public final class PlayerActivityHandler implements Listener {
         uuidCache.get(uuid -> activityFetcher.insertNew(new PlayerActivity.Activity(
                 uuid,
                 playerIpString,
-                "LEAVE SERVER " + Bukkit.getServer().getName() +
+                "LEAVE " + Bukkit.getServer().getName() +
                         " (" + Bukkit.getServer().getPort() + ")",
                 new Timestamp(System.currentTimeMillis())
         )));

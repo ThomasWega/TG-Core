@@ -1,8 +1,8 @@
-package net.trustgames.core.player.data.additional.level;
+package net.trustgames.core.player.data.level;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.cache.PlayerDataCache;
-import net.trustgames.core.config.player_data.PlayerDataType;
+import net.trustgames.core.player.data.config.PlayerDataType;
 import net.trustgames.core.player.data.PlayerDataFetcher;
 
 import java.util.UUID;

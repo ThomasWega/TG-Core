@@ -15,6 +15,7 @@ public enum CommandConfig {
     COMMAND_PLAYER_ONLY("This command can be executed by in-game players only!"),
     COMMAND_SPAM(PREFIX.value + "<dark_gray>Please don't spam the command!"),
     COMMAND_INVALID_ARG(PREFIX.value + "<dark_gray>You need to specify a valid argument!"),
+    COMMAND_INVALID_ID(PREFIX.value + "<dark_gray>Invalid ID <white><id>"),
     COMMAND_PLAYER_OFFLINE(PREFIX.value + "<dark_gray>The player <white><player_name><dark_gray> isn't online on this server!"),
     COMMAND_PLAYER_UNKNOWN(PREFIX.value + "<dark_gray>The player <white><player_name><dark_gray> never joined the network!"),
     COMMAND_NO_PLAYER_ACT(PREFIX_DB.value + "<dark_gray>No activity data for player <white><player_name>"),

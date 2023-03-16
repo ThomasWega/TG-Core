@@ -19,8 +19,8 @@ import java.sql.SQLException;
 public final class DatabaseManager {
 
     private final Core core;
-    public HikariDataSource dataSource;
     private final YamlConfiguration config;
+    public HikariDataSource dataSource;
 
     public DatabaseManager(Core core) {
         this.core = core;
@@ -31,12 +31,11 @@ public final class DatabaseManager {
     /**
      * Check if table exists.
      *
-     * @implNote The connection isn't closed by this method
-     *
      * @param connection HikariCP connection
      * @param tableName  The name of the table
      * @return if the table already exists
      * @throws SQLException if it can't get the ResultSet
+     * @implNote The connection isn't closed by this method
      */
     private static boolean tableExist(Connection connection, String tableName) throws SQLException {
         boolean tExists = false;
@@ -54,7 +53,7 @@ public final class DatabaseManager {
 
     /**
      * gets a new connection from the hikaricp pool
-     * */
+     */
     public Connection getConnection() {
         try {
             return dataSource.getConnection();

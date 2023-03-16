@@ -272,34 +272,34 @@ public final class NPCManager {
             public void onPacketReceiving(PacketEvent event) {
                 PacketContainer packet = event.getPacket();
                 Player player = event.getPlayer();
-                    int entityId = packet.getIntegers().read(0);
+                int entityId = packet.getIntegers().read(0);
 
-                    for (ServerPlayer npc : npcs) {
+                for (ServerPlayer npc : npcs) {
 
-                        if (npc.getId() == entityId) {
+                    if (npc.getId() == entityId) {
 
-                            boolean isPresent = Objects.requireNonNull(
-                                    config.getConfigurationSection("npcs")).getKeys(false).contains(npc.displayName);
-                            if (!isPresent) return;
+                        boolean isPresent = Objects.requireNonNull(
+                                config.getConfigurationSection("npcs")).getKeys(false).contains(npc.displayName);
+                        if (!isPresent) return;
 
-                            double cooldown = config.getDouble("npcs." + npc.displayName + ".action.cooldown");
-                            if (cooldownManager.commandCooldown(player, cooldown)) return;
+                        double cooldown = config.getDouble("npcs." + npc.displayName + ".action.cooldown");
+                        if (cooldownManager.commandCooldown(player, cooldown)) return;
 
-                            String action = config.getString("npcs." + npc.displayName + ".action.type");
-                            List<String> value = config.getStringList("npcs." + npc.displayName + ".action.value");
-                            ActionType actionType = ActionType.valueOf(action);
+                        String action = config.getString("npcs." + npc.displayName + ".action.type");
+                        List<String> value = config.getStringList("npcs." + npc.displayName + ".action.value");
+                        ActionType actionType = ActionType.valueOf(action);
 
-                            switch (actionType) {
-                                case COMMAND:
-                                    core.getServer().getScheduler().runTask(core, () -> value.forEach(player::performCommand));
-                                case MESSAGE:
-                                    for (String s : value) {
-                                        player.sendMessage(MiniMessage.miniMessage().deserialize(s));
-                                    }
-                            }
-                            break;
+                        switch (actionType) {
+                            case COMMAND:
+                                core.getServer().getScheduler().runTask(core, () -> value.forEach(player::performCommand));
+                            case MESSAGE:
+                                for (String s : value) {
+                                    player.sendMessage(MiniMessage.miniMessage().deserialize(s));
+                                }
                         }
+                        break;
                     }
+                }
             }
         });
     }

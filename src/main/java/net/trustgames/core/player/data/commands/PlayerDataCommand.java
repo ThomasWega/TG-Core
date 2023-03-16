@@ -6,7 +6,7 @@ import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.command.TrustCommand;
 import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CorePermissionsConfig;
-import net.trustgames.core.config.player_data.PlayerDataType;
+import net.trustgames.core.player.data.config.PlayerDataType;
 import net.trustgames.core.player.data.PlayerData;
 import net.trustgames.core.player.data.PlayerDataConfig;
 import org.bukkit.command.CommandSender;
@@ -14,13 +14,12 @@ import org.bukkit.command.CommandSender;
 public final class PlayerDataCommand extends TrustCommand {
 
     private final Core core;
+    private PlayerDataType dataType;
 
     public PlayerDataCommand(Core core) {
         super(CorePermissionsConfig.STAFF.permission);
         this.core = core;
     }
-
-    private PlayerDataType dataType;
 
     @Override
     @AllowConsole

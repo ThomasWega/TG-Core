@@ -13,7 +13,7 @@ import net.trustgames.core.managers.ItemManager;
 import net.trustgames.core.managers.database.DatabaseManager;
 import net.trustgames.core.player.activity.PlayerActivity;
 import net.trustgames.core.player.activity.PlayerActivityFetcher;
-import net.trustgames.core.utils.Base64Utils;
+import net.trustgames.core.player.activity.PlayerActivityType;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -46,22 +46,17 @@ public final class ActivityCommand extends TrustCommand implements Listener {
      * Stores all ItemStack with the data for each row
      */
     private static final List<ItemStack> records = new ArrayList<>();
-    /**
-     * Stores all Inventories
-     */
     private static final List<Inventory> inventoryList = new ArrayList<>();
-    /**
-     * Stores all the Actions and their corresponding ItemStack
-     */
-    private static final HashMap<String, Material> actionsMap = new HashMap<>();
-    private static final Component nextPageName = ColorUtils.color("&eNext page");
-    private static final Component prevPageName = ColorUtils.color("&ePrevious page");
+
+    private final Component nextPageName = ColorUtils.color("&eNext page");
+    private final Component prevPageName = ColorUtils.color("&ePrevious page");
+
     /**
      * Used for switching pages.
      * +1 everytime page is switched to next page.
      * -1 everytime page is switched to previous page.
      */
-    private static int pageCount = 0;
+    private int pageCount = 0;
     private final Core core;
     private final DatabaseManager databaseManager;
 
@@ -88,8 +83,6 @@ public final class ActivityCommand extends TrustCommand implements Listener {
             return;
         }
 
-        String target = args[0];
-
         /*
         if the menus were previously opened, all the maps
         need to be cleared to avoid the items showing twice.
@@ -98,8 +91,9 @@ public final class ActivityCommand extends TrustCommand implements Listener {
         */
         records.clear();
         inventoryList.clear();
-        actionsMap.clear();
         pageCount = 0;
+
+        String target = args[0];
 
         createRecords(target, () -> {
             if (records.isEmpty()) {
@@ -140,19 +134,18 @@ public final class ActivityCommand extends TrustCommand implements Listener {
              Then add a clone of the ItemStack to the records list
              */
                 for (PlayerActivity.Activity activity : playerActivity.getActivities()) {
-                    String id = String.valueOf(activity.getId());
+                    long id = activity.getId();
                     String stringUuid = activity.getUuid().toString();
                     String ip = activity.getIp();
                     String action = activity.getAction();
                     Timestamp time = activity.getTime();
-                    String encodedId = Base64Utils.encode(id);
 
                     /*
-                    One of the lore lines needs to have a click event with the value of the encodedID. This is
-                    because in other methods it's required to retrieve the encodedId by just clicking on the item.
+                    One of the lore lines needs to have a click event with the value of the ID. This is
+                    because in other methods it's required to retrieve the ID by just clicking on the item.
                     The click event is technically never being executed, as the player doesn't click on the lore, but
                     on the ItemStack, but the click event value is still present in the ItemStack's lore and can be retrieved.
-                    That's how I get the encodedId from the ItemStack later on.
+                    That's how I get the ID from the ItemStack later on.
                     */
                     List<Component> loreList = new ArrayList<>();
                     loreList.add(Component.text(ChatColor.WHITE + "Date: " + ChatColor.YELLOW + time.toLocalDateTime().toLocalDate()));
@@ -161,7 +154,7 @@ public final class ActivityCommand extends TrustCommand implements Listener {
                     loreList.add(Component.text(ChatColor.WHITE + "UUID: " + ChatColor.GRAY + stringUuid));
                     loreList.add(Component.text(ChatColor.WHITE + "IP: " + ChatColor.GREEN + ip));
                     loreList.add(Component.text(""));
-                    loreList.add(Component.text(ChatColor.LIGHT_PURPLE + "Click to print").clickEvent(ClickEvent.suggestCommand(encodedId)));
+                    loreList.add(Component.text(ChatColor.LIGHT_PURPLE + "Click to print").clickEvent(ClickEvent.suggestCommand(String.valueOf(id))));
 
                     ItemMeta targetHeadMeta = targetHead.getItemMeta();
                     targetHeadMeta.displayName(Component.text(ChatColor.BOLD + "" + ChatColor.DARK_PURPLE + action));
@@ -187,17 +180,9 @@ public final class ActivityCommand extends TrustCommand implements Listener {
      */
     private void setMaterial(ItemStack recordItem) {
         String itemName = ColorUtils.stripColor(recordItem.displayName());
-
-        /*
-         the list of possible actions names.
-         If more actions are started logging, they need to be added here
-        */
-        actionsMap.put("JOIN SERVER", Material.GREEN_BED);
-        actionsMap.put("LEAVE SERVER", Material.RED_BED);
-
-        for (String action : actionsMap.keySet()) {
-            if (itemName.contains(action)) {
-                recordItem.setType(actionsMap.get(action));
+        for (PlayerActivityType activityType : PlayerActivityType.values()) {
+            if (itemName.contains(activityType.action)) {
+                recordItem.setType(activityType.icon);
                 return;
             }
         }
@@ -333,8 +318,7 @@ public final class ActivityCommand extends TrustCommand implements Listener {
 
         if (title.contains("'s activity")) {
             try {
-                if (actionsMap.containsValue(item.getType()) || item.getType() == Material.BEDROCK) {
-
+                if (PlayerActivityType.ALL_MATERIALS.contains(item.getType()) || item.getType() == Material.BEDROCK) {
                     /*
                      get the id from the click event of the item's lore.
                      NOTE: read more in createRecords comments

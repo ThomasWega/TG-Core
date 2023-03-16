@@ -16,12 +16,12 @@ public final class TablistHandler implements Listener {
     @EventHandler
     private void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-            Component header = ServerConfig.TABLIST_HEADER.getText();
-            Component footer = ServerConfig.TABLIST_FOOTER.getText();
+        Component header = ServerConfig.TABLIST_HEADER.getText();
+        Component footer = ServerConfig.TABLIST_FOOTER.getText();
 
-            player.sendPlayerListHeaderAndFooter(header, footer);
+        player.sendPlayerListHeaderAndFooter(header, footer);
 
-            TablistTeams.addToTeam(player);
+        TablistTeams.addToTeam(player);
     }
 
     @EventHandler

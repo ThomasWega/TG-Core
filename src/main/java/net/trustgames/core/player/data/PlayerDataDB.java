@@ -1,8 +1,7 @@
 package net.trustgames.core.player.data;
 
-import net.trustgames.core.Core;
-import net.trustgames.core.config.player_data.PlayerDataType;
 import net.trustgames.core.managers.database.DatabaseManager;
+import net.trustgames.core.player.data.config.PlayerDataType;
 
 /**
  * This class handles the creation of the data database table
@@ -10,12 +9,10 @@ import net.trustgames.core.managers.database.DatabaseManager;
 public final class PlayerDataDB {
 
     public static final String tableName = "player_data";
-    private final Core core;
     private final DatabaseManager databaseManager;
 
-    public PlayerDataDB(Core core) {
-        this.core = core;
-        this.databaseManager = core.getDatabaseManager();
+    public PlayerDataDB(DatabaseManager databaseManager) {
+        this.databaseManager = databaseManager;
         initializeTable();
     }
 

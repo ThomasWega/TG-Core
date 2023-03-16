@@ -1,11 +1,10 @@
-package net.trustgames.core.config.player_data;
+package net.trustgames.core.player.data.config;
 
 public enum PlayerDataConfig {
 
     // in milliseconds
     UPDATE_INTERVAL(5000),
     DATA_EXPIRY(1800000);
-
 
 
     private final long value;
@@ -21,7 +20,7 @@ public enum PlayerDataConfig {
         return value / 50;
     }
 
-    public final long getSeconds(){
+    public final long getSeconds() {
         return value / 1000;
     }
 }

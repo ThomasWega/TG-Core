@@ -25,7 +25,7 @@ public final class CooldownManager implements Listener {
      * This method allows only one execution of the command per given time.
      * It also ensures that the "don't spam" message is not being sent too often to the player.
      *
-     * @param player   Player to put a cooldown on
+     * @param player       Player to put a cooldown on
      * @param cooldownTime Cooldown time in seconds
      * @return True if the player is on cooldown
      */

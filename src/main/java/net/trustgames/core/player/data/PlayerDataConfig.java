@@ -1,7 +1,7 @@
 package net.trustgames.core.player.data;
 
 import net.kyori.adventure.text.Component;
-import net.trustgames.core.config.player_data.PlayerDataType;
+import net.trustgames.core.player.data.config.PlayerDataType;
 import net.trustgames.core.utils.MiniMessageUtils;
 
 /**
