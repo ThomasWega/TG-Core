@@ -3,6 +3,7 @@ package net.trustgames.core.announcer;
 import net.trustgames.core.Core;
 import net.trustgames.core.announcer.config.AnnouncerDelayConfig;
 import net.trustgames.core.announcer.config.AnnouncerMessagesConfig;
+import org.bukkit.Bukkit;
 
 /**
  * Chat messages which are announced to all online players
@@ -36,7 +37,7 @@ public final class AnnounceHandler {
                 if (index == msgList.length) {
                     index = 0;
                 }
-                core.getServer().broadcast(msgList[index].getMessage());
+                Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(msgList[index].getMessage()));
                 index++;
             }
         }, AnnouncerDelayConfig.FIRST.value * 20, AnnouncerDelayConfig.DELAY.value * 20);

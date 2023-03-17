@@ -93,6 +93,9 @@ public final class DatabaseManager {
         });
     }
 
+    /**
+     * @param callback When datasource is initialized
+     */
     public void onDataSourceInitialized(Runnable callback) {
         if (isMySQLDisabled()) return;
         if (dataSource != null) {

@@ -62,7 +62,7 @@ public final class Core extends JavaPlugin {
         - admin system (vanish, menus, spectate ...)
         - level system
         - cosmetics (spawn particles, spawn sounds, balloons)
-        - nick and skin changer
+        - nick and skin changer - test skin classes - add redis cache
         - image maps
         - party and friends system
         - rotating heads
@@ -88,32 +88,23 @@ public final class Core extends JavaPlugin {
         // TODO HOLO clickable
         // TODO NPC action - command prints the command in chat
         // TODO NPC protocollib
-        // TODO TrustCommand add arguments
         // TODO improve player activity (add filters and /activity-ip command)
+        // TODO TrustCommand add arguments
         // TODO add tab completion for playerdata command
-        // TODO playerdata commands add message for the player who got set/added/removed the data
         // TODO add comments where missing
         // TODO move PlayerDataHandler to proxy
         // TODO figure out if to use the Bukkit.getOffline player or Bukkit.getServer.getOfflinePlayer
-        // TODO check command manager if not a bullshit
         // TODO merge join listeners which use uuid to one
         // TODO annotate all things correctly
         // TODO move tablist to proxy
         // TODO check if things can be taken in constructor instead of methods
-        // TODO don't allow to set any data if player never joined!
-        // TODO create an event when a data in database updates
         // TODO activity add ability to check by uuid
         // ADD?: make luckperms async
-        // TODO DataCommand invalid value message not sure if correct value
         // TODO menu/gui/pages manager
+        // TODO improve config getters
 
-        // FIXME @AllowConsole doesn't work
-        // FIXME this.datasource still null
         // FIXME QuitPacket still error
-
-        // FIXME TEST: When restarting, the database connections don't close properly or more are created!
-        // FIXME TEST: Is there correct amount of connections?
-
+        // FIXME Column "uuid" specified twice
 
         // create a data folder
         if (getDataFolder().mkdirs()) {
@@ -152,7 +143,6 @@ public final class Core extends JavaPlugin {
     }
 
     private void registerCommands() {
-
         // List of command to register
         HashMap<PluginCommand, CommandExecutor> cmdList = new HashMap<>();
         cmdList.put(getCommand("activity"), new ActivityCommand(this));

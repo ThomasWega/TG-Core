@@ -56,7 +56,7 @@ public final class ActivityIdCommand extends TrustCommand {
         try {
             id = Long.parseLong(stringId);
         } catch (NumberFormatException e) {
-            sender.sendMessage(CommandConfig.COMMAND_INVALID_ID.addID(stringId));
+            sender.sendMessage(CommandConfig.COMMAND_INVALID_ID.addComponent(Component.text(stringId)));
             return;
         }
 
@@ -75,7 +75,7 @@ public final class ActivityIdCommand extends TrustCommand {
         PlayerActivityFetcher activityFetcher = new PlayerActivityFetcher(core);
         activityFetcher.fetchByID(id, activity -> {
             if (activity == null) {
-                sender.sendMessage(CommandConfig.COMMAND_NO_ID_ACT.addID(String.valueOf(id)));
+                sender.sendMessage(CommandConfig.COMMAND_NO_ID_DATA.addComponent(Component.text(id)));
                 return;
             }
 
@@ -88,6 +88,9 @@ public final class ActivityIdCommand extends TrustCommand {
 
             PlayerDataCache playerDataCache = new PlayerDataCache(core, uuid, PlayerDataType.NAME);
             playerDataCache.get(name -> {
+                if (name == null){
+                    name = "ERROR";
+                }
                 // list of component messages
                 List<Component> chatMessage = List.of(
                         Component.text(ChatColor.DARK_GRAY + "------------------------"),

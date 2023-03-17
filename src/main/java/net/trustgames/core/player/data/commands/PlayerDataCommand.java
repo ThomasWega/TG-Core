@@ -1,15 +1,19 @@
 package net.trustgames.core.player.data.commands;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.trustgames.core.Core;
 import net.trustgames.core.cache.PlayerDataCache;
 import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.command.TrustCommand;
 import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CorePermissionsConfig;
-import net.trustgames.core.player.data.config.PlayerDataType;
 import net.trustgames.core.player.data.PlayerData;
 import net.trustgames.core.player.data.PlayerDataConfig;
+import net.trustgames.core.player.data.config.PlayerDataType;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public final class PlayerDataCommand extends TrustCommand {
 
@@ -17,7 +21,7 @@ public final class PlayerDataCommand extends TrustCommand {
     private PlayerDataType dataType;
 
     public PlayerDataCommand(Core core) {
-        super(CorePermissionsConfig.STAFF.permission);
+        super(CorePermissionsConfig.DEFAULT.permission);
         this.core = core;
     }
 
@@ -30,7 +34,14 @@ public final class PlayerDataCommand extends TrustCommand {
         if (args.length == 0) {
             UUIDCache uuidCache = new UUIDCache(core, senderName);
             uuidCache.get(uuid -> {
-                assert uuid != null; // never null here
+                /*
+                 will most likely mean that console executed this command
+                 and console can't have uuid
+                */
+                if (uuid == null) {
+                    sender.sendMessage(CommandConfig.COMMAND_PLAYER_ONLY.getText());
+                    return;
+                }
                 PlayerDataCache dataCache = new PlayerDataCache(core, uuid, dataType);
                 dataCache.get(data -> sender.sendMessage(PlayerDataConfig.GET_PERSONAL.formatMessage(senderName, dataType, String.valueOf(data))));
             });
@@ -47,25 +58,35 @@ public final class PlayerDataCommand extends TrustCommand {
                     PlayerDataCache dataCache = new PlayerDataCache(core, targetUuid, dataType);
                     dataCache.get(data -> sender.sendMessage(PlayerDataConfig.GET_OTHER.formatMessage(targetName, dataType, data)));
                 } else {
-                    sender.sendMessage(CommandConfig.COMMAND_PLAYER_UNKNOWN.addName(targetName));
+                    sender.sendMessage(CommandConfig.COMMAND_PLAYER_UNKNOWN.addComponent(Component.text(targetName)));
                 }
             });
             return;
         }
 
-        String actionType = args[1];
-        int value = 0;
-        if (!actionType.equals("get")) {
-            try {
-                value = Integer.parseInt(args[2]);
-            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-                sender.sendMessage(PlayerDataConfig.INVALID_VALUE.formatMessage(targetName, dataType, String.valueOf(value)));
-                return;
-            }
-        }
-
+        /*
+        - STAFF SECTION -
+        The below code is only for staff, as it includes
+        setting, adding, or removing a player data
+         */
         if (!sender.hasPermission(CorePermissionsConfig.STAFF.permission)) {
             sender.sendMessage(CommandConfig.COMMAND_NO_PERM.getText());
+            return;
+        }
+
+        if (args.length == 2){
+            sender.sendMessage(CommandConfig.COMMAND_INVALID_ARG.getText().append(
+                    Component.text(" Use /" + label + " <Player> [add | remove | set] <value>", NamedTextColor.DARK_GRAY)));
+            return;
+        }
+
+        String actionType = args[1];
+        String stringValue = args[2];
+        int value;
+        try {
+            value = Integer.parseInt(stringValue);
+        } catch (NumberFormatException e) {
+            sender.sendMessage(CommandConfig.COMMAND_INVALID_VALUE.addComponent(Component.text(stringValue)));
             return;
         }
 
@@ -76,33 +97,35 @@ public final class PlayerDataCommand extends TrustCommand {
         UUIDCache uuidCache = new UUIDCache(core, targetName);
         uuidCache.get(targetUuid -> {
             if (targetUuid == null) {
-                sender.sendMessage(CommandConfig.COMMAND_PLAYER_UNKNOWN.addName(targetName));
+                sender.sendMessage(CommandConfig.COMMAND_PLAYER_UNKNOWN.addComponent(Component.text(targetName)));
                 return;
+            }
+
+            boolean targetMessage = false;
+            Player target = Bukkit.getPlayer(targetName);
+            if (target != null && target.isOnline()) {
+                targetMessage = true;
             }
 
             PlayerData playerData = new PlayerData(core, targetUuid, dataType);
             switch (actionType) {
                 case "set" -> {
                     playerData.setData(value);
-                    sender.sendMessage(PlayerDataConfig.SET.formatMessage(targetName, dataType, String.valueOf(value)));
+                    sender.sendMessage(PlayerDataConfig.SET_SENDER.formatMessage(targetName, dataType, String.valueOf(value)));
+                    if (targetMessage)
+                        target.sendMessage(PlayerDataConfig.SET_TARGET.formatMessage(sender.getName(), dataType, String.valueOf(value)));
                 }
                 case "add" -> {
                     playerData.addData(value);
-                    sender.sendMessage(PlayerDataConfig.ADD.formatMessage(targetName, dataType, String.valueOf(value)));
+                    sender.sendMessage(PlayerDataConfig.ADD_SENDER.formatMessage(targetName, dataType, String.valueOf(value)));
+                    if (targetMessage)
+                        target.sendMessage(PlayerDataConfig.ADD_TARGET.formatMessage(sender.getName(), dataType, String.valueOf(value)));
                 }
                 case "remove" -> {
                     playerData.removeData(value);
-                    sender.sendMessage(PlayerDataConfig.REMOVE.formatMessage(targetName, dataType, String.valueOf(value)));
-                }
-                case "get" -> {
-                    PlayerDataCache dataCache = new PlayerDataCache(core, targetUuid, dataType);
-                    dataCache.get(data -> {
-                        if(data == null) {
-                            sender.sendMessage(CommandConfig.COMMAND_PLAYER_UNKNOWN.addName(targetName));
-                            return;
-                        }
-                        sender.sendMessage(PlayerDataConfig.GET_OTHER.formatMessage(targetName, dataType, data));
-                    });
+                    sender.sendMessage(PlayerDataConfig.REMOVE_SENDER.formatMessage(targetName, dataType, String.valueOf(value)));
+                    if (targetMessage)
+                        target.sendMessage(PlayerDataConfig.REMOVE_TARGET.formatMessage(sender.getName(), dataType, String.valueOf(value)));
                 }
                 default -> sender.sendMessage(PlayerDataConfig.INVALID_ACTION
                         .formatMessage(targetName, dataType, String.valueOf(value)));

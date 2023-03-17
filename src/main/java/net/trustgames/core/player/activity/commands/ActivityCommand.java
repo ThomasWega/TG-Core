@@ -97,7 +97,7 @@ public final class ActivityCommand extends TrustCommand implements Listener {
 
         createRecords(target, () -> {
             if (records.isEmpty()) {
-                player.sendMessage(CommandConfig.COMMAND_NO_PLAYER_ACT.addName(target));
+                player.sendMessage(CommandConfig.COMMAND_NO_PLAYER_DATA.addComponent(Component.text(target)));
                 return;
             }
 

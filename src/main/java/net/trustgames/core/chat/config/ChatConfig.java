@@ -14,8 +14,8 @@ public enum ChatConfig {
     NAME_COLOR("&e"),
     ALLOW_COLORS_PERM(CorePermissionsConfig.KNIGHT.permission),
     MENTION_COLOR("&a"),
-    ON_COOLDOWN(PREFIX.value + "<dark_gray>Wait another <sec> seconds before using chat again!"),
-    ON_SAME_COOLDOWN(PREFIX.value + "<dark_gray>Don't write the same message! (wait <sec> seconds)"),
+    ON_COOLDOWN(PREFIX.value + "<dark_gray>Wait another <component> seconds before using chat again!"),
+    ON_SAME_COOLDOWN(PREFIX.value + "<dark_gray>Don't write the same message! (wait <component> seconds)"),
     MENTION_ACTIONBAR("<gray><player_name> mentioned you");
 
     public final String value;
@@ -49,12 +49,12 @@ public enum ChatConfig {
     }
 
     /**
-     * Replace sec tag with given seconds
+     * {@literal Replace <component> tag with given Component}
      *
-     * @param seconds Seconds to replace the tag with
-     * @return New formatted Component with replaced sec tag
+     * @param component Component to replace the tag with
+     * @return New formatted Component with replaced id tag
      */
-    public final Component addSeconds(double seconds) {
-        return MiniMessageUtils.addSeconds(seconds).deserialize(value);
+    public final Component addComponent(Component component) {
+        return MiniMessageUtils.addComponent(component).deserialize(value);
     }
 }

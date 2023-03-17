@@ -1,12 +1,13 @@
 package net.trustgames.core.player.data;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.player.data.config.PlayerDataType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+
+import java.util.UUID;
 
 public final class PlayerDataHandler implements Listener {
 
@@ -21,10 +22,9 @@ public final class PlayerDataHandler implements Listener {
     private void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         String playerName = player.getName();
-        UUIDCache uuidCache = new UUIDCache(core, playerName);
-        uuidCache.get(uuid -> {
-            PlayerDataFetcher dataFetcher = new PlayerDataFetcher(core, PlayerDataType.NAME);
-            dataFetcher.update(uuid, playerName);
-        });
+        UUID uuid = player.getUniqueId();
+
+        PlayerDataFetcher dataFetcher = new PlayerDataFetcher(core, PlayerDataType.UUID);
+        dataFetcher.update(uuid, playerName);
     }
 }

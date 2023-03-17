@@ -1,6 +1,7 @@
 package net.trustgames.core.chat;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.text.Component;
 import net.trustgames.core.chat.config.ChatConfig;
 import net.trustgames.core.chat.config.ChatLimitConfig;
 import net.trustgames.core.config.CooldownConfig;
@@ -193,9 +194,9 @@ public final class ChatLimiter implements Listener {
 
         //Check if the message is the same as the last time. It is given earlier by the boolean in the method.
         if (sameMessage) {
-            player.sendMessage(ChatConfig.ON_SAME_COOLDOWN.addSeconds(getWaitTime(playerName, ranksSameChatCooldown.get(rank))));
+            player.sendMessage(ChatConfig.ON_SAME_COOLDOWN.addComponent(Component.text(getWaitTime(playerName, ranksSameChatCooldown.get(rank)))));
         } else {
-            player.sendMessage(ChatConfig.ON_COOLDOWN.addSeconds(getWaitTime(playerName, ranksChatCooldown.get(rank))));
+            player.sendMessage(ChatConfig.ON_COOLDOWN.addComponent(Component.text(getWaitTime(playerName, ranksChatCooldown.get(rank)))));
         }
         // log the last time player got the wait message (used in the anti-spam method)
         lastWaitMessage.put(playerName, System.currentTimeMillis());

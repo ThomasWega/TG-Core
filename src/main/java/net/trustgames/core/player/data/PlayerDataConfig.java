@@ -9,14 +9,15 @@ import net.trustgames.core.utils.MiniMessageUtils;
  */
 public enum PlayerDataConfig {
     PREFIX("<color:#3498db>Economy | </color>"),
-    SET(PREFIX.message + "<dark_gray>You have set <yellow><value> <player_data><dark_gray> to <white><player_name>"),
-    ADD(PREFIX.message + "<dark_gray>You have added <yellow><value> <player_data><dark_gray> to <white><player_name>"),
-    REMOVE(PREFIX.message + "<dark_gray>You have removed <yellow><value> <player_data><dark_gray> from <white><player_name>"),
+    SET_SENDER(PREFIX.message + "<dark_gray>You have set <yellow><value> <player_data><dark_gray> to <white><player_name>"),
+    SET_TARGET(PREFIX.message + "<dark_gray>You have been set <yellow><value> <player_data><dark_gray> by <white><player_name>"),
+    ADD_SENDER(PREFIX.message + "<dark_gray>You have added <yellow><value> <player_data><dark_gray> to <white><player_name>"),
+    ADD_TARGET(PREFIX.message + "<dark_gray>You have been added <yellow><value> <player_data><dark_gray> by <white><player_name>"),
+    REMOVE_SENDER(PREFIX.message + "<dark_gray>You have removed <yellow><value> <player_data><dark_gray> from <white><player_name>"),
+    REMOVE_TARGET(PREFIX.message + "<dark_gray>You have been removed <yellow><value> <player_data><dark_gray> by <white><player_name>"),
     GET_OTHER(PREFIX.message + "<dark_gray><white><player_name><dark_gray> has <yellow><value> <player_data>"),
     GET_PERSONAL(PREFIX.message + "<dark_gray>You have <yellow><value> <player_data>"),
-    INVALID_TYPE(PREFIX.message + "<red>Invalid data type!"),
-    INVALID_ACTION(PREFIX.message + "<red>Invalid action for <white><player_data><red>!"),
-    INVALID_VALUE(PREFIX.message + "<red>Invalid value <white><value><red>!");
+    INVALID_ACTION(PREFIX.message + "<red>Invalid action for <white><player_data><red>!");
 
     private final String message;
 

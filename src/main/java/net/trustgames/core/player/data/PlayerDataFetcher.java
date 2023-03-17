@@ -5,8 +5,10 @@ import net.trustgames.core.cache.PlayerDataCache;
 import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.managers.database.DatabaseManager;
 import net.trustgames.core.player.data.config.PlayerDataType;
+import net.trustgames.core.player.data.event.PlayerDataUpdateEvent;
 import net.trustgames.core.player.data.level.PlayerLevel;
 import net.trustgames.core.utils.LevelUtils;
+import org.bukkit.Bukkit;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -145,6 +147,10 @@ public final class PlayerDataFetcher {
             // update the cache
             PlayerDataCache playerDataCache = new PlayerDataCache(core, uuid, dataType);
             playerDataCache.update(object.toString());
+
+            // call the event from the main thread
+            core.getServer().getScheduler().runTask(core, () ->
+                    Bukkit.getPluginManager().callEvent(new PlayerDataUpdateEvent(uuid)));
         } catch (SQLException e) {
             try {
                 connection.rollback();

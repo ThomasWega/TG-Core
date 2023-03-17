@@ -38,8 +38,7 @@ public abstract class TrustCommand implements CommandExecutor {
             if (allowConsoleAnnotation != null) {
                 consoleAllowed = true;
             }
-        } catch (NoSuchMethodException e) {
-            consoleAllowed = false;
+        } catch (NoSuchMethodException ignored) {
         }
 
 
@@ -57,6 +56,7 @@ public abstract class TrustCommand implements CommandExecutor {
 
         execute(sender, args, label);
         return true;
+
     }
 
     /**
@@ -73,12 +73,5 @@ public abstract class TrustCommand implements CommandExecutor {
     @Target(ElementType.METHOD)
     public @interface AllowConsole {
     }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.PARAMETER)
-    public @interface Complete {
-        String[] value();
-    }
-
 }
 

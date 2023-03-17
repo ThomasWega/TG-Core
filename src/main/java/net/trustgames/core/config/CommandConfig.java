@@ -15,11 +15,12 @@ public enum CommandConfig {
     COMMAND_PLAYER_ONLY("This command can be executed by in-game players only!"),
     COMMAND_SPAM(PREFIX.value + "<dark_gray>Please don't spam the command!"),
     COMMAND_INVALID_ARG(PREFIX.value + "<dark_gray>You need to specify a valid argument!"),
-    COMMAND_INVALID_ID(PREFIX.value + "<dark_gray>Invalid ID <white><id>"),
-    COMMAND_PLAYER_OFFLINE(PREFIX.value + "<dark_gray>The player <white><player_name><dark_gray> isn't online on this server!"),
+    COMMAND_INVALID_ID(PREFIX.value + "<dark_gray>Invalid ID <component><id>"),
+    COMMAND_INVALID_VALUE(PREFIX.value + "<red>Invalid value <white><component><red>!"),
+    COMMAND_PLAYER_OFFLINE(PREFIX.value + "<dark_gray>The player <white><component><dark_gray> isn't online on this server!"),
     COMMAND_PLAYER_UNKNOWN(PREFIX.value + "<dark_gray>The player <white><player_name><dark_gray> never joined the network!"),
-    COMMAND_NO_PLAYER_ACT(PREFIX_DB.value + "<dark_gray>No activity data for player <white><player_name>"),
-    COMMAND_NO_ID_ACT(PREFIX_DB.value + "<dark_gray>No activity data for ID <white><id>");
+    COMMAND_NO_PLAYER_DATA(PREFIX_DB.value + "<dark_gray>No data for player <white><player_name>"),
+    COMMAND_NO_ID_DATA(PREFIX_DB.value + "<dark_gray>No data for ID <white><component>");
 
     public final Object value;
 
@@ -52,23 +53,12 @@ public enum CommandConfig {
     }
 
     /**
-     * {@literal Replace <id> tag with given ID}
+     * {@literal Replace <component> tag with given Component}
      *
-     * @param id ID to replace the tag with
+     * @param component Component to replace the tag with
      * @return New formatted Component with replaced id tag
      */
-    public final Component addID(String id) {
-        return MiniMessageUtils.addId(id).deserialize(value.toString());
-    }
-
-
-    /**
-     * {@literal Replace <player_name> tag with given component}
-     *
-     * @param name Name to replace the tag with
-     * @return New formatted Component with replaced component tag
-     */
-    public final Component addName(String name) {
-        return MiniMessageUtils.addName(name).deserialize(value.toString());
+    public final Component addComponent(Component component) {
+        return MiniMessageUtils.addComponent(component).deserialize(value.toString());
     }
 }
