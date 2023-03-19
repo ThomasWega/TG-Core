@@ -97,14 +97,12 @@ public final class Core extends JavaPlugin {
         // TODO activity add ability to check by uuid
         // ADD?: make luckperms async
         // TODO menu/gui/pages manager
-        // TODO move PlayerDataHandler to proxy
         // TODO PlayerDataCommand player online message only on one server, not bungee (move to proxy or use messaging queue like RabbitMQ)
         // TODO edit ChatLimiter
-        // TODO playerDataCommand create enums for actionTypes
         // TODO make CooldownManager per instance!
 
-        // FIXME QuitPacket still error
-        // FIXME Column "uuid" specified twice
+        // FIXME move PlayerDataHandler to proxy
+        // FIXME QuitPacket still error -- even when /stop
 
 
         // create a data folder

@@ -17,8 +17,7 @@ public enum PlayerDataConfig {
     REMOVE_TARGET(PREFIX.message + "<dark_gray>You have been removed <yellow><value> <player_data><dark_gray> by <white><player_name>"),
     GET_OTHER(PREFIX.message + "<dark_gray><white><player_name><dark_gray> has <yellow><value> <player_data>"),
     GET_PERSONAL(PREFIX.message + "<dark_gray>You have <yellow><value> <player_data>"),
-    INVALID_ACTION(PREFIX.message + "<red>Invalid action for <white><player_data>"),
-    NO_DATA(PREFIX.message + "<red>No data for <player_name><component>");
+    INVALID_ACTION(PREFIX.message + "<red>Invalid action for <white><player_data>");
 
     private final String message;
 
@@ -36,15 +35,5 @@ public enum PlayerDataConfig {
                                          @NotNull PlayerDataType dataType,
                                          @NotNull String value) {
         return MiniMessageUtils.playerData(playerName, dataType, value).deserialize(message);
-    }
-
-    /**
-     * {@literal Replace <component> tag with given Component}
-     *
-     * @param component Component to replace the tag with
-     * @return New formatted Component with replaced id tag
-     */
-    public final Component addComponent(@NotNull Component component) {
-        return MiniMessageUtils.component(component).deserialize(message);
     }
 }

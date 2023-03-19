@@ -66,7 +66,7 @@ public final class PlayerDataCommand extends TrustCommand {
                         if (data != null) {
                             sender.sendMessage(PlayerDataConfig.GET_OTHER.formatMessage(targetName, dataType, data));
                         } else {
-                            sender.sendMessage(PlayerDataConfig.NO_DATA.addComponent(Component.text(targetName)));
+                            sender.sendMessage(CommandConfig.COMMAND_NO_PLAYER_DATA.addComponent(Component.text(targetName)));
                         }
                     });
                 } else {
@@ -93,8 +93,17 @@ public final class PlayerDataCommand extends TrustCommand {
             return;
         }
 
+        // check if the action is valid
+        ActionType actionType;
+        try {
+            actionType = ActionType.valueOf(args[1].toUpperCase());
+        } catch (IllegalArgumentException e){
+            sender.sendMessage(CommandConfig.COMMAND_INVALID_ARG.getText().append(
+                    Component.text(" Use /" + label + " <Player> [add | remove | set] <value>", NamedTextColor.DARK_GRAY)));
+            return;
+        }
+
         // check if value is an integer
-        String actionType = args[1];
         String stringValue = args[2];
         int value;
         try {
@@ -120,7 +129,8 @@ public final class PlayerDataCommand extends TrustCommand {
      */
     private void handleAction(@NotNull CommandSender sender,
                               @NotNull String targetName,
-                              @NotNull String actionType, int value) {
+                              @NotNull ActionType actionType,
+                              int value) {
         UUIDCache uuidCache = new UUIDCache(core, targetName);
         uuidCache.get(targetUuid -> {
             if (targetUuid == null) {
@@ -136,27 +146,31 @@ public final class PlayerDataCommand extends TrustCommand {
 
             PlayerData playerData = new PlayerData(core, targetUuid, dataType);
             switch (actionType) {
-                case "set" -> {
+                case SET -> {
                     playerData.setData(value);
                     sender.sendMessage(PlayerDataConfig.SET_SENDER.formatMessage(targetName, dataType, String.valueOf(value)));
                     if (targetMessage)
                         target.sendMessage(PlayerDataConfig.SET_TARGET.formatMessage(sender.getName(), dataType, String.valueOf(value)));
                 }
-                case "add" -> {
+                case ADD -> {
                     playerData.addData(value);
                     sender.sendMessage(PlayerDataConfig.ADD_SENDER.formatMessage(targetName, dataType, String.valueOf(value)));
                     if (targetMessage)
                         target.sendMessage(PlayerDataConfig.ADD_TARGET.formatMessage(sender.getName(), dataType, String.valueOf(value)));
                 }
-                case "remove" -> {
+                case REMOVE -> {
                     playerData.removeData(value);
                     sender.sendMessage(PlayerDataConfig.REMOVE_SENDER.formatMessage(targetName, dataType, String.valueOf(value)));
                     if (targetMessage)
                         target.sendMessage(PlayerDataConfig.REMOVE_TARGET.formatMessage(sender.getName(), dataType, String.valueOf(value)));
                 }
-                default -> sender.sendMessage(PlayerDataConfig.INVALID_ACTION
-                        .formatMessage(targetName, dataType, String.valueOf(value)));
             }
         });
+    }
+
+    public enum ActionType {
+        SET,
+        ADD,
+        REMOVE
     }
 }
