@@ -40,7 +40,7 @@ public final class SkinManager {
      * @param playerName Name of the player with the skin
      * @return Data of the player's skin
      */
-    public static SkinData getSkin(String playerName) {
+    public static SkinData getSkin(@NotNull String playerName) {
         try {
             return (skinCache.get(playerName));
         } catch (ExecutionException e) {
@@ -50,9 +50,9 @@ public final class SkinManager {
 
     /**
      * Used to retrieve the skin data from the mojang servers.
-     * Note that there is a limit for the api calls
+     *@implNote There is a limit for the api calls
      */
-    private static SkinData fetchSkin(String playerName) {
+    private static SkinData fetchSkin(@NotNull String playerName) {
         try {
             // get the UUID of the player by his name
             HttpsURLConnection connection = (HttpsURLConnection) new URL(String.format("https://api.mojang.com/users/profiles/minecraft/%s", playerName)).openConnection();
@@ -87,6 +87,6 @@ public final class SkinManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new SkinData("", "");
+        return new SkinData(null, null);
     }
 }

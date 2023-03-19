@@ -3,6 +3,7 @@ package net.trustgames.core.managers;
 import net.trustgames.core.config.CommandConfig;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -32,7 +33,7 @@ public final class CommandManager implements Listener {
      *
      * @param event Command preprocess event
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     private void onPlayerPreCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         String playerName = player.getName();
@@ -62,7 +63,7 @@ public final class CommandManager implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     private void onPlayerQuit(PlayerQuitEvent event) {
         String playerName = event.getPlayer().getName();
         commandCooldown.remove(playerName);

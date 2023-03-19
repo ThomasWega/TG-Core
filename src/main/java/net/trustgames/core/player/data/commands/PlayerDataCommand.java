@@ -9,12 +9,16 @@ import net.trustgames.core.command.TrustCommand;
 import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CorePermissionsConfig;
 import net.trustgames.core.player.data.PlayerData;
-import net.trustgames.core.player.data.PlayerDataConfig;
+import net.trustgames.core.player.data.config.PlayerDataConfig;
 import net.trustgames.core.player.data.config.PlayerDataType;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
+/**
+ * Command to get or modify player data in the database
+ */
 public final class PlayerDataCommand extends TrustCommand {
 
     private final Core core;
@@ -27,10 +31,11 @@ public final class PlayerDataCommand extends TrustCommand {
 
     @Override
     @AllowConsole
-    public void execute(CommandSender sender, String[] args, String label) {
+    public void execute(@NotNull CommandSender sender, @NotNull String label, String[] args) {
         String senderName = sender.getName();
         dataType = PlayerDataType.valueOf(label.toUpperCase());
 
+        // get the personal players data
         if (args.length == 0) {
             UUIDCache uuidCache = new UUIDCache(core, senderName);
             uuidCache.get(uuid -> {
@@ -51,12 +56,19 @@ public final class PlayerDataCommand extends TrustCommand {
 
         String targetName = args[0];
 
+        // get other player's data
         if (args.length == 1) {
             UUIDCache uuidCache = new UUIDCache(core, targetName);
             uuidCache.get(targetUuid -> {
                 if (targetUuid != null) {
                     PlayerDataCache dataCache = new PlayerDataCache(core, targetUuid, dataType);
-                    dataCache.get(data -> sender.sendMessage(PlayerDataConfig.GET_OTHER.formatMessage(targetName, dataType, data)));
+                    dataCache.get(data -> {
+                        if (data != null) {
+                            sender.sendMessage(PlayerDataConfig.GET_OTHER.formatMessage(targetName, dataType, data));
+                        } else {
+                            sender.sendMessage(PlayerDataConfig.NO_DATA.addComponent(Component.text(targetName)));
+                        }
+                    });
                 } else {
                     sender.sendMessage(CommandConfig.COMMAND_PLAYER_UNKNOWN.addComponent(Component.text(targetName)));
                 }
@@ -74,12 +86,14 @@ public final class PlayerDataCommand extends TrustCommand {
             return;
         }
 
+        // incorrect usage (action is present, but is missing value)
         if (args.length == 2){
             sender.sendMessage(CommandConfig.COMMAND_INVALID_ARG.getText().append(
                     Component.text(" Use /" + label + " <Player> [add | remove | set] <value>", NamedTextColor.DARK_GRAY)));
             return;
         }
 
+        // check if value is an integer
         String actionType = args[1];
         String stringValue = args[2];
         int value;
@@ -93,7 +107,20 @@ public final class PlayerDataCommand extends TrustCommand {
         handleAction(sender, targetName, actionType, value);
     }
 
-    private void handleAction(CommandSender sender, String targetName, String actionType, int value) {
+    /**
+     * Sorts out the correct action (set, remove, add) and
+     * modifies the correct data type in the database with the action.
+     * Also makes sure the target is a known player and if the target is online,
+     * a message is sent to him and the sender
+     *
+     * @param sender The sender of the command
+     * @param targetName Name of the target
+     * @param actionType Type of action to modify the data
+     * @param value Value to modify the data with
+     */
+    private void handleAction(@NotNull CommandSender sender,
+                              @NotNull String targetName,
+                              @NotNull String actionType, int value) {
         UUIDCache uuidCache = new UUIDCache(core, targetName);
         uuidCache.get(targetUuid -> {
             if (targetUuid == null) {

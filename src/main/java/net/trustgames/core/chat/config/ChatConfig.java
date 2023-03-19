@@ -38,7 +38,7 @@ public enum ChatConfig {
      * @return New formatted Component message with replaced tags
      */
     public final Component formatMessage(Player player) {
-        return MiniMessageUtils.format(player).deserialize(value);
+        return MiniMessageUtils.player(player).deserialize(value);
     }
 
     /**
@@ -55,6 +55,6 @@ public enum ChatConfig {
      * @return New formatted Component with replaced id tag
      */
     public final Component addComponent(Component component) {
-        return MiniMessageUtils.addComponent(component).deserialize(value);
+        return MiniMessageUtils.component(component).deserialize(value);
     }
 }

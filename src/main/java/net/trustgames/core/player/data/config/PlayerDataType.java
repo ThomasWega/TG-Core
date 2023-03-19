@@ -1,5 +1,7 @@
 package net.trustgames.core.player.data.config;
 
+import lombok.Getter;
+
 /**
  * Stores all the PlayerData types and their column names
  * which are saved in the player data table.
@@ -16,19 +18,13 @@ public enum PlayerDataType {
     GEMS("gems", "INT DEFAULT 100"),
     RUBIES("rubies", "INT DEFAULT 0");
 
+    @Getter
     private final String columnName;
+    @Getter
     private final String columnType;
 
     PlayerDataType(String columnName, String columnType) {
         this.columnName = columnName;
         this.columnType = columnType;
-    }
-
-    public final String getColumnName() {
-        return columnName;
-    }
-
-    public final String getColumnType() {
-        return columnType;
     }
 }

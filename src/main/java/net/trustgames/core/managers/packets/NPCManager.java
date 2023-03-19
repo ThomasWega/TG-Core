@@ -36,6 +36,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -64,7 +65,8 @@ public final class NPCManager {
      * @param z      location
      * @implSpec UNTESTED!
      */
-    public static void move(ServerPlayer npc, Player player, double x, double y, double z) {
+    public static void move(@NotNull ServerPlayer npc, @NotNull Player player, 
+                            double x, double y, double z) {
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
         connection.send(new ClientboundMoveEntityPacket.Pos(
                 npc.getId(), (short) (x * 4096), (short) (y * 4096), (short) (z * 4096), true));
@@ -74,13 +76,13 @@ public final class NPCManager {
      * Create a new npc using NMS Packets. This method won't spawn it!
      *
      * @param location Location of the npc
-     * @param name     Name of the npc
+     * @param npcName     Name of the npc
      * @return new create npc
      */
-    public ServerPlayer create(Location location, String name) {
+    public ServerPlayer create(@NotNull Location location, @NotNull String npcName) {
         MinecraftServer nmsServer = ((CraftServer) Bukkit.getServer()).getServer();
         ServerLevel nmsWorld = ((CraftWorld) location.getWorld()).getHandle();
-        GameProfile gameProfile = new GameProfile(UUID.randomUUID(), name);
+        GameProfile gameProfile = new GameProfile(UUID.randomUUID(), npcName);
         ServerPlayer npc = new ServerPlayer(nmsServer, nmsWorld, gameProfile, null);
         npc.setPos(location.getX(), location.getY(), location.getZ());
 
@@ -93,7 +95,7 @@ public final class NPCManager {
      * @param npc    Npc to add
      * @param player Player to add the NPC to
      */
-    public void add(ServerPlayer npc, Player player) {
+    public void add(@NotNull ServerPlayer npc, @NotNull Player player) {
         if (!player.isOnline()) return;
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
         connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, npc));
@@ -107,7 +109,7 @@ public final class NPCManager {
      * @param npc    NPC to remove
      * @param player Player to remove the NPC from
      */
-    public void remove(ServerPlayer npc, Player player) {
+    public void remove(@NotNull ServerPlayer npc, @NotNull Player player) {
         if (!player.isOnline()) return;
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
         connection.send(new ClientboundRemoveEntitiesPacket(npc.getId()));
@@ -123,7 +125,8 @@ public final class NPCManager {
      * @param pitch      Location pitch
      * @param straighten Try to make the npc body point the same direction as the head
      */
-    public void lookAtPosition(Entity npc, Player player, float yaw, float pitch, boolean straighten) {
+    public void lookAtPosition(@NotNull Entity npc, @NotNull Player player, 
+                               float yaw, float pitch, boolean straighten) {
         if (!player.isOnline()) return;
 
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
@@ -159,7 +162,8 @@ public final class NPCManager {
      * @param player      Player NPC will be looking at
      * @param npcLocation Location of the NPC
      */
-    public void lookAtPlayer(ServerPlayer npc, Player player, Location npcLocation) {
+    public void lookAtPlayer(@NotNull ServerPlayer npc, @NotNull Player player, 
+                             @NotNull Location npcLocation) {
         if (!player.isOnline()) return;
 
         Location loc = npcLocation.clone();
@@ -191,7 +195,8 @@ public final class NPCManager {
      * @param texture   Texture of the skin
      * @param signature Signature of the skin
      */
-    public void skin(ServerPlayer npc, Player player, String texture, String signature) {
+    public void skin(@NotNull ServerPlayer npc, @NotNull Player player, 
+                     @NotNull String texture, @NotNull String signature) {
         if (!player.isOnline()) return;
 
         remove(npc, player);
@@ -212,7 +217,7 @@ public final class NPCManager {
      *
      * @param npc NPC to hide the name of
      */
-    public void hideName(ServerPlayer npc) {
+    public void hideName(@NotNull ServerPlayer npc) {
         Scoreboard scoreboard = TablistTeams.getTablist();
         Team team = scoreboard.getTeam("9999NPC");
         if (team == null) {
@@ -229,7 +234,7 @@ public final class NPCManager {
      * @param npc    NPC to hide
      * @param player Player to hide NPC from
      */
-    public void hideTab(ServerPlayer npc, Player player) {
+    public void hideTab(@NotNull ServerPlayer npc, @NotNull Player player) {
         if (!player.isOnline()) return;
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
         connection.send(new ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, npc));
@@ -242,7 +247,8 @@ public final class NPCManager {
      * @param player     Player who will see the NPC with equipment
      * @param equipments What items to set as equipment
      */
-    public void equipment(ServerPlayer npc, Player player, List<Pair<EnumWrappers.ItemSlot, ItemStack>> equipments) {
+    public void equipment(@NotNull ServerPlayer npc, @NotNull Player player, 
+                          List<Pair<EnumWrappers.@NotNull ItemSlot, @NotNull ItemStack>> equipments) {
         if (!player.isOnline()) return;
 
         PacketContainer packet = manager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
@@ -264,7 +270,7 @@ public final class NPCManager {
      * @param npcs   List of NPCs to run actions on
      * @param config Config where the NPCs are specified
      */
-    public void interact(List<ServerPlayer> npcs, YamlConfiguration config) {
+    public void interact(List<@NotNull ServerPlayer> npcs, @NotNull YamlConfiguration config) {
         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
 
         manager.addPacketListener(new PacketAdapter(core, PacketType.Play.Client.USE_ENTITY) {
@@ -282,7 +288,7 @@ public final class NPCManager {
                                 config.getConfigurationSection("npcs")).getKeys(false).contains(npc.displayName);
                         if (!isPresent) return;
 
-                        double cooldown = config.getDouble("npcs." + npc.displayName + ".action.cooldown");
+                        long cooldown = config.getLong("npcs." + npc.displayName + ".action.cooldown");
                         if (cooldownManager.commandCooldown(player, cooldown)) return;
 
                         String action = config.getString("npcs." + npc.displayName + ".action.type");
@@ -312,7 +318,7 @@ public final class NPCManager {
      * @param npc   What NPC to set the glow color to
      * @param color Which color to set to the NPC
      */
-    public void glow(ServerPlayer npc, TextColor color) {
+    public void glow(@NotNull ServerPlayer npc, @NotNull TextColor color) {
         Scoreboard scoreboard = TablistTeams.getTablist();
 
         CraftPlayer npcEntity = npc.getBukkitEntity();
@@ -334,7 +340,7 @@ public final class NPCManager {
      *
      * @param team Scoreboard team to set for
      */
-    private void setTeamValues(Team team) {
+    private void setTeamValues(@NotNull Team team) {
         team.prefix(ColorUtils.color("&8[NPC] "));
         team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
     }

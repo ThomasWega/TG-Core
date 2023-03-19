@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -43,7 +44,7 @@ public final class ChatDecoration implements Listener {
         Player sender = event.getPlayer();
         Component message = setColor(sender, event.originalMessage());
 
-        Component prefix = setPrefix(sender);
+        Component prefix = formatPrefix(sender);
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             // if the player is not mentioned, send him the normal message without colored name
@@ -64,7 +65,7 @@ public final class ChatDecoration implements Listener {
      * @param message Message he sent
      * @return Colored message if player has permission
      */
-    private Component setColor(Player player, Component message) {
+    private Component setColor(@NotNull Player player, @NotNull Component message) {
         TextColor messageColor = ChatConfig.COLOR.getColor();
         message = player.hasPermission(ChatConfig.ALLOW_COLORS_PERM.value)
                 ? ColorUtils.color(message).colorIfAbsent(messageColor)
@@ -78,12 +79,15 @@ public final class ChatDecoration implements Listener {
      * and play a sound
      *
      * @param sender  The message sender
-     * @param p       Player from the loop
+     * @param loop       Player from the loop
      * @param message Chat message that was sent
      * @param prefix  What prefix the player has
      * @return True if mention colors were set
      */
-    private boolean setMention(Player sender, Player p, Component message, Component prefix) {
+    private boolean setMention(@NotNull Player sender,
+                               @NotNull Player loop,
+                               @NotNull Component message,
+                               @NotNull Component prefix) {
         Set<Player> mentionedPlayers = new HashSet<>();
 
         message = setColor(sender, message);
@@ -95,11 +99,11 @@ public final class ChatDecoration implements Listener {
         List<String> split = Arrays.stream(desMsg.split(" ")).toList();
 
         // check if chat message contains player's name
-        if (split.contains(p.getName())) {
-            mentionedPlayers.add(p);
+        if (split.contains(loop.getName())) {
+            mentionedPlayers.add(loop);
         }
 
-        if (mentionedPlayers.contains(p)) {
+        if (mentionedPlayers.contains(loop)) {
             List<Component> newMsg = new ArrayList<>();
 
             TextColor nameColor = ChatConfig.MENTION_COLOR.getColor();
@@ -107,7 +111,7 @@ public final class ChatDecoration implements Listener {
             TextColor messageColorNew;
             // if the word equals player's name, color the name
             for (String s : split) {
-                if (s.equalsIgnoreCase(p.getName())) {
+                if (s.equalsIgnoreCase(loop.getName())) {
                     newMsg.add(Component.text(s).color(nameColor));
                 } else {
                     messageColorNew = (ColorUtils.color(s).color() != null) ? ColorUtils.color(s).color() : messageColor;
@@ -118,12 +122,12 @@ public final class ChatDecoration implements Listener {
             Component msg = Component.join(JoinConfiguration.separator(Component.text(" ")), newMsg);
 
             // send different types of messages depending on if the player has permission to use color codes
-            p.sendMessage(getMessage(sender, prefix, msg));
+            loop.sendMessage(getMessage(sender, prefix, msg));
 
             logMessage(prefix, sender.getName(), msg);
 
-            p.sendActionBar(ChatConfig.MENTION_ACTIONBAR.formatMessage(sender));
-            Audience.audience(p).playSound(sound, Sound.Emitter.self());
+            loop.sendActionBar(ChatConfig.MENTION_ACTIONBAR.formatMessage(sender));
+            Audience.audience(loop).playSound(sound, Sound.Emitter.self());
             return true;
         }
         return false;
@@ -136,7 +140,7 @@ public final class ChatDecoration implements Listener {
      * @param player Player to get prefix on
      * @return Player's prefix
      */
-    private Component setPrefix(Player player) {
+    private Component formatPrefix(@NotNull Player player) {
         Component prefix = LuckPermsManager.getPlayerPrefix(player);
 
         // if player doesn't have any prefix, make sure there is not a space before his name
@@ -154,7 +158,9 @@ public final class ChatDecoration implements Listener {
      * @param message Only the last parts change, depending on if player can use color or not
      * @return Complete Component message
      */
-    private Component getMessage(Player player, Component prefix, Component message) {
+    private Component getMessage(@NotNull Player player,
+                                 @NotNull Component prefix,
+                                 @NotNull Component message) {
         return Component.textOfChildren(prefix)
                 .append(Component.textOfChildren(
                         player.displayName()
@@ -171,7 +177,9 @@ public final class ChatDecoration implements Listener {
      * @param playerName Player's name that sent the chat message
      * @param message    Message sent in chat by Player
      */
-    private void logMessage(Component prefix, String playerName, Component message) {
+    private void logMessage(@NotNull Component prefix,
+                            @NotNull String playerName,
+                            @NotNull Component message) {
         Bukkit.getLogger().log(Level.INFO, ColorUtils.stripColor(
                 prefix.append(Component.text(playerName)).append(Component.text(" ")).append(message)));
     }

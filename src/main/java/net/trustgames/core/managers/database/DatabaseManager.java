@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import net.trustgames.core.Core;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.sql.Connection;
@@ -37,7 +38,8 @@ public final class DatabaseManager {
      * @throws SQLException if it can't get the ResultSet
      * @implNote The connection isn't closed by this method
      */
-    private static boolean tableExist(Connection connection, String tableName) throws SQLException {
+    private static boolean tableExist(@NotNull Connection connection,
+                                      @NotNull String tableName) throws SQLException {
         boolean tExists = false;
         try (ResultSet rs = connection.getMetaData().getTables(null, null, tableName, null)) {
             while (rs.next()) {
@@ -114,7 +116,7 @@ public final class DatabaseManager {
      * @param tableName       The name of the table
      * @param stringStatement The SQL statement in String
      */
-    public void initializeTable(String tableName, String stringStatement) {
+    public void initializeTable(@NotNull String tableName, @NotNull String stringStatement) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             if (isMySQLDisabled()) {
                 core.getLogger().warning("MySQL is turned off. Not initializing table " + tableName);

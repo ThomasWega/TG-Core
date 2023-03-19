@@ -1,12 +1,9 @@
 package net.trustgames.core.managers.skin;
 
-import lombok.Data;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Stores the texture and signature data of given skin
  */
-@Data
-public final class SkinData {
-    private final String texture;
-    private final String signature;
+public record SkinData(@Nullable String texture, @Nullable String signature) {
 }

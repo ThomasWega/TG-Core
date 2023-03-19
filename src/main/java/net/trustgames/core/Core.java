@@ -9,6 +9,7 @@ import net.trustgames.core.chat.commands.TextCommands;
 import net.trustgames.core.chat.commands.TextCommandsConfig;
 import net.trustgames.core.managers.*;
 import net.trustgames.core.managers.database.DatabaseManager;
+import net.trustgames.core.player.PlayerHandler;
 import net.trustgames.core.player.activity.PlayerActivityDB;
 import net.trustgames.core.player.activity.PlayerActivityHandler;
 import net.trustgames.core.player.activity.commands.ActivityCommand;
@@ -17,7 +18,6 @@ import net.trustgames.core.player.data.PlayerDataDB;
 import net.trustgames.core.player.data.PlayerDataHandler;
 import net.trustgames.core.player.data.commands.PlayerDataCommand;
 import net.trustgames.core.protection.CoreGamerulesHandler;
-import net.trustgames.core.tablist.TablistHandler;
 import net.trustgames.core.tablist.TablistTeams;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
@@ -91,20 +91,18 @@ public final class Core extends JavaPlugin {
         // TODO improve player activity (add filters and /activity-ip command)
         // TODO TrustCommand add arguments
         // TODO add tab completion for playerdata command
-        // TODO add comments where missing
-        // TODO move PlayerDataHandler to proxy
-        // TODO figure out if to use the Bukkit.getOffline player or Bukkit.getServer.getOfflinePlayer
-        // TODO merge join listeners which use uuid to one
-        // TODO annotate all things correctly
-        // TODO move tablist to proxy
-        // TODO check if things can be taken in constructor instead of methods
         // TODO activity add ability to check by uuid
         // ADD?: make luckperms async
         // TODO menu/gui/pages manager
-        // TODO improve config getters
+        // TODO move PlayerDataHandler to proxy
+        // TODO PlayerDataCommand player online message only on one server, not bungee (move to proxy or use messaging queue like RabbitMQ)
+        // TODO edit ChatLimiter
+        // TODO playerDataCommand create enums for actionTypes
 
         // FIXME QuitPacket still error
         // FIXME Column "uuid" specified twice
+
+
 
         // create a data folder
         if (getDataFolder().mkdirs()) {
@@ -134,10 +132,9 @@ public final class Core extends JavaPlugin {
         pluginManager.registerEvents(new PlayerActivityHandler(this), this);
         pluginManager.registerEvents(new CommandManager(), this);
         pluginManager.registerEvents(new CooldownManager(), this);
-        pluginManager.registerEvents(new PlayerManager(), this);
+        pluginManager.registerEvents(new PlayerHandler(), this);
         pluginManager.registerEvents(new ChatLimiter(), this);
         pluginManager.registerEvents(new ChatDecoration(), this);
-        pluginManager.registerEvents(new TablistHandler(), this);
         pluginManager.registerEvents(new ActivityCommand(this), this);
         pluginManager.registerEvents(new PlayerDataHandler(this), this);
     }

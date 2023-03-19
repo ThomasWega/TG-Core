@@ -1,8 +1,9 @@
 package net.trustgames.core.player.activity;
 
-import jline.internal.Nullable;
 import net.trustgames.core.Core;
 import net.trustgames.core.managers.database.DatabaseManager;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,6 +12,9 @@ import java.util.function.Consumer;
 
 import static net.trustgames.core.player.activity.PlayerActivityDB.tableName;
 
+/**
+ * Fetch or Insert new activity for a Player
+ */
 public final class PlayerActivityFetcher {
 
     private final Core core;
@@ -29,13 +33,8 @@ public final class PlayerActivityFetcher {
      * @param uuid     UUID of Player to get the activity for
      * @param callback Callback where the result will be saved
      */
-    public void fetchByUUID(@Nullable UUID uuid, Consumer<PlayerActivity> callback) {
+    public void fetchByUUID(@NotNull UUID uuid, Consumer<@Nullable PlayerActivity> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
-            if (uuid == null) {
-                callback.accept(null);
-                return;
-            }
-
             try (Connection connection = databaseManager.getConnection();
                  PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE uuid = ? ORDER BY id DESC")) {
                 statement.setString(1, uuid.toString());
@@ -62,7 +61,7 @@ public final class PlayerActivityFetcher {
      * @param id       Given ID
      * @param callback Callback where the result will be saved
      */
-    public void fetchByID(long id, Consumer<PlayerActivity.Activity> callback) {
+    public void fetchByID(long id, Consumer<PlayerActivity.@Nullable Activity> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             try (Connection conn = databaseManager.getConnection();
                  PreparedStatement statement = conn.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?")) {
@@ -91,7 +90,7 @@ public final class PlayerActivityFetcher {
      *
      * @param activity Only one Activity with the corresponding data
      */
-    public void insertNew(PlayerActivity.Activity activity) {
+    public void insertNew(PlayerActivity.@NotNull Activity activity) {
         try (Connection connection = databaseManager.getConnection()) {
             String query = "INSERT INTO " + tableName + " (uuid, ip, action, time) VALUES (?, ?, ?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {

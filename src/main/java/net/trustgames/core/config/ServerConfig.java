@@ -7,12 +7,7 @@ public enum ServerConfig {
     IP("play.trustgames.net"),
     WEBSITE("discord.trustgames.net"),
     STORE("store.trustgames.net"),
-    DISCORD("discord.trustgames.net"),
-
-    RESTART("<yellow>Server is restarting..."),
-
-    TABLIST_HEADER("<yellow><bold>TRUSTGAMES<reset><white> - <gray>Chillin' on the hub"),
-    TABLIST_FOOTER("<green>store.trustgames.net");
+    DISCORD("discord.trustgames.net");
 
     private final String value;
 

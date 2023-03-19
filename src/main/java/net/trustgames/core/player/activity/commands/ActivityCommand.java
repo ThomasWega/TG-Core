@@ -13,7 +13,7 @@ import net.trustgames.core.managers.ItemManager;
 import net.trustgames.core.managers.database.DatabaseManager;
 import net.trustgames.core.player.activity.PlayerActivity;
 import net.trustgames.core.player.activity.PlayerActivityFetcher;
-import net.trustgames.core.player.activity.PlayerActivityType;
+import net.trustgames.core.player.activity.config.PlayerActivityType;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,17 +22,22 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.format.TextStyle;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Opens up a menu with all the given target's logged activity.
@@ -68,7 +73,7 @@ public final class ActivityCommand extends TrustCommand implements Listener {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args, String label) {
+    public void execute(@NotNull CommandSender sender, @NotNull String label, String[] args) {
 
         Player player = ((Player) sender);
 
@@ -115,9 +120,13 @@ public final class ActivityCommand extends TrustCommand implements Listener {
      *
      * @param targetName Name of the targeted player
      */
-    private void createRecords(String targetName, Runnable callback) {
+    private void createRecords(@NotNull String targetName, Runnable callback) {
         UUIDCache uuidCache = new UUIDCache(core, targetName);
         uuidCache.get(uuid -> {
+            if (uuid == null){
+                callback.run();
+                return;
+            }
             PlayerActivityFetcher activityFetcher = new PlayerActivityFetcher(core);
             activityFetcher.fetchByUUID(uuid, playerActivity -> {
                 if (playerActivity == null) {
@@ -178,7 +187,7 @@ public final class ActivityCommand extends TrustCommand implements Listener {
      *
      * @param recordItem ItemStack from the records list
      */
-    private void setMaterial(ItemStack recordItem) {
+    private void setMaterial(@NotNull ItemStack recordItem) {
         String itemName = ColorUtils.stripColor(recordItem.displayName());
         for (PlayerActivityType activityType : PlayerActivityType.values()) {
             if (itemName.contains(activityType.action)) {
@@ -202,7 +211,7 @@ public final class ActivityCommand extends TrustCommand implements Listener {
      * @param player     The command sender
      * @param targetName The target's name
      */
-    private void createPages(Player player, String targetName) {
+    private void createPages(@NotNull Player player, @NotNull String targetName) {
 
         ItemStack nextPage = ItemManager.createItemStack(Material.ARROW, 1);
         ItemStack prevPage = ItemManager.createItemStack(Material.ARROW, 0);
@@ -217,7 +226,7 @@ public final class ActivityCommand extends TrustCommand implements Listener {
          and the max page.
         */
         for (int i = 1; i <= Math.ceil(records.size() / 45d); i++) {
-            Inventory inv = InventoryManager.createInventory(player, 6, targetName + "'s activity");
+            Inventory inv = InventoryManager.createInventory(player, targetName + "'s activity", 6);
             pageInfo.setItemMeta(ItemManager.createItemMeta(pageInfo, ColorUtils.color("&2Page (" + i + "/" + pagesCount + ")"), new ItemFlag[]{ItemFlag.HIDE_ATTRIBUTES}));
             inv.setItem(49, pageInfo);
             inventoryList.add(inv);
@@ -302,7 +311,7 @@ public final class ActivityCommand extends TrustCommand implements Listener {
      * @param event When player clicks in the inventory.
      *              This is sometimes also called when opening and closing the inventory
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     private void onPlayerClick(InventoryClickEvent event) {
         HumanEntity humanEntity = event.getWhoClicked();
         Inventory inventory = event.getClickedInventory();
@@ -351,7 +360,7 @@ public final class ActivityCommand extends TrustCommand implements Listener {
      * @param humanEntity Command sender
      */
 
-    private void switchPage(ItemStack item, HumanEntity humanEntity) {
+    private void switchPage(@NotNull ItemStack item, @NotNull HumanEntity humanEntity) {
         String itemName = ColorUtils.stripColor(item.displayName());
         String nextPageNameString = ColorUtils.stripColor(nextPageName);
         String prevPageNameString = ColorUtils.stripColor(prevPageName);

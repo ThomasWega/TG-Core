@@ -4,8 +4,10 @@ import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CooldownConfig;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
@@ -29,7 +31,7 @@ public final class CooldownManager implements Listener {
      * @param cooldownTime Cooldown time in seconds
      * @return True if the player is on cooldown
      */
-    public boolean commandCooldown(Player player, Double cooldownTime) {
+    public boolean commandCooldown(@NotNull Player player, long cooldownTime) {
         String playerName = player.getName();
         /*
          if the player is not in the cooldown yet, or if his cooldown expired,
@@ -49,7 +51,7 @@ public final class CooldownManager implements Listener {
      * @param cooldownTime Cooldown time in seconds
      * @return if player is on cooldown
      */
-    private boolean isOnCooldown(String playerName, Double cooldownTime) {
+    private boolean isOnCooldown(@NotNull String playerName, long cooldownTime) {
         return !(cooldownTime <= (System.currentTimeMillis() - commandCooldownTime.get(playerName)) / 1000d);
     }
 
@@ -59,13 +61,14 @@ public final class CooldownManager implements Listener {
      * @param playerName Name of the Player which the cooldown messages are being sent to
      * @return if the cooldown message is too spammy
      */
-    private boolean isSpam(String playerName) {
+    private boolean isSpam(@NotNull String playerName) {
         /*
          if he has any last wait message, get the time and make sure the
          current time - the last time of wait message is larger than the min value in config
         */
         if (cooldownMessageTime.containsKey(playerName)) {
-            return !(CooldownConfig.WARN_MESSAGES_LIMIT_SEC.value <= (System.currentTimeMillis() - cooldownMessageTime.get(playerName)) / 1000d);
+            return !(CooldownConfig.WARN_MESSAGES_LIMIT_SEC.value
+                    <= (System.currentTimeMillis() - cooldownMessageTime.get(playerName)) / 1000d);
         } else {
             cooldownMessageTime.put(playerName, System.currentTimeMillis());
             return false;
@@ -78,8 +81,7 @@ public final class CooldownManager implements Listener {
      *
      * @param player Player to send the messages to
      */
-    private void sendMessage(Player player) {
-        if (player == null) return;
+    private void sendMessage(@NotNull Player player) {
         String playerName = player.getName();
         if (isSpam(playerName)) return;
 
@@ -89,7 +91,7 @@ public final class CooldownManager implements Listener {
     }
 
     // on player quit, remove player's entries from the hashmaps
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     private void onPlayerQuit(PlayerQuitEvent event) {
         String playerName = event.getPlayer().getName();
         commandCooldownTime.remove(playerName);

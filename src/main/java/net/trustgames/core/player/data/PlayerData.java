@@ -3,14 +3,18 @@ package net.trustgames.core.player.data;
 import net.trustgames.core.Core;
 import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.player.data.config.PlayerDataType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
 public final class PlayerData {
     private final PlayerDataFetcher dataFetcher;
+
     private final UUID uuid;
 
-    public PlayerData(Core core, UUID uuid, PlayerDataType dataType) {
+    public PlayerData(Core core,
+                      @NotNull UUID uuid,
+                      @NotNull PlayerDataType dataType) {
         if (dataType == PlayerDataType.UUID) {
             throw new RuntimeException(this.getClass().getName() + " can't be used to retrieve UUID. " +
                     "Use the " + UUIDCache.class.getName() + " instead!");
@@ -26,6 +30,7 @@ public final class PlayerData {
      */
     public void addData(int increase) {
         dataFetcher.fetch(uuid, data -> {
+            if (data == null) return;
             int intData = Integer.parseInt(data);
             intData += increase;
             dataFetcher.update(uuid, intData);
@@ -47,6 +52,7 @@ public final class PlayerData {
      */
     public void removeData(int decrease) {
         dataFetcher.fetch(uuid, data -> {
+            if (data == null) return;
             int intData = Integer.parseInt(data);
             if (decrease >= intData) {
                 setData(0);

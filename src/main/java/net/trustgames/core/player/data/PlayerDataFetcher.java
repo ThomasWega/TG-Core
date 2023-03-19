@@ -9,6 +9,8 @@ import net.trustgames.core.player.data.event.PlayerDataUpdateEvent;
 import net.trustgames.core.player.data.level.PlayerLevel;
 import net.trustgames.core.utils.LevelUtils;
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,7 +31,7 @@ public final class PlayerDataFetcher {
     private final DatabaseManager databaseManager;
 
 
-    public PlayerDataFetcher(Core core, PlayerDataType dataType) {
+    public PlayerDataFetcher(Core core, @NotNull PlayerDataType dataType) {
         this.core = core;
         this.dataType = dataType;
         this.databaseManager = core.getDatabaseManager();
@@ -44,7 +46,7 @@ public final class PlayerDataFetcher {
      * @implNote Can't fetch player's UUID!
      * @see PlayerDataFetcher#fetchUUID(String, Consumer)
      */
-    public void fetch(UUID uuid, Consumer<String> callback) {
+    public void fetch(@NotNull UUID uuid, Consumer<@Nullable String> callback) {
 
         if (dataType == PlayerDataType.UUID) {
             throw new RuntimeException(this.getClass().getName() + " can't be used to retrieve UUID. " +
@@ -86,7 +88,7 @@ public final class PlayerDataFetcher {
      * @implNote Can't fetch anything other that Player's UUID!
      * @see PlayerDataFetcher#fetch(UUID, Consumer)
      */
-    public void fetchUUID(String playerName, Consumer<UUID> callback) {
+    public void fetchUUID(@NotNull String playerName, Consumer<@Nullable UUID> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             try (Connection connection = databaseManager.getConnection();
                  PreparedStatement statement = connection.prepareStatement("SELECT uuid FROM " + tableName + " WHERE name = ?")) {
@@ -116,7 +118,7 @@ public final class PlayerDataFetcher {
      *
      * @param object Object to update the DataType with
      */
-    public void update(UUID uuid, Object object) {
+    public void update(@NotNull UUID uuid, @NotNull Object object) {
         // if XP, the level also needs to be recalculated and updated
         if (dataType == PlayerDataType.XP) {
             int level = LevelUtils.getLevelByXp(Integer.parseInt(object.toString()));

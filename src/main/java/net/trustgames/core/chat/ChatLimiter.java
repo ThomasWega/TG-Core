@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,7 +69,9 @@ public final class ChatLimiter implements Listener {
      * @param event         the main AsyncChatEvent
      * @param playerMessage Player's chat message
      */
-    private void doChecks(Player player, AsyncChatEvent event, String playerMessage) {
+    private void doChecks(@NotNull Player player,
+                          @NotNull AsyncChatEvent event,
+                          @NotNull String playerMessage) {
         String playerName = player.getName();
 
         // gets the highest rank player has permission to
@@ -114,7 +117,7 @@ public final class ChatLimiter implements Listener {
      * @param player Player who wrote the message
      * @return Player's highest permission
      */
-    private String getPermission(Player player) {
+    private String getPermission(@NotNull Player player) {
         List<String> possibleRanks = new ArrayList<>();
         for (ChatLimitConfig limitEnum : ChatLimitConfig.values()) {
             possibleRanks.add(limitEnum.name().toLowerCase());
@@ -137,7 +140,7 @@ public final class ChatLimiter implements Listener {
      * @param sameMessage if the message same as the last time
      * @return is Player on Cooldown
      */
-    private boolean isOnCooldown(String playerName, String rank, boolean sameMessage) {
+    private boolean isOnCooldown(@NotNull String playerName, @NotNull String rank, boolean sameMessage) {
         /*
         Check if the message is same as the last time. In case it is, it will use a completely different
         cooldown time and return true if still in cooldown, otherwise return false.
@@ -167,7 +170,7 @@ public final class ChatLimiter implements Listener {
      * @param playerMessage The message the player wrote
      * @return is the same message as the last time
      */
-    private boolean isSameMessage(String playerName, String playerMessage) {
+    private boolean isSameMessage(@NotNull String playerName, @NotNull String playerMessage) {
         if (playerMessage.replaceAll("[^\\p{Alnum}]", "").equalsIgnoreCase(lastPlayerMessage.get(playerName).replaceAll("[^\\p{Alnum}]", ""))) {
             return true;
         } else {
@@ -183,7 +186,7 @@ public final class ChatLimiter implements Listener {
      * @param rank        Player's closest highest rank present in configuration
      * @param sameMessage is it the same message as the last time
      */
-    private void sendMessage(Player player, String rank, boolean sameMessage) {
+    private void sendMessage(@NotNull Player player, @NotNull String rank, boolean sameMessage) {
         String playerName = player.getName();
         /*
          checks if the message print wouldn't be too spammy. Meaning, if the player used
@@ -209,7 +212,7 @@ public final class ChatLimiter implements Listener {
      * @param time       Time of the cooldown
      * @return The time remaining until the player can write again
      */
-    private double getWaitTime(String playerName, double time) {
+    private double getWaitTime(@NotNull String playerName, double time) {
         return (time - ((System.currentTimeMillis() - cooldownTime.get(playerName)) / 1000d));
     }
 
@@ -219,7 +222,7 @@ public final class ChatLimiter implements Listener {
      * @param playerName Player who wrote the message
      * @return is the cooldown message being sent too often
      */
-    private boolean isSpam(String playerName) {
+    private boolean isSpam(@NotNull String playerName) {
         /*
          if he has any last wait message, get the time and make sure the
          current time - the last time of wait message is larger than the min value configured
@@ -233,7 +236,7 @@ public final class ChatLimiter implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerQuit(PlayerQuitEvent event) {
         String playerName = event.getPlayer().getName();
 

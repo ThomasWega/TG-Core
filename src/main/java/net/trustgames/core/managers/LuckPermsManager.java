@@ -13,6 +13,7 @@ import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -27,6 +28,7 @@ public final class LuckPermsManager {
 
     public LuckPermsManager(Core core) {
         this.core = core;
+        // register events
         LuckPermsProvider.get().getEventBus().subscribe(core,
                 UserDataRecalculateEvent.class, this::onUserDataRecalculate);
     }
@@ -36,14 +38,14 @@ public final class LuckPermsManager {
      * @param group  What group check for
      * @return if the given player is in the given group
      */
-    public static boolean isPlayerInGroup(Player player, String group) {
+    public static boolean isPlayerInGroup(@NotNull Player player, @NotNull String group) {
         return player.hasPermission("group." + group);
     }
 
     /**
      * @return Set of all loaded groups
      */
-    public static Set<Group> getGroups() {
+    public static @NotNull Set<Group> getGroups() {
         LuckPerms luckPerms = LuckPermsProvider.get();
         return luckPerms.getGroupManager().getLoadedGroups();
     }
@@ -55,22 +57,14 @@ public final class LuckPermsManager {
      * @param possibleGroups List of groups to check for
      * @return Player's group found from the list
      */
-    public static String getPlayerGroupFromList(Player player, Collection<String> possibleGroups) {
+    public static @Nullable String getPlayerGroupFromList(@NotNull Player player,
+                                                          @NotNull Collection<String> possibleGroups) {
         for (String group : possibleGroups) {
             if (player.hasPermission("group." + group)) {
                 return group;
             }
         }
         return null;
-    }
-
-    /**
-     * @param player Player to check primary group for
-     * @return Primary group of the given player
-     */
-    public static String getPlayerPrimaryGroup(Player player) {
-        User user = getUser(player);
-        return user.getPrimaryGroup();
     }
 
     /**
@@ -90,7 +84,7 @@ public final class LuckPermsManager {
      * @param player Player to get prefix for
      * @return Player prefix String
      */
-    public static @NotNull Component getPlayerPrefix(Player player) {
+    public static @NotNull Component getPlayerPrefix(@NotNull Player player) {
         User user = getUser(player);
         String prefixString = user.getCachedData().getMetaData().getPrefix();
 
@@ -104,7 +98,7 @@ public final class LuckPermsManager {
      * @param group Group to get prefix for
      * @return Group prefix String
      */
-    public static @NotNull Component getGroupPrefix(Group group) {
+    public static @NotNull Component getGroupPrefix(@NotNull Group group) {
         String prefixString = group.getCachedData().getMetaData().getPrefix();
         return ColorUtils.color(Objects.requireNonNullElse(prefixString, ""));
     }
@@ -113,7 +107,7 @@ public final class LuckPermsManager {
      * @param player Player to convert to User
      * @return User from the given Player
      */
-    public static User getUser(Player player) {
+    public static @NotNull User getUser(@NotNull Player player) {
         LuckPerms luckPerms = LuckPermsProvider.get();
         return luckPerms.getPlayerAdapter(Player.class).getUser(player);
     }

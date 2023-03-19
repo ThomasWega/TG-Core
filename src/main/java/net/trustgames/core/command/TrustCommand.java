@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -23,7 +24,7 @@ public abstract class TrustCommand implements CommandExecutor {
 
     private final String permission;
 
-    public TrustCommand(String permission) {
+    public TrustCommand(@Nullable String permission) {
         this.permission = permission;
     }
 
@@ -49,12 +50,12 @@ public abstract class TrustCommand implements CommandExecutor {
         }
 
         // check for permission
-        if (!sender.hasPermission(permission)) {
+        if (permission != null && !sender.hasPermission(permission)) {
             sender.sendMessage(CommandConfig.COMMAND_NO_PERM.getText());
             return true;
         }
 
-        execute(sender, args, label);
+        execute(sender, label, args);
         return true;
 
     }
@@ -64,10 +65,10 @@ public abstract class TrustCommand implements CommandExecutor {
      * Annotation can be used on this method
      *
      * @param sender The Console/Player who sent the command
-     * @param args   What arguments the command had
      * @param label  Alias of the command used
+     * @param args   What arguments the command had
      */
-    public abstract void execute(CommandSender sender, String[] args, String label);
+    public abstract void execute(@NotNull CommandSender sender, @NotNull String label, String[] args);
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)

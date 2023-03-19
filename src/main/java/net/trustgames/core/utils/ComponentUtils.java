@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.jetbrains.annotations.NotNull;
 
 public final class ComponentUtils {
 
@@ -14,7 +15,7 @@ public final class ComponentUtils {
      * @param component Component to convert
      * @return String from Component with unformatted color codes and no events
      */
-    public static String toString(Component component) {
+    public static String toString(@NotNull Component component) {
         return LegacyComponentSerializer.legacyAmpersand().serialize(component);
     }
 
@@ -25,7 +26,7 @@ public final class ComponentUtils {
      * @param component Component to convert
      * @return JSONElement from Component
      */
-    public static JsonElement toJson(Component component) {
+    public static JsonElement toJson(@NotNull Component component) {
         return GsonComponentSerializer.gson().serializeToTree(component);
     }
 }

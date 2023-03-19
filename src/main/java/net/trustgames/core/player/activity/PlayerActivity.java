@@ -1,7 +1,10 @@
 package net.trustgames.core.player.activity;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -12,27 +15,43 @@ import java.util.UUID;
  * for the database player_activity.
  * Using lombok for this
  */
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 public final class PlayerActivity {
     private final UUID uuid;
     private List<Activity> activities;
 
-    public void add(long id, String ip, String action, Timestamp time) {
+    /**
+     * Add a new Activity to the list of Player Activities
+     *
+     * @param id     ID of the Activity
+     * @param ip     IP of the player
+     * @param action Action the player has done
+     * @param time   Time the action happened
+     */
+    public void add(long id,
+                    @Nullable String ip,
+                    @NotNull String action,
+                    @NotNull Timestamp time) {
         activities.add(new Activity(id, uuid, ip, action, time));
     }
 
 
     @AllArgsConstructor
-    @Data
+    @Getter
+    @Setter
     public static class Activity {
         private long id;
-        private UUID uuid;
-        private String ip;
-        private String action;
-        private Timestamp time;
+        @NotNull private UUID uuid;
+        @Nullable private String ip;
+        @NotNull private String action;
+        @NotNull private Timestamp time;
 
-        public Activity(UUID uuid, String ip, String action, Timestamp time) {
+        public Activity(@NotNull UUID uuid,
+                        @Nullable String ip,
+                        @NotNull String action,
+                        @NotNull Timestamp time) {
             this.id = -1; // set the id to -1 since it's not known yet
             this.uuid = uuid;
             this.ip = ip;

@@ -13,6 +13,7 @@ import net.trustgames.core.managers.database.DatabaseManager;
 import net.trustgames.core.player.activity.PlayerActivityFetcher;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.Timestamp;
 import java.time.ZoneId;
@@ -40,7 +41,7 @@ public final class ActivityIdCommand extends TrustCommand {
 
     @Override
     @AllowConsole
-    public void execute(CommandSender sender, String[] args, String label) {
+    public void execute(@NotNull CommandSender sender, @NotNull String label, String[] args) {
         if (databaseManager.isMySQLDisabled()) {
             sender.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
             return;
@@ -51,6 +52,7 @@ public final class ActivityIdCommand extends TrustCommand {
             return;
         }
 
+        // check if the value is a number
         String stringId = args[0];
         long id;
         try {
@@ -71,7 +73,7 @@ public final class ActivityIdCommand extends TrustCommand {
      * @param sender Command sender
      * @param id     Activity id
      */
-    private void printData(CommandSender sender, long id) {
+    private void printData(@NotNull CommandSender sender, long id) {
         PlayerActivityFetcher activityFetcher = new PlayerActivityFetcher(core);
         activityFetcher.fetchByID(id, activity -> {
             if (activity == null) {
@@ -86,7 +88,11 @@ public final class ActivityIdCommand extends TrustCommand {
             String action = activity.getAction();
             Timestamp time = activity.getTime();
 
+            if (ip == null)
+                ip = "ERROR";
+
             PlayerDataCache playerDataCache = new PlayerDataCache(core, uuid, PlayerDataType.NAME);
+            String finalIp = ip;
             playerDataCache.get(name -> {
                 if (name == null){
                     name = "ERROR";
@@ -97,7 +103,7 @@ public final class ActivityIdCommand extends TrustCommand {
                         Component.text(ChatColor.WHITE + "Name: " +
                                 ChatColor.RED + name).clickEvent(ClickEvent.copyToClipboard(name)),
                         Component.text(ChatColor.WHITE + "IP: " +
-                                ChatColor.YELLOW + ip).clickEvent(ClickEvent.copyToClipboard(ip)),
+                                ChatColor.YELLOW + finalIp).clickEvent(ClickEvent.copyToClipboard(finalIp)),
                         Component.text(ChatColor.WHITE + "UUID: " +
                                 ChatColor.GRAY + uuid).clickEvent(ClickEvent.copyToClipboard(uuid.toString())),
                         Component.text(""),

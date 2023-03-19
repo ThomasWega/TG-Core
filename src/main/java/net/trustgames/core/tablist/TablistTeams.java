@@ -1,5 +1,6 @@
 package net.trustgames.core.tablist;
 
+import jline.internal.Nullable;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.luckperms.api.model.group.Group;
@@ -9,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -78,8 +80,9 @@ public final class TablistTeams {
      *
      * @param player Player to add to the scoreboard team
      */
-    public static void addToTeam(Player player) {
-        Group playerGroup = LuckPermsManager.getGroupManager().getGroup(LuckPermsManager.getPlayerPrimaryGroup(player));
+    public static void addToTeam(@NotNull Player player) {
+        String group = LuckPermsManager.getUser(player).getPrimaryGroup();
+        Group playerGroup = LuckPermsManager.getGroupManager().getGroup(group);
         if (playerGroup == null) return;
         String stringTeam = groupOrder.get(playerGroup) + playerGroup.getName();
         Team team = tablist.getTeam(stringTeam);
@@ -100,7 +103,7 @@ public final class TablistTeams {
     /**
      * @param player Player to remove from the scoreboard team
      */
-    public static void removeFromTeam(Player player) {
+    public static void removeFromTeam(@Nullable Player player) {
         if (player == null) return;
         Team team = tablist.getPlayerTeam(player);
         if (team != null)

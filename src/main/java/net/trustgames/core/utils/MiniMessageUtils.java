@@ -8,6 +8,7 @@ import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import net.trustgames.core.managers.LuckPermsManager;
 import net.trustgames.core.player.data.config.PlayerDataType;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public final class MiniMessageUtils {
 
@@ -19,7 +20,7 @@ public final class MiniMessageUtils {
      * @param player Player to replace the tags with info of
      * @return new MiniMessage with formatter ready
      */
-    public static MiniMessage format(Player player) {
+    public static MiniMessage player(@NotNull Player player) {
         String playerName = player.getName();
         Component prefix = LuckPermsManager.getPlayerPrefix(player);
         if (!prefix.equals(Component.text(""))) {
@@ -44,7 +45,7 @@ public final class MiniMessageUtils {
      * @param component Component to replace the tag with
      * @return new MiniMessage with formatter ready
      */
-    public static MiniMessage addComponent(Component component) {
+    public static MiniMessage component(@NotNull Component component) {
         return MiniMessage.builder()
                 .tags(TagResolver.builder()
                         .resolver(StandardTags.defaults())
@@ -62,7 +63,9 @@ public final class MiniMessageUtils {
      * @param playerName Name of the Player to replace the tags with info of
      * @return new MiniMessage with formatter ready
      */
-    public static MiniMessage playerData(String playerName, PlayerDataType dataType, String value) {
+    public static MiniMessage playerData(@NotNull String playerName,
+                                         @NotNull PlayerDataType dataType,
+                                         @NotNull String value) {
         return MiniMessage.builder()
                 .tags(TagResolver.builder()
                         .resolver(StandardTags.defaults())
