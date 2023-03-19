@@ -23,8 +23,8 @@ public final class PlayerDataCache {
     private final PlayerDataType dataType;
 
 
-    public PlayerDataCache(Core core, 
-                           @NotNull UUID uuid, 
+    public PlayerDataCache(Core core,
+                           @NotNull UUID uuid,
                            @NotNull PlayerDataType dataType) {
         this.core = core;
         this.uuid = uuid;

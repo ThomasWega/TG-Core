@@ -87,7 +87,7 @@ public final class PlayerDataCommand extends TrustCommand {
         }
 
         // incorrect usage (action is present, but is missing value)
-        if (args.length == 2){
+        if (args.length == 2) {
             sender.sendMessage(CommandConfig.COMMAND_INVALID_ARG.getText().append(
                     Component.text(" Use /" + label + " <Player> [add | remove | set] <value>", NamedTextColor.DARK_GRAY)));
             return;
@@ -113,10 +113,10 @@ public final class PlayerDataCommand extends TrustCommand {
      * Also makes sure the target is a known player and if the target is online,
      * a message is sent to him and the sender
      *
-     * @param sender The sender of the command
+     * @param sender     The sender of the command
      * @param targetName Name of the target
      * @param actionType Type of action to modify the data
-     * @param value Value to modify the data with
+     * @param value      Value to modify the data with
      */
     private void handleAction(@NotNull CommandSender sender,
                               @NotNull String targetName,

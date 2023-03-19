@@ -2,8 +2,8 @@ package net.trustgames.core.player.data.level;
 
 import net.trustgames.core.Core;
 import net.trustgames.core.cache.PlayerDataCache;
-import net.trustgames.core.player.data.config.PlayerDataType;
 import net.trustgames.core.player.data.PlayerDataFetcher;
+import net.trustgames.core.player.data.config.PlayerDataType;
 
 import java.util.UUID;
 import java.util.function.IntConsumer;
@@ -30,6 +30,7 @@ public final class PlayerLevel {
      */
     public void addLevel(int levelIncrease) {
         dataCache.get(currentXp -> getLevel(currentLevel -> {
+            if (currentXp == null) return;
             int intCurrentXp = Integer.parseInt(currentXp);
             int newLevel = currentLevel + levelIncrease;
             int newThreshold = getThreshold(newLevel);
@@ -49,6 +50,7 @@ public final class PlayerLevel {
      */
     public void getLevel(IntConsumer callback) {
         dataCache.get(xp -> {
+            if (xp == null) return;
             int intXp = Integer.parseInt(xp);
             int level = getLevelByXp(intXp);
             callback.accept(level);
@@ -68,6 +70,7 @@ public final class PlayerLevel {
      */
     public void removeLevel(int levelDecrease) {
         dataCache.get(currentXp -> getLevel(currentLevel -> {
+            if (currentXp == null) return;
             int intCurrentXp = Integer.parseInt(currentXp);
             int newLevel = currentLevel - levelDecrease;
             int newThreshold = getThreshold(newLevel);

@@ -50,7 +50,8 @@ public final class SkinManager {
 
     /**
      * Used to retrieve the skin data from the mojang servers.
-     *@implNote There is a limit for the api calls
+     *
+     * @implNote There is a limit for the api calls
      */
     private static SkinData fetchSkin(@NotNull String playerName) {
         try {

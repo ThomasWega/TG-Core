@@ -8,9 +8,9 @@ import net.trustgames.core.cache.PlayerDataCache;
 import net.trustgames.core.command.TrustCommand;
 import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CorePermissionsConfig;
-import net.trustgames.core.player.data.config.PlayerDataType;
 import net.trustgames.core.managers.database.DatabaseManager;
 import net.trustgames.core.player.activity.PlayerActivityFetcher;
+import net.trustgames.core.player.data.config.PlayerDataType;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
@@ -94,7 +94,7 @@ public final class ActivityIdCommand extends TrustCommand {
             PlayerDataCache playerDataCache = new PlayerDataCache(core, uuid, PlayerDataType.NAME);
             String finalIp = ip;
             playerDataCache.get(name -> {
-                if (name == null){
+                if (name == null) {
                     name = "ERROR";
                 }
                 // list of component messages

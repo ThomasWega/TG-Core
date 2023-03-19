@@ -23,7 +23,7 @@ public final class PlayerHandler implements Listener {
     }
 
     @EventHandler
-    private void onPlayerQuit(PlayerQuitEvent event){
+    private void onPlayerQuit(PlayerQuitEvent event) {
         TablistTeams.removeFromTeam(event.getPlayer());
     }
 }

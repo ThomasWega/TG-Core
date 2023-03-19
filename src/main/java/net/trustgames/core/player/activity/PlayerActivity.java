@@ -43,10 +43,14 @@ public final class PlayerActivity {
     @Setter
     public static class Activity {
         private long id;
-        @NotNull private UUID uuid;
-        @Nullable private String ip;
-        @NotNull private String action;
-        @NotNull private Timestamp time;
+        @NotNull
+        private UUID uuid;
+        @Nullable
+        private String ip;
+        @NotNull
+        private String action;
+        @NotNull
+        private Timestamp time;
 
         public Activity(@NotNull UUID uuid,
                         @Nullable String ip,

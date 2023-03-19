@@ -55,15 +55,14 @@ public final class ActivityCommand extends TrustCommand implements Listener {
 
     private final Component nextPageName = ColorUtils.color("&eNext page");
     private final Component prevPageName = ColorUtils.color("&ePrevious page");
-
+    private final Core core;
+    private final DatabaseManager databaseManager;
     /**
      * Used for switching pages.
      * +1 everytime page is switched to next page.
      * -1 everytime page is switched to previous page.
      */
     private int pageCount = 0;
-    private final Core core;
-    private final DatabaseManager databaseManager;
 
 
     public ActivityCommand(Core core) {
@@ -123,7 +122,7 @@ public final class ActivityCommand extends TrustCommand implements Listener {
     private void createRecords(@NotNull String targetName, Runnable callback) {
         UUIDCache uuidCache = new UUIDCache(core, targetName);
         uuidCache.get(uuid -> {
-            if (uuid == null){
+            if (uuid == null) {
                 callback.run();
                 return;
             }

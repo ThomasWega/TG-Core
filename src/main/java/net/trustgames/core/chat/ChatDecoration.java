@@ -79,7 +79,7 @@ public final class ChatDecoration implements Listener {
      * and play a sound
      *
      * @param sender  The message sender
-     * @param loop       Player from the loop
+     * @param loop    Player from the loop
      * @param message Chat message that was sent
      * @param prefix  What prefix the player has
      * @return True if mention colors were set

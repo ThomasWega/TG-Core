@@ -27,8 +27,8 @@ import static net.trustgames.core.player.data.PlayerDataDB.tableName;
 public final class PlayerDataFetcher {
 
     private final Core core;
-    private PlayerDataType dataType;
     private final DatabaseManager databaseManager;
+    private PlayerDataType dataType;
 
 
     public PlayerDataFetcher(Core core, @NotNull PlayerDataType dataType) {

@@ -45,14 +45,12 @@ import java.util.UUID;
 
 public final class NPCManager {
 
-    private final CooldownManager cooldownManager;
     private final Core core;
     private final ProtocolManager manager;
 
     public NPCManager(Core core) {
         this.core = core;
         this.manager = ProtocolLibrary.getProtocolManager();
-        this.cooldownManager = new CooldownManager();
     }
 
     /**
@@ -65,7 +63,7 @@ public final class NPCManager {
      * @param z      location
      * @implSpec UNTESTED!
      */
-    public static void move(@NotNull ServerPlayer npc, @NotNull Player player, 
+    public static void move(@NotNull ServerPlayer npc, @NotNull Player player,
                             double x, double y, double z) {
         ServerGamePacketListenerImpl connection = ((CraftPlayer) player).getHandle().connection;
         connection.send(new ClientboundMoveEntityPacket.Pos(
@@ -76,7 +74,7 @@ public final class NPCManager {
      * Create a new npc using NMS Packets. This method won't spawn it!
      *
      * @param location Location of the npc
-     * @param npcName     Name of the npc
+     * @param npcName  Name of the npc
      * @return new create npc
      */
     public ServerPlayer create(@NotNull Location location, @NotNull String npcName) {
@@ -125,7 +123,7 @@ public final class NPCManager {
      * @param pitch      Location pitch
      * @param straighten Try to make the npc body point the same direction as the head
      */
-    public void lookAtPosition(@NotNull Entity npc, @NotNull Player player, 
+    public void lookAtPosition(@NotNull Entity npc, @NotNull Player player,
                                float yaw, float pitch, boolean straighten) {
         if (!player.isOnline()) return;
 
@@ -162,7 +160,7 @@ public final class NPCManager {
      * @param player      Player NPC will be looking at
      * @param npcLocation Location of the NPC
      */
-    public void lookAtPlayer(@NotNull ServerPlayer npc, @NotNull Player player, 
+    public void lookAtPlayer(@NotNull ServerPlayer npc, @NotNull Player player,
                              @NotNull Location npcLocation) {
         if (!player.isOnline()) return;
 
@@ -195,7 +193,7 @@ public final class NPCManager {
      * @param texture   Texture of the skin
      * @param signature Signature of the skin
      */
-    public void skin(@NotNull ServerPlayer npc, @NotNull Player player, 
+    public void skin(@NotNull ServerPlayer npc, @NotNull Player player,
                      @NotNull String texture, @NotNull String signature) {
         if (!player.isOnline()) return;
 
@@ -247,7 +245,7 @@ public final class NPCManager {
      * @param player     Player who will see the NPC with equipment
      * @param equipments What items to set as equipment
      */
-    public void equipment(@NotNull ServerPlayer npc, @NotNull Player player, 
+    public void equipment(@NotNull ServerPlayer npc, @NotNull Player player,
                           List<Pair<EnumWrappers.@NotNull ItemSlot, @NotNull ItemStack>> equipments) {
         if (!player.isOnline()) return;
 
@@ -289,7 +287,7 @@ public final class NPCManager {
                         if (!isPresent) return;
 
                         long cooldown = config.getLong("npcs." + npc.displayName + ".action.cooldown");
-                        if (cooldownManager.commandCooldown(player, cooldown)) return;
+                        if (CooldownManager.handle(player, cooldown)) return;
 
                         String action = config.getString("npcs." + npc.displayName + ".action.type");
                         List<String> value = config.getStringList("npcs." + npc.displayName + ".action.value");

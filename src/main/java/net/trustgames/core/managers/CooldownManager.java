@@ -17,21 +17,21 @@ import java.util.HashMap;
  */
 public final class CooldownManager implements Listener {
 
-    private final HashMap<String, Long> commandCooldownTime = new HashMap<>();
-    private final HashMap<String, Long> cooldownMessageTime = new HashMap<>();
+    private static final HashMap<String, Long> commandCooldownTime = new HashMap<>();
+    private static final HashMap<String, Long> cooldownMessageTime = new HashMap<>();
 
     /**
-     * Ensures, that the command is not being spammed too much.
+     * Ensures, that the action is not being spammed too much.
      * There is already one of this check in the CommandManager,
      * but that allows certain number of commands per second.
-     * This method allows only one execution of the command per given time.
+     * This method allows only one execution of the action per given time.
      * It also ensures that the "don't spam" message is not being sent too often to the player.
      *
      * @param player       Player to put a cooldown on
      * @param cooldownTime Cooldown time in seconds
      * @return True if the player is on cooldown
      */
-    public boolean commandCooldown(@NotNull Player player, long cooldownTime) {
+    public static boolean handle(@NotNull Player player, double cooldownTime) {
         String playerName = player.getName();
         /*
          if the player is not in the cooldown yet, or if his cooldown expired,
@@ -51,7 +51,7 @@ public final class CooldownManager implements Listener {
      * @param cooldownTime Cooldown time in seconds
      * @return if player is on cooldown
      */
-    private boolean isOnCooldown(@NotNull String playerName, long cooldownTime) {
+    private static boolean isOnCooldown(@NotNull String playerName, double cooldownTime) {
         return !(cooldownTime <= (System.currentTimeMillis() - commandCooldownTime.get(playerName)) / 1000d);
     }
 
@@ -61,7 +61,7 @@ public final class CooldownManager implements Listener {
      * @param playerName Name of the Player which the cooldown messages are being sent to
      * @return if the cooldown message is too spammy
      */
-    private boolean isSpam(@NotNull String playerName) {
+    private static boolean isSpam(@NotNull String playerName) {
         /*
          if he has any last wait message, get the time and make sure the
          current time - the last time of wait message is larger than the min value in config
@@ -81,7 +81,7 @@ public final class CooldownManager implements Listener {
      *
      * @param player Player to send the messages to
      */
-    private void sendMessage(@NotNull Player player) {
+    private static void sendMessage(@NotNull Player player) {
         String playerName = player.getName();
         if (isSpam(playerName)) return;
 
@@ -90,7 +90,6 @@ public final class CooldownManager implements Listener {
         cooldownMessageTime.put(playerName, System.currentTimeMillis());
     }
 
-    // on player quit, remove player's entries from the hashmaps
     @EventHandler(priority = EventPriority.HIGH)
     private void onPlayerQuit(PlayerQuitEvent event) {
         String playerName = event.getPlayer().getName();

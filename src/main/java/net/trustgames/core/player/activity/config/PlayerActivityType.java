@@ -15,14 +15,6 @@ public enum PlayerActivityType {
     LEAVE("LEAVE", Material.BLACK_BED);
 
 
-    public final String action;
-    public final Material icon;
-
-    PlayerActivityType(String action, Material icon) {
-        this.action = action;
-        this.icon = icon;
-    }
-
     /**
      * List of all Action Strings for the action types
      */
@@ -30,7 +22,6 @@ public enum PlayerActivityType {
             .stream()
             .map(playerActivityType -> playerActivityType.action)
             .collect(Collectors.toSet());
-
     /**
      * List of all Materials for the action types
      */
@@ -38,4 +29,11 @@ public enum PlayerActivityType {
             .stream()
             .map(playerActivityType -> playerActivityType.icon)
             .collect(Collectors.toSet());
+    public final String action;
+    public final Material icon;
+
+    PlayerActivityType(String action, Material icon) {
+        this.action = action;
+        this.icon = icon;
+    }
 }

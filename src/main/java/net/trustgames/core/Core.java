@@ -7,7 +7,10 @@ import net.trustgames.core.chat.ChatDecoration;
 import net.trustgames.core.chat.ChatLimiter;
 import net.trustgames.core.chat.commands.TextCommands;
 import net.trustgames.core.chat.commands.TextCommandsConfig;
-import net.trustgames.core.managers.*;
+import net.trustgames.core.managers.CommandManager;
+import net.trustgames.core.managers.CooldownManager;
+import net.trustgames.core.managers.FileManager;
+import net.trustgames.core.managers.LuckPermsManager;
 import net.trustgames.core.managers.database.DatabaseManager;
 import net.trustgames.core.player.PlayerHandler;
 import net.trustgames.core.player.activity.PlayerActivityDB;
@@ -98,10 +101,10 @@ public final class Core extends JavaPlugin {
         // TODO PlayerDataCommand player online message only on one server, not bungee (move to proxy or use messaging queue like RabbitMQ)
         // TODO edit ChatLimiter
         // TODO playerDataCommand create enums for actionTypes
+        // TODO make CooldownManager per instance!
 
         // FIXME QuitPacket still error
         // FIXME Column "uuid" specified twice
-
 
 
         // create a data folder

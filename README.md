@@ -37,6 +37,7 @@ no chat limit
 no same chat limit  
 /activity  
 /activity-id  
+modify player's data (/gems PLAYER set 1000)
 
 __- ADMIN:__  
 

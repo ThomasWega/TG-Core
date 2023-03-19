@@ -1,9 +1,9 @@
 package net.trustgames.core.cache;
 
 import net.trustgames.core.Core;
+import net.trustgames.core.player.data.PlayerDataFetcher;
 import net.trustgames.core.player.data.config.PlayerDataIntervalConfig;
 import net.trustgames.core.player.data.config.PlayerDataType;
-import net.trustgames.core.player.data.PlayerDataFetcher;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import redis.clients.jedis.Jedis;

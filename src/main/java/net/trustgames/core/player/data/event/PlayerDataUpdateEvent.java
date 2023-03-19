@@ -15,6 +15,10 @@ public class PlayerDataUpdateEvent extends Event {
     @Getter
     private final UUID uuid;
 
+    public PlayerDataUpdateEvent(@NotNull UUID uuid) {
+        this.uuid = uuid;
+    }
+
     public static HandlerList getHandlerList() {
         return HANDLERS;
     }
@@ -22,9 +26,5 @@ public class PlayerDataUpdateEvent extends Event {
     @Override
     public @NotNull HandlerList getHandlers() {
         return HANDLERS;
-    }
-
-    public PlayerDataUpdateEvent(@NotNull UUID uuid){
-        this.uuid = uuid;
     }
 }
