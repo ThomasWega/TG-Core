@@ -11,7 +11,6 @@ import net.trustgames.core.managers.CommandManager;
 import net.trustgames.core.managers.CooldownManager;
 import net.trustgames.core.managers.FileManager;
 import net.trustgames.core.managers.LuckPermsManager;
-import net.trustgames.core.managers.database.DatabaseManager;
 import net.trustgames.core.player.PlayerHandler;
 import net.trustgames.core.player.activity.PlayerActivityDB;
 import net.trustgames.core.player.activity.PlayerActivityHandler;
@@ -22,15 +21,20 @@ import net.trustgames.core.player.data.PlayerDataHandler;
 import net.trustgames.core.player.data.commands.PlayerDataCommand;
 import net.trustgames.core.protection.CoreGamerulesHandler;
 import net.trustgames.core.tablist.TablistTeams;
+import net.trustgames.database.HikariManager;
+import net.trustgames.database.RabbitManager;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 /**
@@ -45,15 +49,14 @@ public final class Core extends JavaPlugin {
     @Getter
     private final JedisPool jedisPool = new JedisPool(new JedisPoolConfig(), "localhost", 6379);
     @Getter
-    private DatabaseManager databaseManager;
+    private HikariManager hikariManager;
+    @Getter
+    private RabbitManager rabbitManager;
 
     @Override
     public void onEnable() {
-        databaseManager = new DatabaseManager(this);
-        databaseManager.onDataSourceInitialized(() -> {
-            new PlayerDataDB(databaseManager);
-            new PlayerActivityDB(databaseManager);
-        });
+        initializeRabbit();
+        initializeHikari();
         new AnnounceHandler(this);
         new LuckPermsManager(this);
         new CoreGamerulesHandler();
@@ -93,17 +96,18 @@ public final class Core extends JavaPlugin {
         // TODO NPC protocollib
         // TODO improve player activity (add filters and /activity-ip command)
         // TODO TrustCommand add arguments
-        // TODO add tab completion for playerdata command
+        // TODO add tab completion for player-data command
         // TODO activity add ability to check by uuid
         // ADD?: make luckperms async
         // TODO menu/gui/pages manager
-        // TODO PlayerDataCommand player online message only on one server, not bungee (move to proxy or use messaging queue like RabbitMQ)
         // TODO edit ChatLimiter
         // TODO make CooldownManager per instance!
+        // TODO check if I should rather throw from method somewhere rather than catch and throw
+        // TODO add the player to database on join
+        // TODO add config for rabbitmq
 
         // FIXME move PlayerDataHandler to proxy
         // FIXME QuitPacket still error -- even when /stop
-
 
         // create a data folder
         if (getDataFolder().mkdirs()) {
@@ -118,12 +122,11 @@ public final class Core extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // the hikari doesn't have enough time to close
+        hikariManager.close();
         try {
-            databaseManager.closeHikari();
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            rabbitManager.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -165,5 +168,34 @@ public final class Core extends JavaPlugin {
         for (File file : configs) {
             FileManager.createFile(this, file);
         }
+    }
+
+    private void initializeHikari(){
+        YamlConfiguration mariaConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "mariadb.yml"));
+        hikariManager = new HikariManager(
+                Objects.requireNonNull(mariaConfig.getString("mariadb.user")),
+                Objects.requireNonNull(mariaConfig.getString("mariadb.password")),
+                Objects.requireNonNull(mariaConfig.getString("mariadb.ip")),
+                Objects.requireNonNull(mariaConfig.getString("mariadb.port")),
+                Objects.requireNonNull(mariaConfig.getString("mariadb.database")),
+                mariaConfig.getInt("hikaricp.pool-size"),
+                !mariaConfig.getBoolean("mariadb.enable")
+        );
+
+        hikariManager.onDataSourceInitialized(() -> {
+            new PlayerDataDB(hikariManager);
+            new PlayerActivityDB(hikariManager);
+        });
+    }
+
+    private void initializeRabbit(){
+        rabbitManager = new RabbitManager(
+                "guest",
+                "guest",
+                "localhost",
+                5672,
+                "proxy",
+                false
+        );
     }
 }

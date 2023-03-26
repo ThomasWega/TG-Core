@@ -1,6 +1,6 @@
 package net.trustgames.core.config;
 
-public enum CorePermissionsConfig {
+public enum CorePermissionConfig {
     ADMIN("core.admin"),
     STAFF("core.staff"),
     TITAN("core.titan"),
@@ -11,7 +11,7 @@ public enum CorePermissionsConfig {
 
     public final String permission;
 
-    CorePermissionsConfig(String permission) {
+    CorePermissionConfig(String permission) {
         this.permission = permission;
     }
 }

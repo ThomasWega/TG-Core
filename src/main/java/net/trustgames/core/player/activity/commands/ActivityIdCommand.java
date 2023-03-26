@@ -7,10 +7,10 @@ import net.trustgames.core.Core;
 import net.trustgames.core.cache.PlayerDataCache;
 import net.trustgames.core.command.TrustCommand;
 import net.trustgames.core.config.CommandConfig;
-import net.trustgames.core.config.CorePermissionsConfig;
-import net.trustgames.core.managers.database.DatabaseManager;
+import net.trustgames.core.config.CorePermissionConfig;
 import net.trustgames.core.player.activity.PlayerActivityFetcher;
 import net.trustgames.core.player.data.config.PlayerDataType;
+import net.trustgames.database.HikariManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
@@ -30,19 +30,19 @@ import java.util.UUID;
 public final class ActivityIdCommand extends TrustCommand {
 
     private final Core core;
-    private final DatabaseManager databaseManager;
+    private final HikariManager hikariManager;
 
 
     public ActivityIdCommand(Core core) {
-        super(CorePermissionsConfig.STAFF.permission);
+        super(CorePermissionConfig.STAFF.permission);
         this.core = core;
-        this.databaseManager = core.getDatabaseManager();
+        this.hikariManager = core.getHikariManager();
     }
 
     @Override
     @AllowConsole
     public void execute(@NotNull CommandSender sender, @NotNull String label, String[] args) {
-        if (databaseManager.isMySQLDisabled()) {
+        if (hikariManager.isDisabled()) {
             sender.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
             return;
         }

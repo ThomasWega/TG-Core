@@ -21,7 +21,7 @@ public abstract class InventoryManager {
      */
     public static Inventory createInventory(@NotNull Player player,
                                             @NotNull String title,
-                                            int columns) {
+                                            @NotNull Integer columns) {
         int slots = columns * 9;
         if (columns > 6)
             LOGGER.severe("Inventory of player " + player.getName() + " has " + columns + " columns! The maximum is 6 (54 slots)");

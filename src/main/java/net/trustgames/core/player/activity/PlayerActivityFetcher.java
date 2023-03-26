@@ -1,7 +1,7 @@
 package net.trustgames.core.player.activity;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.managers.database.DatabaseManager;
+import net.trustgames.database.HikariManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,11 +18,11 @@ import static net.trustgames.core.player.activity.PlayerActivityDB.tableName;
 public final class PlayerActivityFetcher {
 
     private final Core core;
-    private final DatabaseManager databaseManager;
+    private final HikariManager hikariManager;
 
     public PlayerActivityFetcher(Core core) {
         this.core = core;
-        this.databaseManager = core.getDatabaseManager();
+        this.hikariManager = core.getHikariManager();
     }
 
     /**
@@ -35,7 +35,7 @@ public final class PlayerActivityFetcher {
      */
     public void fetchByUUID(@NotNull UUID uuid, Consumer<@Nullable PlayerActivity> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
-            try (Connection connection = databaseManager.getConnection();
+            try (Connection connection = hikariManager.getConnection();
                  PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE uuid = ? ORDER BY id DESC")) {
                 statement.setString(1, uuid.toString());
                 try (ResultSet results = statement.executeQuery()) {
@@ -63,7 +63,7 @@ public final class PlayerActivityFetcher {
      */
     public void fetchByID(long id, Consumer<PlayerActivity.@Nullable Activity> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
-            try (Connection conn = databaseManager.getConnection();
+            try (Connection conn = hikariManager.getConnection();
                  PreparedStatement statement = conn.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?")) {
                 statement.setString(1, String.valueOf(id));
                 try (ResultSet results = statement.executeQuery()) {
@@ -91,7 +91,7 @@ public final class PlayerActivityFetcher {
      * @param activity Only one Activity with the corresponding data
      */
     public void insertNew(PlayerActivity.@NotNull Activity activity) {
-        try (Connection connection = databaseManager.getConnection()) {
+        try (Connection connection = hikariManager.getConnection()) {
             String query = "INSERT INTO " + tableName + " (uuid, ip, action, time) VALUES (?, ?, ?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
                 statement.setString(1, activity.getUuid().toString());

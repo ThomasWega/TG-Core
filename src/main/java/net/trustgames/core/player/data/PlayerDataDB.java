@@ -1,7 +1,7 @@
 package net.trustgames.core.player.data;
 
-import net.trustgames.core.managers.database.DatabaseManager;
 import net.trustgames.core.player.data.config.PlayerDataType;
+import net.trustgames.database.HikariManager;
 
 /**
  * This class handles the creation of the data database table
@@ -9,10 +9,10 @@ import net.trustgames.core.player.data.config.PlayerDataType;
 public final class PlayerDataDB {
 
     public static final String tableName = "player_data";
-    private final DatabaseManager databaseManager;
+    private final HikariManager hikariManager;
 
-    public PlayerDataDB(DatabaseManager databaseManager) {
-        this.databaseManager = databaseManager;
+    public PlayerDataDB(HikariManager hikariManager) {
+        this.hikariManager = hikariManager;
         initializeTable();
     }
 
@@ -38,6 +38,6 @@ public final class PlayerDataDB {
         statement.deleteCharAt(statement.length() - 1);
         statement.append(")");
 
-        databaseManager.initializeTable(tableName, statement.toString());
+        hikariManager.initializeTable(tableName, statement.toString());
     }
 }

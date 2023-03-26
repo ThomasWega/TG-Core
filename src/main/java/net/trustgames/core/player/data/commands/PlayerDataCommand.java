@@ -7,14 +7,15 @@ import net.trustgames.core.cache.PlayerDataCache;
 import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.command.TrustCommand;
 import net.trustgames.core.config.CommandConfig;
-import net.trustgames.core.config.CorePermissionsConfig;
+import net.trustgames.core.config.CorePermissionConfig;
 import net.trustgames.core.player.data.PlayerData;
 import net.trustgames.core.player.data.config.PlayerDataConfig;
 import net.trustgames.core.player.data.config.PlayerDataType;
-import org.bukkit.Bukkit;
+import net.trustgames.core.utils.ComponentUtils;
+import net.trustgames.database.RabbitManager;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
 
 /**
  * Command to get or modify player data in the database
@@ -23,10 +24,12 @@ public final class PlayerDataCommand extends TrustCommand {
 
     private final Core core;
     private PlayerDataType dataType;
+    private final RabbitManager rabbitManager;
 
     public PlayerDataCommand(Core core) {
-        super(CorePermissionsConfig.DEFAULT.permission);
+        super(null);
         this.core = core;
+        this.rabbitManager = core.getRabbitManager();
     }
 
     @Override
@@ -81,7 +84,7 @@ public final class PlayerDataCommand extends TrustCommand {
         The below code is only for staff, as it includes
         setting, adding, or removing a player data
          */
-        if (!sender.hasPermission(CorePermissionsConfig.STAFF.permission)) {
+        if (!sender.hasPermission(CorePermissionConfig.STAFF.permission)) {
             sender.sendMessage(CommandConfig.COMMAND_NO_PERM.getText());
             return;
         }
@@ -130,7 +133,7 @@ public final class PlayerDataCommand extends TrustCommand {
     private void handleAction(@NotNull CommandSender sender,
                               @NotNull String targetName,
                               @NotNull ActionType actionType,
-                              int value) {
+                              @NotNull Integer value) {
         UUIDCache uuidCache = new UUIDCache(core, targetName);
         uuidCache.get(targetUuid -> {
             if (targetUuid == null) {
@@ -138,31 +141,35 @@ public final class PlayerDataCommand extends TrustCommand {
                 return;
             }
 
-            boolean targetMessage = false;
-            Player target = Bukkit.getPlayer(targetName);
-            if (target != null && target.isOnline()) {
-                targetMessage = true;
-            }
-
             PlayerData playerData = new PlayerData(core, targetUuid, dataType);
             switch (actionType) {
                 case SET -> {
                     playerData.setData(value);
                     sender.sendMessage(PlayerDataConfig.SET_SENDER.formatMessage(targetName, dataType, String.valueOf(value)));
-                    if (targetMessage)
-                        target.sendMessage(PlayerDataConfig.SET_TARGET.formatMessage(sender.getName(), dataType, String.valueOf(value)));
+
+                    // message to target on proxy
+                    JSONObject json = new JSONObject();
+                    json.put("player", targetName);
+                    json.put("message", ComponentUtils.toJson(PlayerDataConfig.SET_TARGET.formatMessage(sender.getName(), dataType, String.valueOf(value))).toString());
+                    rabbitManager.send(json);
                 }
                 case ADD -> {
                     playerData.addData(value);
                     sender.sendMessage(PlayerDataConfig.ADD_SENDER.formatMessage(targetName, dataType, String.valueOf(value)));
-                    if (targetMessage)
-                        target.sendMessage(PlayerDataConfig.ADD_TARGET.formatMessage(sender.getName(), dataType, String.valueOf(value)));
+                    // message to target on proxy
+                    JSONObject json = new JSONObject();
+                    json.put("player", targetName);
+                    json.put("message", ComponentUtils.toJson(PlayerDataConfig.ADD_TARGET.formatMessage(sender.getName(), dataType, String.valueOf(value))).toString());
+                    rabbitManager.send(json);
                 }
                 case REMOVE -> {
                     playerData.removeData(value);
                     sender.sendMessage(PlayerDataConfig.REMOVE_SENDER.formatMessage(targetName, dataType, String.valueOf(value)));
-                    if (targetMessage)
-                        target.sendMessage(PlayerDataConfig.REMOVE_TARGET.formatMessage(sender.getName(), dataType, String.valueOf(value)));
+                    // message to target on proxy
+                    JSONObject json = new JSONObject();
+                    json.put("player", targetName);
+                    json.put("message", ComponentUtils.toJson(PlayerDataConfig.REMOVE_TARGET.formatMessage(sender.getName(), dataType, String.valueOf(value))).toString());
+                    rabbitManager.send(json);
                 }
             }
         });

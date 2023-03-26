@@ -7,14 +7,14 @@ import net.trustgames.core.Core;
 import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.command.TrustCommand;
 import net.trustgames.core.config.CommandConfig;
-import net.trustgames.core.config.CorePermissionsConfig;
+import net.trustgames.core.config.CorePermissionConfig;
 import net.trustgames.core.managers.InventoryManager;
 import net.trustgames.core.managers.ItemManager;
-import net.trustgames.core.managers.database.DatabaseManager;
 import net.trustgames.core.player.activity.PlayerActivity;
 import net.trustgames.core.player.activity.PlayerActivityFetcher;
 import net.trustgames.core.player.activity.config.PlayerActivityType;
 import net.trustgames.core.utils.ColorUtils;
+import net.trustgames.database.HikariManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -56,7 +56,7 @@ public final class ActivityCommand extends TrustCommand implements Listener {
     private final Component nextPageName = ColorUtils.color("&eNext page");
     private final Component prevPageName = ColorUtils.color("&ePrevious page");
     private final Core core;
-    private final DatabaseManager databaseManager;
+    private final HikariManager hikariManager;
     /**
      * Used for switching pages.
      * +1 everytime page is switched to next page.
@@ -66,9 +66,9 @@ public final class ActivityCommand extends TrustCommand implements Listener {
 
 
     public ActivityCommand(Core core) {
-        super(CorePermissionsConfig.STAFF.permission);
+        super(CorePermissionConfig.STAFF.permission);
         this.core = core;
-        this.databaseManager = core.getDatabaseManager();
+        this.hikariManager = core.getHikariManager();
     }
 
     @Override
@@ -76,7 +76,7 @@ public final class ActivityCommand extends TrustCommand implements Listener {
 
         Player player = ((Player) sender);
 
-        if (databaseManager.isMySQLDisabled()) {
+        if (hikariManager.isDisabled()) {
             player.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
             return;
         }

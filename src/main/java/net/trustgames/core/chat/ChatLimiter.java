@@ -5,7 +5,7 @@ import net.kyori.adventure.text.Component;
 import net.trustgames.core.chat.config.ChatConfig;
 import net.trustgames.core.chat.config.ChatLimitConfig;
 import net.trustgames.core.config.CooldownConfig;
-import net.trustgames.core.config.CorePermissionsConfig;
+import net.trustgames.core.config.CorePermissionConfig;
 import net.trustgames.core.managers.LuckPermsManager;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.entity.Player;
@@ -41,7 +41,7 @@ public final class ChatLimiter implements Listener {
     public void limit(AsyncChatEvent event) {
         Player player = event.getPlayer();
         String playerMessage = ColorUtils.stripColor(event.originalMessage());
-        if (player.hasPermission(CorePermissionsConfig.STAFF.permission)) return;
+        if (player.hasPermission(CorePermissionConfig.STAFF.permission)) return;
 
         /*
         These for loops will loop through all the configured keys (the normal cooldown

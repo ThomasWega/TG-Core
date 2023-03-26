@@ -3,11 +3,11 @@ package net.trustgames.core.player.data;
 import net.trustgames.core.Core;
 import net.trustgames.core.cache.PlayerDataCache;
 import net.trustgames.core.cache.UUIDCache;
-import net.trustgames.core.managers.database.DatabaseManager;
 import net.trustgames.core.player.data.config.PlayerDataType;
 import net.trustgames.core.player.data.event.PlayerDataUpdateEvent;
 import net.trustgames.core.player.data.level.PlayerLevel;
 import net.trustgames.core.utils.LevelUtils;
+import net.trustgames.database.HikariManager;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,14 +27,14 @@ import static net.trustgames.core.player.data.PlayerDataDB.tableName;
 public final class PlayerDataFetcher {
 
     private final Core core;
-    private final DatabaseManager databaseManager;
+    private final HikariManager hikariManager;
     private PlayerDataType dataType;
 
 
     public PlayerDataFetcher(Core core, @NotNull PlayerDataType dataType) {
         this.core = core;
         this.dataType = dataType;
-        this.databaseManager = core.getDatabaseManager();
+        this.hikariManager = core.getHikariManager();
     }
 
     /**
@@ -61,7 +61,7 @@ public final class PlayerDataFetcher {
             }
 
             String label = dataType.getColumnName();
-            try (Connection connection = databaseManager.getConnection();
+            try (Connection connection = hikariManager.getConnection();
                  PreparedStatement statement = connection.prepareStatement("SELECT " + label + " FROM " + tableName + " WHERE uuid = ?")) {
                 statement.setString(1, uuid.toString());
                 try (ResultSet results = statement.executeQuery()) {
@@ -90,7 +90,7 @@ public final class PlayerDataFetcher {
      */
     public void fetchUUID(@NotNull String playerName, Consumer<@Nullable UUID> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
-            try (Connection connection = databaseManager.getConnection();
+            try (Connection connection = hikariManager.getConnection();
                  PreparedStatement statement = connection.prepareStatement("SELECT uuid FROM " + tableName + " WHERE name = ?")) {
                 statement.setString(1, playerName);
                 ResultSet result = statement.executeQuery();
@@ -136,7 +136,7 @@ public final class PlayerDataFetcher {
 
         String label = dataType.getColumnName();
 
-        Connection connection = databaseManager.getConnection();
+        Connection connection = hikariManager.getConnection();
         try (PreparedStatement statement = connection.prepareStatement(
                 "INSERT INTO " + tableName + "(uuid, " + label + ") VALUES (?, ?) " +
                         "ON DUPLICATE KEY UPDATE " + label + " = VALUES(" + label + ")")) {

@@ -13,6 +13,7 @@
 
     <description>Core plugin for TrustGames.net</description>
     <properties>
+        <tg.database>/Users/weglarz/Documents/IdeaProjects/TG-DATABASE/target/database-0.1-SNAPSHOT.jar</tg.database>
         <java.version>17</java.version>
         <minecraft.version>1.19.2-R0.1-SNAPSHOT</minecraft.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -143,6 +144,10 @@
             <id>dmulloy2-repo</id>
             <url>https://repo.dmulloy2.net/repository/public/</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -160,22 +165,21 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>5.0.1</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mariadb.jdbc</groupId>
-            <artifactId>mariadb-java-client</artifactId>
-            <version>3.0.6</version>
+            <groupId>com.github.ThomasWega</groupId>
+            <artifactId>TG-DATABASE</artifactId>
+            <version>9312ce9</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
+            <version>1.18.26</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>5.17.0</version>
         </dependency>
         <dependency>
             <groupId>net.luckperms</groupId>
