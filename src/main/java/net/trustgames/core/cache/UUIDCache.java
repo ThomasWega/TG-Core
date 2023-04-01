@@ -32,29 +32,36 @@ public final class UUIDCache {
 
     /**
      * Get the UUID of the player from the cache.
-     * If it's not in the cache, it gets it from the database table
-     * and puts it in the cache.
-     * If still null, that means the player never joined the network
+     * If it's not in the cache or the cache is disabled,
+     * it gets it from the database and updates in cache (if on)
+     * In case it is still null, that means the player never joined the network
      *
      * @param callback Where the UUID of the player, or null will be saved
      */
     public void get(Consumer<@Nullable UUID> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
-            try (Jedis jedis = pool.getResource()) {
-                String uuidString = jedis.hget(playerName, field);
-                jedis.expire(playerName, PlayerDataIntervalConfig.DATA_EXPIRY.getSeconds());
-                if (uuidString == null) {
-                    PlayerDataFetcher dataFetcher = new PlayerDataFetcher(core, PlayerDataType.UUID);
-                    dataFetcher.fetchUUID(playerName, uuid -> {
-                        // if still null, there is no data on the player even in the database
-                        if (uuid != null)
-                            update(uuid);
-                        callback.accept(uuid);
-                    });
-                    return;
+            String uuidString = null;
+
+            // cache
+            if (pool != null) {
+                try (Jedis jedis = pool.getResource()) {
+                    uuidString = jedis.hget(playerName, field);
+                    jedis.expire(playerName, PlayerDataIntervalConfig.DATA_EXPIRY.getSeconds());
                 }
-                callback.accept(UUID.fromString(uuidString));
             }
+
+            // database
+            if (uuidString == null) {
+                PlayerDataFetcher dataFetcher = new PlayerDataFetcher(core, PlayerDataType.UUID);
+                dataFetcher.fetchUUID(playerName, uuid -> {
+                    // if still null, there is no data on the player even in the database
+                    if (uuid != null)
+                        update(uuid);
+                    callback.accept(uuid);
+                });
+                return;
+            }
+            callback.accept(UUID.fromString(uuidString));
         });
     }
 
@@ -64,8 +71,11 @@ public final class UUIDCache {
      * @param uuid UUID of the player.
      */
     public void update(@NotNull UUID uuid) {
-        try (Jedis jedis = pool.getResource()) {
-            jedis.hset(playerName, field, uuid.toString());
-        }
+        if (pool == null) return;
+        core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
+            try (Jedis jedis = pool.getResource()) {
+                jedis.hset(playerName, field, uuid.toString());
+            }
+        });
     }
 }

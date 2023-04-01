@@ -34,6 +34,10 @@ public final class PlayerActivityFetcher {
      * @param callback Callback where the result will be saved
      */
     public void fetchByUUID(@NotNull UUID uuid, Consumer<@Nullable PlayerActivity> callback) {
+        if (hikariManager.isDisabled()){
+            callback.accept(null);
+            return;
+        }
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             try (Connection connection = hikariManager.getConnection();
                  PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + tableName + " WHERE uuid = ? ORDER BY id DESC")) {
@@ -62,6 +66,10 @@ public final class PlayerActivityFetcher {
      * @param callback Callback where the result will be saved
      */
     public void fetchByID(long id, Consumer<PlayerActivity.@Nullable Activity> callback) {
+        if (hikariManager.isDisabled()){
+            callback.accept(null);
+            return;
+        }
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             try (Connection conn = hikariManager.getConnection();
                  PreparedStatement statement = conn.prepareStatement("SELECT * FROM " + tableName + " WHERE id = ?")) {
@@ -91,6 +99,7 @@ public final class PlayerActivityFetcher {
      * @param activity Only one Activity with the corresponding data
      */
     public void insertNew(PlayerActivity.@NotNull Activity activity) {
+        if (hikariManager.isDisabled()) return;
         try (Connection connection = hikariManager.getConnection()) {
             String query = "INSERT INTO " + tableName + " (uuid, ip, action, time) VALUES (?, ?, ?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {

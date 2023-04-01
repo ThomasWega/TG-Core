@@ -47,6 +47,10 @@ public final class PlayerDataFetcher {
      * @see PlayerDataFetcher#fetchUUID(String, Consumer)
      */
     public void fetch(@NotNull UUID uuid, Consumer<@Nullable String> callback) {
+        if (hikariManager.isDisabled()){
+            callback.accept(null);
+            return;
+        }
 
         if (dataType == PlayerDataType.UUID) {
             throw new RuntimeException(this.getClass().getName() + " can't be used to retrieve UUID. " +
@@ -89,6 +93,10 @@ public final class PlayerDataFetcher {
      * @see PlayerDataFetcher#fetch(UUID, Consumer)
      */
     public void fetchUUID(@NotNull String playerName, Consumer<@Nullable UUID> callback) {
+        if (hikariManager.isDisabled()){
+            callback.accept(null);
+            return;
+        }
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             try (Connection connection = hikariManager.getConnection();
                  PreparedStatement statement = connection.prepareStatement("SELECT uuid FROM " + tableName + " WHERE name = ?")) {
@@ -119,6 +127,8 @@ public final class PlayerDataFetcher {
      * @param object Object to update the DataType with
      */
     public void update(@NotNull UUID uuid, @NotNull Object object) {
+        if (hikariManager.isDisabled()) return;
+
         // if XP, the level also needs to be recalculated and updated
         if (dataType == PlayerDataType.XP) {
             int level = LevelUtils.getLevelByXp(Integer.parseInt(object.toString()));

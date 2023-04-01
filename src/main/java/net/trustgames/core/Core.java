@@ -28,8 +28,8 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,10 +47,13 @@ public final class Core extends JavaPlugin {
 
     public static final Logger LOGGER = PaperPluginLogger.getLogger("Core");
     @Getter
-    private final JedisPool jedisPool = new JedisPool(new JedisPoolConfig(), "localhost", 6379);
+    @Nullable
+    private JedisPool jedisPool = null;
     @Getter
+    @Nullable
     private HikariManager hikariManager;
     @Getter
+    @Nullable
     private RabbitManager rabbitManager;
     @Getter
     private final GUIManager guiManager = new GUIManager();
@@ -64,8 +67,9 @@ public final class Core extends JavaPlugin {
 
         createConfigs();
 
-        initializeRabbit();
         initializeHikari();
+        initializeRedis();
+        initializeRabbit();
         new AnnounceHandler(this);
         new CoreGamerulesHandler();
         new TablistTeams(this);
@@ -112,10 +116,8 @@ public final class Core extends JavaPlugin {
         // TODO activity add ability to check by uuid
         // TODO add pagination to GuiManager -- migrate all menus
         // TODO check if I should rather throw from method somewhere rather than catch and throw
-        // TODO redis disable when off
-
-        // TEST rabbitmq disable (data command also!)
-        // TEST add config for rabbitmq
+        // TODO maybe make some classes interfaces?
+        // TODO PlayerDataHandler??
 
         // FIXME QuitPacket still error -- even when /stop
 
@@ -128,9 +130,13 @@ public final class Core extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        hikariManager.close();
+        if (hikariManager != null) {
+            hikariManager.close();
+        }
         try {
-            rabbitManager.close();
+            if (rabbitManager != null) {
+                rabbitManager.close();
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -169,7 +175,8 @@ public final class Core extends JavaPlugin {
     private void createConfigs() {
         File[] configs = new File[]{
                 new File(getDataFolder(), "mariadb.yml"),
-                new File(getDataFolder(), "rabbitmq.yml")
+                new File(getDataFolder(), "rabbitmq.yml"),
+                new File(getDataFolder(), "redis.yml")
         };
 
         FileManager.createFile(this, configs);
@@ -202,6 +209,19 @@ public final class Core extends JavaPlugin {
                 rabbitConfig.getInt("proxy.port"),
                 Objects.requireNonNull(rabbitConfig.getString("proxy.queue-name")),
                 !rabbitConfig.getBoolean("proxy.enable")
+        );
+    }
+
+    private void initializeRedis(){
+        YamlConfiguration redisConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "redis.yml"));
+
+        if (!redisConfig.getBoolean("redis.enable")) return;
+
+        jedisPool = new JedisPool(
+                redisConfig.getString("redis.ip"),
+                redisConfig.getInt("redis.port"),
+                redisConfig.getString("redis.user"),
+                redisConfig.getString("redis.password")
         );
     }
 }

@@ -39,6 +39,7 @@ public final class PlayerDataCache {
      * @param value Value to update the data with
      */
     public void update(@NotNull String value) {
+        if (pool == null) return;
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             try (Jedis jedis = pool.getResource()) {
                 String column = dataType.getColumnName();
@@ -50,26 +51,36 @@ public final class PlayerDataCache {
     /**
      * Gets the specified value of data from the cache.
      * The cache should always be up-to-date with the database.
+     * <p></p>
+     * If the cache is off (pool == null), the data will be taken
+     * straight from the database
      *
      * @param callback Callback where the result is saved
      */
     public void get(Consumer<@Nullable String> callback) {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
-            try (Jedis jedis = pool.getResource()) {
-                String result = jedis.hget(uuid.toString(), dataType.getColumnName());
-                jedis.expire(uuid.toString(), PlayerDataIntervalConfig.DATA_EXPIRY.getSeconds());
-                if (result == null) {
-                    PlayerDataFetcher dataFetcher = new PlayerDataFetcher(core, dataType);
-                    dataFetcher.fetch(uuid, data -> {
-                        // if still null, there is no data on the player even in the database
-                        if (data != null)
-                            update(data);
-                        callback.accept(data);
-                    });
-                    return;
+            String result = null;
+
+            // cache
+            if (pool != null){
+                try (Jedis jedis = pool.getResource()) {
+                    result = jedis.hget(uuid.toString(), dataType.getColumnName());
+                    jedis.expire(uuid.toString(), PlayerDataIntervalConfig.DATA_EXPIRY.getSeconds());
                 }
-                callback.accept(result);
             }
+
+            // database
+            if (result == null) {
+                PlayerDataFetcher dataFetcher = new PlayerDataFetcher(core, dataType);
+                dataFetcher.fetch(uuid, data -> {
+                    // if still null, there is no data on the player even in the database
+                    if (data != null)
+                        update(data);
+                    callback.accept(data);
+                });
+                return;
+            }
+            callback.accept(result);
         });
     }
 }
