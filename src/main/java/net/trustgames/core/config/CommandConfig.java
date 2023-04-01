@@ -8,9 +8,11 @@ public enum CommandConfig {
 
     PREFIX("<color:#2472f0>Command | </color>"),
     PREFIX_DB("<color:#ed7168>Database | </color>"),
+    PREFIX_MQ("<color:#edc168>Database | </color>"),
     MAX_PER_SEC(5),
     COMMAND_NO_PERM(PREFIX.value + "<dark_gray>You don't have permission to perform this action!"),
     COMMAND_DATABASE_OFF(PREFIX_DB.value + "<dark_gray>Database is disabled!"),
+    COMMAND_MESSAGE_QUEUE_OFF(PREFIX_MQ.value + "<dark_gray>Message Queue is disabled!"),
     COMMAND_PLAYER_ONLY("This command can be executed by in-game players only!"),
     COMMAND_SPAM(PREFIX.value + "<dark_gray>Please don't spam the command!"),
     COMMAND_INVALID_ARG(PREFIX.value + "<dark_gray>You need to specify a valid argument!"),

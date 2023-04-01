@@ -12,6 +12,7 @@ import net.trustgames.core.player.activity.PlayerActivityFetcher;
 import net.trustgames.core.player.data.config.PlayerDataType;
 import net.trustgames.database.HikariManager;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,7 +42,7 @@ public final class ActivityIdCommand extends TrustCommand {
 
     @Override
     @AllowConsole
-    public void execute(@NotNull CommandSender sender, @NotNull String label, String[] args) {
+    public void execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (hikariManager.isDisabled()) {
             sender.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
             return;

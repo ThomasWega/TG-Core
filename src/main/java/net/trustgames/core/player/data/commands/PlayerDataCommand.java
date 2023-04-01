@@ -13,6 +13,7 @@ import net.trustgames.core.player.data.config.PlayerDataConfig;
 import net.trustgames.core.player.data.config.PlayerDataType;
 import net.trustgames.core.utils.ComponentUtils;
 import net.trustgames.database.RabbitManager;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
@@ -34,7 +35,7 @@ public final class PlayerDataCommand extends TrustCommand {
 
     @Override
     @AllowConsole
-    public void execute(@NotNull CommandSender sender, @NotNull String label, String[] args) {
+    public void execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         String senderName = sender.getName();
         dataType = PlayerDataType.valueOf(label.toUpperCase());
 
@@ -148,6 +149,7 @@ public final class PlayerDataCommand extends TrustCommand {
                     sender.sendMessage(PlayerDataConfig.SET_SENDER.formatMessage(targetName, dataType, String.valueOf(value)));
 
                     // message to target on proxy
+                    if (mqOff(sender)) return;
                     JSONObject json = new JSONObject();
                     json.put("player", targetName);
                     json.put("message", ComponentUtils.toJson(PlayerDataConfig.SET_TARGET.formatMessage(sender.getName(), dataType, String.valueOf(value))).toString());
@@ -157,6 +159,7 @@ public final class PlayerDataCommand extends TrustCommand {
                     playerData.addData(value);
                     sender.sendMessage(PlayerDataConfig.ADD_SENDER.formatMessage(targetName, dataType, String.valueOf(value)));
                     // message to target on proxy
+                    if (mqOff(sender)) return;
                     JSONObject json = new JSONObject();
                     json.put("player", targetName);
                     json.put("message", ComponentUtils.toJson(PlayerDataConfig.ADD_TARGET.formatMessage(sender.getName(), dataType, String.valueOf(value))).toString());
@@ -166,6 +169,7 @@ public final class PlayerDataCommand extends TrustCommand {
                     playerData.removeData(value);
                     sender.sendMessage(PlayerDataConfig.REMOVE_SENDER.formatMessage(targetName, dataType, String.valueOf(value)));
                     // message to target on proxy
+                    if (mqOff(sender)) return;
                     JSONObject json = new JSONObject();
                     json.put("player", targetName);
                     json.put("message", ComponentUtils.toJson(PlayerDataConfig.REMOVE_TARGET.formatMessage(sender.getName(), dataType, String.valueOf(value))).toString());
@@ -173,6 +177,24 @@ public final class PlayerDataCommand extends TrustCommand {
                 }
             }
         });
+    }
+
+    /**
+     * Sends a message to sender when the RabbitMQ is disabled,
+     * that a message to target can't be sent
+     *
+     * @param sender Sender of the command
+     * @return true if RabbitMQ is disabled, otherwise false
+     */
+    private boolean mqOff(CommandSender sender){
+        if (rabbitManager.isDisabled()) {
+            sender.sendMessage(CommandConfig.COMMAND_MESSAGE_QUEUE_OFF.getText()
+                    .append(Component.text("Not sending a message to target player")
+                            .color(NamedTextColor.DARK_GRAY)));
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public enum ActionType {

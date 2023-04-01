@@ -82,7 +82,7 @@ public final class PlayerDataFetcher {
     /**
      * Gets specifically only the Player's uuid by his name from the database.
      * This whole operation is run async, and the result is saved
-     * in the callback. If no result is found, int "0" is returned
+     * in the callback. If no result is found, null is returned
      *
      * @param callback Callback where the result will be saved
      * @implNote Can't fetch anything other that Player's UUID!

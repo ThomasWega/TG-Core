@@ -29,7 +29,7 @@ public abstract class TrustCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
         // Check for @AllowConsole annotation
         boolean consoleAllowed = false;
@@ -55,7 +55,7 @@ public abstract class TrustCommand implements CommandExecutor {
             return true;
         }
 
-        execute(sender, label, args);
+        execute(sender, command, label, args);
         return true;
 
     }
@@ -68,7 +68,7 @@ public abstract class TrustCommand implements CommandExecutor {
      * @param label  Alias of the command used
      * @param args   What arguments the command had
      */
-    public abstract void execute(@NotNull CommandSender sender, @NotNull String label, String[] args);
+    public abstract void execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args);
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)

@@ -19,11 +19,11 @@ public final class PlayerHandler implements Listener {
         player.displayName(Component.text(player.getName()).color(
                 ChatConfig.NAME_COLOR.getColor()));
 
-        TablistTeams.addToTeam(event.getPlayer());
+        TablistTeams.addPlayer(event.getPlayer());
     }
 
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent event) {
-        TablistTeams.removeFromTeam(event.getPlayer());
+        TablistTeams.removePlayer(event.getPlayer());
     }
 }

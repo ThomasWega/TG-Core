@@ -1,0 +1,7 @@
+proxy:
+  enable: false
+  user: guest
+  password: guest
+  ip: 127.0.0.1
+  port: 5672
+  queue-name: proxy

@@ -42,7 +42,6 @@ public final class PlayerDataCache {
         core.getServer().getScheduler().runTaskAsynchronously(core, () -> {
             try (Jedis jedis = pool.getResource()) {
                 String column = dataType.getColumnName();
-                System.out.println();
                 jedis.hset(uuid.toString(), column, value);
             }
         });

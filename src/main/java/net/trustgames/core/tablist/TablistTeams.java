@@ -3,11 +3,16 @@ package net.trustgames.core.tablist;
 import jline.internal.Nullable;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.event.EventBus;
+import net.luckperms.api.event.group.GroupCreateEvent;
+import net.luckperms.api.event.user.UserDataRecalculateEvent;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.node.Node;
 import net.trustgames.core.managers.LuckPermsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import static net.trustgames.core.Core.LOGGER;
 
@@ -24,16 +28,26 @@ import static net.trustgames.core.Core.LOGGER;
  */
 public final class TablistTeams {
 
+    private final Plugin plugin;
+
     static final HashMap<Group, Integer> groupOrder = new HashMap<>();
     @Getter
     private static final Scoreboard tablist = Bukkit.getScoreboardManager().getNewScoreboard();
+
+    public TablistTeams(Plugin plugin) {
+        this.plugin = plugin;
+        create();
+        EventBus eventBus = LuckPermsProvider.get().getEventBus();
+        eventBus.subscribe(plugin, UserDataRecalculateEvent.class, this::onUserDataRecalculate);
+        eventBus.subscribe(plugin, GroupCreateEvent.class, this::onGroupCreation);
+    }
 
     /**
      * Create all the teams by getting all groups from LuckPerms and putting each group in map
      * with its corresponding weight. Then register new team with the first parameter weight, and second
      * parameter the name of the group. Example: "20vip"
      */
-    public static void createTeams() {
+    private static void create() {
         int i = 0;
 
         HashMap<Group, Integer> groupWeight = new HashMap<>();
@@ -44,10 +58,7 @@ public final class TablistTeams {
                 groupWeight.put(group, group.getWeight().getAsInt());
             } else {
                 LOGGER.severe("LuckPerms group " + group.getName() + " doesn't have any weight! Setting the weight to 1...");
-
-                Objects.requireNonNull(LuckPermsManager.getGroupManager().getGroup(group.getName()),
-                                "Group " + group.getName() + " wasn't found when setting a missing weight")
-                        .data().add(Node.builder("weight.1").build());
+                group.data().add(Node.builder("weight.1").build());
 
                 LuckPermsManager.getGroupManager().saveGroup(group);
                 groupWeight.put(group, group.getWeight().getAsInt());
@@ -66,10 +77,13 @@ public final class TablistTeams {
 
             if (group == null) return;
 
-            Team team = tablist.registerNewTeam(i + "" + group.getName());
-            Component prefix = LuckPermsManager.getGroupPrefix(group);
-            if (!group.getName().equals("default"))
-                team.prefix(prefix.append(Component.text(" ")));
+            String teamName = i + group.getName();
+            if (tablist.getTeam(teamName) == null){
+                Team team = tablist.registerNewTeam(i + "" + group.getName());
+                Component prefix = LuckPermsManager.getGroupPrefix(group);
+                if (!group.getName().equals("default"))
+                    team.prefix(prefix.append(Component.text(" ")));
+            }
             i++;
         }
     }
@@ -80,7 +94,7 @@ public final class TablistTeams {
      *
      * @param player Player to add to the scoreboard team
      */
-    public static void addToTeam(@NotNull Player player) {
+    public static void addPlayer(@NotNull Player player) {
         String group = LuckPermsManager.getUser(player).getPrimaryGroup();
         Group playerGroup = LuckPermsManager.getGroupManager().getGroup(group);
         if (playerGroup == null) return;
@@ -103,10 +117,35 @@ public final class TablistTeams {
     /**
      * @param player Player to remove from the scoreboard team
      */
-    public static void removeFromTeam(@Nullable Player player) {
+    public static void removePlayer(@Nullable Player player) {
         if (player == null) return;
         Team team = tablist.getPlayerTeam(player);
         if (team != null)
             team.removePlayer(player);
+    }
+
+    /**
+     * On change of data of the player in luckperms. This is to make sure that if
+     * his group changes, the scoreboard will update his team as well.
+     */
+    private void onUserDataRecalculate(UserDataRecalculateEvent event) {
+        plugin.getServer().getScheduler().runTask(plugin, () -> {
+            Player player = Bukkit.getPlayer(event.getUser().getUniqueId());
+            if (player == null) return;
+
+            TablistTeams.addPlayer(player);
+        });
+    }
+
+    /**
+     * If a new group is created, make sure to recreate all the teams
+     * and reassign players
+     */
+    private void onGroupCreation(GroupCreateEvent event){
+        create();
+
+        for (Player player : Bukkit.getOnlinePlayers()){
+            addPlayer(player);
+        }
     }
 }

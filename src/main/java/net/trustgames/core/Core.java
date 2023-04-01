@@ -8,9 +8,9 @@ import net.trustgames.core.chat.ChatLimiter;
 import net.trustgames.core.chat.commands.TextCommands;
 import net.trustgames.core.chat.commands.TextCommandsConfig;
 import net.trustgames.core.managers.CommandManager;
-import net.trustgames.core.managers.CooldownManager;
 import net.trustgames.core.managers.FileManager;
-import net.trustgames.core.managers.LuckPermsManager;
+import net.trustgames.core.managers.gui.GUIListener;
+import net.trustgames.core.managers.gui.GUIManager;
 import net.trustgames.core.player.PlayerHandler;
 import net.trustgames.core.player.activity.PlayerActivityDB;
 import net.trustgames.core.player.activity.PlayerActivityHandler;
@@ -52,15 +52,23 @@ public final class Core extends JavaPlugin {
     private HikariManager hikariManager;
     @Getter
     private RabbitManager rabbitManager;
+    @Getter
+    private final GUIManager guiManager = new GUIManager();
 
     @Override
     public void onEnable() {
+        // create a data folder
+        if (getDataFolder().mkdirs()) {
+            getLogger().warning("Created main plugin folder");
+        }
+
+        createConfigs();
+
         initializeRabbit();
         initializeHikari();
         new AnnounceHandler(this);
-        new LuckPermsManager(this);
         new CoreGamerulesHandler();
-        TablistTeams.createTeams();
+        new TablistTeams(this);
 
         /* ADD
         - chat system - add level
@@ -89,32 +97,30 @@ public final class Core extends JavaPlugin {
         - disable pvp on lobbies
          */
 
+        // TODO use aikar acf
+
+        // FIXME just improve npc overall
+        // TODO NPC action - command prints the command in chat
+        // TODO NPC protocollib
+
         // TODO register commands without plugin.yml -- can set aliases
         // TODO test skin cache (maybe move to redis?)
         // TODO HOLO clickable
-        // TODO NPC action - command prints the command in chat
-        // TODO NPC protocollib
         // TODO improve player activity (add filters and /activity-ip command)
         // TODO TrustCommand add arguments
         // TODO add tab completion for player-data command
         // TODO activity add ability to check by uuid
-        // ADD?: make luckperms async
-        // TODO menu/gui/pages manager
-        // TODO edit ChatLimiter
-        // TODO make CooldownManager per instance!
+        // TODO add pagination to GuiManager -- migrate all menus
         // TODO check if I should rather throw from method somewhere rather than catch and throw
-        // TODO add the player to database on join
-        // TODO add config for rabbitmq
+        // TODO redis disable when off
 
-        // FIXME move PlayerDataHandler to proxy
+        // TEST rabbitmq disable (data command also!)
+        // TEST add config for rabbitmq
+
         // FIXME QuitPacket still error -- even when /stop
 
-        // create a data folder
-        if (getDataFolder().mkdirs()) {
-            getLogger().warning("Created main plugin folder");
-        }
-
-        createConfigs();
+        // ADD?: make luckperms async
+        // ADD?: make CooldownManager per instance!
 
         registerEvents();
         registerCommands();
@@ -133,9 +139,9 @@ public final class Core extends JavaPlugin {
     private void registerEvents() {
         PluginManager pluginManager = getServer().getPluginManager();
 
+        pluginManager.registerEvents(new GUIListener(guiManager), this);
         pluginManager.registerEvents(new PlayerActivityHandler(this), this);
         pluginManager.registerEvents(new CommandManager(), this);
-        pluginManager.registerEvents(new CooldownManager(), this);
         pluginManager.registerEvents(new PlayerHandler(), this);
         pluginManager.registerEvents(new ChatLimiter(), this);
         pluginManager.registerEvents(new ChatDecoration(), this);
@@ -163,11 +169,10 @@ public final class Core extends JavaPlugin {
     private void createConfigs() {
         File[] configs = new File[]{
                 new File(getDataFolder(), "mariadb.yml"),
+                new File(getDataFolder(), "rabbitmq.yml")
         };
 
-        for (File file : configs) {
-            FileManager.createFile(this, file);
-        }
+        FileManager.createFile(this, configs);
     }
 
     private void initializeHikari(){
@@ -176,7 +181,7 @@ public final class Core extends JavaPlugin {
                 Objects.requireNonNull(mariaConfig.getString("mariadb.user")),
                 Objects.requireNonNull(mariaConfig.getString("mariadb.password")),
                 Objects.requireNonNull(mariaConfig.getString("mariadb.ip")),
-                Objects.requireNonNull(mariaConfig.getString("mariadb.port")),
+                String.valueOf(mariaConfig.getInt("mariadb.port")),
                 Objects.requireNonNull(mariaConfig.getString("mariadb.database")),
                 mariaConfig.getInt("hikaricp.pool-size"),
                 !mariaConfig.getBoolean("mariadb.enable")
@@ -189,13 +194,14 @@ public final class Core extends JavaPlugin {
     }
 
     private void initializeRabbit(){
+        YamlConfiguration rabbitConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "rabbitmq.yml"));
         rabbitManager = new RabbitManager(
-                "guest",
-                "guest",
-                "localhost",
-                5672,
-                "proxy",
-                false
+                Objects.requireNonNull(rabbitConfig.getString("proxy.user")),
+                Objects.requireNonNull(rabbitConfig.getString("proxy.password")),
+                Objects.requireNonNull(rabbitConfig.getString("proxy.ip")),
+                rabbitConfig.getInt("proxy.port"),
+                Objects.requireNonNull(rabbitConfig.getString("proxy.queue-name")),
+                !rabbitConfig.getBoolean("proxy.enable")
         );
     }
 }

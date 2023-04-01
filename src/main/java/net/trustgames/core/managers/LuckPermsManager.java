@@ -3,14 +3,10 @@ package net.trustgames.core.managers;
 import net.kyori.adventure.text.Component;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
-import net.luckperms.api.event.user.UserDataRecalculateEvent;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.group.GroupManager;
 import net.luckperms.api.model.user.User;
-import net.trustgames.core.Core;
-import net.trustgames.core.tablist.TablistTeams;
 import net.trustgames.core.utils.ColorUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,15 +19,6 @@ import java.util.Set;
  * Handles the various LuckPerms checks and events
  */
 public final class LuckPermsManager {
-
-    private final Core core;
-
-    public LuckPermsManager(Core core) {
-        this.core = core;
-        // register events
-        LuckPermsProvider.get().getEventBus().subscribe(core,
-                UserDataRecalculateEvent.class, this::onUserDataRecalculate);
-    }
 
     /**
      * @param player What player to check on
@@ -73,8 +60,7 @@ public final class LuckPermsManager {
      * @return LuckPerms GroupManager
      */
     public static GroupManager getGroupManager() {
-        LuckPerms luckPerms = LuckPermsProvider.get();
-        return luckPerms.getGroupManager();
+        return LuckPermsProvider.get().getGroupManager();
     }
 
     /**
@@ -110,18 +96,5 @@ public final class LuckPermsManager {
     public static @NotNull User getUser(@NotNull Player player) {
         LuckPerms luckPerms = LuckPermsProvider.get();
         return luckPerms.getPlayerAdapter(Player.class).getUser(player);
-    }
-
-    /**
-     * @param event Every data recalculation of the user
-     */
-    private void onUserDataRecalculate(UserDataRecalculateEvent event) {
-        core.getServer().getScheduler().runTask(core, () -> {
-            Player player = Bukkit.getPlayer(event.getUser().getUniqueId());
-            if (player == null) return;
-
-            // add player to player-list team to sort priority
-            TablistTeams.addToTeam(player);
-        });
     }
 }

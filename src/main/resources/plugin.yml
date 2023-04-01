@@ -44,5 +44,7 @@ commands:
       - gems
       - rubies
 
+  test:
+    description: BLABLA
 
 

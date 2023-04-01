@@ -13,18 +13,20 @@ import static net.trustgames.core.Core.LOGGER;
 public final class FileManager {
 
     /**
-     * creates a specified file (config) and its path
+     * creates a specified files and its paths
      *
-     * @param file   The file to create
+     * @param files   One or more files to create
      * @param plugin Instance of the plugin to get the path
      */
-    public static void createFile(@NotNull Plugin plugin, @NotNull File file) {
-        if (!file.exists()) {
-            LOGGER.warning(file.getName() + " not found, creating...");
-            if (file.getParentFile().mkdirs()) {
-                LOGGER.info("Created directory paths for " + file.getName());
+    public static void createFile(@NotNull Plugin plugin, @NotNull File... files) {
+        for (File file : files) {
+            if (!file.exists()) {
+                LOGGER.warning(file.getName() + " not found, creating...");
+                if (file.getParentFile().mkdirs()) {
+                    LOGGER.info("Created directory paths for " + file.getName());
+                }
+                plugin.saveResource(file.getName(), false);
             }
-            plugin.saveResource(file.getName(), false);
         }
     }
 }

@@ -18,6 +18,7 @@ import net.trustgames.database.HikariManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -72,7 +73,7 @@ public final class ActivityCommand extends TrustCommand implements Listener {
     }
 
     @Override
-    public void execute(@NotNull CommandSender sender, @NotNull String label, String[] args) {
+    public void execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
 
         Player player = ((Player) sender);
 
