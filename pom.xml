@@ -13,7 +13,6 @@
 
     <description>Core plugin for TrustGames.net</description>
     <properties>
-        <tg.database>/Users/weglarz/Documents/IdeaProjects/TG-DATABASE/target/database-0.1-SNAPSHOT.jar</tg.database>
         <java.version>17</java.version>
         <minecraft.version>1.19.2-R0.1-SNAPSHOT</minecraft.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -49,6 +48,9 @@
                                     <resources>
                                         <resource>MANIFEST.MF</resource>
                                         <resource>META-INF/LICENSE.txt</resource>
+                                        <resource>META-INF/LICENSE</resource>
+                                        <resource>META-INF/AL2.0</resource>
+                                        <resource>META-INF/LGPL2.1</resource>
                                     </resources>
                                 </transformer>
                             </transformers>
@@ -166,20 +168,14 @@
         </dependency>
         <dependency>
             <groupId>com.github.ThomasWega</groupId>
-            <artifactId>TG-DATABASE</artifactId>
-            <version>9312ce9</version>
+            <artifactId>TG-Toolkit</artifactId>
+            <version>5e16f735</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.26</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.rabbitmq</groupId>
-            <artifactId>amqp-client</artifactId>
-            <version>5.17.0</version>
+            <groupId>cloud.commandframework</groupId>
+            <artifactId>cloud-paper</artifactId>
+            <version>1.8.3</version>
         </dependency>
         <dependency>
             <groupId>net.luckperms</groupId>
@@ -198,13 +194,6 @@
             <artifactId>ProtocolLib</artifactId>
             <version>4.8.0</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-            <version>4.3.1</version>
-            <type>jar</type>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

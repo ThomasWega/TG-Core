@@ -1,7 +1,10 @@
 package net.trustgames.core.player.activity;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.cache.UUIDCache;
+import net.trustgames.toolkit.Toolkit;
+import net.trustgames.toolkit.cache.UUIDCache;
+import net.trustgames.toolkit.database.player.activity.PlayerActivity;
+import net.trustgames.toolkit.database.player.activity.PlayerActivityFetcher;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,12 +21,12 @@ import java.sql.Timestamp;
  */
 public final class PlayerActivityHandler implements Listener {
 
-    private final Core core;
+    private final Toolkit toolkit;
     private final PlayerActivityFetcher activityFetcher;
 
     public PlayerActivityHandler(Core core) {
-        this.core = core;
-        this.activityFetcher = new PlayerActivityFetcher(core);
+        this.toolkit = core.getToolkit();
+        this.activityFetcher = new PlayerActivityFetcher(toolkit.getHikariManager());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -31,7 +34,7 @@ public final class PlayerActivityHandler implements Listener {
         Player player = event.getPlayer();
         InetSocketAddress playerIp = player.getAddress();
         String playerIpString = (playerIp == null) ? null : playerIp.getHostString();
-        UUIDCache uuidCache = new UUIDCache(core, player.getName());
+        UUIDCache uuidCache = new UUIDCache(toolkit, player.getName());
         uuidCache.get(uuid -> {
             if (uuid == null) return;
             activityFetcher.insertNew(new PlayerActivity.Activity(
@@ -49,7 +52,7 @@ public final class PlayerActivityHandler implements Listener {
         Player player = event.getPlayer();
         InetSocketAddress playerIp = player.getAddress();
         String playerIpString = (playerIp == null) ? "null" : playerIp.getHostString();
-        UUIDCache uuidCache = new UUIDCache(core, player.getName());
+        UUIDCache uuidCache = new UUIDCache(toolkit, player.getName());
         uuidCache.get(uuid -> {
             if (uuid == null) return;
             activityFetcher.insertNew(new PlayerActivity.Activity(

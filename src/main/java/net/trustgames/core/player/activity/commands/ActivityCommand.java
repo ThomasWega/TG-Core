@@ -4,17 +4,18 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.trustgames.core.Core;
-import net.trustgames.core.cache.UUIDCache;
 import net.trustgames.core.command.TrustCommand;
-import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CorePermissionConfig;
 import net.trustgames.core.managers.InventoryManager;
 import net.trustgames.core.managers.ItemManager;
-import net.trustgames.core.player.activity.PlayerActivity;
-import net.trustgames.core.player.activity.PlayerActivityFetcher;
 import net.trustgames.core.player.activity.config.PlayerActivityType;
 import net.trustgames.core.utils.ColorUtils;
-import net.trustgames.database.HikariManager;
+import net.trustgames.toolkit.Toolkit;
+import net.trustgames.toolkit.cache.UUIDCache;
+import net.trustgames.toolkit.config.CommandConfig;
+import net.trustgames.toolkit.database.player.activity.PlayerActivity;
+import net.trustgames.toolkit.database.player.activity.PlayerActivityFetcher;
+import net.trustgames.toolkit.managers.HikariManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -48,6 +49,10 @@ import java.util.Objects;
  */
 public final class ActivityCommand extends TrustCommand implements Listener {
 
+    private final Core core;
+    private final Toolkit toolkit;
+    private final HikariManager hikariManager;
+
     /**
      * Stores all ItemStack with the data for each row
      */
@@ -56,8 +61,6 @@ public final class ActivityCommand extends TrustCommand implements Listener {
 
     private final Component nextPageName = ColorUtils.color("&eNext page");
     private final Component prevPageName = ColorUtils.color("&ePrevious page");
-    private final Core core;
-    private final HikariManager hikariManager;
     /**
      * Used for switching pages.
      * +1 everytime page is switched to next page.
@@ -69,7 +72,8 @@ public final class ActivityCommand extends TrustCommand implements Listener {
     public ActivityCommand(Core core) {
         super(CorePermissionConfig.STAFF.permission);
         this.core = core;
-        this.hikariManager = core.getHikariManager();
+        this.toolkit = core.getToolkit();
+        this.hikariManager = toolkit.getHikariManager();
     }
 
     @Override
@@ -77,7 +81,7 @@ public final class ActivityCommand extends TrustCommand implements Listener {
 
         Player player = ((Player) sender);
 
-        if (hikariManager.isDisabled()) {
+        if (hikariManager == null) {
             player.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
             return;
         }
@@ -121,13 +125,13 @@ public final class ActivityCommand extends TrustCommand implements Listener {
      * @param targetName Name of the targeted player
      */
     private void createRecords(@NotNull String targetName, Runnable callback) {
-        UUIDCache uuidCache = new UUIDCache(core, targetName);
+        UUIDCache uuidCache = new UUIDCache(toolkit, targetName);
         uuidCache.get(uuid -> {
             if (uuid == null) {
                 callback.run();
                 return;
             }
-            PlayerActivityFetcher activityFetcher = new PlayerActivityFetcher(core);
+            PlayerActivityFetcher activityFetcher = new PlayerActivityFetcher(hikariManager);
             activityFetcher.fetchByUUID(uuid, playerActivity -> {
                 if (playerActivity == null) {
                     callback.run();

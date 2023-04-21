@@ -4,8 +4,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.trustgames.core.config.CorePermissionConfig;
+import net.trustgames.core.managers.LuckPermsManager;
 import net.trustgames.core.utils.ColorUtils;
-import net.trustgames.core.utils.MiniMessageUtils;
+import net.trustgames.toolkit.utils.MiniMessageUtils;
 import org.bukkit.entity.Player;
 
 public enum ChatConfig {
@@ -38,7 +39,8 @@ public enum ChatConfig {
      * @return New formatted Component message with replaced tags
      */
     public final Component formatMessage(Player player) {
-        return MiniMessageUtils.player(player).deserialize(value);
+        return MiniMessageUtils.withPrefix(player.getName(), LuckPermsManager.getPlayerPrefix(player))
+                .deserialize(value);
     }
 
     /**

@@ -26,25 +26,4 @@ commands:
       - buy
       - shop
 
-  activity:
-    description: Get the player's activity by his name or UUID from the database
-    permission: core.staff
-  activity-id:
-    description: Get the activity by it's ID from the database
-    permission: core.staff
-
-  kills:
-    description: Get personal or targets coins
-    aliases:
-      - deaths
-      - games
-      - playtime
-      - xp
-      - level
-      - gems
-      - rubies
-
-  test:
-    description: BLABLA
-
 

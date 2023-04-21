@@ -1,7 +1,7 @@
 package net.trustgames.core.managers;
 
-import net.trustgames.core.config.CommandConfig;
-import net.trustgames.core.config.CooldownConfig;
+import net.trustgames.core.config.CooldownValueConfig;
+import net.trustgames.toolkit.config.CooldownConfig;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,8 +17,13 @@ import java.util.HashMap;
  */
 public final class CooldownManager implements Listener {
 
-    private static final HashMap<String, Long> commandCooldownTime = new HashMap<>();
-    private static final HashMap<String, Long> cooldownMessageTime = new HashMap<>();
+    private final HashMap<String, Long> commandCooldownTime = new HashMap<>();
+    private final HashMap<String, Long> cooldownMessageTime = new HashMap<>();
+    private final double cooldownTime;
+
+    public CooldownManager(double cooldownTime) {
+        this.cooldownTime = cooldownTime;
+    }
 
     /**
      * Ensures, that the action is not being spammed too much.
@@ -28,10 +33,9 @@ public final class CooldownManager implements Listener {
      * It also ensures that the "don't spam" message is not being sent too often to the player.
      *
      * @param player       Player to put a cooldown on
-     * @param cooldownTime Cooldown time in seconds
      * @return True if the player is on cooldown
      */
-    public static boolean handle(@NotNull Player player, double cooldownTime) {
+    public boolean handle(@NotNull Player player) {
         String playerName = player.getName();
         /*
          if the player is not in the cooldown yet, or if his cooldown expired,
@@ -48,10 +52,10 @@ public final class CooldownManager implements Listener {
 
     /**
      * @param playerName   Name of the Player to check cooldown on
-     * @param cooldownTime Cooldown time in seconds
+     * @param cooldownTime CooldownManager time in seconds
      * @return if player is on cooldown
      */
-    private static boolean isOnCooldown(@NotNull String playerName, double cooldownTime) {
+    private boolean isOnCooldown(@NotNull String playerName, double cooldownTime) {
         return !(cooldownTime <= (System.currentTimeMillis() - commandCooldownTime.get(playerName)) / 1000d);
     }
 
@@ -61,13 +65,13 @@ public final class CooldownManager implements Listener {
      * @param playerName Name of the Player which the cooldown messages are being sent to
      * @return if the cooldown message is too spammy
      */
-    private static boolean isSpam(@NotNull String playerName) {
+    private boolean isSpam(@NotNull String playerName) {
         /*
          if he has any last wait message, get the time and make sure the
          current time - the last time of wait message is larger than the min value in config
         */
         if (cooldownMessageTime.containsKey(playerName)) {
-            return !(CooldownConfig.WARN_MESSAGES_LIMIT_SEC.value
+            return !(CooldownValueConfig.WARN_MESSAGES_LIMIT_SEC.value
                     <= (System.currentTimeMillis() - cooldownMessageTime.get(playerName)) / 1000d);
         } else {
             cooldownMessageTime.put(playerName, System.currentTimeMillis());
@@ -81,11 +85,11 @@ public final class CooldownManager implements Listener {
      *
      * @param player Player to send the messages to
      */
-    private static void sendMessage(@NotNull Player player) {
+    private void sendMessage(@NotNull Player player) {
         String playerName = player.getName();
         if (isSpam(playerName)) return;
 
-        player.sendMessage(CommandConfig.COMMAND_SPAM.getText());
+        player.sendMessage(CooldownConfig.SPAM.getText());
 
         cooldownMessageTime.put(playerName, System.currentTimeMillis());
     }

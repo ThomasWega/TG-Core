@@ -269,6 +269,7 @@ public final class NPCManager {
      * @param config Config where the NPCs are specified
      */
     public void interact(List<@NotNull ServerPlayer> npcs, @NotNull YamlConfiguration config) {
+        CooldownManager cooldownManager = new CooldownManager(0.25d);
         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
 
         manager.addPacketListener(new PacketAdapter(core, PacketType.Play.Client.USE_ENTITY) {
@@ -286,8 +287,9 @@ public final class NPCManager {
                                 config.getConfigurationSection("npcs")).getKeys(false).contains(npc.displayName);
                         if (!isPresent) return;
 
-                        long cooldown = config.getLong("npcs." + npc.displayName + ".action.cooldown");
-                        if (CooldownManager.handle(player, cooldown)) return;
+                        // TODO use this cooldown
+                     //   long cooldown = config.getLong("npcs." + npc.displayName + ".action.cooldown");
+                        if (cooldownManager.handle(player)) return;
 
                         String action = config.getString("npcs." + npc.displayName + ".action.type");
                         List<String> value = config.getStringList("npcs." + npc.displayName + ".action.value");

@@ -1,6 +1,6 @@
 package net.trustgames.core.config;
 
-public enum CooldownConfig {
+public enum CooldownValueConfig {
     SMALL(1d),
     MEDIUM(5d),
     LARGE(15d),
@@ -8,7 +8,7 @@ public enum CooldownConfig {
 
     public final double value;
 
-    CooldownConfig(double value) {
+    CooldownValueConfig(double value) {
         this.value = value;
     }
 }

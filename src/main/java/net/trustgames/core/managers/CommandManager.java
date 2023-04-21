@@ -1,6 +1,6 @@
 package net.trustgames.core.managers;
 
-import net.trustgames.core.config.CommandConfig;
+import net.trustgames.toolkit.config.CommandConfig;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

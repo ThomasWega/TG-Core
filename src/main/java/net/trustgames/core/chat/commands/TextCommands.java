@@ -1,6 +1,6 @@
 package net.trustgames.core.chat.commands;
 
-import net.trustgames.core.config.CommandConfig;
+import net.trustgames.toolkit.config.CommandConfig;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

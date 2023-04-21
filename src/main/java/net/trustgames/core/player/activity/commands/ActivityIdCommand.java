@@ -4,13 +4,14 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.trustgames.core.Core;
-import net.trustgames.core.cache.PlayerDataCache;
 import net.trustgames.core.command.TrustCommand;
-import net.trustgames.core.config.CommandConfig;
 import net.trustgames.core.config.CorePermissionConfig;
-import net.trustgames.core.player.activity.PlayerActivityFetcher;
-import net.trustgames.core.player.data.config.PlayerDataType;
-import net.trustgames.database.HikariManager;
+import net.trustgames.toolkit.Toolkit;
+import net.trustgames.toolkit.cache.PlayerDataCache;
+import net.trustgames.toolkit.config.CommandConfig;
+import net.trustgames.toolkit.database.player.activity.PlayerActivityFetcher;
+import net.trustgames.toolkit.database.player.data.config.PlayerDataType;
+import net.trustgames.toolkit.managers.HikariManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -30,20 +31,20 @@ import java.util.UUID;
  */
 public final class ActivityIdCommand extends TrustCommand {
 
-    private final Core core;
+    private final Toolkit toolkit;
     private final HikariManager hikariManager;
 
 
     public ActivityIdCommand(Core core) {
         super(CorePermissionConfig.STAFF.permission);
-        this.core = core;
-        this.hikariManager = core.getHikariManager();
+        this.toolkit = core.getToolkit();
+        this.hikariManager = toolkit.getHikariManager();
     }
 
     @Override
     @AllowConsole
     public void execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-        if (hikariManager.isDisabled()) {
+        if (hikariManager == null) {
             sender.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
             return;
         }
@@ -75,7 +76,7 @@ public final class ActivityIdCommand extends TrustCommand {
      * @param id     Activity id
      */
     private void printData(@NotNull CommandSender sender, long id) {
-        PlayerActivityFetcher activityFetcher = new PlayerActivityFetcher(core);
+        PlayerActivityFetcher activityFetcher = new PlayerActivityFetcher(hikariManager);
         activityFetcher.fetchByID(id, activity -> {
             if (activity == null) {
                 sender.sendMessage(CommandConfig.COMMAND_NO_ID_DATA.addComponent(Component.text(id)));
@@ -92,7 +93,7 @@ public final class ActivityIdCommand extends TrustCommand {
             if (ip == null)
                 ip = "ERROR";
 
-            PlayerDataCache playerDataCache = new PlayerDataCache(core, uuid, PlayerDataType.NAME);
+            PlayerDataCache playerDataCache = new PlayerDataCache(toolkit, uuid, PlayerDataType.NAME);
             String finalIp = ip;
             playerDataCache.get(name -> {
                 if (name == null) {
