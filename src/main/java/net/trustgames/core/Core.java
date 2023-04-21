@@ -7,8 +7,6 @@ import lombok.Getter;
 import net.trustgames.core.announcer.AnnounceHandler;
 import net.trustgames.core.chat.ChatDecoration;
 import net.trustgames.core.chat.ChatLimiter;
-import net.trustgames.core.chat.commands.TextCommands;
-import net.trustgames.core.chat.commands.TextCommandsConfig;
 import net.trustgames.core.managers.CommandManager;
 import net.trustgames.core.managers.FileManager;
 import net.trustgames.core.managers.gui.GUIListener;
@@ -16,7 +14,6 @@ import net.trustgames.core.managers.gui.GUIManager;
 import net.trustgames.core.player.PlayerHandler;
 import net.trustgames.core.player.activity.PlayerActivityHandler;
 import net.trustgames.core.player.activity.commands.ActivityCommand;
-import net.trustgames.core.player.activity.commands.ActivityIdCommand;
 import net.trustgames.core.protection.CoreGamerulesHandler;
 import net.trustgames.core.tablist.TablistHandler;
 import net.trustgames.core.tablist.TablistTeams;
@@ -25,16 +22,13 @@ import net.trustgames.toolkit.database.player.activity.PlayerActivityDB;
 import net.trustgames.toolkit.database.player.data.PlayerDataDB;
 import net.trustgames.toolkit.managers.HikariManager;
 import net.trustgames.toolkit.managers.rabbit.RabbitManager;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.JedisPool;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -113,7 +107,6 @@ public final class Core extends JavaPlugin {
         // TODO add pagination to GuiManager -- migrate all menus
         // TODO DO FOR ALL OTHER PLUGINS AS WELL -- better catching of exceptions (log it, except throwing runtime exception)
         // TODO DO FOR ALL OTHER PLUGINS AS WELL -- stop the server on database off
-        // TODO DO FOR ALL OTHER PLUGINS AS WELL -- use ConcurrentHashMap for multi-thread purposes
         // TODO move ServerConfig to Toolkit
         // TODO custom messages for cloud
         // TODO finish moving activity commands to proxy
@@ -163,21 +156,6 @@ public final class Core extends JavaPlugin {
     }
 
     private void registerCommands() {
-        // List of command to register
-        HashMap<PluginCommand, CommandExecutor> cmdList = new HashMap<>();
-        cmdList.put(getCommand("activity"), new ActivityCommand(this));
-        cmdList.put(getCommand("activity-id"), new ActivityIdCommand(this));
-       // cmdList.put(getCommand("kills"), new PlayerDataCommand(this));
-
-        // Messages Commands
-        for (TextCommandsConfig msgCmd : TextCommandsConfig.values()) {
-            cmdList.put(getCommand(msgCmd.name().toLowerCase()), new TextCommands());
-        }
-
-        for (PluginCommand cmd : cmdList.keySet()) {
-            cmd.setExecutor(cmdList.get(cmd));
-        }
-
         try {
             commandManager = PaperCommandManager.createNative(
                     this,

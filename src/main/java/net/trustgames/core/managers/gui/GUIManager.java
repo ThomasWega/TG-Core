@@ -7,11 +7,10 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class GUIManager {
 
-    private final Map<Inventory, InventoryHandler> activeInventories = new HashMap<>();
+    private final HashMap<Inventory, InventoryHandler> activeInventories = new HashMap<>();
 
     public void openInventory(InventoryGUI gui, Player player) {
         Inventory inv = gui.getInventory();

@@ -9,7 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Handles cooldowns for chat and commands messages.
@@ -17,8 +17,8 @@ import java.util.HashMap;
  */
 public final class CooldownManager implements Listener {
 
-    private final HashMap<String, Long> commandCooldownTime = new HashMap<>();
-    private final HashMap<String, Long> cooldownMessageTime = new HashMap<>();
+    private final ConcurrentHashMap<String, Long> commandCooldownTime = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Long> cooldownMessageTime = new ConcurrentHashMap<>();
     private final double cooldownTime;
 
     public CooldownManager(double cooldownTime) {
