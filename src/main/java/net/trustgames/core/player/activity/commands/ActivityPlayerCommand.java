@@ -1,11 +1,12 @@
 package net.trustgames.core.player.activity.commands;
 
+import cloud.commandframework.ArgumentDescription;
+import cloud.commandframework.arguments.CommandArgument;
+import cloud.commandframework.arguments.standard.StringArgument;
+import cloud.commandframework.paper.PaperCommandManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.trustgames.core.Core;
-import net.trustgames.core.command.TrustCommand;
-import net.trustgames.core.config.CorePermissionConfig;
 import net.trustgames.core.managers.InventoryManager;
 import net.trustgames.core.managers.ItemManager;
 import net.trustgames.core.player.activity.config.PlayerActivityType;
@@ -13,13 +14,13 @@ import net.trustgames.core.utils.ColorUtils;
 import net.trustgames.toolkit.Toolkit;
 import net.trustgames.toolkit.cache.UUIDCache;
 import net.trustgames.toolkit.config.CommandConfig;
+import net.trustgames.toolkit.config.PermissionConfig;
 import net.trustgames.toolkit.database.player.activity.PlayerActivity;
 import net.trustgames.toolkit.database.player.activity.PlayerActivityFetcher;
 import net.trustgames.toolkit.managers.HikariManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -47,11 +48,12 @@ import java.util.Objects;
  * are differentiated by different Materials. The player can click
  * the item and all the data will be printed in chat.
  */
-public final class ActivityCommand extends TrustCommand implements Listener {
+public final class ActivityPlayerCommand implements Listener {
 
     private final Core core;
     private final Toolkit toolkit;
     private final HikariManager hikariManager;
+    private final PaperCommandManager<CommandSender> commandManager;
 
     /**
      * Stores all ItemStack with the data for each row
@@ -69,52 +71,65 @@ public final class ActivityCommand extends TrustCommand implements Listener {
     private int pageCount = 0;
 
 
-    public ActivityCommand(Core core) {
-        super(CorePermissionConfig.STAFF.permission);
+    public ActivityPlayerCommand(Core core) {
         this.core = core;
         this.toolkit = core.getToolkit();
         this.hikariManager = toolkit.getHikariManager();
+        this.commandManager = core.getCommandManager();
+        register();
     }
 
-    @Override
-    public void execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+    public void register() {
 
-        Player player = ((Player) sender);
+        // COMMAND
+        cloud.commandframework.Command.Builder<CommandSender> activityCommand = commandManager.commandBuilder("activity",
+                ArgumentDescription.of("ADD")
+        );
 
-        if (hikariManager == null) {
-            player.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
-            return;
-        }
+        // TARGET argument
+        CommandArgument<CommandSender, String> targetArg = StringArgument.<CommandSender>builder("target")
+                .withSuggestionsProvider((context, s) -> Bukkit.getServer().getOnlinePlayers().stream()
+                        .map(Player::getName)
+                        .toList())
+                .asRequired()
+                .build();
 
-        if (args.length != 1) {
-            player.sendMessage(CommandConfig.COMMAND_INVALID_ARG.getText().append(
-                    Component.text(" Use /activity <Player/UUID>", NamedTextColor.DARK_GRAY)));
-            return;
-        }
+        commandManager.command(activityCommand
+                .senderType(Player.class)
+                .literal("player")
+                .permission(PermissionConfig.STAFF.permission)
+                .argument(targetArg)
+                .handler(context -> {
+                    Player player = ((Player) context.getSender());
+                    if (hikariManager == null) {
+                        player.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
+                        return;
+                    }
+                    String targetName = context.get(targetArg);
 
-        /*
+                    /*
         if the menus were previously opened, all the maps
         need to be cleared to avoid the items showing twice.
         The int needs to be reset so when the menu is opened a
         second time, the pages are reset to the first one
         */
-        records.clear();
-        inventoryList.clear();
-        pageCount = 0;
+                    records.clear();
+                    inventoryList.clear();
+                    pageCount = 0;
 
-        String target = args[0];
+                    createRecords(targetName, () -> {
+                        if (records.isEmpty()) {
+                            player.sendMessage(CommandConfig.COMMAND_NO_PLAYER_DATA.addComponent(Component.text(targetName)));
+                            return;
+                        }
 
-        createRecords(target, () -> {
-            if (records.isEmpty()) {
-                player.sendMessage(CommandConfig.COMMAND_NO_PLAYER_DATA.addComponent(Component.text(target)));
-                return;
-            }
+                        createPages(player, targetName);
 
-            createPages(player, target);
-
-            // open the first inventory (first page) from the list on the main server thread
-            Bukkit.getScheduler().runTask(core, () -> player.openInventory(inventoryList.get(0)));
-        });
+                        // open the first inventory (first page) from the list on the main server thread
+                        Bukkit.getScheduler().runTask(core, () -> player.openInventory(inventoryList.get(0)));
+                    });
+                })
+        );
     }
 
     /**

@@ -6,13 +6,11 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
-import net.trustgames.core.chat.config.ChatConfig;
 import net.trustgames.core.managers.LuckPermsManager;
 import net.trustgames.core.utils.ColorUtils;
 import net.trustgames.core.utils.ComponentUtils;
+import net.trustgames.toolkit.config.chat.ChatConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -50,10 +48,9 @@ public final class ChatDecoration implements Listener {
             // if the player is not mentioned, send him the normal message without colored name
             if (!setMention(sender, p, message, prefix)) {
                 p.sendMessage(getMessage(sender, prefix, message));
-
-                logMessage(prefix, sender.getName(), message);
             }
         }
+        logMessage(prefix, sender.getName(), message);
         event.setCancelled(true);
     }
 
@@ -66,7 +63,7 @@ public final class ChatDecoration implements Listener {
      * @return Colored message if player has permission
      */
     private Component setColor(@NotNull Player player, @NotNull Component message) {
-        TextColor messageColor = ChatConfig.COLOR.getColor();
+        TextColor messageColor = ColorUtils.color(ChatConfig.CHAT_COLOR.value).color();
         message = player.hasPermission(ChatConfig.ALLOW_COLORS_PERM.value)
                 ? ColorUtils.color(message).colorIfAbsent(messageColor)
                 : Component.text(ColorUtils.stripColor(message)).color(messageColor);
@@ -89,33 +86,55 @@ public final class ChatDecoration implements Listener {
                                @NotNull Component message,
                                @NotNull Component prefix) {
         Set<Player> mentionedPlayers = new HashSet<>();
-
+        String loopName = loop.getName();
         message = setColor(sender, message);
 
         // remove the player name from the message
-        String desMsg = ComponentUtils.toString(message)
-                .replace(sender.displayName().toString(), "")
-                .replaceAll(ChatConfig.COLOR.value, "");
-        List<String> split = Arrays.stream(desMsg.split(" ")).toList();
+        String strMsg = ComponentUtils.toString(message);
+        List<String> split = Arrays.stream(strMsg.split(" ")).toList();
 
         // check if chat message contains player's name
-        if (split.contains(loop.getName())) {
-            mentionedPlayers.add(loop);
-        }
+        split.forEach(s -> {
+            String stripped = ColorUtils.stripColor(Component.text(s));
+            if (stripped.equalsIgnoreCase(loopName))
+                mentionedPlayers.add(loop);
+        });
 
         if (mentionedPlayers.contains(loop)) {
             List<Component> newMsg = new ArrayList<>();
 
-            TextColor nameColor = ChatConfig.MENTION_COLOR.getColor();
-            TextColor messageColor = ChatConfig.COLOR.getColor();
-            TextColor messageColorNew;
+            TextColor nameColor = ColorUtils.color(ChatConfig.MENTION_COLOR.value).color();
+            TextColor chatColor = ColorUtils.color(ChatConfig.CHAT_COLOR.value).color();
             // if the word equals player's name, color the name
+            TextColor lastColor = null;
+
             for (String s : split) {
-                if (s.equalsIgnoreCase(loop.getName())) {
-                    newMsg.add(Component.text(s).color(nameColor));
+                String stripped = ColorUtils.stripColor(Component.text(s));
+                if (stripped.contains(loopName)) {
+                    newMsg.add(Component.text(stripped).color(nameColor));
+                    /*
+                    loops through the last message all the way to the last one,
+                    until a color code is found. If one is found, it is used to set the
+                    same color after the colored mention name
+                     */
+                    for (int i = (newMsg.size() - 2); i >= 0; i--) {
+                        String idk = ComponentUtils.toString(newMsg.get(i));
+                        int index = idk.lastIndexOf("&");
+                        if (index != -1){
+                            lastColor = ColorUtils.color(idk.substring(index)).color();
+                        }
+                    }
                 } else {
-                    messageColorNew = (ColorUtils.color(s).color() != null) ? ColorUtils.color(s).color() : messageColor;
-                    newMsg.add(ColorUtils.color(s).colorIfAbsent(messageColorNew));
+                    TextColor currentColor = ColorUtils.color(s).color();
+                    // save if a color was used
+                    if (currentColor != null){
+                        lastColor = currentColor;
+                    }
+                    // if any color was used, color the following text as well
+                    if (lastColor != null) {
+                        s = "&" + lastColor.asHexString() + s;
+                    }
+                    newMsg.add(ColorUtils.color(s).colorIfAbsent(chatColor));
                 }
             }
 
@@ -124,9 +143,9 @@ public final class ChatDecoration implements Listener {
             // send different types of messages depending on if the player has permission to use color codes
             loop.sendMessage(getMessage(sender, prefix, msg));
 
-            logMessage(prefix, sender.getName(), msg);
-
-            loop.sendActionBar(ChatConfig.MENTION_ACTIONBAR.formatMessage(sender));
+            loop.sendActionBar(ChatConfig.MENTION_ACTIONBAR.formatMessage(
+                    sender.getName(), LuckPermsManager.getPlayerPrefix(sender))
+            );
             Audience.audience(loop).playSound(sound, Sound.Emitter.self());
             return true;
         }
@@ -162,10 +181,7 @@ public final class ChatDecoration implements Listener {
                                  @NotNull Component prefix,
                                  @NotNull Component message) {
         return Component.textOfChildren(prefix)
-                .append(Component.textOfChildren(
-                        player.displayName()
-                                .hoverEvent(HoverEvent.showText(Component.text("TO ADD...")))
-                                .clickEvent(ClickEvent.suggestCommand(player.getName()))))
+                .append(Component.textOfChildren(player.displayName()))
                 .append(Component.text(" ")
                         .append(message));
     }

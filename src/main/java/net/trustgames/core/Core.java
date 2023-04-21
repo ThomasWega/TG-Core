@@ -4,16 +4,15 @@ import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.destroystokyo.paper.utils.PaperPluginLogger;
 import lombok.Getter;
-import net.trustgames.core.announcer.AnnounceHandler;
 import net.trustgames.core.chat.ChatDecoration;
-import net.trustgames.core.chat.ChatLimiter;
 import net.trustgames.core.managers.CommandManager;
 import net.trustgames.core.managers.FileManager;
 import net.trustgames.core.managers.gui.GUIListener;
 import net.trustgames.core.managers.gui.GUIManager;
 import net.trustgames.core.player.PlayerHandler;
 import net.trustgames.core.player.activity.PlayerActivityHandler;
-import net.trustgames.core.player.activity.commands.ActivityCommand;
+import net.trustgames.core.player.activity.commands.ActivityIdCommand;
+import net.trustgames.core.player.activity.commands.ActivityPlayerCommand;
 import net.trustgames.core.protection.CoreGamerulesHandler;
 import net.trustgames.core.tablist.TablistHandler;
 import net.trustgames.core.tablist.TablistTeams;
@@ -64,7 +63,6 @@ public final class Core extends JavaPlugin {
         initializeHikari();
         initializeRedis();
         initializeRabbit();
-        new AnnounceHandler(this);
         new CoreGamerulesHandler();
         new TablistTeams(this);
 
@@ -84,42 +82,6 @@ public final class Core extends JavaPlugin {
         - autorestart (only if no one is online)
         - menu manager with pagination
         */
-
-        /* SIDE ADDITIONS
-        - hover on player name in chat, add info
-         */
-
-        /* CHANGE on server side
-        - disallow some default command (/?, /version, /plugins, etc.) - make permissions false
-        - change some default messages (unknown command, etc.) - change in server .yml files
-        - disable pvp on lobbies
-         */
-
-        // TODO UUID caching (check discord)
-
-        // FIXME just improve npc overall
-        // TODO NPC action - command prints the command in chat
-        // TODO NPC protocollib
-
-        // TODO add listeners for player data update (kills, deaths, ...)
-        // TODO test skin cache (maybe move to redis?)
-        // TODO HOLO clickable (maybe remake holos with protocollib?)
-        // TODO add pagination to GuiManager -- migrate all menus
-        // TODO DO FOR ALL OTHER PLUGINS AS WELL -- better catching of exceptions (log it, except throwing runtime exception)
-        // TODO DO FOR ALL OTHER PLUGINS AS WELL -- stop the server on database off
-        // TODO move ServerConfig to Toolkit
-        // TODO custom messages for cloud
-        // TODO finish moving activity commands to proxy
-        // TODO move TextCommands to proxy
-        // TODO move CooldownManager to Toolkit
-
-        // FIXME QuitPacket still error -- even when /stop
-        //  (maybe if an runtime errors in core occurs, lobby plugin doesnt have the driver?
-        //  Or maybe I also try to close it in lobby too?)
-
-        // TO-DO Apache Archive self-hosted repo
-
-        // ADD?: make luckperms async
 
         registerEvents();
         registerCommands();
@@ -150,9 +112,8 @@ public final class Core extends JavaPlugin {
         pluginManager.registerEvents(new CommandManager(), this);
         pluginManager.registerEvents(new PlayerHandler(), this);
         pluginManager.registerEvents(new TablistHandler(), this);
-        pluginManager.registerEvents(new ChatLimiter(), this);
         pluginManager.registerEvents(new ChatDecoration(), this);
-        pluginManager.registerEvents(new ActivityCommand(this), this);
+        pluginManager.registerEvents(new ActivityPlayerCommand(this), this);
     }
 
     private void registerCommands() {
@@ -164,6 +125,9 @@ public final class Core extends JavaPlugin {
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize Command Manager", e);
         }
+
+        new ActivityPlayerCommand(this);
+        new ActivityIdCommand(this);
     }
 
     private void createConfigs() {

@@ -28,5 +28,4 @@ public class GUIListener implements Listener {
     public void onClose(InventoryCloseEvent event) {
         this.guiManager.handleClose(event);
     }
-
 }

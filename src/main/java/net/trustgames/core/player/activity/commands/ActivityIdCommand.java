@@ -1,27 +1,29 @@
 package net.trustgames.core.player.activity.commands;
 
+import cloud.commandframework.ArgumentDescription;
+import cloud.commandframework.Command;
+import cloud.commandframework.arguments.CommandArgument;
+import cloud.commandframework.arguments.standard.LongArgument;
+import cloud.commandframework.paper.PaperCommandManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.trustgames.core.Core;
-import net.trustgames.core.command.TrustCommand;
-import net.trustgames.core.config.CorePermissionConfig;
+import net.trustgames.core.utils.ColorUtils;
 import net.trustgames.toolkit.Toolkit;
 import net.trustgames.toolkit.cache.PlayerDataCache;
 import net.trustgames.toolkit.config.CommandConfig;
+import net.trustgames.toolkit.config.PermissionConfig;
 import net.trustgames.toolkit.database.player.activity.PlayerActivityFetcher;
 import net.trustgames.toolkit.database.player.data.config.PlayerDataType;
 import net.trustgames.toolkit.managers.HikariManager;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Timestamp;
-import java.time.ZoneId;
-import java.time.format.TextStyle;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -29,43 +31,49 @@ import java.util.UUID;
  * than the player's name. It always prints just one result in the chat,
  * where player can click on each data, and it will be copied to his clipboard.
  */
-public final class ActivityIdCommand extends TrustCommand {
+public final class ActivityIdCommand {
 
+    private final PaperCommandManager<CommandSender> commandManager;
     private final Toolkit toolkit;
     private final HikariManager hikariManager;
 
 
     public ActivityIdCommand(Core core) {
-        super(CorePermissionConfig.STAFF.permission);
+        this.commandManager = core.getCommandManager();
         this.toolkit = core.getToolkit();
         this.hikariManager = toolkit.getHikariManager();
+        register();
     }
 
-    @Override
-    @AllowConsole
-    public void execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-        if (hikariManager == null) {
-            sender.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
-            return;
-        }
-        if (args.length != 1) {
-            sender.sendMessage(CommandConfig.COMMAND_INVALID_ARG.getText().append(
-                    Component.text(" Use /activity-id <ID>", NamedTextColor.DARK_GRAY)));
-            return;
-        }
 
-        // check if the value is a number
-        String stringId = args[0];
-        long id;
-        try {
-            id = Long.parseLong(stringId);
-        } catch (NumberFormatException e) {
-            sender.sendMessage(CommandConfig.COMMAND_INVALID_ID.addComponent(Component.text(stringId)));
-            return;
-        }
+    private void register() {
 
-        // print the data to the chat
-        printData(sender, id);
+        // COMMAND
+        Command.Builder<CommandSender> activityCommand = commandManager.commandBuilder("activity",
+                ArgumentDescription.of("ADD")
+        );
+
+        // VALUE argument
+        CommandArgument<CommandSender, Long> idArg = LongArgument.<CommandSender>builder("id")
+                .withMin(0L)
+                .build();
+
+        commandManager.command(activityCommand
+                .literal("id", ArgumentDescription.of("ADD"))
+                .permission(PermissionConfig.STAFF.permission)
+                .argument(idArg)
+                .handler(context -> {
+                    CommandSender sender = context.getSender();
+
+                    if (hikariManager == null) {
+                        sender.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
+                        return;
+                    }
+
+                    long id = context.get("id");
+                    printData(sender, id);
+                })
+        );
     }
 
     /**
@@ -91,44 +99,73 @@ public final class ActivityIdCommand extends TrustCommand {
             Timestamp time = activity.getTime();
 
             if (ip == null)
-                ip = "ERROR";
+                ip = "UNABLE TO FETCH";
 
             PlayerDataCache playerDataCache = new PlayerDataCache(toolkit, uuid, PlayerDataType.NAME);
             String finalIp = ip;
             playerDataCache.get(name -> {
                 if (name == null) {
-                    name = "ERROR";
+                    name = "UNABLE TO FETCH";
                 }
-                // list of component messages
-                List<Component> chatMessage = List.of(
-                        Component.text(ChatColor.DARK_GRAY + "------------------------"),
-                        Component.text(ChatColor.WHITE + "Name: " +
-                                ChatColor.RED + name).clickEvent(ClickEvent.copyToClipboard(name)),
-                        Component.text(ChatColor.WHITE + "IP: " +
-                                ChatColor.YELLOW + finalIp).clickEvent(ClickEvent.copyToClipboard(finalIp)),
-                        Component.text(ChatColor.WHITE + "UUID: " +
-                                ChatColor.GRAY + uuid).clickEvent(ClickEvent.copyToClipboard(uuid.toString())),
-                        Component.text(""),
-                        Component.text(ChatColor.WHITE + "Action: " +
-                                ChatColor.GOLD + action).clickEvent(ClickEvent.copyToClipboard(action)),
-                        Component.text(ChatColor.WHITE + "Date: " +
-                                        ChatColor.GREEN + time.toLocalDateTime().toLocalDate())
-                                .clickEvent(ClickEvent.copyToClipboard(time.toLocalDateTime().toLocalDate().toString())),
-                        Component.text(ChatColor.WHITE + "Time: " +
-                                        ChatColor.DARK_GREEN + time.toLocalDateTime().toLocalTime() + " " +
-                                        ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT))
-                                .clickEvent(ClickEvent.copyToClipboard(time.toLocalDateTime().toLocalTime() + " " +
-                                        ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT))),
-                        Component.text(""),
-                        Component.text(ChatColor.WHITE + "ID: " +
-                                ChatColor.DARK_PURPLE + resultId).clickEvent(ClickEvent.copyToClipboard(String.valueOf(resultId))),
-                        Component.text(ChatColor.DARK_GRAY + "------------------------")
-                );
+
                 // loop through the list and for each, send a message
-                for (Component s : chatMessage) {
+                for (Component s : createMessage(uuid, name, finalIp, action, time, resultId)) {
                     sender.sendMessage(s);
                 }
             });
         });
+    }
+
+    // Just creates table with the fetched data and saves it as List of Components
+    private List<Component> createMessage(@NotNull UUID uuid,
+                                          @NotNull String name,
+                                          @NotNull String finalIp,
+                                          @NotNull String action,
+                                          @NotNull Timestamp time,
+                                          long id) {
+        Component nameComp = Component.text("Name: ").color(NamedTextColor.WHITE)
+                .append(Component.text(name).color(TextColor.fromHexString("#FF5555")))
+                .clickEvent(ClickEvent.copyToClipboard(name));
+
+        Component ipComp = Component.text("IP: ").color(NamedTextColor.WHITE)
+                .append(Component.text(finalIp).color(TextColor.fromHexString("#FFCC33")))
+                .clickEvent(ClickEvent.copyToClipboard(finalIp));
+
+        Component uuidComp = Component.text("UUID: ").color(NamedTextColor.WHITE)
+                .append(Component.text(uuid.toString()).color(TextColor.fromHexString("#A0A0A0")))
+                .clickEvent(ClickEvent.copyToClipboard(uuid.toString()));
+
+        Component actionComp = Component.text("Action: ").color(NamedTextColor.WHITE)
+                .append(Component.text(action).color(TextColor.fromHexString("#0dc9de")))
+                .clickEvent(ClickEvent.copyToClipboard(action));
+
+        Component dateTimeComp = Component.text("Date/Time: ").color(NamedTextColor.WHITE)
+                .append(Component.text(time.toLocalDateTime()
+                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).color(TextColor.fromHexString("#07e015")))
+                .clickEvent(ClickEvent.copyToClipboard(time.toLocalDateTime().toString()));
+
+        Component idComp = Component.text("ID: ").color(NamedTextColor.WHITE)
+                .append(Component.text(String.valueOf(id)).color(TextColor.fromHexString("#ed1186")))
+                .clickEvent(ClickEvent.copyToClipboard(String.valueOf(id)));
+
+
+        return List.of(
+                Component.empty(),
+                ColorUtils.color("&l&#3e403e--------------------"),
+                nameComp,
+                ipComp,
+                uuidComp,
+
+                Component.empty(),
+
+                actionComp,
+                dateTimeComp,
+
+                Component.empty(),
+
+                idComp,
+                ColorUtils.color("&l&#3e403e--------------------"),
+                Component.empty()
+        );
     }
 }
