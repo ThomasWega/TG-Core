@@ -16,16 +16,16 @@ public class GUIListener implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        this.guiManager.handleClick(event);
+        guiManager.handleClick(event);
     }
 
     @EventHandler
     public void onOpen(InventoryOpenEvent event) {
-        this.guiManager.handleOpen(event);
+        guiManager.handleOpen(event);
     }
 
     @EventHandler
     public void onClose(InventoryCloseEvent event) {
-        this.guiManager.handleClose(event);
+        guiManager.handleClose(event);
     }
 }

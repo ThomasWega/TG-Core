@@ -12,40 +12,57 @@ public class GUIManager {
 
     private final HashMap<Inventory, InventoryHandler> activeInventories = new HashMap<>();
 
-    public void openInventory(InventoryGUI gui, Player player) {
+    /**
+     * Register the GUI's inventory and then open it for the player
+     *
+     * @param player Player to open the GUI for
+     * @param gui    What GUI to open
+     */
+    public void openInventory(Player player, InventoryGUI gui) {
         Inventory inv = gui.getInventory();
-        this.registerHandledInventory(inv, gui);
+        registerInventory(inv, gui);
         player.openInventory(inv);
     }
 
-    public void registerHandledInventory(Inventory inventory, InventoryHandler handler) {
-        this.activeInventories.put(inventory, handler);
+    /**
+     * Add the inventory to the list of active inventories to manage
+     *
+     * @param inventory Inventory to be added
+     */
+    public void registerInventory(Inventory inventory, InventoryHandler handler) {
+        activeInventories.put(inventory, handler);
     }
 
+    /**
+     * Remove the inventory from the list of active inventories to manage
+     *
+     * @param inventory Inventory to be removed
+     */
     public void unregisterInventory(Inventory inventory) {
-        this.activeInventories.remove(inventory);
+        activeInventories.remove(inventory);
     }
 
     public void handleClick(InventoryClickEvent event) {
-        InventoryHandler handler = this.activeInventories.get(event.getInventory());
+        InventoryHandler handler = activeInventories.get(event.getInventory());
         if (handler != null) {
             handler.onClick(event);
         }
     }
 
     public void handleOpen(InventoryOpenEvent event) {
-        InventoryHandler handler = this.activeInventories.get(event.getInventory());
+        InventoryHandler handler = activeInventories.get(event.getInventory());
         if (handler != null) {
             handler.onOpen(event);
         }
     }
 
+
     public void handleClose(InventoryCloseEvent event) {
         Inventory inventory = event.getInventory();
-        InventoryHandler handler = this.activeInventories.get(inventory);
+        InventoryHandler handler = activeInventories.get(inventory);
         if (handler != null) {
             handler.onClose(event);
-            this.unregisterInventory(inventory);
+            unregisterInventory(inventory);
         }
     }
 

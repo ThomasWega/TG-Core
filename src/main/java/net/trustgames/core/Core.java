@@ -21,6 +21,7 @@ import net.trustgames.toolkit.database.player.activity.PlayerActivityDB;
 import net.trustgames.toolkit.database.player.data.PlayerDataDB;
 import net.trustgames.toolkit.managers.HikariManager;
 import net.trustgames.toolkit.managers.rabbit.RabbitManager;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
@@ -80,11 +81,10 @@ public final class Core extends JavaPlugin {
         - playtime bonus
         - boosters
         - autorestart (only if no one is online)
-        - menu manager with pagination
         */
 
-        registerEvents();
         registerCommands();
+        registerEvents();
     }
 
     @Override
@@ -113,7 +113,7 @@ public final class Core extends JavaPlugin {
         pluginManager.registerEvents(new PlayerHandler(), this);
         pluginManager.registerEvents(new TablistHandler(), this);
         pluginManager.registerEvents(new ChatDecoration(), this);
-        pluginManager.registerEvents(new ActivityPlayerCommand(this), this);
+       // pluginManager.registerEvents(new ActivityPlayerCommand(this), this);
     }
 
     private void registerCommands() {
@@ -126,7 +126,10 @@ public final class Core extends JavaPlugin {
             throw new RuntimeException("Failed to initialize Command Manager", e);
         }
 
-        new ActivityPlayerCommand(this);
+        // because I cant register menu before command manager is initialized,
+        // when I move to GUIManager, this issue will be resolved
+        ActivityPlayerCommand apc = new ActivityPlayerCommand(this);
+        Bukkit.getPluginManager().registerEvents(apc, this);
         new ActivityIdCommand(this);
     }
 
