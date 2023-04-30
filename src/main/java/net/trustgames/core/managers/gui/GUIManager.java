@@ -8,6 +8,9 @@ import org.bukkit.inventory.Inventory;
 
 import java.util.HashMap;
 
+/**
+ * The type Gui manager.
+ */
 public class GUIManager {
 
     private final HashMap<Inventory, InventoryHandler> activeInventories = new HashMap<>();
@@ -28,6 +31,7 @@ public class GUIManager {
      * Add the inventory to the list of active inventories to manage
      *
      * @param inventory Inventory to be added
+     * @param handler   the handler
      */
     public void registerInventory(Inventory inventory, InventoryHandler handler) {
         activeInventories.put(inventory, handler);
@@ -42,6 +46,11 @@ public class GUIManager {
         activeInventories.remove(inventory);
     }
 
+    /**
+     * Handle click.
+     *
+     * @param event the event
+     */
     public void handleClick(InventoryClickEvent event) {
         InventoryHandler handler = activeInventories.get(event.getInventory());
         if (handler != null) {
@@ -49,6 +58,11 @@ public class GUIManager {
         }
     }
 
+    /**
+     * Handle open.
+     *
+     * @param event the event
+     */
     public void handleOpen(InventoryOpenEvent event) {
         InventoryHandler handler = activeInventories.get(event.getInventory());
         if (handler != null) {
@@ -57,6 +71,11 @@ public class GUIManager {
     }
 
 
+    /**
+     * Handle close.
+     *
+     * @param event the event
+     */
     public void handleClose(InventoryCloseEvent event) {
         Inventory inventory = event.getInventory();
         InventoryHandler handler = activeInventories.get(inventory);

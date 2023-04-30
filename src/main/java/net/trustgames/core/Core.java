@@ -3,6 +3,7 @@ package net.trustgames.core;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.destroystokyo.paper.utils.PaperPluginLogger;
+import dev.sergiferry.playernpc.api.NPCLib;
 import lombok.Getter;
 import net.trustgames.core.chat.ChatDecoration;
 import net.trustgames.core.managers.CommandManager;
@@ -40,6 +41,9 @@ import java.util.logging.Logger;
  */
 public final class Core extends JavaPlugin {
 
+    /**
+     * The constant LOGGER.
+     */
     public static final Logger LOGGER = PaperPluginLogger.getLogger("Core");
 
     @Getter
@@ -51,8 +55,14 @@ public final class Core extends JavaPlugin {
     @Getter
     private PaperCommandManager<CommandSender> commandManager;
 
+    @Getter
+    private NPCLib npcLib;
+
     @Override
     public void onEnable() {
+
+        npcLib = NPCLib.getInstance();
+        npcLib.registerPlugin(this);
 
         // create a data folder
         if (getDataFolder().mkdirs()) {
@@ -82,6 +92,11 @@ public final class Core extends JavaPlugin {
         - boosters
         - autorestart (only if no one is online)
         */
+
+        // TODO do ItemBuilder instead of ItemManager, but leave the skull if not present in the api
+        //  (https://github.com/RusterX16/ItemBuilder)
+        // TODO convert to ItemBuilder in activityCommands and LOBBY
+        // TODO convert activity command to the new GUI Manager
 
         registerCommands();
         registerEvents();

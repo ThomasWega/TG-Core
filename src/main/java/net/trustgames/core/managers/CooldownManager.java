@@ -21,6 +21,11 @@ public final class CooldownManager implements Listener {
     private final ConcurrentHashMap<String, Long> cooldownMessageTime = new ConcurrentHashMap<>();
     private final double cooldownTime;
 
+    /**
+     * Instantiates a new Cooldown manager.
+     *
+     * @param cooldownTime the cooldown time
+     */
     public CooldownManager(double cooldownTime) {
         this.cooldownTime = cooldownTime;
     }
@@ -32,7 +37,7 @@ public final class CooldownManager implements Listener {
      * This method allows only one execution of the action per given time.
      * It also ensures that the "don't spam" message is not being sent too often to the player.
      *
-     * @param player       Player to put a cooldown on
+     * @param player Player to put a cooldown on
      * @return True if the player is on cooldown
      */
     public boolean handle(@NotNull Player player) {

@@ -7,7 +7,6 @@ import cloud.commandframework.paper.PaperCommandManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.trustgames.core.Core;
-import net.trustgames.core.managers.InventoryManager;
 import net.trustgames.core.managers.ItemManager;
 import net.trustgames.core.player.activity.config.PlayerActivityType;
 import net.trustgames.core.utils.ColorUtils;
@@ -71,6 +70,11 @@ public final class ActivityPlayerCommand implements Listener {
     private int pageCount = 0;
 
 
+    /**
+     * Instantiates a new Activity player command.
+     *
+     * @param core the core
+     */
     public ActivityPlayerCommand(Core core) {
         this.core = core;
         this.toolkit = core.getToolkit();
@@ -79,6 +83,9 @@ public final class ActivityPlayerCommand implements Listener {
         register();
     }
 
+    /**
+     * Register.
+     */
     public void register() {
 
         // COMMAND
@@ -245,7 +252,7 @@ public final class ActivityPlayerCommand implements Listener {
          and the max page.
         */
         for (int i = 1; i <= Math.ceil(records.size() / 45d); i++) {
-            Inventory inv = InventoryManager.createInventory(player, targetName + "'s activity", 6);
+            Inventory inv = Bukkit.createInventory(player, 54, Component.text(targetName + "'s activity"));
             pageInfo.setItemMeta(ItemManager.createItemMeta(pageInfo, ColorUtils.color("&2Page (" + i + "/" + pagesCount + ")"), new ItemFlag[]{ItemFlag.HIDE_ATTRIBUTES}));
             inv.setItem(49, pageInfo);
             inventoryList.add(inv);

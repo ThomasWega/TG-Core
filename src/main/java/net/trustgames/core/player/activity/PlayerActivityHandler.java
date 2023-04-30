@@ -24,6 +24,11 @@ public final class PlayerActivityHandler implements Listener {
     private final Toolkit toolkit;
     private final PlayerActivityFetcher activityFetcher;
 
+    /**
+     * Instantiates a new Player activity handler.
+     *
+     * @param core the core
+     */
     public PlayerActivityHandler(Core core) {
         this.toolkit = core.getToolkit();
         this.activityFetcher = new PlayerActivityFetcher(toolkit.getHikariManager());

@@ -24,6 +24,11 @@ public abstract class TrustCommand implements CommandExecutor {
 
     private final String permission;
 
+    /**
+     * Instantiates a new Trust command.
+     *
+     * @param permission the permission
+     */
     public TrustCommand(@Nullable String permission) {
         this.permission = permission;
     }
@@ -64,12 +69,16 @@ public abstract class TrustCommand implements CommandExecutor {
      * This method is called on command execution.
      * Annotation can be used on this method
      *
-     * @param sender The Console/Player who sent the command
-     * @param label  Alias of the command used
-     * @param args   What arguments the command had
+     * @param sender  The Console/Player who sent the command
+     * @param command the command
+     * @param label   Alias of the command used
+     * @param args    What arguments the command had
      */
     public abstract void execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args);
 
+    /**
+     * The interface Allow console.
+     */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
     public @interface AllowConsole {

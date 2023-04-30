@@ -36,6 +36,8 @@ public final class ChatDecoration implements Listener {
      * report feature doesn't work and doesn't produce the symbols next to the
      * chat message. Also makes sure to send a modified message if a player is
      * mentioned in the chat.
+     *
+     * @param event the event
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void decorate(AsyncChatEvent event) {

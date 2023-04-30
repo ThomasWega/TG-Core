@@ -38,6 +38,11 @@ public final class ActivityIdCommand {
     private final HikariManager hikariManager;
 
 
+    /**
+     * Instantiates a new Activity id command.
+     *
+     * @param core the core
+     */
     public ActivityIdCommand(Core core) {
         this.commandManager = core.getCommandManager();
         this.toolkit = core.getToolkit();

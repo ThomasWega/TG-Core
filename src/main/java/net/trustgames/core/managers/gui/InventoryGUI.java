@@ -25,6 +25,9 @@ import java.util.Map;
 public abstract class InventoryGUI implements InventoryHandler, Cloneable {
 
     private final List<Integer> inventorySizes = Arrays.asList(9, 18, 27, 36, 36, 46, 54);
+    /**
+     * The Button map.
+     */
     protected Map<Integer, @Nullable InventoryButton> buttonMap = new HashMap<>();
     @Getter
     private Inventory inventory;
@@ -32,6 +35,12 @@ public abstract class InventoryGUI implements InventoryHandler, Cloneable {
     @Setter
     private Component inventoryTitle;
 
+    /**
+     * Instantiates a new Inventory gui.
+     *
+     * @param inventoryTitle the inventory title
+     * @param inventorySize  the inventory size
+     */
     public InventoryGUI(@NotNull Component inventoryTitle,
                         int inventorySize) {
         this.inventory = Bukkit.createInventory(
@@ -56,6 +65,8 @@ public abstract class InventoryGUI implements InventoryHandler, Cloneable {
     }
 
     /**
+     * Sets button.
+     *
      * @param slot   Slot to set the button at
      * @param button Button to be set
      */
@@ -64,6 +75,8 @@ public abstract class InventoryGUI implements InventoryHandler, Cloneable {
     }
 
     /**
+     * Gets button.
+     *
      * @param slot Slot to get the button at
      * @return Button at the given slot
      */

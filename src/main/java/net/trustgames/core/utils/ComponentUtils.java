@@ -6,6 +6,9 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * The type Component utils.
+ */
 public final class ComponentUtils {
 
     /**

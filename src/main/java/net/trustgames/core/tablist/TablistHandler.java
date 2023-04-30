@@ -5,6 +5,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+/**
+ * The type Tablist handler.
+ */
 public class TablistHandler implements Listener {
 
     @EventHandler

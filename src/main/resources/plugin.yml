@@ -3,7 +3,7 @@ depend:
   - LuckPerms
   - ProtocolLib
 softdepend:
-  - PlaceholderAPI
+  - PlayerNPC
 name: Core
 version: '${project.version}'
 main: net.trustgames.core.Core

@@ -11,7 +11,13 @@ import java.util.stream.Collectors;
  * The action String is then used to find the action by using contains()
  */
 public enum PlayerActivityType {
+    /**
+     * Join player activity type.
+     */
     JOIN("JOIN", Material.GREEN_BED),
+    /**
+     * Leave player activity type.
+     */
     LEAVE("LEAVE", Material.BLACK_BED);
 
 
@@ -29,7 +35,13 @@ public enum PlayerActivityType {
             .stream()
             .map(playerActivityType -> playerActivityType.icon)
             .collect(Collectors.toSet());
+    /**
+     * The Action.
+     */
     public final String action;
+    /**
+     * The Icon.
+     */
     public final Material icon;
 
     PlayerActivityType(String action, Material icon) {

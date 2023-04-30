@@ -26,6 +26,9 @@ public class InventoryPageButton extends InventoryButton implements Cloneable {
     /**
      * Set the SwitchAction to the button
      * (whether to switch the page to next or previous)
+     *
+     * @param pageManager the page manager
+     * @return the inventory page button
      */
     public InventoryPageButton pager(Function<PaginatedGUI, SwitchAction> pageManager) {
         this.pageManager = pageManager;
@@ -36,7 +39,9 @@ public class InventoryPageButton extends InventoryButton implements Cloneable {
      * Replacement button in case the page button needs to be removed
      * (on first or last page)
      *
-     * @see PaginatedGUI#paginate(List)
+     * @param replaceManager the replace manager
+     * @return the inventory page button
+     * @see PaginatedGUI#paginate(List) PaginatedGUI#paginate(List)
      */
     public InventoryPageButton replace(Function<PaginatedGUI, @Nullable InventoryButton> replaceManager) {
         this.replaceManager = replaceManager;
@@ -62,7 +67,13 @@ public class InventoryPageButton extends InventoryButton implements Cloneable {
      * Which page switch action should the button do
      */
     public enum SwitchAction {
+        /**
+         * Next switch action.
+         */
         NEXT,
+        /**
+         * Previous switch action.
+         */
         PREVIOUS
     }
 }

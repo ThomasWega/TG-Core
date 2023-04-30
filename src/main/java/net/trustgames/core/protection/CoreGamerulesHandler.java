@@ -9,6 +9,9 @@ import org.bukkit.World;
  */
 public final class CoreGamerulesHandler {
 
+    /**
+     * Instantiates a new Core gamerules handler.
+     */
     public CoreGamerulesHandler() {
         setGamerules();
     }

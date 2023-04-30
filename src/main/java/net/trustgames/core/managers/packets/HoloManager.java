@@ -16,6 +16,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Holo manager.
+ */
+@Deprecated
 public final class HoloManager {
 
     /**

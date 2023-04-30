@@ -2,7 +2,10 @@ package net.trustgames.core.managers;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import net.kyori.adventure.text.Component;
+import org.apache.commons.codec.binary.Base64;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
@@ -12,6 +15,8 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Field;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -21,6 +26,8 @@ import java.util.UUID;
 public final class ItemManager {
 
     /**
+     * Create item stack.
+     *
      * @param material ItemStack Material
      * @param count    What amount
      * @return created ItemStack
@@ -30,6 +37,8 @@ public final class ItemManager {
     }
 
     /**
+     * Create item meta item meta.
+     *
      * @param itemStack ItemStack to create ItemMeta to
      * @param name      Display name of the ItemStack
      * @param itemFlags What items flags to put on the ItemStack. Can be null
@@ -50,7 +59,7 @@ public final class ItemManager {
     }
 
     /**
-     * gets the player skull by his url. Use mineskin.org for url
+     * Gets the player skull by his url. Use mineskin.org for url
      * Using paper api method for this. (will not work on spigot)
      *
      * @param value     Value of the Texture of the Skull
@@ -68,22 +77,34 @@ public final class ItemManager {
 
         return skull;
     }
-}
 
-/*      OLD METHOD (spigot way)
-https://www.spigotmc.org/threads/tutorial-skulls.135083/#post-1432132
 
-     ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
+    /*
+      OLD METHOD (spigot way)
+      https://www.spigotmc.org/threads/tutorial-skulls.135083/#post-1432132
+    */
+
+    /**
+     * Spigot way of retrieving Skull
+     *
+     * @param skinUrl URL of the skin
+     * @return new ItemStack with the Skull
+     * @deprecated In favor of paper-api way
+     * @see ItemManager#getSkull(String, String)
+     */
+    public static ItemStack getSkullSpigot(String skinUrl) {
+
+        ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
 
         // check if the skinurl is null or empty, in case it is, return skull (null)
-        if (skinURL == null || skinURL.isEmpty())
+        if (skinUrl == null || skinUrl.isEmpty())
             return skull;
 
         ItemMeta skullMeta = skull.getItemMeta();
         // generate a new gameprofile with random uuid and name null
         GameProfile profile = new GameProfile(UUID.randomUUID(), null);
         // get the decoded data and encodes it back
-        byte[] encodedData = Base64.encodeBase64(String.format("{textures:{SKIN:{url:\"%s\"}}}", skinURL).getBytes());
+        byte[] encodedData = Base64.encodeBase64(String.format("{textures:{SKIN:{url:\"%s\"}}}", skinUrl).getBytes());
         profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
         Field profileField = null;
 
@@ -102,5 +123,6 @@ https://www.spigotmc.org/threads/tutorial-skulls.135083/#post-1432132
         }
 
         skull.setItemMeta(skullMeta);
-
-    */
+        return skull;
+    }
+}

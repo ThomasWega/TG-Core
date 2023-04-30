@@ -25,6 +25,9 @@ public class InventoryButton implements Cloneable {
 
     /**
      * Set the ItemStack or the Meta for the Item
+     *
+     * @param iconCreator the icon creator
+     * @return the inventory button
      */
     public InventoryButton creator(Function<Player, ItemStack> iconCreator) {
         this.iconCreator = iconCreator;
@@ -33,6 +36,9 @@ public class InventoryButton implements Cloneable {
 
     /**
      * Set what should happen on a click at the item
+     *
+     * @param eventConsumer the event consumer
+     * @return the inventory button
      */
     public InventoryButton consumer(Consumer<InventoryClickEvent> eventConsumer) {
         this.eventConsumer = eventConsumer;

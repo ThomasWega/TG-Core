@@ -32,8 +32,7 @@ public abstract class PaginatedGUI extends InventoryGUI {
      *
      * @param guiManager     GUI Manager instance
      * @param inventoryTitle Title of the inventory (will also be used for copying)
-     * @param inventorySize  Size of the inventory
-     *                       (the closest higher will be used if not exact)
+     * @param inventorySize  Size of the inventory                       (the closest higher will be used if not exact)
      * @see InventoryGUI
      */
     public PaginatedGUI(@NotNull GUIManager guiManager,
@@ -145,7 +144,7 @@ public abstract class PaginatedGUI extends InventoryGUI {
      * Switches the gui page to the next one
      *
      * @param player Player to switch the GUI for
-     * @see PaginatedGUI#previousPage(Player)
+     * @see PaginatedGUI#previousPage(Player) PaginatedGUI#previousPage(Player)
      */
     public void nextPage(Player player) {
         openPage(player, ++pageInt);
@@ -155,7 +154,7 @@ public abstract class PaginatedGUI extends InventoryGUI {
      * Switches the gui page to the previous one
      *
      * @param player Player to switch the GUI for
-     * @see PaginatedGUI#nextPage(Player)
+     * @see PaginatedGUI#nextPage(Player) PaginatedGUI#nextPage(Player)
      */
     public void previousPage(Player player) {
         openPage(player, --pageInt);
@@ -196,6 +195,8 @@ public abstract class PaginatedGUI extends InventoryGUI {
     }
 
     /**
+     * Gets current page.
+     *
      * @return The int of page the GUI is currently set at (starting at 0)
      */
     public InventoryGUI getCurrentPage() {
@@ -203,6 +204,8 @@ public abstract class PaginatedGUI extends InventoryGUI {
     }
 
     /**
+     * Gets page.
+     *
      * @param page The page number (starting from 0)
      * @return InventoryGUI located at the specified page
      */
@@ -211,6 +214,8 @@ public abstract class PaginatedGUI extends InventoryGUI {
     }
 
     /**
+     * Gets pages amount.
+     *
      * @return The amount of pages there the GUI has
      */
     public int getPagesAmount() {
