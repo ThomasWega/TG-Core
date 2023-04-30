@@ -3,7 +3,6 @@ package net.trustgames.core;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.destroystokyo.paper.utils.PaperPluginLogger;
-import dev.sergiferry.playernpc.api.NPCLib;
 import lombok.Getter;
 import net.trustgames.core.chat.ChatDecoration;
 import net.trustgames.core.managers.CommandManager;
@@ -55,14 +54,8 @@ public final class Core extends JavaPlugin {
     @Getter
     private PaperCommandManager<CommandSender> commandManager;
 
-    @Getter
-    private NPCLib npcLib;
-
     @Override
     public void onEnable() {
-
-        npcLib = NPCLib.getInstance();
-        npcLib.registerPlugin(this);
 
         // create a data folder
         if (getDataFolder().mkdirs()) {
