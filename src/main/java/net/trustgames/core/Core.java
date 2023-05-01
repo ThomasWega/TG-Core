@@ -11,8 +11,7 @@ import net.trustgames.core.managers.gui.GUIListener;
 import net.trustgames.core.managers.gui.GUIManager;
 import net.trustgames.core.player.PlayerHandler;
 import net.trustgames.core.player.activity.PlayerActivityHandler;
-import net.trustgames.core.player.activity.commands.ActivityIdCommand;
-import net.trustgames.core.player.activity.commands.ActivityPlayerCommand;
+import net.trustgames.core.player.activity.commands.ActivityCommands;
 import net.trustgames.core.protection.CoreGamerulesHandler;
 import net.trustgames.core.tablist.TablistHandler;
 import net.trustgames.core.tablist.TablistTeams;
@@ -21,7 +20,6 @@ import net.trustgames.toolkit.database.player.activity.PlayerActivityDB;
 import net.trustgames.toolkit.database.player.data.PlayerDataDB;
 import net.trustgames.toolkit.managers.HikariManager;
 import net.trustgames.toolkit.managers.rabbit.RabbitManager;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
@@ -40,16 +38,13 @@ import java.util.logging.Logger;
  */
 public final class Core extends JavaPlugin {
 
-    /**
-     * The constant LOGGER.
-     */
     public static final Logger LOGGER = PaperPluginLogger.getLogger("Core");
 
     @Getter
     private final Toolkit toolkit = new Toolkit();
 
     @Getter
-    private final GUIManager guiManager = new GUIManager();
+    private GUIManager guiManager;
 
     @Getter
     private PaperCommandManager<CommandSender> commandManager;
@@ -67,6 +62,7 @@ public final class Core extends JavaPlugin {
         initializeHikari();
         initializeRedis();
         initializeRabbit();
+        guiManager = new GUIManager(this);
         new CoreGamerulesHandler();
         new TablistTeams(this);
 
@@ -85,11 +81,6 @@ public final class Core extends JavaPlugin {
         - boosters
         - autorestart (only if no one is online)
         */
-
-        // TODO do ItemBuilder instead of ItemManager, but leave the skull if not present in the api
-        //  (https://github.com/RusterX16/ItemBuilder)
-        // TODO convert to ItemBuilder in activityCommands and LOBBY
-        // TODO convert activity command to the new GUI Manager
 
         registerCommands();
         registerEvents();
@@ -121,7 +112,6 @@ public final class Core extends JavaPlugin {
         pluginManager.registerEvents(new PlayerHandler(), this);
         pluginManager.registerEvents(new TablistHandler(), this);
         pluginManager.registerEvents(new ChatDecoration(), this);
-       // pluginManager.registerEvents(new ActivityPlayerCommand(this), this);
     }
 
     private void registerCommands() {
@@ -134,11 +124,7 @@ public final class Core extends JavaPlugin {
             throw new RuntimeException("Failed to initialize Command Manager", e);
         }
 
-        // because I cant register menu before command manager is initialized,
-        // when I move to GUIManager, this issue will be resolved
-        ActivityPlayerCommand apc = new ActivityPlayerCommand(this);
-        Bukkit.getPluginManager().registerEvents(apc, this);
-        new ActivityIdCommand(this);
+        new ActivityCommands(this);
     }
 
     private void createConfigs() {

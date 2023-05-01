@@ -12,18 +12,6 @@ authors: [ Wega ]
 description: Core plugin for TrustGames.net
 website: www.trustgames.net
 commands:
-  discord:
-    description: Get the discord server url
-  website:
-    description: Get the website url
-    aliases:
-      - web
-  store:
-    description: Get the store url
-    aliases:
-      - vip
-      - benefits
-      - buy
-      - shop
+
 
 

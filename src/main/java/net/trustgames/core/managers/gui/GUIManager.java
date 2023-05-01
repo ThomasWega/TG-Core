@@ -1,5 +1,7 @@
 package net.trustgames.core.managers.gui;
 
+import net.trustgames.core.Core;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -8,12 +10,14 @@ import org.bukkit.inventory.Inventory;
 
 import java.util.HashMap;
 
-/**
- * The type Gui manager.
- */
 public class GUIManager {
 
+    private final Core core;
     private final HashMap<Inventory, InventoryHandler> activeInventories = new HashMap<>();
+
+    public GUIManager(Core core) {
+        this.core = core;
+    }
 
     /**
      * Register the GUI's inventory and then open it for the player
@@ -24,7 +28,7 @@ public class GUIManager {
     public void openInventory(Player player, InventoryGUI gui) {
         Inventory inv = gui.getInventory();
         registerInventory(inv, gui);
-        player.openInventory(inv);
+        Bukkit.getScheduler().runTask(core, () -> player.openInventory(inv));
     }
 
     /**
@@ -46,11 +50,6 @@ public class GUIManager {
         activeInventories.remove(inventory);
     }
 
-    /**
-     * Handle click.
-     *
-     * @param event the event
-     */
     public void handleClick(InventoryClickEvent event) {
         InventoryHandler handler = activeInventories.get(event.getInventory());
         if (handler != null) {
@@ -58,11 +57,6 @@ public class GUIManager {
         }
     }
 
-    /**
-     * Handle open.
-     *
-     * @param event the event
-     */
     public void handleOpen(InventoryOpenEvent event) {
         InventoryHandler handler = activeInventories.get(event.getInventory());
         if (handler != null) {
@@ -70,12 +64,6 @@ public class GUIManager {
         }
     }
 
-
-    /**
-     * Handle close.
-     *
-     * @param event the event
-     */
     public void handleClose(InventoryCloseEvent event) {
         Inventory inventory = event.getInventory();
         InventoryHandler handler = activeInventories.get(inventory);
@@ -84,6 +72,5 @@ public class GUIManager {
             unregisterInventory(inventory);
         }
     }
-
 }
 

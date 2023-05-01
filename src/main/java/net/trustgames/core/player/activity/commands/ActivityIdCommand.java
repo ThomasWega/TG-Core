@@ -38,25 +38,15 @@ public final class ActivityIdCommand {
     private final HikariManager hikariManager;
 
 
-    /**
-     * Instantiates a new Activity id command.
-     *
-     * @param core the core
-     */
-    public ActivityIdCommand(Core core) {
+    public ActivityIdCommand(Core core, Command.Builder<CommandSender> activityCommand) {
         this.commandManager = core.getCommandManager();
         this.toolkit = core.getToolkit();
         this.hikariManager = toolkit.getHikariManager();
-        register();
+        register(activityCommand);
     }
 
 
-    private void register() {
-
-        // COMMAND
-        Command.Builder<CommandSender> activityCommand = commandManager.commandBuilder("activity",
-                ArgumentDescription.of("ADD")
-        );
+    private void register(Command.Builder<CommandSender> activityCommand) {
 
         // VALUE argument
         CommandArgument<CommandSender, Long> idArg = LongArgument.<CommandSender>builder("id")

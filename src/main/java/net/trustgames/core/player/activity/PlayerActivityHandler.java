@@ -24,11 +24,6 @@ public final class PlayerActivityHandler implements Listener {
     private final Toolkit toolkit;
     private final PlayerActivityFetcher activityFetcher;
 
-    /**
-     * Instantiates a new Player activity handler.
-     *
-     * @param core the core
-     */
     public PlayerActivityHandler(Core core) {
         this.toolkit = core.getToolkit();
         this.activityFetcher = new PlayerActivityFetcher(toolkit.getHikariManager());
@@ -56,7 +51,7 @@ public final class PlayerActivityHandler implements Listener {
     private void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         InetSocketAddress playerIp = player.getAddress();
-        String playerIpString = (playerIp == null) ? "null" : playerIp.getHostString();
+        String playerIpString = (playerIp == null) ? null : playerIp.getHostString();
         UUIDCache uuidCache = new UUIDCache(toolkit, player.getName());
         uuidCache.get(uuid -> {
             if (uuid == null) return;

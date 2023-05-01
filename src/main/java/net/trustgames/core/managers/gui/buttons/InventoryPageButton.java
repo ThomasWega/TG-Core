@@ -3,9 +3,13 @@ package net.trustgames.core.managers.gui.buttons;
 import lombok.Getter;
 import lombok.Setter;
 import net.trustgames.core.managers.gui.PaginatedGUI;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -24,6 +28,31 @@ public class InventoryPageButton extends InventoryButton implements Cloneable {
     private Function<PaginatedGUI, InventoryButton> replaceManager;
 
     /**
+     * Set the ItemStack or the Meta for the Item
+     *
+     * @param iconCreator the icon creator
+     * @return the inventory page button
+     */
+    @Override
+    public InventoryPageButton creator(Function<Player, ItemStack> iconCreator) {
+        super.creator(iconCreator);
+        return this;
+    }
+
+    /**
+     * Set what should happen on a click at the item
+     *
+     * @param eventConsumer the event consumer
+     * @return the inventory page button
+     */
+    @Override
+    public InventoryPageButton consumer(Consumer<InventoryClickEvent> eventConsumer) {
+        super.consumer(eventConsumer);
+        return this;
+    }
+
+
+    /**
      * Set the SwitchAction to the button
      * (whether to switch the page to next or previous)
      *
@@ -39,7 +68,7 @@ public class InventoryPageButton extends InventoryButton implements Cloneable {
      * Replacement button in case the page button needs to be removed
      * (on first or last page)
      *
-     * @param replaceManager the replace manager
+     * @param replaceManager the replacement manager
      * @return the inventory page button
      * @see PaginatedGUI#paginate(List) PaginatedGUI#paginate(List)
      */
@@ -63,17 +92,8 @@ public class InventoryPageButton extends InventoryButton implements Cloneable {
         return clone;
     }
 
-    /**
-     * Which page switch action should the button do
-     */
     public enum SwitchAction {
-        /**
-         * Next switch action.
-         */
         NEXT,
-        /**
-         * Previous switch action.
-         */
         PREVIOUS
     }
 }

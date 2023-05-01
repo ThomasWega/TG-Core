@@ -30,18 +30,10 @@ public final class TablistTeams {
 
     private final Plugin plugin;
 
-    /**
-     * The Group order.
-     */
     static final HashMap<Group, Integer> groupOrder = new HashMap<>();
     @Getter
     private static final Scoreboard tablist = Bukkit.getScoreboardManager().getNewScoreboard();
 
-    /**
-     * Instantiates a new Tablist teams.
-     *
-     * @param plugin the plugin
-     */
     public TablistTeams(Plugin plugin) {
         this.plugin = plugin;
         create();
@@ -122,11 +114,6 @@ public final class TablistTeams {
         player.setScoreboard(tablist);
     }
 
-    /**
-     * Remove player.
-     *
-     * @param player Player to remove from the scoreboard team
-     */
     public static void removePlayer(@Nullable Player player) {
         if (player == null) return;
         Team team = tablist.getPlayerTeam(player);

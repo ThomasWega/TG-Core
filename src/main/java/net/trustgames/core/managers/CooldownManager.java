@@ -21,11 +21,6 @@ public final class CooldownManager implements Listener {
     private final ConcurrentHashMap<String, Long> cooldownMessageTime = new ConcurrentHashMap<>();
     private final double cooldownTime;
 
-    /**
-     * Instantiates a new Cooldown manager.
-     *
-     * @param cooldownTime the cooldown time
-     */
     public CooldownManager(double cooldownTime) {
         this.cooldownTime = cooldownTime;
     }

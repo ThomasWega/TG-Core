@@ -7,7 +7,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * The type Component utils.
+ * Handles the conversion from Components to other Types
  */
 public final class ComponentUtils {
 

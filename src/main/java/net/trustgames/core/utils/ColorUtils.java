@@ -6,7 +6,7 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Handles the converting of colors
+ * Handles the conversion of colors
  */
 public final class ColorUtils {
 

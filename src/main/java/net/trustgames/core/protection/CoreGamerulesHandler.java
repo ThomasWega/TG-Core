@@ -5,13 +5,10 @@ import org.bukkit.GameRule;
 import org.bukkit.World;
 
 /**
- * Handles the gamerules of world
+ * Handles the game-rules of world
  */
 public final class CoreGamerulesHandler {
 
-    /**
-     * Instantiates a new Core gamerules handler.
-     */
     public CoreGamerulesHandler() {
         setGamerules();
     }

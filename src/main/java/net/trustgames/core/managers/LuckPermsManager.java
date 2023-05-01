@@ -21,8 +21,6 @@ import java.util.Set;
 public final class LuckPermsManager {
 
     /**
-     * Is player in group boolean.
-     *
      * @param player What player to check on
      * @param group  What group check for
      * @return if the given player is in the given group
@@ -32,8 +30,6 @@ public final class LuckPermsManager {
     }
 
     /**
-     * Gets groups.
-     *
      * @return Set of all loaded groups
      */
     public static @NotNull Set<Group> getGroups() {
@@ -59,8 +55,6 @@ public final class LuckPermsManager {
     }
 
     /**
-     * Get the GroupManager of LuckPerms
-     *
      * @return LuckPerms GroupManager
      */
     public static GroupManager getGroupManager() {
@@ -94,8 +88,6 @@ public final class LuckPermsManager {
     }
 
     /**
-     * Gets user.
-     *
      * @param player Player to convert to User
      * @return User from the given Player
      */

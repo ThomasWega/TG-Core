@@ -1,62 +1,28 @@
-package net.trustgames.core.managers;
+package net.trustgames.core.managers.item;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import net.kyori.adventure.text.Component;
 import org.apache.commons.codec.binary.Base64;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Handles the creation of the ItemStack,
- * their flags and ItemMeta
+ * Handles the creation of Skulls ItemStacks
  */
-public final class ItemManager {
+public final class SkullManager {
 
-    /**
-     * Create item stack.
-     *
-     * @param material ItemStack Material
-     * @param count    What amount
-     * @return created ItemStack
-     */
-    public static ItemStack createItemStack(@NotNull Material material, int count) {
-        return new ItemStack(material, count);
-    }
-
-    /**
-     * Create item meta item meta.
-     *
-     * @param itemStack ItemStack to create ItemMeta to
-     * @param name      Display name of the ItemStack
-     * @param itemFlags What items flags to put on the ItemStack. Can be null
-     * @return created ItemMeta of the given ItemStack
-     */
-    public static ItemMeta createItemMeta(@NotNull ItemStack itemStack,
-                                          @NotNull Component name,
-                                          @Nullable ItemFlag[] itemFlags) {
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.displayName(name);
-
-        if (itemFlags != null) {
-            itemMeta.addItemFlags(itemFlags);
-        }
-
-        itemStack.setItemMeta(itemMeta);
-        return itemMeta;
-    }
+    // TODO Convert to be similar to ItemBuilder
+    // TODO return ItemBuilder instead of ItemStack
 
     /**
      * Gets the player skull by his url. Use mineskin.org for url
@@ -90,7 +56,7 @@ public final class ItemManager {
      * @param skinUrl URL of the skin
      * @return new ItemStack with the Skull
      * @deprecated In favor of paper-api way
-     * @see ItemManager#getSkull(String, String)
+     * @see SkullManager#getSkull(String, String)
      */
     public static ItemStack getSkullSpigot(String skinUrl) {
 

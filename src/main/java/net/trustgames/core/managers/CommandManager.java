@@ -17,9 +17,6 @@ public final class CommandManager implements Listener {
 
     private final HashMap<String, Long> commandCooldown = new HashMap<>();
 
-    /**
-     * The .
-     */
     int i = 1;
 
     /**

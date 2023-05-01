@@ -11,9 +11,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-/**
- * The type Player handler.
- */
 public final class PlayerHandler implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
