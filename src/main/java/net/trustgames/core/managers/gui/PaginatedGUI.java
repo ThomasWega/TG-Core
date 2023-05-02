@@ -10,10 +10,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
 
@@ -30,7 +27,7 @@ public abstract class PaginatedGUI extends InventoryGUI {
     private final InventoryGUI templateGui;
     private final List<InventoryGUI> pages = new ArrayList<>();
 
-    private final ConcurrentHashMap<String, Integer> currentPage = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, Integer> currentPage = new ConcurrentHashMap<>();
 
     /**
      * @see InventoryGUI
@@ -172,14 +169,16 @@ public abstract class PaginatedGUI extends InventoryGUI {
      * @param index  What page to open the GUI at (starting at 0)
      */
     public void openPage(Player player, int index) {
-        currentPage.put(player.getName(), index);
-        this.guiManager.openInventory(player, pages.get(currentPage.get(player.getName())));
+        UUID uuid = player.getUniqueId();
+        currentPage.put(uuid, index);
+        this.guiManager.openInventory(player, pages.get(currentPage.get(uuid)));
     }
 
     public void openCurrentPage(Player player) {
-        Optional<InventoryGUI> page = getCurrentPage(player);
+        UUID uuid = player.getUniqueId();
+        Optional<InventoryGUI> page = getCurrentPage(uuid);
         if (page.isEmpty()) {
-            Core.LOGGER.warning("No page is present for player " + player.getName());
+            Core.LOGGER.warning("No page is present for uuid " + uuid);
             return;
         }
 
@@ -212,7 +211,7 @@ public abstract class PaginatedGUI extends InventoryGUI {
      * @see PaginatedGUI#openPreviousPage(Player) PaginatedGUI#previousPage(Player)
      */
     public void openNextPage(Player player) {
-        openPage(player, currentPage.get(player.getName()) + 1);
+        openPage(player, currentPage.get(player.getUniqueId()) + 1);
     }
 
     /**
@@ -222,7 +221,7 @@ public abstract class PaginatedGUI extends InventoryGUI {
      * @see PaginatedGUI#openNextPage(Player) PaginatedGUI#nextPage(Player)
      */
     public void openPreviousPage(Player player) {
-        openPage(player, currentPage.get(player.getName()) - 1);
+        openPage(player, currentPage.get(player.getUniqueId()) - 1);
     }
 
     /**
@@ -242,10 +241,11 @@ public abstract class PaginatedGUI extends InventoryGUI {
     /**
      * Gets current page the player is
      *
+     * @param uuid UUID of the player to get the page for
      * @return The int of page the GUI is currently set at (starting at 0)
      */
-    public Optional<InventoryGUI> getCurrentPage(Player player) {
-        Integer page = currentPage.get(player.getName());
+    public Optional<InventoryGUI> getCurrentPage(UUID uuid) {
+        Integer page = currentPage.get(uuid);
         if (page == null)
             return Optional.empty();
 
@@ -266,19 +266,19 @@ public abstract class PaginatedGUI extends InventoryGUI {
     /**
      * Gets the page the player is at
      *
-     * @param playerName The name of the player to check for
+     * @param uuid The UUID of the player to check for
      * @return InventoryGUI that the player has opened right now
      */
-    public @Nullable InventoryGUI getPage(String playerName) {
-        return pages.get(currentPage.get(playerName));
+    public @Nullable InventoryGUI getPage(UUID uuid) {
+        return pages.get(currentPage.get(uuid));
     }
 
     /**
-     * @param playerName The name of the player
+     * @param uuid The UUID of the player to get the index for
      * @return Integer index of the page the player is currently at
      */
-    public int getPageIndex(String playerName) {
-        Integer page = currentPage.get(playerName);
+    public int getPageIndex(UUID uuid) {
+        Integer page = currentPage.get(uuid);
         return Objects.requireNonNullElse(page, 0);
     }
 
@@ -300,7 +300,7 @@ public abstract class PaginatedGUI extends InventoryGUI {
         he should be removed from the list
          */
         if (event.getReason() != InventoryCloseEvent.Reason.OPEN_NEW) {
-            currentPage.remove(event.getPlayer().getName());
+            currentPage.remove(event.getPlayer().getUniqueId());
         }
     }
 

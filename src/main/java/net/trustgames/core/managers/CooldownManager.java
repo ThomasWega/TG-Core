@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -17,8 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class CooldownManager implements Listener {
 
-    private final ConcurrentHashMap<String, Long> commandCooldownTime = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, Long> cooldownMessageTime = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, Long> commandCooldownTime = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, Long> cooldownMessageTime = new ConcurrentHashMap<>();
     private final double cooldownTime;
 
     public CooldownManager(double cooldownTime) {
@@ -35,15 +36,15 @@ public final class CooldownManager implements Listener {
      * @param player Player to put a cooldown on
      * @return True if the player is on cooldown
      */
-    public boolean handle(@NotNull Player player) {
-        String playerName = player.getName();
+    public boolean handleCooldown(@NotNull Player player) {
+        UUID uuid = player.getUniqueId();
         /*
          if the player is not in the cooldown yet, or if his cooldown expired,
          put him in the hashmap with the new time
         */
-        if (!commandCooldownTime.containsKey(playerName) || !isOnCooldown(playerName, cooldownTime)) {
-            commandCooldownTime.put(playerName, System.currentTimeMillis());
-        } else if (isOnCooldown(playerName, cooldownTime)) {
+        if (!commandCooldownTime.containsKey(uuid) || !isOnCooldown(uuid, cooldownTime)) {
+            commandCooldownTime.put(uuid, System.currentTimeMillis());
+        } else if (isOnCooldown(uuid, cooldownTime)) {
             sendMessage(player);
             return true;
         }
@@ -51,30 +52,30 @@ public final class CooldownManager implements Listener {
     }
 
     /**
-     * @param playerName   Name of the Player to check cooldown on
+     * @param uuid   UUID of the Player to check cooldown on
      * @param cooldownTime CooldownManager time in seconds
      * @return if player is on cooldown
      */
-    private boolean isOnCooldown(@NotNull String playerName, double cooldownTime) {
-        return !(cooldownTime <= (System.currentTimeMillis() - commandCooldownTime.get(playerName)) / 1000d);
+    private boolean isOnCooldown(@NotNull UUID uuid, double cooldownTime) {
+        return !(cooldownTime <= (System.currentTimeMillis() - commandCooldownTime.get(uuid)) / 1000d);
     }
 
     /**
      * check if the wait message isn't being sent too often to avoid it being too spammy
      *
-     * @param playerName Name of the Player which the cooldown messages are being sent to
+     * @param uuid UUID of the Player which the cooldown messages are being sent to
      * @return if the cooldown message is too spammy
      */
-    private boolean isSpam(@NotNull String playerName) {
+    private boolean isSpam(@NotNull UUID uuid) {
         /*
          if he has any last wait message, get the time and make sure the
          current time - the last time of wait message is larger than the min value in config
         */
-        if (cooldownMessageTime.containsKey(playerName)) {
+        if (cooldownMessageTime.containsKey(uuid)) {
             return !(CooldownValueConfig.WARN_MESSAGES_LIMIT_SEC.value
-                    <= (System.currentTimeMillis() - cooldownMessageTime.get(playerName)) / 1000d);
+                    <= (System.currentTimeMillis() - cooldownMessageTime.get(uuid)) / 1000d);
         } else {
-            cooldownMessageTime.put(playerName, System.currentTimeMillis());
+            cooldownMessageTime.put(uuid, System.currentTimeMillis());
             return false;
         }
     }
@@ -86,18 +87,18 @@ public final class CooldownManager implements Listener {
      * @param player Player to send the messages to
      */
     private void sendMessage(@NotNull Player player) {
-        String playerName = player.getName();
-        if (isSpam(playerName)) return;
+        UUID uuid = player.getUniqueId();
+        if (isSpam(uuid)) return;
 
         player.sendMessage(CooldownConfig.SPAM.getText());
 
-        cooldownMessageTime.put(playerName, System.currentTimeMillis());
+        cooldownMessageTime.put(uuid, System.currentTimeMillis());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     private void onPlayerQuit(PlayerQuitEvent event) {
-        String playerName = event.getPlayer().getName();
-        commandCooldownTime.remove(playerName);
-        cooldownMessageTime.remove(playerName);
+        UUID uuid = event.getPlayer().getUniqueId();
+        commandCooldownTime.remove(uuid);
+        cooldownMessageTime.remove(uuid);
     }
 }

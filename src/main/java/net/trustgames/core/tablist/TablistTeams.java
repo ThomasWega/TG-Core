@@ -56,7 +56,7 @@ public final class TablistTeams {
             if (group.getWeight().isPresent()) {
                 groupWeight.put(group, group.getWeight().getAsInt());
             } else {
-                LOGGER.severe("LuckPerms group " + group.getName() + " doesn't have any weight! Setting the weight to 1...");
+                LOGGER.warning("LuckPerms group " + group.getName() + " doesn't have any weight! Setting the weight to 1...");
                 group.data().add(Node.builder("weight.1").build());
 
                 LuckPermsManager.getGroupManager().saveGroup(group);

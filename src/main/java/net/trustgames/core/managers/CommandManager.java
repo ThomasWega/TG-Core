@@ -9,13 +9,14 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Handles the command cooldowns
  */
 public final class CommandManager implements Listener {
 
-    private final HashMap<String, Long> commandCooldown = new HashMap<>();
+    private final HashMap<UUID, Long> commandCooldown = new HashMap<>();
 
     int i = 1;
 
@@ -36,13 +37,13 @@ public final class CommandManager implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     private void onPlayerPreCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
-        String playerName = player.getName();
+        UUID uuid = player.getUniqueId();
         // if player is in the cooldown hashmap
-        if (!commandCooldown.containsKey(playerName)) {
-            commandCooldown.put(playerName, System.currentTimeMillis());
+        if (!commandCooldown.containsKey(uuid)) {
+            commandCooldown.put(uuid, System.currentTimeMillis());
         }
         // if the last time of the command is less than a second (1000 milliseconds)
-        else if (System.currentTimeMillis() - commandCooldown.get(playerName) < 1000) {
+        else if (System.currentTimeMillis() - commandCooldown.get(uuid) < 1000) {
             /*
              if "i" is more than the config value number.
              Meaning the player typed a command in the last second more than the allowed count.
@@ -57,7 +58,7 @@ public final class CommandManager implements Listener {
         // if the last time player typed a command is more than a second.
         else {
             // put him in the cooldown with the new time of last command used
-            commandCooldown.put(playerName, System.currentTimeMillis());
+            commandCooldown.put(uuid, System.currentTimeMillis());
             // reset the integer "i" to default value
             i = 1;
         }
@@ -65,7 +66,6 @@ public final class CommandManager implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     private void onPlayerQuit(PlayerQuitEvent event) {
-        String playerName = event.getPlayer().getName();
-        commandCooldown.remove(playerName);
+        commandCooldown.remove(event.getPlayer().getUniqueId());
     }
 }

@@ -1,8 +1,6 @@
 package net.trustgames.core.player.activity;
 
 import net.trustgames.core.Core;
-import net.trustgames.toolkit.Toolkit;
-import net.trustgames.toolkit.cache.UUIDCache;
 import net.trustgames.toolkit.database.player.activity.PlayerActivity;
 import net.trustgames.toolkit.database.player.activity.PlayerActivityFetcher;
 import org.bukkit.Bukkit;
@@ -21,47 +19,34 @@ import java.sql.Timestamp;
  */
 public final class PlayerActivityHandler implements Listener {
 
-    private final Toolkit toolkit;
     private final PlayerActivityFetcher activityFetcher;
 
     public PlayerActivityHandler(Core core) {
-        this.toolkit = core.getToolkit();
-        this.activityFetcher = new PlayerActivityFetcher(toolkit.getHikariManager());
+        this.activityFetcher = new PlayerActivityFetcher(core.getToolkit().getHikariManager());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     private void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        InetSocketAddress playerIp = player.getAddress();
-        String playerIpString = (playerIp == null) ? null : playerIp.getHostString();
-        UUIDCache uuidCache = new UUIDCache(toolkit, player.getName());
-        uuidCache.get(uuid -> {
-            if (uuid.isEmpty()) return;
-            activityFetcher.insertNew(new PlayerActivity.Activity(
-                    uuid.get(),
-                    playerIpString,
-                    "JOIN " + Bukkit.getServer().getName() +
-                            " (" + Bukkit.getServer().getPort() + ")",
-                    new Timestamp(System.currentTimeMillis())
-            ));
-        });
+        insertNewAction(event.getPlayer(),
+                "JOIN " + Bukkit.getServer().getName() +
+                        " (" + Bukkit.getServer().getPort() + ")");
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     private void onPlayerQuit(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
+        insertNewAction(event.getPlayer(),
+                "LEAVE " + Bukkit.getServer().getName() +
+                        " (" + Bukkit.getServer().getPort() + ")");
+    }
+
+    private void insertNewAction(Player player, String action) {
         InetSocketAddress playerIp = player.getAddress();
         String playerIpString = (playerIp == null) ? null : playerIp.getHostString();
-        UUIDCache uuidCache = new UUIDCache(toolkit, player.getName());
-        uuidCache.get(uuid -> {
-            if (uuid.isEmpty()) return;
-            activityFetcher.insertNew(new PlayerActivity.Activity(
-                    uuid.get(),
-                    playerIpString,
-                    "LEAVE " + Bukkit.getServer().getName() +
-                            " (" + Bukkit.getServer().getPort() + ")",
-                    new Timestamp(System.currentTimeMillis())
-            ));
-        });
+        activityFetcher.insertNew(new PlayerActivity.Activity(
+                player.getUniqueId(),
+                playerIpString,
+                action,
+                new Timestamp(System.currentTimeMillis())
+        ));
     }
 }

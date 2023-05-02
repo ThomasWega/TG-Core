@@ -157,7 +157,7 @@ public class ActivityPlayerCommand extends PaginatedGUI {
                 Component.text(ChatColor.WHITE + "UUID: " + ChatColor.GRAY + stringUuid),
                 Component.text(ChatColor.WHITE + "IP: " + ChatColor.GREEN + ip),
                 Component.empty(),
-                Component.text(id).color(TextColor.fromHexString("#1d2730")),
+                Component.text(id).color(TextColor.fromHexString("#272a2e")),
                 Component.text(ChatColor.LIGHT_PURPLE + "Click to print")
         );
     }
@@ -203,7 +203,7 @@ public class ActivityPlayerCommand extends PaginatedGUI {
 
         this.setButton(49, new InventoryButton()
                 .creator(player -> new ItemBuilder(Material.KNOWLEDGE_BOOK)
-                        .displayName(Component.text("Page " + (this.getPageIndex(player.getName()) + 1) + "/" + this.getPagesAmount()))
+                        .displayName(Component.text("Page " + (this.getPageIndex(player.getUniqueId()) + 1) + "/" + this.getPagesAmount()))
                         .hideFlags()
                         .build()
                 )
