@@ -169,16 +169,16 @@ public abstract class PaginatedGUI extends InventoryGUI {
      * Open the GUI at the specified page
      *
      * @param player Player to open the GUI for
-     * @param index   What page to open the GUI at (starting at 0)
+     * @param index  What page to open the GUI at (starting at 0)
      */
     public void openPage(Player player, int index) {
         currentPage.put(player.getName(), index);
         this.guiManager.openInventory(player, pages.get(currentPage.get(player.getName())));
     }
 
-    public void openCurrentPage(Player player){
+    public void openCurrentPage(Player player) {
         Optional<InventoryGUI> page = getCurrentPage(player);
-        if (page.isEmpty()){
+        if (page.isEmpty()) {
             Core.LOGGER.warning("No page is present for player " + player.getName());
             return;
         }
@@ -227,7 +227,6 @@ public abstract class PaginatedGUI extends InventoryGUI {
 
     /**
      * @return first InventoryGUI page
-     * @implNote might be null if the gui was not paginated yet
      */
     public InventoryGUI getFirstPage() {
         return pages.get(0);
@@ -235,7 +234,6 @@ public abstract class PaginatedGUI extends InventoryGUI {
 
     /**
      * @return last InventoryGUI page
-     * @implNote might be null if the gui was not paginated yet
      */
     public InventoryGUI getLastPage() {
         return pages.get(pages.size() - 1);

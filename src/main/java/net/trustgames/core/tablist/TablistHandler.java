@@ -9,12 +9,12 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class TablistHandler implements Listener {
 
     @EventHandler
-    private void onPlayerJoin(PlayerJoinEvent event){
+    private void onPlayerJoin(PlayerJoinEvent event) {
         TablistTeams.addPlayer(event.getPlayer());
     }
 
     @EventHandler
-    private void onPlayerQuit(PlayerQuitEvent event){
+    private void onPlayerQuit(PlayerQuitEvent event) {
         TablistTeams.removePlayer(event.getPlayer());
     }
 }

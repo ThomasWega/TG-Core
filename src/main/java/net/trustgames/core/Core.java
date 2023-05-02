@@ -68,14 +68,11 @@ public final class Core extends JavaPlugin {
 
         /* ADD
         - chat system - add level
-        - economy system
         - admin system (vanish, menus, spectate ...)
-        - level system
         - cosmetics (spawn particles, spawn sounds, balloons)
         - nick and skin changer - test skin classes - add redis cache
         - image maps
         - party and friends system
-        - rotating heads
         - maintenance
         - playtime bonus
         - boosters
@@ -88,19 +85,7 @@ public final class Core extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        HikariManager hikariManager = toolkit.getHikariManager();
-        JedisPool jedisPool = toolkit.getJedisPool();
-        RabbitManager rabbitManager = toolkit.getRabbitManager();
-
-        if (hikariManager != null) {
-            hikariManager.close();
-        }
-        if (jedisPool != null){
-            jedisPool.close();
-        }
-        if (rabbitManager != null) {
-            rabbitManager.close();
-        }
+        toolkit.closeConnections();
     }
 
     private void registerEvents() {
@@ -137,7 +122,7 @@ public final class Core extends JavaPlugin {
         FileManager.createFile(this, configs);
     }
 
-    private void initializeHikari(){
+    private void initializeHikari() {
         YamlConfiguration mariaConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "mariadb.yml"));
         if (!mariaConfig.getBoolean("mariadb.enable")) {
             LOGGER.warning("HikariCP is disabled");
@@ -151,10 +136,12 @@ public final class Core extends JavaPlugin {
                 String.valueOf(mariaConfig.getInt("mariadb.port")),
                 Objects.requireNonNull(mariaConfig.getString("mariadb.database")),
                 mariaConfig.getInt("hikaricp.pool-size")
-                ));
+        ));
 
         HikariManager hikariManager = toolkit.getHikariManager();
-        if (hikariManager == null) return;
+        if (hikariManager == null) {
+            throw new RuntimeException("HikariManager wasn't initialized");
+        }
         hikariManager.onDataSourceInitialized(() -> {
             new PlayerDataDB(hikariManager);
             new PlayerActivityDB(hikariManager);
@@ -163,7 +150,7 @@ public final class Core extends JavaPlugin {
         LOGGER.info("HikariCP is enabled");
     }
 
-    private void initializeRabbit(){
+    private void initializeRabbit() {
         YamlConfiguration rabbitConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "rabbitmq.yml"));
         if (!rabbitConfig.getBoolean("rabbitmq.enable")) {
             LOGGER.warning("RabbitMQ is disabled");
@@ -177,10 +164,15 @@ public final class Core extends JavaPlugin {
                 rabbitConfig.getInt("rabbitmq.port"))
         );
 
+        RabbitManager rabbitManager = toolkit.getRabbitManager();
+        if (rabbitManager == null) {
+            throw new RuntimeException("RabbitManager wasn't initialized");
+        }
+
         LOGGER.info("RabbitMQ is enabled");
     }
 
-    private void initializeRedis(){
+    private void initializeRedis() {
         YamlConfiguration redisConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "redis.yml"));
         if (!redisConfig.getBoolean("redis.enable")) {
             LOGGER.warning("Redis is disabled");
@@ -193,6 +185,11 @@ public final class Core extends JavaPlugin {
                 redisConfig.getString("redis.user"),
                 redisConfig.getString("redis.password")
         ));
+
+        JedisPool jedisPool = toolkit.getJedisPool();
+        if (jedisPool == null) {
+            throw new RuntimeException("JedisPool wasn't initialized");
+        }
 
         LOGGER.info("Redis is enabled");
     }

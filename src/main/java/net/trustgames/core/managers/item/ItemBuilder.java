@@ -329,7 +329,7 @@ public class ItemBuilder {
      *
      * @param enchantment The enchantment to remove
      * @param level       The level of the enchantment to remove
-     * @return            The ItemBuilder
+     * @return The ItemBuilder
      */
     public ItemBuilder removeEnchantment(Enchantment enchantment, int level) {
         enchantments.entrySet().stream().filter(e -> e.getValue() == level).forEach(e -> {
@@ -372,6 +372,7 @@ public class ItemBuilder {
 
     /**
      * Check if the item has some enchantments
+     *
      * @return true if the item has some enchantments
      */
     public boolean hasEnchantments() {
@@ -443,18 +444,18 @@ public class ItemBuilder {
      * Add a specified key to the items DataContainer.
      * Similar to NBT tags
      *
-     * @param key The key instance with plugin and tag name
-     * @param type Type of the value stored
+     * @param key   The key instance with plugin and tag name
+     * @param type  Type of the value stored
      * @param value Value to be stored
-     * @param <T> the primary object type that is stored in the given ta
-     * @param <Z> the retrieved object type when applying this tag typ
+     * @param <T>   the primary object type that is stored in the given ta
+     * @param <Z>   the retrieved object type when applying this tag typ
      * @return the ItemBuilder
      * @see PersistentDataContainer
      * @see PersistentDataType
      */
     public <T, Z> ItemBuilder container(@NotNull NamespacedKey key,
-                                     @NotNull PersistentDataType<T, Z> type,
-                                     @NotNull Z value) {
+                                        @NotNull PersistentDataType<T, Z> type,
+                                        @NotNull Z value) {
         meta.getPersistentDataContainer().set(key, type, value);
         item.setItemMeta(meta);
         return this;
@@ -534,6 +535,7 @@ public class ItemBuilder {
 
     /**
      * Get the item enchantments
+     *
      * @return The enchantments
      */
     public Map<Enchantment, Integer> getEnchantments() {

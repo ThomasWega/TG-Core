@@ -36,9 +36,9 @@ public final class PlayerActivityHandler implements Listener {
         String playerIpString = (playerIp == null) ? null : playerIp.getHostString();
         UUIDCache uuidCache = new UUIDCache(toolkit, player.getName());
         uuidCache.get(uuid -> {
-            if (uuid == null) return;
+            if (uuid.isEmpty()) return;
             activityFetcher.insertNew(new PlayerActivity.Activity(
-                    uuid,
+                    uuid.get(),
                     playerIpString,
                     "JOIN " + Bukkit.getServer().getName() +
                             " (" + Bukkit.getServer().getPort() + ")",
@@ -54,9 +54,9 @@ public final class PlayerActivityHandler implements Listener {
         String playerIpString = (playerIp == null) ? null : playerIp.getHostString();
         UUIDCache uuidCache = new UUIDCache(toolkit, player.getName());
         uuidCache.get(uuid -> {
-            if (uuid == null) return;
+            if (uuid.isEmpty()) return;
             activityFetcher.insertNew(new PlayerActivity.Activity(
-                    uuid,
+                    uuid.get(),
                     playerIpString,
                     "LEAVE " + Bukkit.getServer().getName() +
                             " (" + Bukkit.getServer().getPort() + ")",

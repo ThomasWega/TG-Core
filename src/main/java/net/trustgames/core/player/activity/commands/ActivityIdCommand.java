@@ -15,6 +15,7 @@ import net.trustgames.toolkit.Toolkit;
 import net.trustgames.toolkit.cache.PlayerDataCache;
 import net.trustgames.toolkit.config.CommandConfig;
 import net.trustgames.toolkit.config.PermissionConfig;
+import net.trustgames.toolkit.database.player.activity.PlayerActivity;
 import net.trustgames.toolkit.database.player.activity.PlayerActivityFetcher;
 import net.trustgames.toolkit.database.player.data.config.PlayerDataType;
 import net.trustgames.toolkit.managers.HikariManager;
@@ -59,12 +60,6 @@ public final class ActivityIdCommand {
                 .argument(idArg)
                 .handler(context -> {
                     CommandSender sender = context.getSender();
-
-                    if (hikariManager == null) {
-                        sender.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
-                        return;
-                    }
-
                     long id = context.get("id");
                     printData(sender, id);
                 })
@@ -80,11 +75,13 @@ public final class ActivityIdCommand {
      */
     private void printData(@NotNull CommandSender sender, long id) {
         PlayerActivityFetcher activityFetcher = new PlayerActivityFetcher(hikariManager);
-        activityFetcher.fetchByID(id, activity -> {
-            if (activity == null) {
+        activityFetcher.fetchByID(id, optActivity -> {
+            if (optActivity.isEmpty()) {
                 sender.sendMessage(CommandConfig.COMMAND_NO_ID_DATA.addComponent(Component.text(id)));
                 return;
             }
+
+            PlayerActivity.Activity activity = optActivity.get();
 
             // get all the data from the resultSet
             long resultId = activity.getId();
@@ -98,10 +95,8 @@ public final class ActivityIdCommand {
 
             PlayerDataCache playerDataCache = new PlayerDataCache(toolkit, uuid, PlayerDataType.NAME);
             String finalIp = ip;
-            playerDataCache.get(name -> {
-                if (name == null) {
-                    name = "UNABLE TO FETCH";
-                }
+            playerDataCache.get(optName -> {
+                String name = optName.orElse("UNABLE TO FETCH");
 
                 // loop through the list and for each, send a message
                 for (Component s : createMessage(uuid, name, finalIp, action, time, resultId)) {

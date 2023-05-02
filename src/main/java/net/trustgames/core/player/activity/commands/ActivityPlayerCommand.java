@@ -6,6 +6,7 @@ import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.paper.PaperCommandManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.trustgames.core.Core;
 import net.trustgames.core.managers.gui.InventoryGUI;
 import net.trustgames.core.managers.gui.PaginatedGUI;
@@ -38,14 +39,12 @@ import java.util.function.Consumer;
 
 public class ActivityPlayerCommand extends PaginatedGUI {
 
-    private final Core core;
     private final Toolkit toolkit;
     private final HikariManager hikariManager;
     private final PaperCommandManager<CommandSender> commandManager;
 
     public ActivityPlayerCommand(Core core, Command.Builder<CommandSender> activityCommand) {
         super(core.getGuiManager(), Component.text("Player activity"), Rows.SIX);
-        this.core = core;
         this.toolkit = core.getToolkit();
         this.hikariManager = toolkit.getHikariManager();
         this.commandManager = core.getCommandManager();
@@ -78,13 +77,8 @@ public class ActivityPlayerCommand extends PaginatedGUI {
 
     private void handleCommandExecution(Player sender,
                                         @NotNull String targetName) {
-        if (hikariManager == null) {
-            sender.sendMessage(CommandConfig.COMMAND_DATABASE_OFF.getText());
-            return;
-        }
-
         createButtons(targetName, optButtons -> {
-            if (optButtons.isEmpty()){
+            if (optButtons.isEmpty()) {
                 sender.sendMessage(CommandConfig.COMMAND_NO_PLAYER_DATA.addComponent(Component.text(targetName)));
                 return;
             }
@@ -98,13 +92,13 @@ public class ActivityPlayerCommand extends PaginatedGUI {
                                Consumer<Optional<List<InventoryButton>>> activityItems) {
         UUIDCache uuidCache = new UUIDCache(toolkit, targetName);
         uuidCache.get(uuid -> {
-            if (uuid == null) {
+            if (uuid.isEmpty()) {
                 activityItems.accept(Optional.empty());
                 return;
             }
             PlayerActivityFetcher activityFetcher = new PlayerActivityFetcher(hikariManager);
-            activityFetcher.fetchByUUID(uuid, playerActivity -> {
-                if (playerActivity == null) {
+            activityFetcher.fetchByUUID(uuid.get(), playerActivity -> {
+                if (playerActivity.isEmpty()) {
                     activityItems.accept(Optional.empty());
                     return;
                 }
@@ -116,7 +110,7 @@ public class ActivityPlayerCommand extends PaginatedGUI {
              Also set the correct Material by using setMaterial method.
              Then add a clone of the ItemStack to the records list
              */
-                for (PlayerActivity.Activity activity : playerActivity.getActivities()) {
+                for (PlayerActivity.Activity activity : playerActivity.get().getActivities()) {
                     long id = activity.getId();
                     String stringUuid = activity.getUuid().toString();
                     String ip = activity.getIp();
@@ -163,6 +157,7 @@ public class ActivityPlayerCommand extends PaginatedGUI {
                 Component.text(ChatColor.WHITE + "UUID: " + ChatColor.GRAY + stringUuid),
                 Component.text(ChatColor.WHITE + "IP: " + ChatColor.GREEN + ip),
                 Component.empty(),
+                Component.text(id).color(TextColor.fromHexString("#1d2730")),
                 Component.text(ChatColor.LIGHT_PURPLE + "Click to print")
         );
     }

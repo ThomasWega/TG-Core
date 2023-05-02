@@ -169,7 +169,7 @@
         <dependency>
             <groupId>com.github.ThomasWega</groupId>
             <artifactId>TG-Toolkit</artifactId>
-            <version>aac7e8fb</version>
+            <version>3cbdb833</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

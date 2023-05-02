@@ -122,14 +122,14 @@ public final class ChatDecoration implements Listener {
                     for (int i = (newMsg.size() - 2); i >= 0; i--) {
                         String idk = ComponentUtils.toString(newMsg.get(i));
                         int index = idk.lastIndexOf("&");
-                        if (index != -1){
+                        if (index != -1) {
                             lastColor = ColorUtils.color(idk.substring(index)).color();
                         }
                     }
                 } else {
                     TextColor currentColor = ColorUtils.color(s).color();
                     // save if a color was used
-                    if (currentColor != null){
+                    if (currentColor != null) {
                         lastColor = currentColor;
                     }
                     // if any color was used, color the following text as well

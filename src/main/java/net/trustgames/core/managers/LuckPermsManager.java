@@ -9,10 +9,10 @@ import net.luckperms.api.model.user.User;
 import net.trustgames.core.utils.ColorUtils;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -44,14 +44,14 @@ public final class LuckPermsManager {
      * @param possibleGroups List of groups to check for
      * @return Player 's group found from the list
      */
-    public static @Nullable String getPlayerGroupFromList(@NotNull Player player,
+    public static Optional<String> getPlayerGroupFromList(@NotNull Player player,
                                                           @NotNull Collection<String> possibleGroups) {
         for (String group : possibleGroups) {
             if (player.hasPermission("group." + group)) {
-                return group;
+                return Optional.of(group);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     /**

@@ -17,7 +17,7 @@ public class ActivityCommands {
         registerCommands();
     }
 
-    private void registerCommands(){
+    private void registerCommands() {
         // MAIN SHARED COMMAND
         Command.Builder<CommandSender> activityCommand = commandManager.commandBuilder("activity",
                 ArgumentDescription.of("ADD")

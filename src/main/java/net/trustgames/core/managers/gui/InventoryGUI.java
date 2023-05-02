@@ -32,6 +32,20 @@ public abstract class InventoryGUI implements InventoryHandler, Cloneable {
     private int inventorySize;
 
     /**
+     * @param inventoryTitle the inventory title (can be changed later using setter)
+     * @param rows           the number of rows the inventory should have (can be changed later using setter)
+     */
+    public InventoryGUI(@NotNull Component inventoryTitle,
+                        Rows rows) {
+        this.inventoryTitle = inventoryTitle;
+        this.inventorySize = rows.slots;
+        this.inventory = Bukkit.createInventory(
+                null,
+                inventorySize,
+                inventoryTitle);
+    }
+
+    /**
      * Also updates the Inventory,
      * but it might need to be reopened for the player
      *
@@ -62,33 +76,18 @@ public abstract class InventoryGUI implements InventoryHandler, Cloneable {
     }
 
     /**
-     * @param inventoryTitle the inventory title (can be changed later using setter)
-     * @param rows  the number of rows the inventory should have (can be changed later using setter)
-     */
-    public InventoryGUI(@NotNull Component inventoryTitle,
-                        Rows rows) {
-        this.inventoryTitle = inventoryTitle;
-        this.inventorySize = rows.slots;
-        this.inventory = Bukkit.createInventory(
-                null,
-                inventorySize,
-                inventoryTitle);
-    }
-
-    /**
      * Adds a button to the inventory. If the inventory is full,
      * the button won't be added
      *
      * @param button Button to be added
-     * @return
-     * true - if button was added
+     * @return true - if button was added
      * <p>false - if the button couldn't be added (inventory is full)
      * @see InventoryGUI#addAll(Collection)
      * @deprecated This method is currently untested and may not function correctly.
      */
     public boolean addButton(InventoryButton button) {
         for (int i = 0; i < inventory.getSize(); i++) {
-            if (buttonMap.get(i) == null){
+            if (buttonMap.get(i) == null) {
                 buttonMap.put(i, button);
                 return true;
             }
@@ -98,7 +97,7 @@ public abstract class InventoryGUI implements InventoryHandler, Cloneable {
 
     /**
      * Adds multiple buttons to the inventory
-     * 
+     *
      * @param buttons Buttons to be added to the inventory
      * @return List of buttons which weren't added
      * @see InventoryGUI#addButton(InventoryButton)

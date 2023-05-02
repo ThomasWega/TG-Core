@@ -55,8 +55,8 @@ public final class SkullManager {
      *
      * @param skinUrl URL of the skin
      * @return new ItemStack with the Skull
-     * @deprecated In favor of paper-api way
      * @see SkullManager#getSkull(String, String)
+     * @deprecated In favor of paper-api way
      */
     public static ItemStack getSkullSpigot(String skinUrl) {
 

@@ -28,11 +28,10 @@ import static net.trustgames.core.Core.LOGGER;
  */
 public final class TablistTeams {
 
-    private final Plugin plugin;
-
     static final HashMap<Group, Integer> groupOrder = new HashMap<>();
     @Getter
     private static final Scoreboard tablist = Bukkit.getScoreboardManager().getNewScoreboard();
+    private final Plugin plugin;
 
     public TablistTeams(Plugin plugin) {
         this.plugin = plugin;
@@ -78,7 +77,7 @@ public final class TablistTeams {
             if (group == null) return;
 
             String teamName = i + group.getName();
-            if (tablist.getTeam(teamName) == null){
+            if (tablist.getTeam(teamName) == null) {
                 Team team = tablist.registerNewTeam(i + "" + group.getName());
                 Component prefix = LuckPermsManager.getGroupPrefix(group);
                 if (!group.getName().equals("default"))
@@ -138,10 +137,10 @@ public final class TablistTeams {
      * If a new group is created, make sure to recreate all the teams
      * and reassign players
      */
-    private void onGroupCreation(GroupCreateEvent event){
+    private void onGroupCreation(GroupCreateEvent event) {
         create();
 
-        for (Player player : Bukkit.getOnlinePlayers()){
+        for (Player player : Bukkit.getOnlinePlayers()) {
             addPlayer(player);
         }
     }

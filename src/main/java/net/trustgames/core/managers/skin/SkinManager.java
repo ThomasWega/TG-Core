@@ -1,8 +1,5 @@
 package net.trustgames.core.managers.skin;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,8 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
+import java.util.Optional;
 
 /**
  * Handles getting the skin texture and signature from the mojang servers
@@ -22,38 +18,11 @@ import java.util.concurrent.TimeUnit;
 public final class SkinManager {
 
     /**
-     * Cache that holds the SkinData. It expires after 12 hours.
-     */
-    private static final LoadingCache<String, SkinData> skinCache = CacheBuilder.newBuilder()
-            .expireAfterWrite(12, TimeUnit.HOURS)
-            .build(new CacheLoader<>() {
-                @Override
-                public @NotNull SkinData load(@NotNull String playerName) {
-                    return fetchSkin(playerName);
-                }
-            });
-
-
-    /**
-     * Get the data of the skin
-     *
-     * @param playerName Name of the player with the skin
-     * @return Data of the player's skin
-     */
-    public static SkinData getSkin(@NotNull String playerName) {
-        try {
-            return (skinCache.get(playerName));
-        } catch (ExecutionException e) {
-            return new SkinData("", "");
-        }
-    }
-
-    /**
      * Used to retrieve the skin data from the mojang servers.
      *
      * @implNote There is a limit for the api calls
      */
-    private static SkinData fetchSkin(@NotNull String playerName) {
+    private static Optional<SkinData> fetchSkin(@NotNull String playerName) {
         try {
             // get the UUID of the player by his name
             HttpsURLConnection connection = (HttpsURLConnection) new URL(String.format("https://api.mojang.com/users/profiles/minecraft/%s", playerName)).openConnection();
@@ -78,7 +47,7 @@ public final class SkinManager {
                     String texture = reply.substring(indexOfValue + 10, reply.indexOf("\"", indexOfValue + 10));
                     String signature = reply.substring(indexOfSignature + 14, reply.indexOf("\"", indexOfSignature + 14));
 
-                    return new SkinData(texture, signature);
+                    return Optional.of(new SkinData(texture, signature));
                 } else {
                     Bukkit.getConsoleSender().sendMessage("Connection could not be opened when fetching player skin (Response code " + connection.getResponseCode() + ", " + connection.getResponseMessage() + ")");
                 }
@@ -88,6 +57,6 @@ public final class SkinManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new SkinData(null, null);
+        return Optional.empty();
     }
 }
