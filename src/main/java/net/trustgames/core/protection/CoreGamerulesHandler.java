@@ -5,7 +5,7 @@ import org.bukkit.GameRule;
 import org.bukkit.World;
 
 /**
- * Handles the game-rules of world
+ * Handles the gamerules of all worlds on the server
  */
 public final class CoreGamerulesHandler {
 

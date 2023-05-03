@@ -56,7 +56,7 @@ public final class ActivityIdCommand {
 
         commandManager.command(activityCommand
                 .literal("id", ArgumentDescription.of("ADD"))
-                .permission(PermissionConfig.STAFF.permission)
+                .permission(PermissionConfig.STAFF.getPermission())
                 .argument(idArg)
                 .handler(context -> {
                     CommandSender sender = context.getSender();

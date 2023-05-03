@@ -18,7 +18,7 @@ public final class PlayerHandler implements Listener {
         Player player = event.getPlayer();
 
         player.displayName(
-                ColorUtils.color(ChatConfig.NAME_COLOR.value + player.getName())
+                ColorUtils.color(ChatConfig.NAME_COLOR.getValue() + player.getName())
                         .hoverEvent(HoverEvent.showText(Component.text("TO ADD...")))
                         .clickEvent(ClickEvent.suggestCommand(player.getName()))
         );

@@ -1,5 +1,6 @@
 package net.trustgames.core.player.activity.config;
 
+import lombok.Getter;
 import org.bukkit.Material;
 
 import java.util.EnumSet;
@@ -11,13 +12,7 @@ import java.util.stream.Collectors;
  * The action String is then used to find the action by using contains()
  */
 public enum PlayerActivityType {
-    /**
-     * Join player activity type.
-     */
     JOIN("JOIN", Material.GREEN_BED),
-    /**
-     * Leave player activity type.
-     */
     LEAVE("LEAVE", Material.BLACK_BED);
 
 
@@ -35,14 +30,11 @@ public enum PlayerActivityType {
             .stream()
             .map(playerActivityType -> playerActivityType.icon)
             .collect(Collectors.toSet());
-    /**
-     * The Action.
-     */
-    public final String action;
-    /**
-     * The Icon.
-     */
-    public final Material icon;
+
+    @Getter
+    private final String action;
+    @Getter
+    private final Material icon;
 
     PlayerActivityType(String action, Material icon) {
         this.action = action;

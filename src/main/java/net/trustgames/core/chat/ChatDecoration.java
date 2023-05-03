@@ -65,8 +65,8 @@ public final class ChatDecoration implements Listener {
      * @return Colored message if player has permission
      */
     private Component setColor(@NotNull Player player, @NotNull Component message) {
-        TextColor messageColor = ColorUtils.color(ChatConfig.CHAT_COLOR.value).color();
-        message = player.hasPermission(ChatConfig.ALLOW_COLORS_PERM.value)
+        TextColor messageColor = ColorUtils.color(ChatConfig.CHAT_COLOR.getFormatted()).color();
+        message = player.hasPermission(ChatConfig.ALLOW_COLORS_PERM.getValue())
                 ? ColorUtils.color(message).colorIfAbsent(messageColor)
                 : Component.text(ColorUtils.stripColor(message)).color(messageColor);
         return message;
@@ -105,8 +105,8 @@ public final class ChatDecoration implements Listener {
         if (mentionedPlayers.contains(loop)) {
             List<Component> newMsg = new ArrayList<>();
 
-            TextColor nameColor = ColorUtils.color(ChatConfig.MENTION_COLOR.value).color();
-            TextColor chatColor = ColorUtils.color(ChatConfig.CHAT_COLOR.value).color();
+            TextColor nameColor = ColorUtils.color(ChatConfig.MENTION_COLOR.getValue()).color();
+            TextColor chatColor = ColorUtils.color(ChatConfig.CHAT_COLOR.getValue()).color();
             // if the word equals player's name, color the name
             TextColor lastColor = null;
 

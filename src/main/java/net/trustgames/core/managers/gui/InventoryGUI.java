@@ -214,7 +214,8 @@ public abstract class InventoryGUI implements InventoryHandler, Cloneable {
         FIVE(45),
         SIX(54);
 
-        public final int slots;
+        @Getter
+        private final int slots;
 
         Rows(int slots) {
             this.slots = slots;

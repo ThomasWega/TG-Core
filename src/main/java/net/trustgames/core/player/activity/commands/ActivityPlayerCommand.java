@@ -64,7 +64,7 @@ public class ActivityPlayerCommand extends PaginatedGUI {
         commandManager.command(activityCommand
                 .senderType(Player.class)
                 .literal("player")
-                .permission(PermissionConfig.STAFF.permission)
+                .permission(PermissionConfig.STAFF.getPermission())
                 .argument(targetArg)
                 .handler(context -> {
                     Player sender = ((Player) context.getSender());
@@ -164,8 +164,8 @@ public class ActivityPlayerCommand extends PaginatedGUI {
 
     private Material getMaterial(@NotNull String action) {
         for (PlayerActivityType activityType : PlayerActivityType.values()) {
-            if (action.contains(activityType.action)) {
-                return activityType.icon;
+            if (action.contains(activityType.getAction())) {
+                return activityType.getIcon();
             }
         }
 

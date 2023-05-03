@@ -1,6 +1,7 @@
 package net.trustgames.core.managers.item;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Color;
@@ -32,36 +33,43 @@ import java.util.*;
 @SuppressWarnings("unused")
 public class ItemBuilder {
 
-    /**
-     * The ItemStack instance
-     */
-    private final ItemStack item;
+    @Getter
+    private final ItemStack itemStack;
+    @Getter
     private final ItemMeta meta;
     private final Damageable damageable;
+    @Getter
     private final List<Component> lore = new ArrayList<>();
+    @Getter
     private final Set<ItemFlag> flags = new HashSet<>();
+    @Getter
     private final Map<Enchantment, Integer> enchantments = new HashMap<>();
+    @Getter
     private Material material;
+    @Getter
     private Component displayName;
+    @Getter
     private int amount;
+    @Getter
     private short durability;
+    @Getter
     private boolean unbreakable;
     private boolean save = false;
 
     /**
      * Create a new ItemBuilder
      *
-     * @param item The ItemStack to build from
+     * @param itemStack The ItemStack to build from
      */
-    public ItemBuilder(ItemStack item) {
-        this.item = new ItemStack(item);
-        material = item.getType();
-        amount = item.getAmount();
-        enchantments.putAll(item.getEnchantments());
-        meta = item.getItemMeta();
+    public ItemBuilder(ItemStack itemStack) {
+        this.itemStack = new ItemStack(itemStack);
+        material = itemStack.getType();
+        amount = itemStack.getAmount();
+        enchantments.putAll(itemStack.getEnchantments());
+        meta = itemStack.getItemMeta();
         damageable = (Damageable) meta;
 
-        if (item.hasItemMeta()) {
+        if (itemStack.hasItemMeta()) {
             if (meta.hasDisplayName()) {
                 displayName = meta.displayName();
             }
@@ -80,8 +88,8 @@ public class ItemBuilder {
      * @param amount   The amount of item
      */
     public ItemBuilder(Material material, int amount) {
-        item = new ItemStack(material, amount);
-        meta = item.getItemMeta();
+        itemStack = new ItemStack(material, amount);
+        meta = itemStack.getItemMeta();
         damageable = (Damageable) meta;
         this.material = material;
         this.amount = amount;
@@ -104,8 +112,8 @@ public class ItemBuilder {
      * @param builder The ItemBuilder to copy from
      */
     public ItemBuilder(@NotNull ItemBuilder builder) {
-        item = new ItemStack(builder.item);
-        meta = item.getItemMeta();
+        itemStack = new ItemStack(builder.itemStack);
+        meta = itemStack.getItemMeta();
         damageable = (Damageable) meta;
         material = builder.material;
         displayName = builder.displayName;
@@ -116,7 +124,7 @@ public class ItemBuilder {
         flags.addAll(builder.flags);
         enchantments.putAll(builder.enchantments);
         save = builder.save;
-        item.setItemMeta(meta);
+        itemStack.setItemMeta(meta);
     }
 
     /**
@@ -127,7 +135,7 @@ public class ItemBuilder {
      */
     public ItemBuilder material(Material material) {
         this.material = material;
-        item.setType(material);
+        itemStack.setType(material);
         return this;
     }
 
@@ -140,7 +148,7 @@ public class ItemBuilder {
     public ItemBuilder displayName(Component displayName) {
         this.displayName = displayName;
         meta.displayName(this.displayName);
-        item.setItemMeta(meta);
+        itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -155,7 +163,7 @@ public class ItemBuilder {
         clearLore();
         this.lore.addAll(lore);
         meta.lore(this.lore);
-        item.setItemMeta(meta);
+        itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -179,7 +187,7 @@ public class ItemBuilder {
     public ItemBuilder appendLoreLine(Component line) {
         lore.add(line);
         meta.lore(lore);
-        item.setItemMeta(meta);
+        itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -198,7 +206,7 @@ public class ItemBuilder {
             lore.add(index, line);
         }
         meta.lore(lore);
-        item.setItemMeta(meta);
+        itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -223,7 +231,7 @@ public class ItemBuilder {
     public ItemBuilder removeLoreLine(int index) {
         lore.remove(index);
         meta.lore(lore);
-        item.setItemMeta(meta);
+        itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -236,7 +244,7 @@ public class ItemBuilder {
     public ItemBuilder removeLoreLine(Component line) {
         lore.removeAll(Collections.singleton(line));
         meta.lore(lore);
-        item.setItemMeta(meta);
+        itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -249,7 +257,7 @@ public class ItemBuilder {
     public ItemBuilder clearLore() {
         lore.clear();
         meta.lore(lore);
-        item.setItemMeta(meta);
+        itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -262,7 +270,7 @@ public class ItemBuilder {
     public ItemBuilder hideFlag(ItemFlag @NotNull ... flags) {
         this.flags.addAll(List.of(flags));
         meta.addItemFlags(flags);
-        item.setItemMeta(meta);
+        itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -284,7 +292,7 @@ public class ItemBuilder {
     public ItemBuilder showFlag(ItemFlag @NotNull ... flags) {
         List.of(flags).forEach(this.flags::remove);
         meta.removeItemFlags(flags);
-        item.setItemMeta(meta);
+        itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -306,7 +314,7 @@ public class ItemBuilder {
     public ItemBuilder enchantment(Map<Enchantment, Integer> enchantments) {
         this.enchantments.putAll(enchantments);
         enchantments.forEach((e, i) -> meta.addEnchant(e, i, true));
-        item.setItemMeta(meta);
+        itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -320,7 +328,7 @@ public class ItemBuilder {
     public ItemBuilder addEnchantment(Enchantment enchantment, int level) {
         enchantments.put(enchantment, level);
         meta.addEnchant(enchantment, level, true);
-        item.setItemMeta(meta);
+        itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -336,7 +344,7 @@ public class ItemBuilder {
             enchantments.remove(enchantment, level);
             meta.removeEnchant(e.getKey());
         });
-        item.setItemMeta(meta);
+        itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -351,7 +359,7 @@ public class ItemBuilder {
             this.enchantments.remove(e);
             meta.removeEnchant(e);
         });
-        item.setItemMeta(meta);
+        itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -366,7 +374,7 @@ public class ItemBuilder {
             enchantments.remove(key);
             meta.removeEnchant(key);
         }));
-        item.setItemMeta(meta);
+        itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -386,7 +394,7 @@ public class ItemBuilder {
      */
     public ItemBuilder amount(int amount) {
         this.amount = amount;
-        item.setAmount(amount);
+        itemStack.setAmount(amount);
         return this;
     }
 
@@ -399,7 +407,7 @@ public class ItemBuilder {
     public ItemBuilder damage(short durability) {
         this.durability = durability;
         damageable.setDamage(durability);
-        item.setItemMeta(damageable);
+        itemStack.setItemMeta(damageable);
         return this;
     }
 
@@ -410,7 +418,7 @@ public class ItemBuilder {
      * @return The ItemBuilder
      */
     public ItemBuilder durability(short damage) {
-        return damage((short) (item.getMaxItemUseDuration() - damage));
+        return damage((short) (itemStack.getMaxItemUseDuration() - damage));
     }
 
     /**
@@ -423,7 +431,7 @@ public class ItemBuilder {
     public ItemBuilder dye(Color color) {
         LeatherArmorMeta armor = (LeatherArmorMeta) this.meta;
         armor.setColor(color);
-        item.setItemMeta(armor);
+        itemStack.setItemMeta(armor);
         return this;
     }
 
@@ -436,7 +444,7 @@ public class ItemBuilder {
     public ItemBuilder unbreakable(boolean unbreakable) {
         this.unbreakable = unbreakable;
         meta.setUnbreakable(true);
-        item.setItemMeta(meta);
+        itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -457,7 +465,7 @@ public class ItemBuilder {
                                         @NotNull PersistentDataType<T, Z> type,
                                         @NotNull Z value) {
         meta.getPersistentDataContainer().set(key, type, value);
-        item.setItemMeta(meta);
+        itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -467,113 +475,14 @@ public class ItemBuilder {
      * @return The ItemStack
      */
     public ItemStack build() {
-        return item;
+        return itemStack;
     }
 
-    /**
-     * Get the ItemStack
-     *
-     * @return The ItemStack
-     */
-    public ItemStack getItemStack() {
-        return item;
-    }
 
-    /**
-     * Get the ItemMeta
-     *
-     * @return The ItemMeta
-     */
-    public ItemMeta getMeta() {
-        return meta;
-    }
-
-    /**
-     * Get the material type of the item
-     *
-     * @return The material
-     */
-    public Material getMaterial() {
-        return material;
-    }
-
-    /**
-     * Get the amount of the item
-     *
-     * @return The amount
-     */
-    public int getAmount() {
-        return amount;
-    }
-
-    /**
-     * Get the item display name
-     *
-     * @return The display name
-     */
-    public Component getDisplayName() {
-        return displayName;
-    }
-
-    /**
-     * Get the item durability
-     *
-     * @return The durability
-     */
-    public short getDurability() {
-        return durability;
-    }
-
-    /**
-     * Get the item lore
-     *
-     * @return The lore
-     */
-    public List<Component> getLore() {
-        return lore;
-    }
-
-    /**
-     * Get the item enchantments
-     *
-     * @return The enchantments
-     */
-    public Map<Enchantment, Integer> getEnchantments() {
-        return enchantments;
-    }
-
-    /**
-     * Get the item flags
-     *
-     * @return The flags
-     */
-    public Set<ItemFlag> getFlags() {
-        return flags;
-    }
-
-    /**
-     * Get the state of the item flags
-     *
-     * @return The state of the item flags<br><b>true</b> if item flags are hidden<br><b>false</b> if item flags are visible
-     */
     public boolean hasFlags() {
         return !flags.isEmpty();
     }
 
-    /**
-     * Check if the item is unbreakable or not
-     *
-     * @return The state of the item break ability<br>
-     * <b>true</b> if unbreakable<br>
-     * <b>false</b> if breakable<br>
-     */
-    public boolean isUnbreakable() {
-        return unbreakable;
-    }
-
-    /**
-     * ADD
-     */
     public PersistentDataContainer getContainer() {
         return this.meta.getPersistentDataContainer();
     }

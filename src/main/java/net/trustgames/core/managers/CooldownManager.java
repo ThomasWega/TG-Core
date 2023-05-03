@@ -72,7 +72,7 @@ public final class CooldownManager implements Listener {
          current time - the last time of wait message is larger than the min value in config
         */
         if (cooldownMessageTime.containsKey(uuid)) {
-            return !(CooldownValueConfig.WARN_MESSAGES_LIMIT_SEC.value
+            return !(CooldownValueConfig.WARN_MESSAGES_LIMIT_SEC.getValue()
                     <= (System.currentTimeMillis() - cooldownMessageTime.get(uuid)) / 1000d);
         } else {
             cooldownMessageTime.put(uuid, System.currentTimeMillis());
@@ -90,7 +90,7 @@ public final class CooldownManager implements Listener {
         UUID uuid = player.getUniqueId();
         if (isSpam(uuid)) return;
 
-        player.sendMessage(CooldownConfig.SPAM.getText());
+        player.sendMessage(CooldownConfig.SPAM.getFormatted());
 
         cooldownMessageTime.put(uuid, System.currentTimeMillis());
     }
