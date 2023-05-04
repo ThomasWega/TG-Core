@@ -5,12 +5,11 @@ import cloud.commandframework.paper.PaperCommandManager;
 import com.destroystokyo.paper.utils.PaperPluginLogger;
 import lombok.Getter;
 import net.trustgames.core.chat.ChatDecoration;
-import net.trustgames.core.managers.CommandManager;
+import net.trustgames.core.managers.CommandCooldownManager;
 import net.trustgames.core.managers.FileManager;
 import net.trustgames.core.managers.gui.GUIListener;
 import net.trustgames.core.managers.gui.GUIManager;
 import net.trustgames.core.player.PlayerHandler;
-import net.trustgames.core.player.activity.PlayerActivityHandler;
 import net.trustgames.core.player.activity.commands.ActivityCommands;
 import net.trustgames.core.protection.CoreGamerulesHandler;
 import net.trustgames.core.tablist.TablistHandler;
@@ -85,15 +84,16 @@ public final class Core extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        System.out.println("BEFORE CLOSE");
         toolkit.closeConnections();
+        System.out.println("AFTER CLOSE");
     }
 
     private void registerEvents() {
         final PluginManager pluginManager = getServer().getPluginManager();
 
         pluginManager.registerEvents(new GUIListener(guiManager), this);
-        pluginManager.registerEvents(new PlayerActivityHandler(this), this);
-        pluginManager.registerEvents(new CommandManager(), this);
+        pluginManager.registerEvents(new CommandCooldownManager(), this);
         pluginManager.registerEvents(new PlayerHandler(), this);
         pluginManager.registerEvents(new TablistHandler(), this);
         pluginManager.registerEvents(new ChatDecoration(), this);

@@ -28,7 +28,7 @@ public final class CooldownManager implements Listener {
 
     /**
      * Ensures, that the action is not being spammed too much.
-     * There is already one of this check in the CommandManager,
+     * There is already one of this check in the CommandCooldownManager,
      * but that allows certain number of commands per second.
      * This method allows only one execution of the action per given time.
      * It also ensures that the "don't spam" message is not being sent too often to the player.

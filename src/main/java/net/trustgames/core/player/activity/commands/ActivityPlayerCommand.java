@@ -13,7 +13,7 @@ import net.trustgames.core.managers.gui.PaginatedGUI;
 import net.trustgames.core.managers.gui.buttons.InventoryButton;
 import net.trustgames.core.managers.gui.buttons.InventoryPageButton;
 import net.trustgames.core.managers.item.ItemBuilder;
-import net.trustgames.core.player.activity.config.PlayerActivityType;
+import net.trustgames.core.player.activity.config.PlayerActivityMaterials;
 import net.trustgames.toolkit.Toolkit;
 import net.trustgames.toolkit.cache.UUIDCache;
 import net.trustgames.toolkit.config.CommandConfig;
@@ -163,9 +163,9 @@ public class ActivityPlayerCommand extends PaginatedGUI {
     }
 
     private Material getMaterial(@NotNull String action) {
-        for (PlayerActivityType activityType : PlayerActivityType.values()) {
-            if (action.contains(activityType.getAction())) {
-                return activityType.getIcon();
+        for (PlayerActivityMaterials materialEnum : PlayerActivityMaterials.values()) {
+            if (action.contains(materialEnum.getActivityType().getAction())) {
+                return materialEnum.getIcon();
             }
         }
 
