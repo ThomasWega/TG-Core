@@ -11,6 +11,7 @@ import net.trustgames.core.managers.gui.GUIListener;
 import net.trustgames.core.managers.gui.GUIManager;
 import net.trustgames.core.player.PlayerHandler;
 import net.trustgames.core.player.activity.commands.ActivityCommands;
+import net.trustgames.core.player.data.handler.PlayerDataKillsDeathsHandler;
 import net.trustgames.core.protection.CoreGamerulesHandler;
 import net.trustgames.core.tablist.TablistHandler;
 import net.trustgames.core.tablist.TablistTeams;
@@ -91,6 +92,7 @@ public final class Core extends JavaPlugin {
 
     private void registerEvents() {
         final PluginManager pluginManager = getServer().getPluginManager();
+        new PlayerDataKillsDeathsHandler(this);
 
         pluginManager.registerEvents(new GUIListener(guiManager), this);
         pluginManager.registerEvents(new CommandCooldownManager(), this);
