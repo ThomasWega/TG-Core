@@ -1,6 +1,9 @@
 # TGCore
 Core for TrustGames.net
 
+###### Configs:
+- Player activity menu materials
+
 ###### Features:
 - Chat Decoration manager
 - GUI Manager with Pagination
@@ -21,5 +24,3 @@ Core for TrustGames.net
 ###### Commands:
 - /activity id <id> 
 - /activity player <name>
-- /gemsadmin PLAYER set 1000 (xp/level/kills/...)
-

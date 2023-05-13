@@ -1,7 +1,7 @@
 package net.trustgames.core.managers;
 
-import net.trustgames.core.config.CooldownValueConfig;
-import net.trustgames.toolkit.config.CooldownConfig;
+import net.trustgames.toolkit.config.cooldown.CooldownConfig;
+import net.trustgames.toolkit.config.cooldown.CooldownValueConfig;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
