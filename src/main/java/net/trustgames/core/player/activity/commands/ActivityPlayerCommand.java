@@ -15,11 +15,11 @@ import net.trustgames.core.managers.gui.buttons.InventoryPageButton;
 import net.trustgames.core.managers.item.ItemBuilder;
 import net.trustgames.core.player.activity.config.PlayerActivityMaterials;
 import net.trustgames.toolkit.Toolkit;
-import net.trustgames.toolkit.cache.UUIDCache;
 import net.trustgames.toolkit.config.CommandConfig;
 import net.trustgames.toolkit.config.PermissionConfig;
 import net.trustgames.toolkit.database.player.activity.PlayerActivity;
 import net.trustgames.toolkit.database.player.activity.PlayerActivityFetcher;
+import net.trustgames.toolkit.database.player.data.PlayerDataFetcher;
 import net.trustgames.toolkit.managers.HikariManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -90,14 +90,13 @@ public class ActivityPlayerCommand extends PaginatedGUI {
 
     private void createButtons(@NotNull String targetName,
                                Consumer<Optional<List<InventoryButton>>> activityItems) {
-        UUIDCache uuidCache = new UUIDCache(toolkit, targetName);
-        uuidCache.get(uuid -> {
-            if (uuid.isEmpty()) {
+        new PlayerDataFetcher(toolkit).resolveUUIDAsync(targetName).thenAccept(optUuid -> {
+            if (optUuid.isEmpty()) {
                 activityItems.accept(Optional.empty());
                 return;
             }
             PlayerActivityFetcher activityFetcher = new PlayerActivityFetcher(hikariManager);
-            activityFetcher.fetchByUUID(uuid.get(), playerActivity -> {
+            activityFetcher.fetchByUUID(optUuid.get()).thenAccept(playerActivity -> {
                 if (playerActivity.isEmpty()) {
                     activityItems.accept(Optional.empty());
                     return;

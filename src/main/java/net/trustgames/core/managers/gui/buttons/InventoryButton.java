@@ -57,7 +57,7 @@ public class InventoryButton implements Cloneable {
         try {
             clone = (InventoryButton) super.clone();
         } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to create a clone of InventoryButton", e);
         }
         clone.iconCreator = this.iconCreator;
         clone.eventConsumer = this.eventConsumer;

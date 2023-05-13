@@ -2,7 +2,7 @@ package net.trustgames.core.player.data.handler;
 
 import net.trustgames.core.Core;
 import net.trustgames.toolkit.Toolkit;
-import net.trustgames.toolkit.database.player.data.PlayerData;
+import net.trustgames.toolkit.database.player.data.PlayerDataFetcher;
 import net.trustgames.toolkit.database.player.data.config.PlayerDataType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -32,10 +32,10 @@ public class PlayerDataKillsDeathsHandler implements Listener {
     }
 
     private void onPlayerKill(@NotNull Player killer) {
-        new PlayerData(toolkit, killer.getUniqueId(), PlayerDataType.KILLS).addData(1);
+        new PlayerDataFetcher(toolkit).addDataAsync(killer.getUniqueId(), PlayerDataType.KILLS, 1);
     }
 
     private void onPlayerDeath(@NotNull Player death) {
-        new PlayerData(toolkit, death.getUniqueId(), PlayerDataType.DEATHS).addData(1);
+        new PlayerDataFetcher(toolkit).addDataAsync(death.getUniqueId(), PlayerDataType.DEATHS, 1);
     }
 }

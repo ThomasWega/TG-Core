@@ -15,6 +15,7 @@ import net.trustgames.core.player.data.handler.PlayerDataKillsDeathsHandler;
 import net.trustgames.core.protection.CoreGamerulesHandler;
 import net.trustgames.core.tablist.TablistHandler;
 import net.trustgames.core.tablist.TablistTeams;
+import net.trustgames.core.utils.PlaceholderUtils;
 import net.trustgames.toolkit.Toolkit;
 import net.trustgames.toolkit.database.player.activity.PlayerActivityDB;
 import net.trustgames.toolkit.database.player.data.PlayerDataDB;
@@ -49,12 +50,12 @@ public final class Core extends JavaPlugin {
     @Getter
     private PaperCommandManager<CommandSender> commandManager;
 
+
     @Override
     public void onEnable() {
-
         // create a data folder
         if (getDataFolder().mkdirs()) {
-            getLogger().warning("Created main plugin folder");
+            LOGGER.warning("Created main plugin folder");
         }
 
         createConfigs();
@@ -79,6 +80,7 @@ public final class Core extends JavaPlugin {
         - autorestart (only if no one is online)
         */
 
+        new PlaceholderUtils(toolkit).initialize();
         registerCommands();
         registerEvents();
     }

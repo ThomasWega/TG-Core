@@ -1,5 +1,6 @@
 package net.trustgames.core.chat;
 
+import io.github.miniplaceholders.api.MiniPlaceholders;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.key.Key;
@@ -7,6 +8,7 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.trustgames.core.managers.LuckPermsManager;
 import net.trustgames.core.utils.ColorUtils;
 import net.trustgames.core.utils.ComponentUtils;
@@ -26,6 +28,7 @@ import java.util.logging.Level;
  */
 public final class ChatDecoration implements Listener {
 
+
     private final Sound sound = Sound.sound(Key.key(
                     "block.note_block.flute"),
             Sound.Source.AMBIENT,
@@ -44,15 +47,15 @@ public final class ChatDecoration implements Listener {
         Player sender = event.getPlayer();
         Component message = setColor(sender, event.originalMessage());
 
-        Component prefix = formatPrefix(sender);
-
+        Component preMessageField = getPreMessageField(sender);
+        Component fullMessage = preMessageField.append(message);
         for (Player p : Bukkit.getOnlinePlayers()) {
             // if the player is not mentioned, send him the normal message without colored name
-            if (!setMention(sender, p, message, prefix)) {
-                p.sendMessage(getMessage(sender, prefix, message));
+            if (!setMention(sender, p, message, preMessageField)) {
+                p.sendMessage(fullMessage);
             }
         }
-        logMessage(prefix, sender.getName(), message);
+        logMessage(fullMessage);
         event.setCancelled(true);
     }
 
@@ -79,20 +82,19 @@ public final class ChatDecoration implements Listener {
      *
      * @param sender  The message sender
      * @param loop    Player from the loop
-     * @param message Chat message that was sent
-     * @param prefix  What prefix the player has
+     * @param originalMessage Chat message that was sent
      * @return True if mention colors were set
      */
     private boolean setMention(@NotNull Player sender,
                                @NotNull Player loop,
-                               @NotNull Component message,
-                               @NotNull Component prefix) {
+                               @NotNull Component originalMessage,
+                               @NotNull Component preMessageField) {
         Set<Player> mentionedPlayers = new HashSet<>();
         String loopName = loop.getName();
-        message = setColor(sender, message);
+        originalMessage = setColor(sender, originalMessage);
 
         // remove the player name from the message
-        String strMsg = ComponentUtils.toString(message);
+        String strMsg = ComponentUtils.toString(originalMessage);
         List<String> split = Arrays.stream(strMsg.split(" ")).toList();
 
         // check if chat message contains player's name
@@ -143,7 +145,7 @@ public final class ChatDecoration implements Listener {
             Component msg = Component.join(JoinConfiguration.separator(Component.text(" ")), newMsg);
 
             // send different types of messages depending on if the player has permission to use color codes
-            loop.sendMessage(getMessage(sender, prefix, msg));
+            loop.sendMessage(preMessageField.append(msg));
 
             loop.sendActionBar(ChatConfig.MENTION_ACTIONBAR.formatMessage(
                     sender.getName(), LuckPermsManager.getPlayerPrefix(sender))
@@ -155,50 +157,23 @@ public final class ChatDecoration implements Listener {
     }
 
     /**
-     * Gets and formats the correct prefix for the player.
-     * If player has no prefix, null will be replaced with ""
-     *
-     * @param player Player to get prefix on
-     * @return Player's prefix
+     * @param player  Player to resolve the data for
+     * @return Get the component that will be before the message
+     * (eg. PREFIX NAME:)
      */
-    private Component formatPrefix(@NotNull Player player) {
-        Component prefix = LuckPermsManager.getPlayerPrefix(player);
-
-        // if player doesn't have any prefix, make sure there is not a space before his name
-        if (!prefix.equals(Component.text(""))) {
-            prefix = prefix.append(Component.text(" "));
-        }
-        return prefix;
-    }
-
-    /**
-     * Get the component message each player will be sent
-     *
-     * @param player  Player to copy his name on name click
-     * @param prefix  Prefix the player has
-     * @param message Only the last parts change, depending on if player can use color or not
-     * @return Complete Component message
-     */
-    private Component getMessage(@NotNull Player player,
-                                 @NotNull Component prefix,
-                                 @NotNull Component message) {
-        return Component.textOfChildren(prefix)
-                .append(Component.textOfChildren(player.displayName()))
-                .append(Component.text(" ")
-                        .append(message));
+    private Component getPreMessageField(@NotNull Player player) {
+        System.out.println("HERE IT SHOULD DO TWICE");
+        return MiniMessage.miniMessage().deserialize(
+                "<tg_player_level> <tg_player_prefix_spaced><player_displayname> ",
+                MiniPlaceholders.getAudiencePlaceholders(player));
     }
 
     /**
      * Log the message in console without the colors
      *
-     * @param prefix     Player's prefix
-     * @param playerName Player's name that sent the chat message
-     * @param message    Message sent in chat by Player
+     * @param fullMessage  The chat message also containing name
      */
-    private void logMessage(@NotNull Component prefix,
-                            @NotNull String playerName,
-                            @NotNull Component message) {
-        Bukkit.getLogger().log(Level.INFO, ColorUtils.stripColor(
-                prefix.append(Component.text(playerName)).append(Component.text(" ")).append(message)));
+    private void logMessage(@NotNull Component fullMessage) {
+        Bukkit.getLogger().log(Level.INFO, ColorUtils.stripColor(fullMessage));
     }
 }

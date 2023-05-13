@@ -120,6 +120,13 @@
         </resources>
     </build>
 
+    <distributionManagement>
+        <repository>
+            <id>trustgames-repo</id>
+            <url>http://81.201.49.240:8080/private</url>
+        </repository>
+    </distributionManagement>
+
     <repositories>
         <repository>
             <id>papermc-repo</id>
@@ -128,6 +135,11 @@
         <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>trustgames-repo-private</id>
+            <name>TrustGames Repository</name>
+            <url>http://81.201.49.240:8080/private</url>
         </repository>
         <repository>
             <id>sonatype</id>
@@ -156,20 +168,20 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.19.2-R0.1-SNAPSHOT</version>
+            <version>1.19.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.19.2-R0.1-SNAPSHOT</version>
+            <version>1.19.4-R0.1-SNAPSHOT</version>
             <classifier>remapped-mojang</classifier>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.ThomasWega</groupId>
-            <artifactId>TG-Toolkit</artifactId>
-            <version>80d4d4ea</version>
+            <groupId>net.trustgames</groupId>
+            <artifactId>toolkit</artifactId>
+            <version>0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

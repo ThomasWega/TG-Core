@@ -4,6 +4,7 @@ import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import net.trustgames.core.Core;
 import org.apache.commons.codec.binary.Base64;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -15,6 +16,8 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Field;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Handles the creation of Skulls ItemStacks
@@ -23,6 +26,8 @@ public final class SkullManager {
 
     // TODO Convert to be similar to ItemBuilder
     // TODO return ItemBuilder instead of ItemStack
+
+    private static final Logger logger = Core.LOGGER;
 
     /**
      * Gets the player skull by his url. Use mineskin.org for url
@@ -72,20 +77,20 @@ public final class SkullManager {
         // get the decoded data and encodes it back
         byte[] encodedData = Base64.encodeBase64(String.format("{textures:{SKIN:{url:\"%s\"}}}", skinUrl).getBytes());
         profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
-        Field profileField = null;
+        Field profileField;
 
         try {
             profileField = skullMeta.getClass().getDeclaredField("profile");
         } catch (NoSuchFieldException | SecurityException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Unable to get declared profile field for skull with url " + skinUrl);
+            return skull;
         }
-
         Objects.requireNonNull(profileField).setAccessible(true);
 
         try {
             profileField.set(skullMeta, profile);
         } catch (IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Unable to set meta to declared skull profile field", e);
         }
 
         skull.setItemMeta(skullMeta);

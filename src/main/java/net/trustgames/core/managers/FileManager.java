@@ -1,16 +1,18 @@
 package net.trustgames.core.managers;
 
+import net.trustgames.core.Core;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-
-import static net.trustgames.core.Core.LOGGER;
+import java.util.logging.Logger;
 
 /**
  * Handles the creation of custom configs
  */
 public final class FileManager {
+
+    private static final Logger logger = Core.LOGGER;
 
     /**
      * creates a specified files and its paths
@@ -21,9 +23,9 @@ public final class FileManager {
     public static void createFile(@NotNull Plugin plugin, @NotNull File... files) {
         for (File file : files) {
             if (!file.exists()) {
-                LOGGER.warning(file.getName() + " not found, creating...");
+                logger.warning(file.getName() + " not found, creating...");
                 if (file.getParentFile().mkdirs()) {
-                    LOGGER.info("Created directory paths for " + file.getName());
+                    logger.info("Created directory paths for " + file.getName());
                 }
                 plugin.saveResource(file.getName(), false);
             }

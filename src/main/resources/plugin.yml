@@ -1,7 +1,6 @@
 load: POSTWORLD
 depend:
   - LuckPerms
-  - ProtocolLib
 softdepend:
   - PlayerNPC
 name: Core

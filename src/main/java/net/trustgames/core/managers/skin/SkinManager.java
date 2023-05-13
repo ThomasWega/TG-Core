@@ -1,5 +1,6 @@
 package net.trustgames.core.managers.skin;
 
+import net.trustgames.core.Core;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,12 +11,16 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Handles getting the skin texture and signature from the mojang servers
  * and also caching it to save mojang api calls.
  */
 public final class SkinManager {
+
+    private static final Logger logger = Core.LOGGER;
 
     /**
      * Used to retrieve the skin data from the mojang servers.
@@ -55,7 +60,8 @@ public final class SkinManager {
                 Bukkit.getConsoleSender().sendMessage("Connection could not be opened when fetching player profile (Response code " + connection.getResponseCode() + ", " + connection.getResponseMessage() + ")");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Failed to fetch skin data for name " + playerName + " from mojang servers", e);
+            return Optional.empty();
         }
         return Optional.empty();
     }

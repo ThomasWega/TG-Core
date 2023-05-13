@@ -1,43 +1,25 @@
 # TGCore
 Core for TrustGames.net
 
-###### Permissions
-- core.admin
-- core.staff
-- core.titan
-- core.lord
-- core.knight
-- core.prime
-- core.default
+###### Features:
+- Chat Decoration manager
+- GUI Manager with Pagination
+- ItemBuilder with Skulls support
+- Skin Manager with fetching
+- Command Cooldown manager
+- Cooldown manager
+- File creation manager
+- LuckPerms manager
+- Player Data saving (kills/deaths/playtime/...)
+- Player display name
+- Gamerules
+- Tablist Teams
+- Color conversion Util
+- Component conversion Util
+- Placeholder conversion Util (MiniPlaceholders)
 
-###### Benefits:
-__- PRIME:__  
-chat prefix  
-tablist prefix  
-name prefix  
-10s chat limit  
-60s same chat limit  
-
-__- KNIGHT:__  
-can use colors in chat  
-5s chat limit  
-45s same chat limit
-can use color in chat
-
-__- LORD:__  
-3s chat limit  
-25s same chat limit  
-
-__- TITAN:__  
-no chat limit  
-10s same chat limit  
-
-__- STAFF:__  
-no chat limit  
-no same chat limit  
-/activity  
-/activity-id  
-modify player's data (/gems PLAYER set 1000)
-
-__- ADMIN:__  
+###### Commands:
+- /activity id <id> 
+- /activity player <name>
+- /gemsadmin PLAYER set 1000 (xp/level/kills/...)
 

@@ -12,11 +12,11 @@ import net.kyori.adventure.text.format.TextColor;
 import net.trustgames.core.Core;
 import net.trustgames.core.utils.ColorUtils;
 import net.trustgames.toolkit.Toolkit;
-import net.trustgames.toolkit.cache.PlayerDataCache;
 import net.trustgames.toolkit.config.CommandConfig;
 import net.trustgames.toolkit.config.PermissionConfig;
 import net.trustgames.toolkit.database.player.activity.PlayerActivity;
 import net.trustgames.toolkit.database.player.activity.PlayerActivityFetcher;
+import net.trustgames.toolkit.database.player.data.PlayerDataFetcher;
 import net.trustgames.toolkit.database.player.data.config.PlayerDataType;
 import net.trustgames.toolkit.managers.HikariManager;
 import org.bukkit.command.CommandSender;
@@ -75,7 +75,7 @@ public final class ActivityIdCommand {
      */
     private void printData(@NotNull CommandSender sender, long id) {
         PlayerActivityFetcher activityFetcher = new PlayerActivityFetcher(hikariManager);
-        activityFetcher.fetchByID(id, optActivity -> {
+        activityFetcher.fetchByID(id).thenAccept(optActivity -> {
             if (optActivity.isEmpty()) {
                 sender.sendMessage(CommandConfig.COMMAND_NO_ID_DATA.addComponent(Component.text(id)));
                 return;
@@ -93,10 +93,9 @@ public final class ActivityIdCommand {
             if (ip == null)
                 ip = "UNABLE TO FETCH";
 
-            PlayerDataCache playerDataCache = new PlayerDataCache(toolkit, uuid, PlayerDataType.NAME);
             String finalIp = ip;
-            playerDataCache.get(optName -> {
-                String name = optName.orElse("UNABLE TO FETCH");
+            new PlayerDataFetcher(toolkit).resolveDataAsync(uuid, PlayerDataType.NAME).thenAccept(optName -> {
+                String name = optName.map(Object::toString).orElse("UNABLE TO FETCH");
 
                 // loop through the list and for each, send a message
                 for (Component s : createMessage(uuid, name, finalIp, action, time, resultId)) {

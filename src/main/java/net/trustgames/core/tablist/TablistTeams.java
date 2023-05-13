@@ -9,6 +9,7 @@ import net.luckperms.api.event.group.GroupCreateEvent;
 import net.luckperms.api.event.user.UserDataRecalculateEvent;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.node.Node;
+import net.trustgames.core.Core;
 import net.trustgames.core.managers.LuckPermsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -20,15 +21,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-
-import static net.trustgames.core.Core.LOGGER;
+import java.util.logging.Logger;
 
 /**
  * Handles the priority sorting of groups and players in the player-list
  */
 public final class TablistTeams {
 
-    static final HashMap<Group, Integer> groupOrder = new HashMap<>();
+    private static final Logger logger = Core.LOGGER;
+
+    private static final HashMap<Group, Integer> groupOrder = new HashMap<>();
     @Getter
     private static final Scoreboard tablist = Bukkit.getScoreboardManager().getNewScoreboard();
     private final Plugin plugin;
@@ -56,7 +58,7 @@ public final class TablistTeams {
             if (group.getWeight().isPresent()) {
                 groupWeight.put(group, group.getWeight().getAsInt());
             } else {
-                LOGGER.warning("LuckPerms group " + group.getName() + " doesn't have any weight! Setting the weight to 1...");
+                logger.warning("LuckPerms group " + group.getName() + " doesn't have any weight! Setting the weight to 1...");
                 group.data().add(Node.builder("weight.1").build());
 
                 LuckPermsManager.getGroupManager().saveGroup(group);
@@ -101,7 +103,7 @@ public final class TablistTeams {
         Team team = tablist.getTeam(stringTeam);
 
         if (team == null) {
-            LOGGER.severe("Scoreboard team " + stringTeam + " wasn't found");
+            logger.severe("Scoreboard team " + stringTeam + " wasn't found");
             return;
         }
 
