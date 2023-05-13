@@ -36,5 +36,5 @@ TG-Toolkit is self-hosted on a server. To be able to reach that server you need 
       <username>{username}</username>
       <password>{secret}</password>
     </server>
-  </servers>
+</servers>
 ```
