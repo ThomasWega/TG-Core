@@ -12,6 +12,7 @@ import net.trustgames.core.managers.gui.GUIManager;
 import net.trustgames.core.player.PlayerHandler;
 import net.trustgames.core.player.activity.commands.ActivityCommands;
 import net.trustgames.core.player.data.handler.PlayerDataKillsDeathsHandler;
+import net.trustgames.core.player.data.handler.PlayerDataPlaytimeHandler;
 import net.trustgames.core.protection.CoreGamerulesHandler;
 import net.trustgames.core.tablist.TablistTeams;
 import net.trustgames.core.tablist.TablistTeamsHandler;
@@ -92,12 +93,13 @@ public final class Core extends JavaPlugin {
     }
 
     private void registerEvents() {
-        new PlayerDataKillsDeathsHandler(this);
         new GUIListener(this);
         new CommandCooldownManager(this);
         new PlayerHandler(this);
-        new TablistTeamsHandler(this);
         new ChatDecoration(this);
+        new PlayerDataPlaytimeHandler(this);
+        new PlayerDataKillsDeathsHandler(this);
+        new TablistTeamsHandler(this);
     }
 
     private void registerCommands() {
