@@ -3,6 +3,7 @@ package net.trustgames.core.managers.item;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import net.kyori.adventure.text.Component;
+import net.trustgames.core.managers.skin.SkinData;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -179,17 +180,16 @@ public class SkullBuilder extends ItemBuilder {
     }
 
     /**
-     * Sets the skull texture using the player profile.
+     * Sets the skull skin (textures) using the player profile.
      *
-     * @param value     Value of the Texture of the Skull
-     * @param signature Signature of the texture of the Skull
+     * @param skinData filled in with texture and signature of the skin
      * @return The updated SkullBuilder instance
      */
-    public SkullBuilder texture(@NotNull String value, @NotNull String signature) {
+    public SkullBuilder skin(@NotNull SkinData skinData) {
         SkullMeta skullMeta = this.getMeta();
 
         PlayerProfile playerProfile = Bukkit.createProfile(java.util.UUID.randomUUID(), null);
-        playerProfile.getProperties().add(new ProfileProperty("textures", value, signature));
+        playerProfile.getProperties().add(new ProfileProperty("textures", skinData.texture(), skinData.signature()));
         skullMeta.setPlayerProfile(playerProfile);
         super.getItemStack().setItemMeta(skullMeta);
         return this;
