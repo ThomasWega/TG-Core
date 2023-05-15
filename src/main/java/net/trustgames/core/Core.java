@@ -80,6 +80,8 @@ public final class Core extends JavaPlugin {
         - autorestart (only if no one is online)
         */
 
+        // Test Skull Builder
+
         new PlaceholderUtils(toolkit).initialize();
         registerCommands();
         registerEvents();

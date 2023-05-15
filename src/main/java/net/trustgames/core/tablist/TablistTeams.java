@@ -83,7 +83,7 @@ public final class TablistTeams {
                 Team team = tablist.registerNewTeam(i + "" + group.getName());
                 Component prefix = LuckPermsManager.getGroupPrefix(group);
                 if (!group.getName().equals("default"))
-                    team.prefix(prefix.append(Component.text(" ")));
+                    team.prefix(prefix.appendSpace());
             }
             i++;
         }
@@ -110,7 +110,7 @@ public final class TablistTeams {
         team.addPlayer(player);
 
         if (!stringTeam.contains("default"))
-            team.prefix(LuckPermsManager.getPlayerPrefix(player).append(Component.text(" ")));
+            team.prefix(LuckPermsManager.getPlayerPrefix(player).appendSpace());
 
         player.setScoreboard(tablist);
     }

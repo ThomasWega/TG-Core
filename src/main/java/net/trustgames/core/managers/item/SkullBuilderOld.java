@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 /**
  * Handles the creation of Skulls ItemStacks
  */
-public final class SkullManager {
+public final class SkullBuilderOld {
 
     // TODO Convert to be similar to ItemBuilder
     // TODO return ItemBuilder instead of ItemStack
@@ -49,7 +49,6 @@ public final class SkullManager {
         return skull;
     }
 
-
     /*
       OLD METHOD (spigot way)
       https://www.spigotmc.org/threads/tutorial-skulls.135083/#post-1432132
@@ -60,7 +59,7 @@ public final class SkullManager {
      *
      * @param skinUrl URL of the skin
      * @return new ItemStack with the Skull
-     * @see SkullManager#getSkull(String, String)
+     * @see SkullBuilderOld#getSkull(String, String)
      * @deprecated In favor of paper-api way
      */
     public static ItemStack getSkullSpigot(String skinUrl) {

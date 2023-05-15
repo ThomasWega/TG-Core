@@ -6,7 +6,9 @@ import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.paper.PaperCommandManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.trustgames.core.Core;
 import net.trustgames.core.managers.gui.InventoryGUI;
 import net.trustgames.core.managers.gui.PaginatedGUI;
@@ -22,7 +24,6 @@ import net.trustgames.toolkit.database.player.activity.PlayerActivityFetcher;
 import net.trustgames.toolkit.database.player.data.PlayerDataFetcher;
 import net.trustgames.toolkit.managers.HikariManager;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -120,7 +121,7 @@ public class ActivityPlayerCommand extends PaginatedGUI {
                     List<Component> loreList = createLore(time, stringUuid, ip, id);
 
                     ItemStack activityItem = new ItemBuilder(getMaterial(action), 1)
-                            .displayName(Component.text(ChatColor.BOLD + "" + ChatColor.DARK_PURPLE + action))
+                            .displayName(Component.empty().append(Component.text(action)).style(Style.style(NamedTextColor.DARK_PURPLE, TextDecoration.BOLD)))
                             .lore(loreList)
                             .hideFlags()
                             .build();
@@ -149,15 +150,16 @@ public class ActivityPlayerCommand extends PaginatedGUI {
 
         ip = Objects.requireNonNullElse(ip, "UNKNOWN");
         return List.of(
-                Component.text(ChatColor.WHITE + "Date: " + ChatColor.YELLOW + time.toLocalDateTime().toLocalDate()),
-                Component.text(ChatColor.WHITE + "Time: " + ChatColor.GOLD + time.toLocalDateTime().toLocalTime() + " " +
-                        ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT)),
+                Component.text("Date: ").color(NamedTextColor.WHITE).append(Component.text(time.toLocalDateTime().toLocalDate().toString())).color(NamedTextColor.YELLOW),
+                Component.text("Time: ").color(NamedTextColor.WHITE).append(Component.text(time.toLocalDateTime().toLocalTime().toString()).color(NamedTextColor.GOLD))
+                        .appendSpace()
+                        .append(Component.text(ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT))),
                 Component.empty(),
-                Component.text(ChatColor.WHITE + "UUID: " + ChatColor.GRAY + stringUuid),
-                Component.text(ChatColor.WHITE + "IP: " + ChatColor.GREEN + ip),
+                Component.text("UUID: ").color(NamedTextColor.WHITE).append(Component.text(stringUuid).color(NamedTextColor.GRAY)),
+                Component.text("IP: ").color(NamedTextColor.WHITE).append(Component.text(ip)).color(NamedTextColor.GREEN),
                 Component.empty(),
                 Component.text(id).color(TextColor.fromHexString("#272a2e")),
-                Component.text(ChatColor.LIGHT_PURPLE + "Click to print")
+                Component.text("Click to print").color(NamedTextColor.LIGHT_PURPLE)
         );
     }
 

@@ -4,7 +4,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -12,7 +11,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -419,20 +417,6 @@ public class ItemBuilder {
      */
     public ItemBuilder durability(short damage) {
         return damage((short) (itemStack.getMaxItemUseDuration() - damage));
-    }
-
-    /**
-     * Color the item.
-     *
-     * @param color The color to apply
-     * @return the ItemBuilder
-     * @implNote Only available for item that supports LeatherArmorMeta.
-     */
-    public ItemBuilder dye(Color color) {
-        LeatherArmorMeta armor = (LeatherArmorMeta) this.meta;
-        armor.setColor(color);
-        itemStack.setItemMeta(armor);
-        return this;
     }
 
     /**
