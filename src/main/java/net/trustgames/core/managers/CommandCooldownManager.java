@@ -1,6 +1,8 @@
 package net.trustgames.core.managers;
 
+import net.trustgames.core.Core;
 import net.trustgames.toolkit.config.CommandConfig;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,6 +17,10 @@ import java.util.UUID;
  * Handles the command cooldowns
  */
 public final class CommandCooldownManager implements Listener {
+
+    public CommandCooldownManager(Core core) {
+        Bukkit.getServer().getPluginManager().registerEvents(this, core);
+    }
 
     private final HashMap<UUID, Long> commandCooldown = new HashMap<>();
 

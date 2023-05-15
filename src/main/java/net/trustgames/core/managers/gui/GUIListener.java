@@ -1,5 +1,7 @@
 package net.trustgames.core.managers.gui;
 
+import net.trustgames.core.Core;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -10,8 +12,9 @@ public class GUIListener implements Listener {
 
     private final GUIManager guiManager;
 
-    public GUIListener(GUIManager guiManager) {
-        this.guiManager = guiManager;
+    public GUIListener(Core core) {
+        this.guiManager = core.getGuiManager();
+        Bukkit.getServer().getPluginManager().registerEvents(this, core);
     }
 
     @EventHandler

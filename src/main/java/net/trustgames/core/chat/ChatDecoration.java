@@ -9,6 +9,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.trustgames.core.Core;
 import net.trustgames.core.managers.LuckPermsManager;
 import net.trustgames.core.utils.ColorUtils;
 import net.trustgames.core.utils.ComponentUtils;
@@ -28,6 +29,9 @@ import java.util.logging.Level;
  */
 public final class ChatDecoration implements Listener {
 
+    public ChatDecoration(Core core) {
+        Bukkit.getServer().getPluginManager().registerEvents(this, core);
+    }
 
     private final Sound sound = Sound.sound(Key.key(
                     "block.note_block.flute"),

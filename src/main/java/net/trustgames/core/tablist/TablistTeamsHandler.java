@@ -1,12 +1,18 @@
 package net.trustgames.core.tablist;
 
+import net.trustgames.core.Core;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 
-public class TablistHandler implements Listener {
+public class TablistTeamsHandler implements Listener {
+
+    public TablistTeamsHandler(Core core) {
+        Bukkit.getServer().getPluginManager().registerEvents(this, core);
+    }
 
     @EventHandler
     private void onPlayerJoin(PlayerJoinEvent event) {

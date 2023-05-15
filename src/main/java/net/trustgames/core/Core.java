@@ -13,8 +13,8 @@ import net.trustgames.core.player.PlayerHandler;
 import net.trustgames.core.player.activity.commands.ActivityCommands;
 import net.trustgames.core.player.data.handler.PlayerDataKillsDeathsHandler;
 import net.trustgames.core.protection.CoreGamerulesHandler;
-import net.trustgames.core.tablist.TablistHandler;
 import net.trustgames.core.tablist.TablistTeams;
+import net.trustgames.core.tablist.TablistTeamsHandler;
 import net.trustgames.core.utils.PlaceholderUtils;
 import net.trustgames.toolkit.Toolkit;
 import net.trustgames.toolkit.database.player.activity.PlayerActivityDB;
@@ -23,7 +23,6 @@ import net.trustgames.toolkit.managers.HikariManager;
 import net.trustgames.toolkit.managers.rabbit.RabbitManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.JedisPool;
 
@@ -93,14 +92,12 @@ public final class Core extends JavaPlugin {
     }
 
     private void registerEvents() {
-        final PluginManager pluginManager = getServer().getPluginManager();
         new PlayerDataKillsDeathsHandler(this);
-
-        pluginManager.registerEvents(new GUIListener(guiManager), this);
-        pluginManager.registerEvents(new CommandCooldownManager(), this);
-        pluginManager.registerEvents(new PlayerHandler(), this);
-        pluginManager.registerEvents(new TablistHandler(), this);
-        pluginManager.registerEvents(new ChatDecoration(), this);
+        new GUIListener(this);
+        new CommandCooldownManager(this);
+        new PlayerHandler(this);
+        new TablistTeamsHandler(this);
+        new ChatDecoration(this);
     }
 
     private void registerCommands() {
