@@ -1,6 +1,5 @@
 package net.trustgames.core.managers.gui;
 
-import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.trustgames.core.Core;
 import net.trustgames.core.managers.gui.buttons.InventoryButton;
@@ -19,12 +18,9 @@ import java.util.stream.IntStream;
  *
  * @see InventoryGUI
  */
-public abstract class PaginatedGUI extends InventoryGUI {
+public class PaginatedGUI extends InventoryGUI {
 
     private final GUIManager guiManager;
-
-    @Getter
-    private final InventoryGUI templateGui;
     private final List<InventoryGUI> pages = new ArrayList<>();
 
     private final ConcurrentHashMap<UUID, Integer> currentPage = new ConcurrentHashMap<>();
@@ -37,7 +33,6 @@ public abstract class PaginatedGUI extends InventoryGUI {
                         @NotNull Rows rows) {
         super(title, rows);
         this.guiManager = guiManager;
-        this.templateGui = this.createTemplate();
     }
 
     /**
@@ -62,11 +57,11 @@ public abstract class PaginatedGUI extends InventoryGUI {
     @SuppressWarnings("CommentedOutCode")
     public void paginate(List<InventoryButton> buttons) {
         this.pages.clear();
-        int invSize = templateGui.getInventory().getSize();
+        int invSize = this.getInventory().getSize();
 
         // how many free (undefined) slots there is in the templateGui
         List<Integer> freeSlots = IntStream.range(0, invSize)
-                .filter(i -> !templateGui.buttonMap.containsKey(i))
+                .filter(i -> !this.buttonMap.containsKey(i))
                 .boxed()
                 .toList();
 
@@ -74,7 +69,7 @@ public abstract class PaginatedGUI extends InventoryGUI {
 
         // remove page buttons on first and last page
         for (int i = 0; i < pageAmount; i++) {
-            InventoryGUI templateGuiClone = templateGui.clone();
+            InventoryGUI templateGuiClone = this.clone();
             if (i == 0) {
                 onFirstPagedButtons(templateGuiClone);
             }
@@ -303,15 +298,4 @@ public abstract class PaginatedGUI extends InventoryGUI {
             currentPage.remove(event.getPlayer().getUniqueId());
         }
     }
-
-    /**
-     * Creates a gui that will be used as template for the pagination.
-     * Every page will look as this templateGui, with the only exception that
-     * InventoryPageButtons might get removed depending on what the current page is
-     *
-     * @return new InventoryGUI that will be used as a template
-     * @see InventoryPageButton
-     */
-
-    protected abstract InventoryGUI createTemplate();
 }

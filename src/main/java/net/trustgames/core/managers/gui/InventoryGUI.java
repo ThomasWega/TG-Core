@@ -18,7 +18,7 @@ import java.util.*;
 /**
  * Single page chest inventory
  */
-public abstract class InventoryGUI implements InventoryHandler, Cloneable {
+public class InventoryGUI implements InventoryHandler, Cloneable {
 
     protected Map<Integer, @Nullable InventoryButton> buttonMap = new HashMap<>();
 

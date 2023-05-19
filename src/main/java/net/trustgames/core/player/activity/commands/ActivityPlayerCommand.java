@@ -10,6 +10,7 @@ import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.trustgames.core.Core;
+import net.trustgames.core.managers.gui.GUIManager;
 import net.trustgames.core.managers.gui.InventoryGUI;
 import net.trustgames.core.managers.gui.PaginatedGUI;
 import net.trustgames.core.managers.gui.buttons.InventoryButton;
@@ -36,17 +37,18 @@ import java.sql.Timestamp;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class ActivityPlayerCommand extends PaginatedGUI {
+public class ActivityPlayerCommand {
 
     private final Toolkit toolkit;
     private final HikariManager hikariManager;
     private final PaperCommandManager<CommandSender> commandManager;
+    private final GUIManager guiManager;
 
     public ActivityPlayerCommand(Core core, Command.Builder<CommandSender> activityCommand) {
-        super(core.getGuiManager(), Component.text("Player activity"), Rows.SIX);
         this.toolkit = core.getToolkit();
         this.hikariManager = toolkit.getHikariManager();
         this.commandManager = core.getCommandManager();
+        this.guiManager = core.getGuiManager();
         register(activityCommand);
     }
 
@@ -81,9 +83,11 @@ public class ActivityPlayerCommand extends PaginatedGUI {
                 sender.sendMessage(CommandConfig.COMMAND_NO_PLAYER_DATA.addComponent(Component.text(targetName)));
                 return;
             }
-            this.getTemplateGui().setInventoryTitle(Component.text(targetName + "'s activity"));
-            this.paginate(optButtons.get());
-            this.openFirstPage(sender);
+            
+            PaginatedGUI paginatedGUI = new PaginatedGUI(guiManager, Component.text(targetName + "'s activity"), InventoryGUI.Rows.SIX);
+            fillTemplate(paginatedGUI);
+            paginatedGUI.paginate(optButtons.get());
+            paginatedGUI.openFirstPage(sender);
         });
     }
 
@@ -187,46 +191,43 @@ public class ActivityPlayerCommand extends PaginatedGUI {
         return Material.BEDROCK;
     }
 
-    @Override
-    protected InventoryGUI createTemplate() {
-        this.setButton(48, new InventoryPageButton()
-                .pager(paginatedGUI -> InventoryPageButton.SwitchAction.PREVIOUS)
-                .replace(paginatedGUI -> new InventoryButton()
+    private void fillTemplate(PaginatedGUI paginatedGUI) {
+        paginatedGUI.setButton(48, new InventoryPageButton()
+                .pager(gui -> InventoryPageButton.SwitchAction.PREVIOUS)
+                .replace(gui -> new InventoryButton()
                         .creator(player -> new ItemStack(Material.AIR)))
                 .creator(player -> new ItemBuilder(Material.ARROW)
                         .displayName(Component.text("Previous page")
                                 .color(NamedTextColor.YELLOW))
                         .hideFlags()
                         .build())
-                .consumer(event -> this.openPreviousPage(((Player) event.getWhoClicked())))
+                .consumer(event -> paginatedGUI.openPreviousPage(((Player) event.getWhoClicked())))
 
         );
 
-        this.setButton(50, new InventoryPageButton()
-                .pager(paginatedGUI -> InventoryPageButton.SwitchAction.NEXT)
-                .replace(paginatedGUI -> new InventoryButton()
+        paginatedGUI.setButton(50, new InventoryPageButton()
+                .pager(gui -> InventoryPageButton.SwitchAction.NEXT)
+                .replace(gui -> new InventoryButton()
                         .creator(player -> new ItemStack(Material.AIR)))
                 .creator(player -> new ItemBuilder(Material.ARROW)
                         .displayName(Component.text("Next page")
                                 .color(NamedTextColor.YELLOW))
                         .hideFlags()
                         .build())
-                .consumer(event -> this.openNextPage(((Player) event.getWhoClicked())))
+                .consumer(event -> paginatedGUI.openNextPage(((Player) event.getWhoClicked())))
 
         );
 
-        this.setButton(49, new InventoryButton()
+        paginatedGUI.setButton(49, new InventoryButton()
                 .creator(player -> new ItemBuilder(Material.KNOWLEDGE_BOOK)
-                        .displayName(Component.text("Page " + (this.getPageIndex(player.getUniqueId()) + 1) + "/" + this.getPagesAmount()))
+                        .displayName(Component.text("Page " + (paginatedGUI.getPageIndex(player.getUniqueId()) + 1) + "/" + paginatedGUI.getPagesAmount()))
                         .hideFlags()
                         .build()
                 )
         );
 
         int[] fill = new int[]{45, 46, 47, 51, 52, 53};
-        Arrays.stream(fill).forEach(value -> this.setButton(value, new InventoryButton()
+        Arrays.stream(fill).forEach(value -> paginatedGUI.setButton(value, new InventoryButton()
                 .creator(player -> new ItemStack(Material.AIR))));
-
-        return this;
     }
 }
