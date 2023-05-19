@@ -89,9 +89,7 @@ public final class Core extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        System.out.println("BEFORE CLOSE");
         toolkit.closeConnections();
-        System.out.println("AFTER CLOSE");
     }
 
     private void registerEvents() {

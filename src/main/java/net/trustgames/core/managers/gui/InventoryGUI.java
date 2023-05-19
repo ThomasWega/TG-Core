@@ -2,7 +2,7 @@ package net.trustgames.core.managers.gui;
 
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.trustgames.core.managers.gui.buttons.InventoryButton;
+import net.trustgames.core.managers.gui.buttons.GUIButton;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -20,7 +20,7 @@ import java.util.*;
  */
 public class InventoryGUI implements InventoryHandler, Cloneable {
 
-    protected Map<Integer, @Nullable InventoryButton> buttonMap = new HashMap<>();
+    protected Map<Integer, @Nullable GUIButton> buttonMap = new HashMap<>();
 
     @Getter
     private Inventory inventory;
@@ -85,7 +85,7 @@ public class InventoryGUI implements InventoryHandler, Cloneable {
      * @see InventoryGUI#addAll(Collection)
      * @deprecated This method is currently untested and may not function correctly.
      */
-    public boolean addButton(InventoryButton button) {
+    public boolean addButton(GUIButton button) {
         for (int i = 0; i < inventory.getSize(); i++) {
             if (buttonMap.get(i) == null) {
                 buttonMap.put(i, button);
@@ -100,11 +100,11 @@ public class InventoryGUI implements InventoryHandler, Cloneable {
      *
      * @param buttons Buttons to be added to the inventory
      * @return List of buttons which weren't added
-     * @see InventoryGUI#addButton(InventoryButton)
+     * @see InventoryGUI#addButton(GUIButton)
      * @deprecated This method is currently untested and may not function correctly.
      */
-    public List<InventoryButton> addAll(Collection<InventoryButton> buttons) {
-        List<InventoryButton> unAdded = new ArrayList<>();
+    public List<GUIButton> addAll(Collection<GUIButton> buttons) {
+        List<GUIButton> unAdded = new ArrayList<>();
         buttons.forEach(button -> {
             boolean addSuccess = addButton(button);
             if (!addSuccess) {
@@ -121,7 +121,7 @@ public class InventoryGUI implements InventoryHandler, Cloneable {
      * @param slot   Slot to set the button at
      * @param button Button to be set
      */
-    public void setButton(int slot, InventoryButton button) {
+    public void setButton(int slot, GUIButton button) {
         buttonMap.put(slot, button);
     }
 
@@ -131,7 +131,7 @@ public class InventoryGUI implements InventoryHandler, Cloneable {
      * @param slot Slot to get the button at
      * @return Button at the given slot
      */
-    public Optional<InventoryButton> getButton(int slot) {
+    public Optional<GUIButton> getButton(int slot) {
         return Optional.ofNullable(buttonMap.get(slot));
     }
 
@@ -156,7 +156,7 @@ public class InventoryGUI implements InventoryHandler, Cloneable {
     public void onClick(InventoryClickEvent event) {
         event.setCancelled(true);
         int slot = event.getRawSlot();
-        InventoryButton button = buttonMap.get(slot);
+        GUIButton button = buttonMap.get(slot);
         if (button != null && button.getEventConsumer() != null) {
             button.getEventConsumer().accept(event);
         }

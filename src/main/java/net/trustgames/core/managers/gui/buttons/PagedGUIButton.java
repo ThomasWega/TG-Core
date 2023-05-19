@@ -13,11 +13,11 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * InventoryButton with extended functionality of switching pages
- * and the option to replace the button with InventoryButton in case
+ * GUIButton with extended functionality of switching pages
+ * and the option to replace the button with GUIButton in case
  * the Page Switching is not needed (ex. previous page button on first page)
  */
-public class InventoryPageButton extends InventoryButton implements Cloneable {
+public class PagedGUIButton extends GUIButton implements Cloneable {
 
     @Getter
     @Setter
@@ -25,7 +25,7 @@ public class InventoryPageButton extends InventoryButton implements Cloneable {
 
     @Getter
     @Setter
-    private Function<PaginatedGUI, InventoryButton> replaceManager;
+    private Function<PaginatedGUI, GUIButton> replaceManager;
 
     /**
      * Set the ItemStack or the Meta for the Item
@@ -34,7 +34,7 @@ public class InventoryPageButton extends InventoryButton implements Cloneable {
      * @return the inventory page button
      */
     @Override
-    public InventoryPageButton creator(Function<Player, ItemStack> iconCreator) {
+    public PagedGUIButton creator(Function<Player, ItemStack> iconCreator) {
         super.creator(iconCreator);
         return this;
     }
@@ -46,8 +46,8 @@ public class InventoryPageButton extends InventoryButton implements Cloneable {
      * @return the inventory page button
      */
     @Override
-    public InventoryPageButton consumer(Consumer<InventoryClickEvent> eventConsumer) {
-        super.consumer(eventConsumer);
+    public PagedGUIButton event(Consumer<InventoryClickEvent> eventConsumer) {
+        super.event(eventConsumer);
         return this;
     }
 
@@ -59,7 +59,7 @@ public class InventoryPageButton extends InventoryButton implements Cloneable {
      * @param pageManager the page manager
      * @return the inventory page button
      */
-    public InventoryPageButton pager(Function<PaginatedGUI, SwitchAction> pageManager) {
+    public PagedGUIButton pager(Function<PaginatedGUI, SwitchAction> pageManager) {
         this.pageManager = pageManager;
         return this;
     }
@@ -72,21 +72,21 @@ public class InventoryPageButton extends InventoryButton implements Cloneable {
      * @return the inventory page button
      * @see PaginatedGUI#paginate(List) PaginatedGUI#paginate(List)
      */
-    public InventoryPageButton replace(Function<PaginatedGUI, @Nullable InventoryButton> replaceManager) {
+    public PagedGUIButton replace(Function<PaginatedGUI, @Nullable GUIButton> replaceManager) {
         this.replaceManager = replaceManager;
         return this;
     }
 
     /**
-     * Uses the clone of InventoryButton, but also
+     * Uses the clone of GUIButton, but also
      * clones the Page and Replace Managers
      *
-     * @return Deep clone of the InventoryPageButton
-     * @see InventoryButton#clone()
+     * @return Deep clone of the PagedGUIButton
+     * @see GUIButton#clone()
      */
     @Override
-    public InventoryPageButton clone() {
-        InventoryPageButton clone = (InventoryPageButton) super.clone();
+    public PagedGUIButton clone() {
+        PagedGUIButton clone = (PagedGUIButton) super.clone();
         clone.pageManager = this.pageManager;
         clone.replaceManager = this.replaceManager;
         return clone;

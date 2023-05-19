@@ -30,7 +30,7 @@ import java.util.logging.Level;
 public final class ChatDecoration implements Listener {
 
     public ChatDecoration(Core core) {
-        Bukkit.getServer().getPluginManager().registerEvents(this, core);
+        Bukkit.getPluginManager().registerEvents(this, core);
     }
 
     private final Sound sound = Sound.sound(Key.key(
@@ -75,7 +75,7 @@ public final class ChatDecoration implements Listener {
         TextColor messageColor = ColorUtils.color(ChatConfig.CHAT_COLOR.getFormatted()).color();
         message = player.hasPermission(ChatConfig.ALLOW_COLORS_PERM.getValue())
                 ? ColorUtils.color(message).colorIfAbsent(messageColor)
-                : Component.text(ColorUtils.stripColor(message)).color(messageColor);
+                : Component.text(ColorUtils.stripColor(message), messageColor);
         return message;
     }
 
@@ -119,7 +119,7 @@ public final class ChatDecoration implements Listener {
             for (String s : split) {
                 String stripped = ColorUtils.stripColor(Component.text(s));
                 if (stripped.contains(loopName)) {
-                    newMsg.add(Component.text(stripped).color(nameColor));
+                    newMsg.add(Component.text(stripped, nameColor));
                     /*
                     loops through the last message all the way to the last one,
                     until a color code is found. If one is found, it is used to set the
@@ -166,7 +166,6 @@ public final class ChatDecoration implements Listener {
      * (eg. PREFIX NAME:)
      */
     private Component getPreMessageField(@NotNull Player player) {
-        System.out.println("HERE IT SHOULD DO TWICE");
         return MiniMessage.miniMessage().deserialize(
                 "<tg_player_level> <tg_player_prefix_spaced><player_displayname> ",
                 MiniPlaceholders.getAudiencePlaceholders(player));

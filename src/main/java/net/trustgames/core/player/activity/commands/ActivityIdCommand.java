@@ -112,29 +112,29 @@ public final class ActivityIdCommand {
                                           @NotNull String action,
                                           @NotNull Timestamp time,
                                           long id) {
-        Component nameComp = Component.text("Name: ").color(NamedTextColor.WHITE)
-                .append(Component.text(name).color(TextColor.fromHexString("#FF5555")))
+        Component nameComp = Component.text("Name: ", NamedTextColor.WHITE)
+                .append(Component.text(name, TextColor.fromHexString("#FF5555")))
                 .clickEvent(ClickEvent.copyToClipboard(name));
 
-        Component ipComp = Component.text("IP: ").color(NamedTextColor.WHITE)
-                .append(Component.text(finalIp).color(TextColor.fromHexString("#FFCC33")))
+        Component ipComp = Component.text("IP: ", NamedTextColor.WHITE)
+                .append(Component.text(finalIp, TextColor.fromHexString("#FFCC33")))
                 .clickEvent(ClickEvent.copyToClipboard(finalIp));
 
-        Component uuidComp = Component.text("UUID: ").color(NamedTextColor.WHITE)
-                .append(Component.text(uuid.toString()).color(TextColor.fromHexString("#A0A0A0")))
+        Component uuidComp = Component.text("UUID: ", NamedTextColor.WHITE)
+                .append(Component.text(uuid.toString(), TextColor.fromHexString("#A0A0A0")))
                 .clickEvent(ClickEvent.copyToClipboard(uuid.toString()));
 
-        Component actionComp = Component.text("Action: ").color(NamedTextColor.WHITE)
-                .append(Component.text(action).color(TextColor.fromHexString("#0dc9de")))
+        Component actionComp = Component.text("Action: ", NamedTextColor.WHITE)
+                .append(Component.text(action, TextColor.fromHexString("#0dc9de")))
                 .clickEvent(ClickEvent.copyToClipboard(action));
 
-        Component dateTimeComp = Component.text("Date/Time: ").color(NamedTextColor.WHITE)
+        Component dateTimeComp = Component.text("Date/Time: ", NamedTextColor.WHITE)
                 .append(Component.text(time.toLocalDateTime()
-                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).color(TextColor.fromHexString("#07e015")))
+                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), TextColor.fromHexString("#07e015")))
                 .clickEvent(ClickEvent.copyToClipboard(time.toLocalDateTime().toString()));
 
-        Component idComp = Component.text("ID: ").color(NamedTextColor.WHITE)
-                .append(Component.text(String.valueOf(id)).color(TextColor.fromHexString("#ed1186")))
+        Component idComp = Component.text("ID: ", NamedTextColor.WHITE)
+                .append(Component.text(String.valueOf(id), TextColor.fromHexString("#ed1186")))
                 .clickEvent(ClickEvent.copyToClipboard(String.valueOf(id)));
 
 

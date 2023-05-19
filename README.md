@@ -6,8 +6,8 @@ Core for TrustGames.net
 
 ###### Features:
 - Chat Decoration manager
-- GUI Manager with Pagination
-- ItemBuilder with Skulls support
+- GUI Manager with Pagination and PlayerInventory
+- ItemBuilder with Skulls support (converts default italic text)
 - Skin Manager with fetching
 - Command Cooldown manager
 - Cooldown manager
@@ -16,6 +16,7 @@ Core for TrustGames.net
 - Player Data saving (kills/deaths/playtime/...)
 - Player display name
 - Gamerules
+- Hunger disable
 - Tablist Teams
 - Color conversion Util
 - Component conversion Util

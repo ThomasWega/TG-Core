@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 public class GUIListener implements Listener {
 
@@ -14,21 +15,26 @@ public class GUIListener implements Listener {
 
     public GUIListener(Core core) {
         this.guiManager = core.getGuiManager();
-        Bukkit.getServer().getPluginManager().registerEvents(this, core);
+        Bukkit.getPluginManager().registerEvents(this, core);
     }
 
     @EventHandler
-    public void onClick(InventoryClickEvent event) {
+    private void onClick(InventoryClickEvent event) {
         guiManager.handleClick(event);
     }
 
     @EventHandler
-    public void onOpen(InventoryOpenEvent event) {
+    private void onOpen(InventoryOpenEvent event) {
         guiManager.handleOpen(event);
     }
 
     @EventHandler
-    public void onClose(InventoryCloseEvent event) {
+    private void onClose(InventoryCloseEvent event) {
         guiManager.handleClose(event);
+    }
+
+    @EventHandler
+    private void onInteract(PlayerInteractEvent event) {
+        guiManager.handleInteract(event);
     }
 }

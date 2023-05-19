@@ -13,7 +13,7 @@ import java.util.function.Function;
  * Create an item for the GUI and specify the Material/Meta and what happens on
  * click on the item
  */
-public class InventoryButton implements Cloneable {
+public class GUIButton implements Cloneable {
 
     @Getter
     @Setter
@@ -23,13 +23,14 @@ public class InventoryButton implements Cloneable {
     @Setter
     private Consumer<InventoryClickEvent> eventConsumer;
 
+
     /**
      * Set the ItemStack or the Meta for the Item
      *
      * @param iconCreator the icon creator
      * @return the inventory button
      */
-    public InventoryButton creator(Function<Player, ItemStack> iconCreator) {
+    public GUIButton creator(Function<Player, ItemStack> iconCreator) {
         this.iconCreator = iconCreator;
         return this;
     }
@@ -40,24 +41,24 @@ public class InventoryButton implements Cloneable {
      * @param eventConsumer the event consumer
      * @return the inventory button
      */
-    public InventoryButton consumer(Consumer<InventoryClickEvent> eventConsumer) {
+    public GUIButton event(Consumer<InventoryClickEvent> eventConsumer) {
         this.eventConsumer = eventConsumer;
         return this;
     }
 
     /**
-     * Creates a new InventoryButton and sets
+     * Creates a new GUIButton and sets
      * the IconCreator and EventConsumer to the original one
      *
-     * @return Deep clone of the InventoryButton
+     * @return Deep clone of the GUIButton
      */
     @Override
-    public InventoryButton clone() {
-        InventoryButton clone;
+    public GUIButton clone() {
+        GUIButton clone;
         try {
-            clone = (InventoryButton) super.clone();
+            clone = (GUIButton) super.clone();
         } catch (CloneNotSupportedException e) {
-            throw new RuntimeException("Failed to create a clone of InventoryButton", e);
+            throw new RuntimeException("Failed to create a clone of GUIButton", e);
         }
         clone.iconCreator = this.iconCreator;
         clone.eventConsumer = this.eventConsumer;

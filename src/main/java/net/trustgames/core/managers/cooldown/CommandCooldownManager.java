@@ -19,7 +19,7 @@ import java.util.UUID;
 public final class CommandCooldownManager implements Listener {
 
     public CommandCooldownManager(Core core) {
-        Bukkit.getServer().getPluginManager().registerEvents(this, core);
+        Bukkit.getPluginManager().registerEvents(this, core);
     }
 
     private final HashMap<UUID, Long> commandCooldown = new HashMap<>();

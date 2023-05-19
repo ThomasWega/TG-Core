@@ -6,15 +6,14 @@ import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.paper.PaperCommandManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.trustgames.core.Core;
 import net.trustgames.core.managers.gui.GUIManager;
 import net.trustgames.core.managers.gui.InventoryGUI;
 import net.trustgames.core.managers.gui.PaginatedGUI;
-import net.trustgames.core.managers.gui.buttons.InventoryButton;
-import net.trustgames.core.managers.gui.buttons.InventoryPageButton;
+import net.trustgames.core.managers.gui.buttons.GUIButton;
+import net.trustgames.core.managers.gui.buttons.PagedGUIButton;
 import net.trustgames.core.managers.item.ItemBuilder;
 import net.trustgames.core.player.activity.config.PlayerActivityMaterials;
 import net.trustgames.toolkit.Toolkit;
@@ -92,7 +91,7 @@ public class ActivityPlayerCommand {
     }
 
     private void createButtons(@NotNull String targetName,
-                               Consumer<Optional<List<InventoryButton>>> activityItemsCallback) {
+                               Consumer<Optional<List<GUIButton>>> activityItemsCallback) {
         new PlayerDataFetcher(toolkit).resolveUUIDAsync(targetName).thenAccept(optUuid -> {
             if (optUuid.isEmpty()) {
                 activityItemsCallback.accept(Optional.empty());
@@ -105,7 +104,7 @@ public class ActivityPlayerCommand {
                     return;
                 }
 
-                List<InventoryButton> buttons = new ArrayList<>();
+                List<GUIButton> buttons = new ArrayList<>();
             /*
              loop through all the results and for each one, set the corresponding
              id, uuid, ip, and time to the lore and set action as the display name.
@@ -123,14 +122,14 @@ public class ActivityPlayerCommand {
                     List<Component> loreList = createLore(time, stringUuid, ip, id);
 
                     ItemStack activityItem = new ItemBuilder(getMaterial(action), 1)
-                            .displayName(Component.empty().append(Component.text(action)).style(Style.style(NamedTextColor.DARK_PURPLE, TextDecoration.BOLD)))
+                            .displayName(Component.text(action, NamedTextColor.DARK_PURPLE, TextDecoration.BOLD))
                             .lore(loreList)
                             .hideFlags()
                             .build();
 
-                    InventoryButton activityButton = new InventoryButton()
+                    GUIButton activityButton = new GUIButton()
                             .creator(player -> activityItem)
-                            .consumer(event -> {
+                            .event(event -> {
                                 Player player = ((Player) event.getWhoClicked());
                                 player.performCommand("activity id " + id);
                                 player.closeInventory(InventoryCloseEvent.Reason.PLUGIN);
@@ -152,21 +151,21 @@ public class ActivityPlayerCommand {
 
         ip = Objects.requireNonNullElse(ip, "UNKNOWN");
 
-        Component dateComp = Component.textOfChildren(Component.text("Date: ").color(NamedTextColor.WHITE))
-                .append(Component.textOfChildren(Component.text(time.toLocalDateTime().toLocalDate().toString())).color(NamedTextColor.YELLOW));
+        Component dateComp = Component.text("Date: ", NamedTextColor.WHITE)
+                .append(Component.text(time.toLocalDateTime().toLocalDate().toString(), NamedTextColor.YELLOW));
 
-        Component timeComp = Component.textOfChildren(Component.text("Time: ").color(NamedTextColor.WHITE))
-                .append(Component.textOfChildren(Component.text(time.toLocalDateTime().toLocalTime().toString()).color(NamedTextColor.GOLD)));
+        Component timeComp = Component.text("Time: ", NamedTextColor.WHITE)
+                .append(Component.text(time.toLocalDateTime().toLocalTime().toString(), NamedTextColor.GOLD));
 
-        Component uuidComp = Component.textOfChildren(Component.text("UUID: ").color(NamedTextColor.WHITE))
-                .append(Component.textOfChildren(Component.text(stringUuid).color(NamedTextColor.GRAY)));
+        Component uuidComp = Component.text("UUID: ", NamedTextColor.WHITE)
+                .append(Component.text(stringUuid, NamedTextColor.GRAY));
 
-        Component ipComp = Component.textOfChildren(Component.text("IP: ").color(NamedTextColor.WHITE))
-                .append(Component.textOfChildren(Component.text(ip)).color(NamedTextColor.GREEN));
+        Component ipComp = Component.text("IP: ", NamedTextColor.WHITE)
+                .append(Component.text(ip, NamedTextColor.GREEN));
 
-        Component idComp = Component.text(id).color(TextColor.fromHexString("#272a2e"));
+        Component idComp = Component.text(id, TextColor.fromHexString("#272a2e"));
 
-        Component clickToPrintComp = Component.text("Click to print").color(NamedTextColor.LIGHT_PURPLE);
+        Component clickToPrintComp = Component.text("Click to print", NamedTextColor.LIGHT_PURPLE);
 
         return List.of(
                 dateComp,
@@ -192,33 +191,31 @@ public class ActivityPlayerCommand {
     }
 
     private void fillTemplate(PaginatedGUI paginatedGUI) {
-        paginatedGUI.setButton(48, new InventoryPageButton()
-                .pager(gui -> InventoryPageButton.SwitchAction.PREVIOUS)
-                .replace(gui -> new InventoryButton()
+        paginatedGUI.setButton(48, new PagedGUIButton()
+                .pager(gui -> PagedGUIButton.SwitchAction.PREVIOUS)
+                .replace(gui -> new GUIButton()
                         .creator(player -> new ItemStack(Material.AIR)))
                 .creator(player -> new ItemBuilder(Material.ARROW)
-                        .displayName(Component.text("Previous page")
-                                .color(NamedTextColor.YELLOW))
+                        .displayName(Component.text("Previous page", NamedTextColor.YELLOW))
                         .hideFlags()
                         .build())
-                .consumer(event -> paginatedGUI.openPreviousPage(((Player) event.getWhoClicked())))
+                .event(event -> paginatedGUI.openPreviousPage(((Player) event.getWhoClicked())))
 
         );
 
-        paginatedGUI.setButton(50, new InventoryPageButton()
-                .pager(gui -> InventoryPageButton.SwitchAction.NEXT)
-                .replace(gui -> new InventoryButton()
+        paginatedGUI.setButton(50, new PagedGUIButton()
+                .pager(gui -> PagedGUIButton.SwitchAction.NEXT)
+                .replace(gui -> new GUIButton()
                         .creator(player -> new ItemStack(Material.AIR)))
                 .creator(player -> new ItemBuilder(Material.ARROW)
-                        .displayName(Component.text("Next page")
-                                .color(NamedTextColor.YELLOW))
+                        .displayName(Component.text("Next page", NamedTextColor.YELLOW))
                         .hideFlags()
                         .build())
-                .consumer(event -> paginatedGUI.openNextPage(((Player) event.getWhoClicked())))
+                .event(event -> paginatedGUI.openNextPage(((Player) event.getWhoClicked())))
 
         );
 
-        paginatedGUI.setButton(49, new InventoryButton()
+        paginatedGUI.setButton(49, new GUIButton()
                 .creator(player -> new ItemBuilder(Material.KNOWLEDGE_BOOK)
                         .displayName(Component.text("Page " + (paginatedGUI.getPageIndex(player.getUniqueId()) + 1) + "/" + paginatedGUI.getPagesAmount()))
                         .hideFlags()
@@ -227,7 +224,7 @@ public class ActivityPlayerCommand {
         );
 
         int[] fill = new int[]{45, 46, 47, 51, 52, 53};
-        Arrays.stream(fill).forEach(value -> paginatedGUI.setButton(value, new InventoryButton()
+        Arrays.stream(fill).forEach(value -> paginatedGUI.setButton(value, new GUIButton()
                 .creator(player -> new ItemStack(Material.AIR))));
     }
 }

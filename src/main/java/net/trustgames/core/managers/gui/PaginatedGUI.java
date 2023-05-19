@@ -2,8 +2,8 @@ package net.trustgames.core.managers.gui;
 
 import net.kyori.adventure.text.Component;
 import net.trustgames.core.Core;
-import net.trustgames.core.managers.gui.buttons.InventoryButton;
-import net.trustgames.core.managers.gui.buttons.InventoryPageButton;
+import net.trustgames.core.managers.gui.buttons.GUIButton;
+import net.trustgames.core.managers.gui.buttons.PagedGUIButton;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.jetbrains.annotations.NotNull;
@@ -13,11 +13,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
 
-/**
- * Manage a list of InventoryGUIs as pages and handle switching of these pages
- *
- * @see InventoryGUI
- */
 public class PaginatedGUI extends InventoryGUI {
 
     private final GUIManager guiManager;
@@ -26,6 +21,8 @@ public class PaginatedGUI extends InventoryGUI {
     private final ConcurrentHashMap<UUID, Integer> currentPage = new ConcurrentHashMap<>();
 
     /**
+     * Manage a list of InventoryGUIs as pages and handle switching of these pages
+     *
      * @see InventoryGUI
      */
     public PaginatedGUI(@NotNull GUIManager guiManager,
@@ -55,7 +52,7 @@ public class PaginatedGUI extends InventoryGUI {
      * @param buttons List of buttons to create pages for
      */
     @SuppressWarnings("CommentedOutCode")
-    public void paginate(List<InventoryButton> buttons) {
+    public void paginate(List<GUIButton> buttons) {
         this.pages.clear();
         int invSize = this.getInventory().getSize();
 
@@ -113,8 +110,8 @@ public class PaginatedGUI extends InventoryGUI {
      */
     private void onFirstPagedButtons(InventoryGUI templateGuiClone) {
         templateGuiClone.buttonMap.forEach((slot, button) -> {
-            if (!(button instanceof InventoryPageButton pageButton)) return;
-            if (pageButton.getPageManager().apply(this) != InventoryPageButton.SwitchAction.PREVIOUS) return;
+            if (!(button instanceof PagedGUIButton pageButton)) return;
+            if (pageButton.getPageManager().apply(this) != PagedGUIButton.SwitchAction.PREVIOUS) return;
 
             templateGuiClone.buttonMap.replace(slot, pageButton.getReplaceManager().apply(this));
         });
@@ -128,8 +125,8 @@ public class PaginatedGUI extends InventoryGUI {
      */
     private void onLastPagedButtons(InventoryGUI templateGuiClone) {
         templateGuiClone.buttonMap.forEach((slot, button) -> {
-            if (!(button instanceof InventoryPageButton pageButton)) return;
-            if (pageButton.getPageManager().apply(this) != InventoryPageButton.SwitchAction.NEXT) return;
+            if (!(button instanceof PagedGUIButton pageButton)) return;
+            if (pageButton.getPageManager().apply(this) != PagedGUIButton.SwitchAction.NEXT) return;
 
             templateGuiClone.buttonMap.replace(slot, pageButton.getReplaceManager().apply(this));
         });
@@ -141,7 +138,7 @@ public class PaginatedGUI extends InventoryGUI {
      * @param invSize Size of the inventory
      * @param buttons Buttons to fill the inventory with
      */
-    private void fillPages(int invSize, List<InventoryButton> buttons) {
+    private void fillPages(int invSize, List<GUIButton> buttons) {
         int buttonIndex = 0;
         for (InventoryGUI inventoryGUI : pages) {
             for (int i = 0; i < invSize; i++) {

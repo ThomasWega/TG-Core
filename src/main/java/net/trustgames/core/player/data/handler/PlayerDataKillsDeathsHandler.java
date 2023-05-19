@@ -17,7 +17,7 @@ public class PlayerDataKillsDeathsHandler implements Listener {
 
     public PlayerDataKillsDeathsHandler(Core core) {
         this.toolkit = core.getToolkit();
-        Bukkit.getServer().getPluginManager().registerEvents(this, core);
+        Bukkit.getPluginManager().registerEvents(this, core);
     }
 
     @EventHandler

@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class TablistTeamsHandler implements Listener {
 
     public TablistTeamsHandler(Core core) {
-        Bukkit.getServer().getPluginManager().registerEvents(this, core);
+        Bukkit.getPluginManager().registerEvents(this, core);
     }
 
     @EventHandler

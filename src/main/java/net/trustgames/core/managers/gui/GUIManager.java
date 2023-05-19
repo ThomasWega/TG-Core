@@ -1,11 +1,13 @@
 package net.trustgames.core.managers.gui;
 
 import net.trustgames.core.Core;
+import net.trustgames.core.managers.gui.player.PlayerInventoryHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,7 +55,10 @@ public class GUIManager {
     }
 
     public void handleClick(InventoryClickEvent event) {
-        InventoryHandler handler = activeInventories.get(event.getInventory());
+        Inventory inventory = event.getClickedInventory();
+        if (inventory == null) return;
+
+        InventoryHandler handler = activeInventories.get(inventory);
         if (handler != null) {
             handler.onClick(event);
         }
@@ -72,6 +77,18 @@ public class GUIManager {
         if (handler != null) {
             handler.onClose(event);
             unregisterInventory(inventory);
+        }
+    }
+
+    /**
+     * This event is called when item is clicked on from the hotbar
+     * (not from an open inventory)
+     */
+    public void handleInteract(PlayerInteractEvent event){
+        Inventory inventory = event.getPlayer().getInventory();
+        InventoryHandler handler = activeInventories.get(inventory);
+        if (handler instanceof PlayerInventoryHandler playerInventoryHandler) {
+            playerInventoryHandler.onHotbarInteract(event);
         }
     }
 }

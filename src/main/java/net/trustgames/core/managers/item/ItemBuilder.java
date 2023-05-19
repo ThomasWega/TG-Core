@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -28,7 +29,7 @@ import java.util.*;
  */
 @ToString
 @EqualsAndHashCode
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public class ItemBuilder {
 
     @Getter
@@ -37,7 +38,7 @@ public class ItemBuilder {
     private final ItemMeta meta;
     private final Damageable damageable;
     @Getter
-    private final List<Component> lore = new ArrayList<>();
+    private List<Component> lore = new ArrayList<>();
     @Getter
     private final Set<ItemFlag> flags = new HashSet<>();
     @Getter
@@ -144,7 +145,9 @@ public class ItemBuilder {
      * @return The ItemBuilder
      */
     public ItemBuilder displayName(Component displayName) {
-        this.displayName = displayName;
+        this.displayName = displayName
+                // in vanilla minecraft italic may be set on some items
+                .decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE);
         meta.displayName(this.displayName);
         itemStack.setItemMeta(meta);
         return this;
@@ -158,8 +161,11 @@ public class ItemBuilder {
      * @return The ItemBuilder
      */
     public ItemBuilder lore(@NotNull List<Component> lore) {
-        clearLore();
-        this.lore.addAll(lore);
+        // handle if the list is immutable
+        List<Component> newLore = new ArrayList<>(lore);
+        // in vanilla minecraft italic may be set on some items
+        newLore.replaceAll(component -> component.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
+        this.lore = newLore;
         meta.lore(this.lore);
         itemStack.setItemMeta(meta);
         return this;
@@ -183,7 +189,7 @@ public class ItemBuilder {
      * @return The ItemBuilder
      */
     public ItemBuilder appendLoreLine(Component line) {
-        lore.add(line);
+        lore.add(line.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE));
         meta.lore(lore);
         itemStack.setItemMeta(meta);
         return this;
@@ -198,6 +204,7 @@ public class ItemBuilder {
      * @return The ItemBuilder
      */
     public ItemBuilder setLoreLine(int index, Component line, boolean override) {
+        line = line.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE);
         if (override) {
             lore.set(index, line);
         } else {
@@ -217,7 +224,11 @@ public class ItemBuilder {
      * @return The ItemBuilder
      */
     public ItemBuilder setLoreLine(int index, Component line) {
-        return setLoreLine(index, line, true);
+        return setLoreLine(
+                index,
+                line.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE),
+                true
+        );
     }
 
     /**
@@ -240,6 +251,7 @@ public class ItemBuilder {
      * @return The ItemBuilder
      */
     public ItemBuilder removeLoreLine(Component line) {
+        line = line.decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE);
         lore.removeAll(Collections.singleton(line));
         meta.lore(lore);
         itemStack.setItemMeta(meta);

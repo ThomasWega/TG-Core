@@ -16,7 +16,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 public final class PlayerHandler implements Listener {
 
     public PlayerHandler(Core core) {
-        Bukkit.getServer().getPluginManager().registerEvents(this, core);
+        Bukkit.getPluginManager().registerEvents(this, core);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
