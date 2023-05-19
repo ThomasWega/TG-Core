@@ -9,7 +9,6 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,21 +17,9 @@ import java.util.Map;
 
 public class SkullBuilder extends ItemBuilder {
 
-    /**
-     * @implNote Make sure Material is PLAYER_HEAD!
-     */
-    public SkullBuilder(ItemStack itemStack) {
-        super(itemStack);
-    }
-
-    public SkullBuilder(int amount) {
-        super(Material.PLAYER_HEAD, amount);
-    }
-
     public SkullBuilder() {
         super(Material.PLAYER_HEAD);
     }
-
     public SkullBuilder(@NotNull ItemBuilder builder) {
         super(builder);
     }
