@@ -1,4 +1,4 @@
-package net.trustgames.core.managers;
+package net.trustgames.core.managers.cooldown;
 
 import net.trustgames.core.Core;
 import net.trustgames.toolkit.config.CommandConfig;

@@ -33,8 +33,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.Timestamp;
-import java.time.ZoneId;
-import java.time.format.TextStyle;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -90,16 +88,16 @@ public class ActivityPlayerCommand extends PaginatedGUI {
     }
 
     private void createButtons(@NotNull String targetName,
-                               Consumer<Optional<List<InventoryButton>>> activityItems) {
+                               Consumer<Optional<List<InventoryButton>>> activityItemsCallback) {
         new PlayerDataFetcher(toolkit).resolveUUIDAsync(targetName).thenAccept(optUuid -> {
             if (optUuid.isEmpty()) {
-                activityItems.accept(Optional.empty());
+                activityItemsCallback.accept(Optional.empty());
                 return;
             }
             PlayerActivityFetcher activityFetcher = new PlayerActivityFetcher(hikariManager);
             activityFetcher.fetchByUUID(optUuid.get()).thenAccept(playerActivity -> {
                 if (playerActivity.isEmpty()) {
-                    activityItems.accept(Optional.empty());
+                    activityItemsCallback.accept(Optional.empty());
                     return;
                 }
 
@@ -137,7 +135,7 @@ public class ActivityPlayerCommand extends PaginatedGUI {
 
                     buttons.add(activityButton);
                 }
-                activityItems.accept(Optional.of(buttons));
+                activityItemsCallback.accept(Optional.of(buttons));
             });
         });
     }
@@ -149,17 +147,32 @@ public class ActivityPlayerCommand extends PaginatedGUI {
 
 
         ip = Objects.requireNonNullElse(ip, "UNKNOWN");
+
+        Component dateComp = Component.textOfChildren(Component.text("Date: ").color(NamedTextColor.WHITE))
+                .append(Component.textOfChildren(Component.text(time.toLocalDateTime().toLocalDate().toString())).color(NamedTextColor.YELLOW));
+
+        Component timeComp = Component.textOfChildren(Component.text("Time: ").color(NamedTextColor.WHITE))
+                .append(Component.textOfChildren(Component.text(time.toLocalDateTime().toLocalTime().toString()).color(NamedTextColor.GOLD)));
+
+        Component uuidComp = Component.textOfChildren(Component.text("UUID: ").color(NamedTextColor.WHITE))
+                .append(Component.textOfChildren(Component.text(stringUuid).color(NamedTextColor.GRAY)));
+
+        Component ipComp = Component.textOfChildren(Component.text("IP: ").color(NamedTextColor.WHITE))
+                .append(Component.textOfChildren(Component.text(ip)).color(NamedTextColor.GREEN));
+
+        Component idComp = Component.text(id).color(TextColor.fromHexString("#272a2e"));
+
+        Component clickToPrintComp = Component.text("Click to print").color(NamedTextColor.LIGHT_PURPLE);
+
         return List.of(
-                Component.text("Date: ").color(NamedTextColor.WHITE).append(Component.text(time.toLocalDateTime().toLocalDate().toString())).color(NamedTextColor.YELLOW),
-                Component.text("Time: ").color(NamedTextColor.WHITE).append(Component.text(time.toLocalDateTime().toLocalTime().toString()).color(NamedTextColor.GOLD))
-                        .appendSpace()
-                        .append(Component.text(ZoneId.systemDefault().getDisplayName(TextStyle.SHORT, Locale.ROOT))),
+                dateComp,
+                timeComp,
                 Component.empty(),
-                Component.text("UUID: ").color(NamedTextColor.WHITE).append(Component.text(stringUuid).color(NamedTextColor.GRAY)),
-                Component.text("IP: ").color(NamedTextColor.WHITE).append(Component.text(ip)).color(NamedTextColor.GREEN),
+                uuidComp,
+                ipComp,
                 Component.empty(),
-                Component.text(id).color(TextColor.fromHexString("#272a2e")),
-                Component.text("Click to print").color(NamedTextColor.LIGHT_PURPLE)
+                idComp,
+                clickToPrintComp
         );
     }
 
