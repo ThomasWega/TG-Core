@@ -9,8 +9,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.trustgames.core.Core;
-import net.trustgames.core.utils.ColorUtils;
 import net.trustgames.toolkit.Toolkit;
 import net.trustgames.toolkit.config.CommandConfig;
 import net.trustgames.toolkit.config.PermissionConfig;
@@ -140,7 +140,7 @@ public final class ActivityIdCommand {
 
         return List.of(
                 Component.empty(),
-                ColorUtils.color("&l&#3e403e--------------------"),
+                MiniMessage.miniMessage().deserialize("<bold><color:#3e403e>--------------------"),
                 nameComp,
                 ipComp,
                 uuidComp,
@@ -153,7 +153,7 @@ public final class ActivityIdCommand {
                 Component.empty(),
 
                 idComp,
-                ColorUtils.color("&l&#3e403e--------------------"),
+                MiniMessage.miniMessage().deserialize("<bold><color:#3e403e>--------------------"),
                 Component.empty()
         );
     }
