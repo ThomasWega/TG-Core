@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public class GUIListener implements Listener {
@@ -36,5 +37,10 @@ public class GUIListener implements Listener {
     @EventHandler
     private void onInteract(PlayerInteractEvent event) {
         guiManager.handleInteract(event);
+    }
+
+    @EventHandler
+    private void onHotbarDrop(PlayerDropItemEvent event) {
+        guiManager.handleHotbarDrop(event);
     }
 }

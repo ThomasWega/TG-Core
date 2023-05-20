@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
@@ -89,6 +90,18 @@ public class GUIManager {
         InventoryHandler handler = activeInventories.get(inventory);
         if (handler instanceof PlayerInventoryHandler playerInventoryHandler) {
             playerInventoryHandler.onHotbarInteract(event);
+        }
+    }
+
+    /**
+     * This event is called when item is dropped from the hotbar
+     * (not from an open inventory)
+     */
+    public void handleHotbarDrop(PlayerDropItemEvent event){
+        Inventory inventory = event.getPlayer().getInventory();
+        InventoryHandler handler = activeInventories.get(inventory);
+        if (handler instanceof PlayerInventoryHandler playerInventoryHandler) {
+            playerInventoryHandler.onHotbarItemDrop(event);
         }
     }
 }

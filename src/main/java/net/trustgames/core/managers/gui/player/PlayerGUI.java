@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -72,6 +73,8 @@ public class PlayerGUI implements PlayerInventoryHandler {
 
     @Override
     public void onHotbarInteract(PlayerInteractEvent event) {
+        if (!event.getAction().isRightClick()) return;
+
         ItemStack item = event.getItem();
         int slot = Arrays.stream(event.getPlayer().getInventory().getContents()).toList().indexOf(item);
         if (slot == -1) return;
@@ -81,5 +84,10 @@ public class PlayerGUI implements PlayerInventoryHandler {
         if (button != null && button.getEventConsumer() != null) {
             button.getEventConsumerHotbar().accept(event);
         }
+    }
+
+    @Override
+    public void onHotbarItemDrop(PlayerDropItemEvent event) {
+        event.setCancelled(true);
     }
 }
