@@ -39,7 +39,7 @@ import java.util.logging.Logger;
  */
 public final class Core extends JavaPlugin {
 
-    public static final Logger LOGGER = PaperPluginLogger.getLogger("Core");
+    public static final Logger LOGGER = PaperPluginLogger.getLogger("TG-Core");
 
     @Getter
     private final Toolkit toolkit = new Toolkit();

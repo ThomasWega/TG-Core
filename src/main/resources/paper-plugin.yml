@@ -1,0 +1,9 @@
+name: TG-Core
+version: '${project.version}'
+main: net.trustgames.core.Core
+description: Core plugin for TrustGames.net
+api-version: '1.19'
+dependencies:
+  - name: LuckPerms
+    required: true
+    bootstrap: false
