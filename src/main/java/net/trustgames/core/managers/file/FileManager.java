@@ -1,4 +1,4 @@
-package net.trustgames.core.managers;
+package net.trustgames.core.managers.file;
 
 import net.trustgames.core.Core;
 import org.bukkit.plugin.Plugin;

@@ -9,9 +9,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.trustgames.core.Core;
-import net.trustgames.core.managers.LuckPermsManager;
 import net.trustgames.core.utils.ColorUtils;
 import net.trustgames.toolkit.config.chat.ChatConfig;
+import net.trustgames.toolkit.managers.permission.LuckPermsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -109,8 +109,10 @@ public final class ChatDecoration implements Listener {
         loop.sendMessage(preMessageField.append(newMsg));
 
         loop.sendActionBar(ChatConfig.MENTION_ACTIONBAR.formatMessage(
-                sender.getName(), LuckPermsManager.getPlayerPrefix(sender))
+                sender.getName(),
+                ColorUtils.color(LuckPermsManager.getOnlinePlayerPrefix(sender.getUniqueId())))
         );
+
         Audience.audience(loop).playSound(sound, Sound.Emitter.self());
 
         return true;

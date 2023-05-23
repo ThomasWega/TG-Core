@@ -8,9 +8,11 @@ import net.luckperms.api.event.EventBus;
 import net.luckperms.api.event.group.GroupCreateEvent;
 import net.luckperms.api.event.user.UserDataRecalculateEvent;
 import net.luckperms.api.model.group.Group;
+import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
 import net.trustgames.core.Core;
-import net.trustgames.core.managers.LuckPermsManager;
+import net.trustgames.core.utils.ColorUtils;
+import net.trustgames.toolkit.managers.permission.LuckPermsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -21,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
@@ -81,7 +84,7 @@ public final class TablistTeams {
             String teamName = i + group.getName();
             if (tablist.getTeam(teamName) == null) {
                 Team team = tablist.registerNewTeam(i + "" + group.getName());
-                Component prefix = LuckPermsManager.getGroupPrefix(group);
+                Component prefix = ColorUtils.color(LuckPermsManager.getGroupPrefix(group));
                 if (!group.getName().equals("default"))
                     team.prefix(prefix.appendSpace());
             }
@@ -96,7 +99,12 @@ public final class TablistTeams {
      * @param player Player to add to the scoreboard team
      */
     public static void addPlayer(@NotNull Player player) {
-        String group = LuckPermsManager.getUser(player).getPrimaryGroup();
+        Optional<User> optUser = LuckPermsManager.getOnlineUser(player.getUniqueId());
+        if (optUser.isEmpty())
+            return;
+
+        User user = optUser.get();
+        String group = user.getPrimaryGroup();
         Group playerGroup = LuckPermsManager.getGroupManager().getGroup(group);
         if (playerGroup == null) return;
         String stringTeam = groupOrder.get(playerGroup) + playerGroup.getName();
@@ -110,7 +118,10 @@ public final class TablistTeams {
         team.addPlayer(player);
 
         if (!stringTeam.contains("default"))
-            team.prefix(LuckPermsManager.getPlayerPrefix(player).appendSpace());
+            team.prefix(
+                    ColorUtils.color(LuckPermsManager.getOnlinePlayerPrefix(user))
+                    .appendSpace()
+            );
 
         player.setScoreboard(tablist);
     }

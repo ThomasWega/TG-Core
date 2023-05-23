@@ -3,13 +3,15 @@ package net.trustgames.core.utils;
 import io.github.miniplaceholders.api.Expansion;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.Tag;
-import net.trustgames.core.managers.LuckPermsManager;
+import net.luckperms.api.model.user.User;
 import net.trustgames.toolkit.Toolkit;
 import net.trustgames.toolkit.database.player.data.PlayerDataFetcher;
 import net.trustgames.toolkit.database.player.data.config.PlayerDataType;
+import net.trustgames.toolkit.managers.permission.LuckPermsManager;
 import net.trustgames.toolkit.utils.LevelUtils;
 import org.bukkit.entity.Player;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class PlaceholderUtils {
@@ -49,9 +51,14 @@ public class PlaceholderUtils {
     }
     
     private Component formatPrefix(Player player) {
-        String primaryGroup = LuckPermsManager.getUser(player).getPrimaryGroup();
-        Component prefix = LuckPermsManager.getPlayerPrefix(player);
-        if (!(primaryGroup.equals("default"))){
+        Optional<User> optUser = LuckPermsManager.getOnlineUser(player.getUniqueId());
+        if (optUser.isEmpty()){
+            return Component.empty();
+        }
+        User user = optUser.get();
+        String primaryGroup = user.getPrimaryGroup();
+        Component prefix = ColorUtils.color(LuckPermsManager.getOnlinePlayerPrefix(user));
+        if (!(primaryGroup.equals("default"))) {
             prefix = prefix.appendSpace();
         } 
         return prefix;

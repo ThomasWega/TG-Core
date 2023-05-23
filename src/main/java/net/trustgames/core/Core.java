@@ -5,7 +5,7 @@ import cloud.commandframework.paper.PaperCommandManager;
 import com.destroystokyo.paper.utils.PaperPluginLogger;
 import lombok.Getter;
 import net.trustgames.core.chat.ChatDecoration;
-import net.trustgames.core.managers.FileManager;
+import net.trustgames.core.managers.file.FileManager;
 import net.trustgames.core.managers.command.CommandCooldownManager;
 import net.trustgames.core.managers.gui.GUIListener;
 import net.trustgames.core.managers.gui.GUIManager;
