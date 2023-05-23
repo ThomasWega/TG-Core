@@ -6,13 +6,13 @@ import com.destroystokyo.paper.utils.PaperPluginLogger;
 import lombok.Getter;
 import net.trustgames.core.chat.ChatDecoration;
 import net.trustgames.core.managers.FileManager;
-import net.trustgames.core.managers.cooldown.CommandCooldownManager;
+import net.trustgames.core.managers.command.CommandCooldownManager;
 import net.trustgames.core.managers.gui.GUIListener;
 import net.trustgames.core.managers.gui.GUIManager;
-import net.trustgames.core.player.PlayerHandler;
 import net.trustgames.core.player.activity.commands.ActivityCommands;
 import net.trustgames.core.player.data.handler.PlayerDataKillsDeathsHandler;
 import net.trustgames.core.player.data.handler.PlayerDataPlaytimeHandler;
+import net.trustgames.core.player.display_name.PlayerDisplayNameHandler;
 import net.trustgames.core.protection.CoreGamerulesHandler;
 import net.trustgames.core.tablist.TablistTeams;
 import net.trustgames.core.tablist.TablistTeamsHandler;
@@ -20,8 +20,8 @@ import net.trustgames.core.utils.PlaceholderUtils;
 import net.trustgames.toolkit.Toolkit;
 import net.trustgames.toolkit.database.player.activity.PlayerActivityDB;
 import net.trustgames.toolkit.database.player.data.PlayerDataDB;
-import net.trustgames.toolkit.managers.HikariManager;
-import net.trustgames.toolkit.managers.rabbit.RabbitManager;
+import net.trustgames.toolkit.managers.database.HikariManager;
+import net.trustgames.toolkit.managers.message_queue.RabbitManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -66,7 +66,7 @@ public final class Core extends JavaPlugin {
         guiManager = new GUIManager(this);
         new CoreGamerulesHandler();
         new TablistTeams(this);
-
+        
         /* ADD
         - chat system - add level
         - admin system (vanish, menus, spectate ...)
@@ -79,8 +79,6 @@ public final class Core extends JavaPlugin {
         - boosters
         - autorestart (only if no one is online)
         */
-
-        // Test Skull Builder
 
         new PlaceholderUtils(toolkit).initialize();
         registerCommands();
@@ -95,7 +93,7 @@ public final class Core extends JavaPlugin {
     private void registerEvents() {
         new GUIListener(this);
         new CommandCooldownManager(this);
-        new PlayerHandler(this);
+        new PlayerDisplayNameHandler(this);
         new ChatDecoration(this);
         new PlayerDataPlaytimeHandler(this);
         new PlayerDataKillsDeathsHandler(this);

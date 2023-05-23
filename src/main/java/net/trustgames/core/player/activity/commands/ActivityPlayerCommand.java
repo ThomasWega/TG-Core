@@ -22,7 +22,7 @@ import net.trustgames.toolkit.config.PermissionConfig;
 import net.trustgames.toolkit.database.player.activity.PlayerActivity;
 import net.trustgames.toolkit.database.player.activity.PlayerActivityFetcher;
 import net.trustgames.toolkit.database.player.data.PlayerDataFetcher;
-import net.trustgames.toolkit.managers.HikariManager;
+import net.trustgames.toolkit.managers.database.HikariManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;

@@ -7,3 +7,16 @@ dependencies:
   - name: LuckPerms
     required: true
     bootstrap: false
+
+  - name: MiniPlaceholders
+    required: true
+    bootstrap: false
+
+  - name: player-expansion-paper
+    required: true
+    bootstrap: false
+
+  - name: LuckPerms-Expansion
+    required: true
+    bootstrap: false
+
