@@ -18,8 +18,6 @@ Core for TrustGames.net
 - Gamerules
 - Hunger disable
 - Tablist Teams
-- Color conversion Util
-- Component conversion Util
 - Placeholder conversion Util (MiniPlaceholders)
 
 ###### Commands:

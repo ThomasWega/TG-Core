@@ -9,7 +9,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.trustgames.core.Core;
-import net.trustgames.core.utils.ColorUtils;
+import net.trustgames.toolkit.utils.ColorUtils;
 import net.trustgames.toolkit.config.chat.ChatConfig;
 import net.trustgames.toolkit.managers.permission.LuckPermsManager;
 import org.bukkit.Bukkit;
