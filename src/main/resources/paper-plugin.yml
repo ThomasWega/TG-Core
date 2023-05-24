@@ -20,3 +20,7 @@ dependencies:
     required: true
     bootstrap: false
 
+  - name: ProtocolLib
+    required: true
+    bootstrap: false
+
