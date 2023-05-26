@@ -170,7 +170,7 @@ public class PaginatedGUI extends InventoryGUI {
         UUID uuid = player.getUniqueId();
         Optional<InventoryGUI> page = getCurrentPage(uuid);
         if (page.isEmpty()) {
-            Core.LOGGER.warning("No page is present for uuid " + uuid);
+            Core.LOGGER.warn("No page is present for uuid {}", uuid);
             return;
         }
 

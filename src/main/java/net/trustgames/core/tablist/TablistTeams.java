@@ -24,14 +24,11 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 /**
  * Handles the priority sorting of groups and players in the player-list
  */
 public final class TablistTeams {
-
-    private static final Logger logger = Core.LOGGER;
 
     private static final HashMap<Group, Integer> groupOrder = new HashMap<>();
     @Getter
@@ -61,7 +58,7 @@ public final class TablistTeams {
             if (group.getWeight().isPresent()) {
                 groupWeight.put(group, group.getWeight().getAsInt());
             } else {
-                logger.warning("LuckPerms group " + group.getName() + " doesn't have any weight! Setting the weight to 1...");
+                Core.LOGGER.warn("LuckPerms group {} doesn't have any weight! Setting the weight to 1...", group.getName());
                 group.data().add(Node.builder("weight.1").build());
 
                 LuckPermsManager.getGroupManager().saveGroup(group);
@@ -111,7 +108,7 @@ public final class TablistTeams {
         Team team = tablist.getTeam(stringTeam);
 
         if (team == null) {
-            logger.severe("Scoreboard team " + stringTeam + " wasn't found");
+            Core.LOGGER.error("Scoreboard team {} wasn't found", stringTeam);
             return;
         }
 

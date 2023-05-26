@@ -61,6 +61,12 @@
                                         <exclude>**/module-info.*</exclude>
                                     </excludes>
                                 </filter>
+                                <filter>
+                                    <artifact>net.kyori:*</artifact>
+                                    <excludes>
+                                        <exclude>classpath.index</exclude>
+                                    </excludes>
+                                </filter>
                             </filters>
                         </configuration>
                     </execution>
@@ -184,6 +190,13 @@
             <groupId>cloud.commandframework</groupId>
             <artifactId>cloud-paper</artifactId>
             <version>1.8.3</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>cloud.commandframework</groupId>
+            <artifactId>cloud-minecraft-extras</artifactId>
+            <version>1.8.3</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.luckperms</groupId>

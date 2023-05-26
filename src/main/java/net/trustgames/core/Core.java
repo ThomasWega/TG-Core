@@ -2,8 +2,8 @@ package net.trustgames.core;
 
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
-import com.destroystokyo.paper.utils.PaperPluginLogger;
 import lombok.Getter;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.trustgames.core.chat.ChatDecoration;
 import net.trustgames.core.managers.command.CommandCooldownManager;
 import net.trustgames.core.managers.file.FileManager;
@@ -29,7 +29,6 @@ import redis.clients.jedis.JedisPool;
 
 import java.io.File;
 import java.util.Objects;
-import java.util.logging.Logger;
 
 /**
  * Main class of the Core plugin, which registers all the events and commands.
@@ -39,7 +38,7 @@ import java.util.logging.Logger;
  */
 public final class Core extends JavaPlugin {
 
-    public static final Logger LOGGER = PaperPluginLogger.getLogger("TG-Core");
+    public static ComponentLogger LOGGER;
 
     @Getter
     private final Toolkit toolkit = new Toolkit();
@@ -55,8 +54,10 @@ public final class Core extends JavaPlugin {
     public void onEnable() {
         // create a data folder
         if (getDataFolder().mkdirs()) {
-            LOGGER.warning("Created main plugin folder");
+            LOGGER.warn("Created main plugin folder {}", getDataFolder().getAbsoluteFile());
         }
+
+        LOGGER = getComponentLogger();
 
         createConfigs();
 
@@ -78,11 +79,13 @@ public final class Core extends JavaPlugin {
         - playtime bonus
         - boosters
         - autorestart (only if no one is online)
+        - npcs
         */
 
         new PlaceholderUtils(toolkit).initialize();
         registerCommands();
         registerEvents();
+
     }
 
     @Override
@@ -126,7 +129,7 @@ public final class Core extends JavaPlugin {
     private void initializeHikari() {
         YamlConfiguration mariaConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "mariadb.yml"));
         if (!mariaConfig.getBoolean("mariadb.enable")) {
-            LOGGER.warning("HikariCP is disabled");
+            LOGGER.warn("HikariCP is disabled");
             return;
         }
 
@@ -154,7 +157,7 @@ public final class Core extends JavaPlugin {
     private void initializeRabbit() {
         YamlConfiguration rabbitConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "rabbitmq.yml"));
         if (!rabbitConfig.getBoolean("rabbitmq.enable")) {
-            LOGGER.warning("RabbitMQ is disabled");
+            LOGGER.warn("RabbitMQ is disabled");
             return;
         }
 
@@ -176,7 +179,7 @@ public final class Core extends JavaPlugin {
     private void initializeRedis() {
         YamlConfiguration redisConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "redis.yml"));
         if (!redisConfig.getBoolean("redis.enable")) {
-            LOGGER.warning("Redis is disabled");
+            LOGGER.warn("Redis is disabled");
             return;
         }
 
