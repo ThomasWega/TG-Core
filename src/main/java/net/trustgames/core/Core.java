@@ -18,8 +18,6 @@ import net.trustgames.core.tablist.TablistTeams;
 import net.trustgames.core.tablist.TablistTeamsHandler;
 import net.trustgames.core.utils.PlaceholderUtils;
 import net.trustgames.toolkit.Toolkit;
-import net.trustgames.toolkit.database.player.activity.PlayerActivityDB;
-import net.trustgames.toolkit.database.player.data.PlayerDataDB;
 import net.trustgames.toolkit.managers.database.HikariManager;
 import net.trustgames.toolkit.managers.message_queue.RabbitManager;
 import org.bukkit.command.CommandSender;
@@ -52,12 +50,12 @@ public final class Core extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        LOGGER = getComponentLogger();
+
         // create a data folder
         if (getDataFolder().mkdirs()) {
             LOGGER.warn("Created main plugin folder {}", getDataFolder().getAbsoluteFile());
         }
-
-        LOGGER = getComponentLogger();
 
         createConfigs();
 
@@ -142,14 +140,9 @@ public final class Core extends JavaPlugin {
                 mariaConfig.getInt("hikaricp.pool-size")
         ));
 
-        HikariManager hikariManager = toolkit.getHikariManager();
-        if (hikariManager == null) {
+        if (toolkit.getHikariManager() == null) {
             throw new RuntimeException("HikariManager wasn't initialized");
         }
-        hikariManager.onDataSourceInitialized(() -> {
-            new PlayerDataDB(hikariManager);
-            new PlayerActivityDB(hikariManager);
-        });
 
         LOGGER.info("HikariCP is enabled");
     }
@@ -168,8 +161,7 @@ public final class Core extends JavaPlugin {
                 rabbitConfig.getInt("rabbitmq.port"))
         );
 
-        RabbitManager rabbitManager = toolkit.getRabbitManager();
-        if (rabbitManager == null) {
+        if (toolkit.getRabbitManager() == null) {
             throw new RuntimeException("RabbitManager wasn't initialized");
         }
 
@@ -190,8 +182,7 @@ public final class Core extends JavaPlugin {
                 redisConfig.getString("redis.password")
         ));
 
-        JedisPool jedisPool = toolkit.getJedisPool();
-        if (jedisPool == null) {
+        if (toolkit.getJedisPool() == null) {
             throw new RuntimeException("JedisPool wasn't initialized");
         }
 
