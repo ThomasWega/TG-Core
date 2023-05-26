@@ -9,6 +9,7 @@ import net.trustgames.core.managers.command.CommandCooldownManager;
 import net.trustgames.core.managers.file.FileManager;
 import net.trustgames.core.managers.gui.GUIListener;
 import net.trustgames.core.managers.gui.GUIManager;
+import net.trustgames.core.player.JoinLeaveMessageDisabler;
 import net.trustgames.core.player.activity.commands.ActivityCommands;
 import net.trustgames.core.player.data.handler.PlayerDataKillsDeathsHandler;
 import net.trustgames.core.player.data.handler.PlayerDataPlaytimeHandler;
@@ -99,6 +100,7 @@ public final class Core extends JavaPlugin {
         new PlayerDataPlaytimeHandler(this);
         new PlayerDataKillsDeathsHandler(this);
         new TablistTeamsHandler(this);
+        new JoinLeaveMessageDisabler(this);
     }
 
     private void registerCommands() {
