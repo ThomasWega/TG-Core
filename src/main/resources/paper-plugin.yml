@@ -12,7 +12,7 @@ dependencies:
     required: true
     bootstrap: false
 
-  - name: player-expansion-paper
+  - name: MiniPlaceholders-Player-Expansion
     required: true
     bootstrap: false
 

@@ -8,11 +8,10 @@ import net.trustgames.toolkit.config.chat.ChatConfig;
 
 public enum PlayerDisplayNameConfig {
     DISPLAY_NAME(ChatConfig.NAME_COLOR.getValue() +
-            "<hover:show_text:'TO ADD'>" +
             "<click:suggest_command:'<player_name>'>" +
             "<player_name>" +
-            "</click>" +
-            "</hover>");
+            "</click>"
+    );
 
     private final String value;
 
