@@ -2,10 +2,10 @@ package net.trustgames.core.managers.gui.buttons;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.trustgames.core.managers.gui.PaginatedGUI;
+import net.trustgames.core.managers.gui.type.PaginatedGUI;
+import net.trustgames.core.managers.item.ItemBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -34,7 +34,7 @@ public class PagedGUIButton extends GUIButton implements Cloneable {
      * @return the inventory page button
      */
     @Override
-    public PagedGUIButton creator(Function<Player, ItemStack> iconCreator) {
+    public PagedGUIButton creator(Function<Player, ItemBuilder> iconCreator) {
         super.creator(iconCreator);
         return this;
     }
@@ -48,6 +48,18 @@ public class PagedGUIButton extends GUIButton implements Cloneable {
     @Override
     public PagedGUIButton event(Consumer<InventoryClickEvent> eventConsumer) {
         super.event(eventConsumer);
+        return this;
+    }
+
+    /**
+     * Set how often the button should update (be re-given)
+     *
+     * @param updateIntervalTick interval between updates in ticks
+     * @return the inventory button
+     */
+    @Override
+    public PagedGUIButton update(long updateIntervalTick) {
+        super.update(updateIntervalTick);
         return this;
     }
 

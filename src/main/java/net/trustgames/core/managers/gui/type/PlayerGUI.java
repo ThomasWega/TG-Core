@@ -1,7 +1,7 @@
-package net.trustgames.core.managers.gui.player;
+package net.trustgames.core.managers.gui.type;
 
+import lombok.Getter;
 import net.trustgames.core.managers.gui.GUIManager;
-import net.trustgames.core.managers.gui.InventoryGUI;
 import net.trustgames.core.managers.gui.buttons.GUIButton;
 import net.trustgames.core.managers.gui.buttons.HotbarGUIButton;
 import org.bukkit.entity.Player;
@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -20,8 +21,10 @@ import java.util.Map;
 
 public class PlayerGUI implements PlayerInventoryHandler {
 
-    private Map<Integer, HotbarGUIButton> buttonMap = new HashMap<>();
+    private Map<Integer, GUIButton> buttonMap;
+    @Getter
     private final Player player;
+    private final PlayerInventory playerInventory;
 
     /**
      * Manage player's personal inventory including hotbar, with InventoryButtons.
@@ -32,6 +35,7 @@ public class PlayerGUI implements PlayerInventoryHandler {
      */
     public PlayerGUI(GUIManager guiManager, @NotNull Player player) {
         this.player = player;
+        this.playerInventory = player.getInventory();
         guiManager.registerInventory(player.getInventory(), this);
     }
 
@@ -40,14 +44,31 @@ public class PlayerGUI implements PlayerInventoryHandler {
      *
      * @param buttons Collection of buttons to make the new inventory content out of
      */
-    public void setContents(@NotNull Map<Integer, HotbarGUIButton> buttons) {
-        this.buttonMap = buttons;
-        player.getInventory().clear();
+    public void setContents(@NotNull Map<Integer, GUIButton> buttons) {
+        this.buttonMap = new HashMap<>(buttons);
+        playerInventory.clear();
+        decorate();
+    }
 
-        buttons.forEach((slot, button) -> {
-            ItemStack icon = button != null ? button.getIconCreator().apply(player) : null;
-            player.getInventory().setItem(slot, icon);
+    /**
+     * Converts the buttons to itemStacks and sets them in the inventory
+     */
+    public void decorate() {
+        buttonMap.forEach((slot, button) -> {
+            ItemStack icon = button != null ? button.getIconCreator().apply(player).build() : null;
+            playerInventory.setItem(slot, icon);
         });
+    }
+
+    /**
+     * Sets the item on the slot to the buttons item
+     *
+     * @param slot Slot where to set the item
+     * @param guiButton Button to set
+     */
+    public void setButton(int slot, @NotNull GUIButton guiButton) {
+        buttonMap.put(slot, guiButton);
+        playerInventory.setItem(slot, guiButton.getIconCreator().apply(player).build());
     }
 
     @Override
@@ -73,16 +94,17 @@ public class PlayerGUI implements PlayerInventoryHandler {
 
     @Override
     public void onHotbarInteract(PlayerInteractEvent event) {
-        if (!event.getAction().isRightClick()) return;
+        if (event.getAction().isLeftClick()) return;
 
         ItemStack item = event.getItem();
         int slot = Arrays.stream(event.getPlayer().getInventory().getContents()).toList().indexOf(item);
         if (slot == -1) return;
 
         event.setCancelled(true);
-        HotbarGUIButton button = buttonMap.get(slot);
-        if (button != null && button.getEventConsumer() != null) {
-            button.getEventConsumerHotbar().accept(event);
+        GUIButton button = buttonMap.get(slot);
+        if (button instanceof HotbarGUIButton hotbarGUIButton
+                && hotbarGUIButton.getEventConsumerHotbar() != null) {
+            hotbarGUIButton.getEventConsumerHotbar().accept(event);
         }
     }
 

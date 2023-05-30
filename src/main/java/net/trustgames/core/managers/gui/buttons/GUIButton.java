@@ -2,9 +2,9 @@ package net.trustgames.core.managers.gui.buttons;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.trustgames.core.managers.item.ItemBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -17,11 +17,15 @@ public class GUIButton implements Cloneable {
 
     @Getter
     @Setter
-    private Function<Player, ItemStack> iconCreator;
+    private Function<Player, ItemBuilder> iconCreator;
 
     @Getter
     @Setter
     private Consumer<InventoryClickEvent> eventConsumer;
+
+    @Getter
+    @Setter
+    private long updateIntervalTick = -1;
 
 
     /**
@@ -30,7 +34,7 @@ public class GUIButton implements Cloneable {
      * @param iconCreator the icon creator
      * @return the inventory button
      */
-    public GUIButton creator(Function<Player, ItemStack> iconCreator) {
+    public GUIButton creator(Function<Player, ItemBuilder> iconCreator) {
         this.iconCreator = iconCreator;
         return this;
     }
@@ -43,6 +47,17 @@ public class GUIButton implements Cloneable {
      */
     public GUIButton event(Consumer<InventoryClickEvent> eventConsumer) {
         this.eventConsumer = eventConsumer;
+        return this;
+    }
+
+    /**
+     * Set how often the button should update (be re-given)
+     *
+     * @param updateIntervalTick interval between updates in ticks
+     * @return the inventory button
+     */
+    public GUIButton update(long updateIntervalTick) {
+        this.updateIntervalTick = updateIntervalTick;
         return this;
     }
 

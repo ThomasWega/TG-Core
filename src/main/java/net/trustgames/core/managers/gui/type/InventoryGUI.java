@@ -1,4 +1,4 @@
-package net.trustgames.core.managers.gui;
+package net.trustgames.core.managers.gui.type;
 
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -142,7 +142,7 @@ public class InventoryGUI implements InventoryHandler, Cloneable {
      */
     public void decorate(Player player) {
         buttonMap.forEach((slot, button) -> {
-            ItemStack icon = button != null ? button.getIconCreator().apply(player) : null;
+            ItemStack icon = button != null ? button.getIconCreator().apply(player).build() : null;
             inventory.setItem(slot, icon);
         });
     }

@@ -2,10 +2,10 @@ package net.trustgames.core.managers.gui.buttons;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.trustgames.core.managers.item.ItemBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -26,7 +26,7 @@ public class HotbarGUIButton extends GUIButton implements Cloneable {
      * @return the inventory button
      */
     @Override
-    public HotbarGUIButton creator(Function<Player, ItemStack> iconCreator) {
+    public HotbarGUIButton creator(Function<Player, ItemBuilder> iconCreator) {
         super.creator(iconCreator);
         return this;
     }
@@ -40,6 +40,18 @@ public class HotbarGUIButton extends GUIButton implements Cloneable {
     @Override
     public HotbarGUIButton event(Consumer<InventoryClickEvent> eventConsumer) {
         super.event(eventConsumer);
+        return this;
+    }
+
+    /**
+     * Set how often the button should update (be re-given)
+     *
+     * @param updateIntervalTick interval between updates in ticks
+     * @return the inventory button
+     */
+    @Override
+    public HotbarGUIButton update(long updateIntervalTick) {
+        super.update(updateIntervalTick);
         return this;
     }
 

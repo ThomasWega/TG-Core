@@ -1,7 +1,8 @@
-package net.trustgames.core.managers.gui;
+package net.trustgames.core.managers.gui.type;
 
 import net.kyori.adventure.text.Component;
 import net.trustgames.core.Core;
+import net.trustgames.core.managers.gui.GUIManager;
 import net.trustgames.core.managers.gui.buttons.GUIButton;
 import net.trustgames.core.managers.gui.buttons.PagedGUIButton;
 import org.bukkit.entity.Player;

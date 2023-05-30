@@ -21,9 +21,9 @@ public final class SkinManager {
     /**
      * Used to retrieve the skin data from the mojang servers.
      *
-     * @implNote There is a limit for the api calls
+     * @implNote API-Calls are rate limited by Mojang
      */
-    private static Optional<SkinData> fetchSkin(@NotNull String playerName) {
+    public static Optional<SkinData> fetchSkin(@NotNull String playerName) {
         try {
             // get the UUID of the player by his name
             HttpsURLConnection connection = (HttpsURLConnection) new URL(String.format("https://api.mojang.com/users/profiles/minecraft/%s", playerName)).openConnection();

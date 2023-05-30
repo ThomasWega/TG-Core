@@ -1,4 +1,4 @@
-package net.trustgames.core.managers.gui;
+package net.trustgames.core.managers.gui.type;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;

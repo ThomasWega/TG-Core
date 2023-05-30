@@ -10,10 +10,10 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.trustgames.core.Core;
 import net.trustgames.core.managers.gui.GUIManager;
-import net.trustgames.core.managers.gui.InventoryGUI;
-import net.trustgames.core.managers.gui.PaginatedGUI;
 import net.trustgames.core.managers.gui.buttons.GUIButton;
 import net.trustgames.core.managers.gui.buttons.PagedGUIButton;
+import net.trustgames.core.managers.gui.type.InventoryGUI;
+import net.trustgames.core.managers.gui.type.PaginatedGUI;
 import net.trustgames.core.managers.item.ItemBuilder;
 import net.trustgames.core.player.activity.config.PlayerActivityMaterials;
 import net.trustgames.toolkit.Toolkit;
@@ -28,7 +28,6 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -121,14 +120,13 @@ public class ActivityPlayerCommand {
 
                     List<Component> loreList = createLore(time, stringUuid, ip, id);
 
-                    ItemStack activityItem = new ItemBuilder(getMaterial(action), 1)
+                    ItemBuilder activityItemBuilder = new ItemBuilder(getMaterial(action), 1)
                             .displayName(Component.text(action, NamedTextColor.DARK_PURPLE, TextDecoration.BOLD))
                             .lore(loreList)
-                            .hideFlags()
-                            .build();
+                            .hideFlags();
 
                     GUIButton activityButton = new GUIButton()
-                            .creator(player -> activityItem)
+                            .creator(player -> activityItemBuilder)
                             .event(event -> {
                                 Player player = ((Player) event.getWhoClicked());
                                 player.performCommand("activity id " + id);
@@ -194,11 +192,11 @@ public class ActivityPlayerCommand {
         paginatedGUI.setButton(48, new PagedGUIButton()
                 .pager(gui -> PagedGUIButton.SwitchAction.PREVIOUS)
                 .replace(gui -> new GUIButton()
-                        .creator(player -> new ItemStack(Material.AIR)))
+                        .creator(player -> new ItemBuilder(Material.AIR)))
                 .creator(player -> new ItemBuilder(Material.ARROW)
                         .displayName(Component.text("Previous page", NamedTextColor.YELLOW))
                         .hideFlags()
-                        .build())
+                )
                 .event(event -> paginatedGUI.openPreviousPage(((Player) event.getWhoClicked())))
 
         );
@@ -206,11 +204,11 @@ public class ActivityPlayerCommand {
         paginatedGUI.setButton(50, new PagedGUIButton()
                 .pager(gui -> PagedGUIButton.SwitchAction.NEXT)
                 .replace(gui -> new GUIButton()
-                        .creator(player -> new ItemStack(Material.AIR)))
+                        .creator(player -> new ItemBuilder(Material.AIR)))
                 .creator(player -> new ItemBuilder(Material.ARROW)
                         .displayName(Component.text("Next page", NamedTextColor.YELLOW))
                         .hideFlags()
-                        .build())
+                )
                 .event(event -> paginatedGUI.openNextPage(((Player) event.getWhoClicked())))
 
         );
@@ -219,12 +217,11 @@ public class ActivityPlayerCommand {
                 .creator(player -> new ItemBuilder(Material.KNOWLEDGE_BOOK)
                         .displayName(Component.text("Page " + (paginatedGUI.getPageIndex(player.getUniqueId()) + 1) + "/" + paginatedGUI.getPagesAmount()))
                         .hideFlags()
-                        .build()
                 )
         );
 
         int[] fill = new int[]{45, 46, 47, 51, 52, 53};
         Arrays.stream(fill).forEach(value -> paginatedGUI.setButton(value, new GUIButton()
-                .creator(player -> new ItemStack(Material.AIR))));
+                .creator(player -> new ItemBuilder(Material.AIR))));
     }
 }

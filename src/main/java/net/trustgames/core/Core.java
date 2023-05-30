@@ -68,7 +68,6 @@ public final class Core extends JavaPlugin {
         new TablistTeams(this);
         
         /* ADD
-        - chat system - add level
         - admin system (vanish, menus, spectate ...)
         - cosmetics (spawn particles, spawn sounds, balloons)
         - nick and skin changer - test skin classes - add redis cache
@@ -84,7 +83,6 @@ public final class Core extends JavaPlugin {
         new PlaceholderUtils(toolkit).initialize();
         registerCommands();
         registerEvents();
-
     }
 
     @Override
