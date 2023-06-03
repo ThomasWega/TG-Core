@@ -8,7 +8,6 @@ import net.trustgames.core.chat.ChatDecoration;
 import net.trustgames.core.gui.GUIListener;
 import net.trustgames.core.gui.GUIManager;
 import net.trustgames.core.player.JoinLeaveMessageDisabler;
-import net.trustgames.core.player.activity.commands.ActivityCommands;
 import net.trustgames.core.player.data.handler.PlayerDataKillsDeathsHandler;
 import net.trustgames.core.player.data.handler.PlayerDataPlaytimeHandler;
 import net.trustgames.core.player.display_name.PlayerDisplayNameHandler;
@@ -111,8 +110,6 @@ public final class Core extends JavaPlugin {
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize Command Manager", e);
         }
-
-        new ActivityCommands(this);
     }
 
     private void createConfigs() {
