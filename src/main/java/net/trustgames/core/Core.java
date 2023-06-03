@@ -6,7 +6,6 @@ import lombok.Getter;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.trustgames.core.chat.ChatDecoration;
 import net.trustgames.core.managers.command.CommandCooldownManager;
-import net.trustgames.core.managers.file.FileManager;
 import net.trustgames.core.managers.gui.GUIListener;
 import net.trustgames.core.managers.gui.GUIManager;
 import net.trustgames.core.player.JoinLeaveMessageDisabler;
@@ -20,6 +19,7 @@ import net.trustgames.core.tablist.TablistTeamsHandler;
 import net.trustgames.core.utils.PlaceholderUtils;
 import net.trustgames.toolkit.Toolkit;
 import net.trustgames.toolkit.managers.database.HikariManager;
+import net.trustgames.toolkit.managers.file.FileLoader;
 import net.trustgames.toolkit.managers.message_queue.RabbitManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -27,6 +27,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.JedisPool;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -115,13 +118,23 @@ public final class Core extends JavaPlugin {
     }
 
     private void createConfigs() {
-        File[] configs = new File[]{
-                new File(getDataFolder(), "mariadb.yml"),
-                new File(getDataFolder(), "rabbitmq.yml"),
-                new File(getDataFolder(), "redis.yml")
-        };
+        /*
+         1. Name of the file
+         2. Folder of the file
+        */
+        Map<String, File> configsMap = new HashMap<>(Map.of(
+                "mariadb.yml", getDataFolder(),
+                "rabbitmq.yml", getDataFolder(),
+                "redis.yml", getDataFolder()
+        ));
 
-        FileManager.createFile(this, configs);
+        configsMap.forEach((configName, configDir) -> {
+            try {
+                FileLoader.loadFile(this.getClassLoader(), configDir, configName);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to load config " + configName + "from resources file", e);
+            }
+        });
     }
 
     private void initializeHikari() {
