@@ -1,9 +1,9 @@
-package net.trustgames.core.managers.gui.type;
+package net.trustgames.core.gui.type;
 
 import lombok.Getter;
-import net.trustgames.core.managers.gui.GUIManager;
-import net.trustgames.core.managers.gui.buttons.GUIButton;
-import net.trustgames.core.managers.gui.buttons.HotbarGUIButton;
+import net.trustgames.core.gui.buttons.GUIButton;
+import net.trustgames.core.gui.GUIManager;
+import net.trustgames.core.gui.buttons.HotbarGUIButton;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;

@@ -1,4 +1,4 @@
-package net.trustgames.core.managers.gui.type;
+package net.trustgames.core.gui.type;
 
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;

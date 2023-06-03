@@ -1,4 +1,4 @@
-package net.trustgames.core.managers.item;
+package net.trustgames.core.item;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

@@ -1,9 +1,9 @@
-package net.trustgames.core.managers.gui;
+package net.trustgames.core.gui;
 
 import net.trustgames.core.Core;
-import net.trustgames.core.managers.gui.type.InventoryGUI;
-import net.trustgames.core.managers.gui.type.InventoryHandler;
-import net.trustgames.core.managers.gui.type.PlayerInventoryHandler;
+import net.trustgames.core.gui.type.InventoryGUI;
+import net.trustgames.core.gui.type.InventoryHandler;
+import net.trustgames.core.gui.type.PlayerInventoryHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;

@@ -1,8 +1,8 @@
-package net.trustgames.core.managers.gui.buttons;
+package net.trustgames.core.gui.buttons;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.trustgames.core.managers.item.ItemBuilder;
+import net.trustgames.core.item.ItemBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;

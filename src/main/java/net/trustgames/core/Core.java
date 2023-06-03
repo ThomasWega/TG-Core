@@ -5,9 +5,8 @@ import cloud.commandframework.paper.PaperCommandManager;
 import lombok.Getter;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.trustgames.core.chat.ChatDecoration;
-import net.trustgames.core.managers.command.CommandCooldownManager;
-import net.trustgames.core.managers.gui.GUIListener;
-import net.trustgames.core.managers.gui.GUIManager;
+import net.trustgames.core.gui.GUIListener;
+import net.trustgames.core.gui.GUIManager;
 import net.trustgames.core.player.JoinLeaveMessageDisabler;
 import net.trustgames.core.player.activity.commands.ActivityCommands;
 import net.trustgames.core.player.data.handler.PlayerDataKillsDeathsHandler;
@@ -95,7 +94,6 @@ public final class Core extends JavaPlugin {
 
     private void registerEvents() {
         new GUIListener(this);
-        new CommandCooldownManager(this);
         new PlayerDisplayNameHandler(this);
         new ChatDecoration(this);
         new PlayerDataPlaytimeHandler(this);

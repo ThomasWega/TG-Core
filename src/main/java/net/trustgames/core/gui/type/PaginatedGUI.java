@@ -1,10 +1,10 @@
-package net.trustgames.core.managers.gui.type;
+package net.trustgames.core.gui.type;
 
 import net.kyori.adventure.text.Component;
 import net.trustgames.core.Core;
-import net.trustgames.core.managers.gui.GUIManager;
-import net.trustgames.core.managers.gui.buttons.GUIButton;
-import net.trustgames.core.managers.gui.buttons.PagedGUIButton;
+import net.trustgames.core.gui.GUIManager;
+import net.trustgames.core.gui.buttons.GUIButton;
+import net.trustgames.core.gui.buttons.PagedGUIButton;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.jetbrains.annotations.NotNull;
