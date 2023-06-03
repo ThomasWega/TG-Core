@@ -18,7 +18,7 @@ import net.trustgames.toolkit.database.player.activity.PlayerActivity;
 import net.trustgames.toolkit.database.player.activity.PlayerActivityFetcher;
 import net.trustgames.toolkit.database.player.data.PlayerDataFetcher;
 import net.trustgames.toolkit.database.player.data.config.PlayerDataType;
-import net.trustgames.toolkit.managers.database.HikariManager;
+import net.trustgames.toolkit.database.HikariManager;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 

@@ -11,7 +11,7 @@ import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
 import net.trustgames.core.Core;
-import net.trustgames.toolkit.managers.permission.LuckPermsManager;
+import net.trustgames.toolkit.luckperms.LuckPermsManager;
 import net.trustgames.toolkit.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

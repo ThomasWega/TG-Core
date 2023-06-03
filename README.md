@@ -8,7 +8,6 @@ Core for TrustGames.net
 - Chat Decoration manager
 - GUI Manager with Pagination and PlayerInventory
 - ItemBuilder with Skulls support (converts default italic text)
-- Command Cooldown manager
 - Cooldown manager
 - LuckPerms manager
 - Player Data saving (kills/deaths/playtime/...)

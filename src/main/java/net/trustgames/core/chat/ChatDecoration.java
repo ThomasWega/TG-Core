@@ -11,7 +11,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.trustgames.core.Core;
 import net.trustgames.toolkit.utils.ColorUtils;
 import net.trustgames.toolkit.config.chat.ChatConfig;
-import net.trustgames.toolkit.managers.permission.LuckPermsManager;
+import net.trustgames.toolkit.luckperms.LuckPermsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
