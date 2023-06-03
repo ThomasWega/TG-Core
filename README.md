@@ -15,7 +15,6 @@ Core for TrustGames.net
 - Gamerules
 - Hunger disable
 - Tablist Teams
-- Placeholder conversion Util (MiniPlaceholders)
 
 ###### Commands:
 - /activity id <id> 
