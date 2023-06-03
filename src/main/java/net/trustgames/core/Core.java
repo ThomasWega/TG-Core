@@ -14,13 +14,14 @@ import net.trustgames.core.player.display_name.PlayerDisplayNameHandler;
 import net.trustgames.core.protection.CoreGamerulesHandler;
 import net.trustgames.core.tablist.TablistTeams;
 import net.trustgames.core.tablist.TablistTeamsHandler;
-import net.trustgames.core.utils.PlaceholderUtils;
 import net.trustgames.toolkit.Toolkit;
 import net.trustgames.toolkit.database.HikariManager;
 import net.trustgames.toolkit.file.FileLoader;
 import net.trustgames.toolkit.message_queue.RabbitManager;
+import net.trustgames.toolkit.placeholders.PlaceholderManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.JedisPool;
 
@@ -64,6 +65,7 @@ public final class Core extends JavaPlugin {
         initializeHikari();
         initializeRedis();
         initializeRabbit();
+        initializePlaceholders();
         guiManager = new GUIManager(this);
         new CoreGamerulesHandler();
         new TablistTeams(this);
@@ -81,7 +83,6 @@ public final class Core extends JavaPlugin {
         - npcs
         */
 
-        new PlaceholderUtils(toolkit).initialize();
         registerCommands();
         registerEvents();
     }
@@ -195,5 +196,12 @@ public final class Core extends JavaPlugin {
         }
 
         LOGGER.info("Redis is enabled");
+    }
+
+    private void initializePlaceholders(){
+        PlaceholderManager.createPlaceholders(toolkit)
+                .filter(Player.class)
+                .build()
+                .register();
     }
 }

@@ -3,7 +3,6 @@ package net.trustgames.core.item;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import net.kyori.adventure.text.Component;
-import net.trustgames.core.Core;
 import net.trustgames.toolkit.skin.Skin;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -176,7 +175,6 @@ public class SkullBuilder extends ItemBuilder {
      */
     public SkullBuilder skin(@NotNull Skin skinData) {
         if (skinData.texture() == null) {
-            Core.LOGGER.warn("SkinData texture was null when setting texture for skull");
             return this;
         }
         SkullMeta skullMeta = this.getMeta();
