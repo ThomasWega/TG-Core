@@ -51,18 +51,6 @@ public class PagedGUIButton extends GUIButton implements Cloneable {
         return this;
     }
 
-    /**
-     * Set how often the button should update (be re-given)
-     *
-     * @param updateIntervalTick interval between updates in ticks
-     * @return the inventory button
-     */
-    @Override
-    public PagedGUIButton update(long updateIntervalTick) {
-        super.update(updateIntervalTick);
-        return this;
-    }
-
 
     /**
      * Set the SwitchAction to the button

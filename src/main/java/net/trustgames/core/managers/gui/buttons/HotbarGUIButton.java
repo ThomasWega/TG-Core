@@ -44,18 +44,6 @@ public class HotbarGUIButton extends GUIButton implements Cloneable {
     }
 
     /**
-     * Set how often the button should update (be re-given)
-     *
-     * @param updateIntervalTick interval between updates in ticks
-     * @return the inventory button
-     */
-    @Override
-    public HotbarGUIButton update(long updateIntervalTick) {
-        super.update(updateIntervalTick);
-        return this;
-    }
-
-    /**
      * Set what should happen on a click at the item when in hotbar
      * (inventory not open)
      *

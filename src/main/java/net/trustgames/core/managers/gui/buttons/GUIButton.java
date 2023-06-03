@@ -51,17 +51,6 @@ public class GUIButton implements Cloneable {
     }
 
     /**
-     * Set how often the button should update (be re-given)
-     *
-     * @param updateIntervalTick interval between updates in ticks
-     * @return the inventory button
-     */
-    public GUIButton update(long updateIntervalTick) {
-        this.updateIntervalTick = updateIntervalTick;
-        return this;
-    }
-
-    /**
      * Creates a new GUIButton and sets
      * the IconCreator and EventConsumer to the original one
      *
