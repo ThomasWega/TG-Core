@@ -10,7 +10,6 @@ Core for TrustGames.net
 - ItemBuilder with Skulls support (converts default italic text)
 - Command Cooldown manager
 - Cooldown manager
-- File creation manager
 - LuckPerms manager
 - Player Data saving (kills/deaths/playtime/...)
 - Player display name
