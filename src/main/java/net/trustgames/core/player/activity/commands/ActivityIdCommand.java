@@ -16,6 +16,7 @@ import net.trustgames.toolkit.config.CommandConfig;
 import net.trustgames.toolkit.config.PermissionConfig;
 import net.trustgames.toolkit.database.player.activity.PlayerActivity;
 import net.trustgames.toolkit.database.player.activity.PlayerActivityFetcher;
+import net.trustgames.toolkit.database.player.activity.config.PlayerAction;
 import net.trustgames.toolkit.database.player.data.PlayerDataFetcher;
 import net.trustgames.toolkit.database.player.data.config.PlayerDataType;
 import net.trustgames.toolkit.database.HikariManager;
@@ -87,7 +88,7 @@ public final class ActivityIdCommand {
             long resultId = activity.getId();
             UUID uuid = activity.getUuid();
             String ip = activity.getIp();
-            String action = activity.getAction();
+            PlayerAction action = activity.getAction();
             Timestamp time = activity.getTime();
 
             if (ip == null)
@@ -109,7 +110,7 @@ public final class ActivityIdCommand {
     private List<Component> createMessage(@NotNull UUID uuid,
                                           @NotNull String name,
                                           @NotNull String finalIp,
-                                          @NotNull String action,
+                                          @NotNull PlayerAction action,
                                           @NotNull Timestamp time,
                                           long id) {
         Component nameComp = Component.text("Name: ", NamedTextColor.WHITE)
@@ -125,8 +126,8 @@ public final class ActivityIdCommand {
                 .clickEvent(ClickEvent.copyToClipboard(uuid.toString()));
 
         Component actionComp = Component.text("Action: ", NamedTextColor.WHITE)
-                .append(Component.text(action, TextColor.fromHexString("#0dc9de")))
-                .clickEvent(ClickEvent.copyToClipboard(action));
+                .append(Component.text(action.getActionString(), TextColor.fromHexString("#0dc9de")))
+                .clickEvent(ClickEvent.copyToClipboard(action.getActionString()));
 
         Component dateTimeComp = Component.text("Date/Time: ", NamedTextColor.WHITE)
                 .append(Component.text(time.toLocalDateTime()

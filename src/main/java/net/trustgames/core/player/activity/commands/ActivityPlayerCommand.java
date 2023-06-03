@@ -15,12 +15,13 @@ import net.trustgames.core.gui.buttons.PagedGUIButton;
 import net.trustgames.core.gui.type.InventoryGUI;
 import net.trustgames.core.gui.type.PaginatedGUI;
 import net.trustgames.core.item.ItemBuilder;
-import net.trustgames.core.player.activity.config.PlayerActivityMaterials;
+import net.trustgames.core.player.activity.config.PlayerActionMaterials;
 import net.trustgames.toolkit.Toolkit;
 import net.trustgames.toolkit.config.CommandConfig;
 import net.trustgames.toolkit.config.PermissionConfig;
 import net.trustgames.toolkit.database.player.activity.PlayerActivity;
 import net.trustgames.toolkit.database.player.activity.PlayerActivityFetcher;
+import net.trustgames.toolkit.database.player.activity.config.PlayerAction;
 import net.trustgames.toolkit.database.player.data.PlayerDataFetcher;
 import net.trustgames.toolkit.database.HikariManager;
 import org.bukkit.Bukkit;
@@ -114,14 +115,14 @@ public class ActivityPlayerCommand {
                     long id = activity.getId();
                     String stringUuid = activity.getUuid().toString();
                     String ip = activity.getIp();
-                    String action = activity.getAction();
+                    PlayerAction action = activity.getAction();
                     Timestamp time = activity.getTime();
 
 
                     List<Component> loreList = createLore(time, stringUuid, ip, id);
 
                     ItemBuilder activityItemBuilder = new ItemBuilder(getMaterial(action), 1)
-                            .displayName(Component.text(action, NamedTextColor.DARK_PURPLE, TextDecoration.BOLD))
+                            .displayName(Component.text(action.getActionString(), NamedTextColor.DARK_PURPLE, TextDecoration.BOLD))
                             .lore(loreList)
                             .hideFlags();
 
@@ -177,9 +178,9 @@ public class ActivityPlayerCommand {
         );
     }
 
-    private Material getMaterial(@NotNull String action) {
-        for (PlayerActivityMaterials materialEnum : PlayerActivityMaterials.values()) {
-            if (action.contains(materialEnum.getActivityType().getAction())) {
+    private Material getMaterial(@NotNull PlayerAction action) {
+        for (PlayerActionMaterials materialEnum : PlayerActionMaterials.values()) {
+            if (action == materialEnum.getAction()) {
                 return materialEnum.getIcon();
             }
         }
