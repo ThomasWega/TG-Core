@@ -1,5 +1,6 @@
 package net.trustgames.core.gui;
 
+import lombok.Getter;
 import net.trustgames.core.Core;
 import net.trustgames.core.gui.type.InventoryGUI;
 import net.trustgames.core.gui.type.InventoryHandler;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 public class GUIManager {
 
     private final Core core;
+    @Getter
     private final HashMap<Inventory, InventoryHandler> activeInventories = new HashMap<>();
 
     public GUIManager(Core core) {

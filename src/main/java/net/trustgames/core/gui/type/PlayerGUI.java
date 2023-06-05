@@ -46,14 +46,14 @@ public class PlayerGUI implements PlayerInventoryHandler {
      */
     public void setContents(@NotNull Map<Integer, GUIButton> buttons) {
         this.buttonMap = new HashMap<>(buttons);
-        playerInventory.clear();
-        decorate();
+        fill();
     }
 
     /**
      * Converts the buttons to itemStacks and sets them in the inventory
      */
-    public void decorate() {
+    public void fill() {
+        playerInventory.clear();
         buttonMap.forEach((slot, button) -> {
             ItemStack icon = button != null ? button.getIconCreator().apply(player).build() : null;
             playerInventory.setItem(slot, icon);
