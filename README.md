@@ -2,7 +2,7 @@
 Core for TrustGames.net
 
 ###### Configs:
-- Player activity menu materials
+- xx
 
 ###### Features:
 - Chat Decoration manager
