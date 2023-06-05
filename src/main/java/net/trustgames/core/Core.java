@@ -104,6 +104,7 @@ public final class Core extends JavaPlugin {
                     this,
                     CommandExecutionCoordinator.simpleCoordinator()
             );
+            commandManager.registerAsynchronousCompletions();
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize Command Manager", e);
         }
