@@ -1,7 +1,6 @@
 package net.trustgames.core.tablist;
 
 import jline.internal.Nullable;
-import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.EventBus;
@@ -30,9 +29,8 @@ import java.util.Optional;
  */
 public final class TablistTeams {
 
-    private static final HashMap<Group, Integer> groupOrder = new HashMap<>();
-    @Getter
-    private static final Scoreboard tablist = Bukkit.getScoreboardManager().getNewScoreboard();
+    private static final HashMap<Group, Integer> groupOrder = TablistGroupOrderMap.getMap();
+    private static final Scoreboard tablist = Tablist.getTablistScoreboard();
     private final Plugin plugin;
 
     public TablistTeams(Plugin plugin) {
