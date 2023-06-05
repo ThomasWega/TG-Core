@@ -40,23 +40,19 @@ import java.util.Objects;
 public final class Core extends JavaPlugin {
 
     public static ComponentLogger LOGGER;
-
     @Getter
     private final Toolkit toolkit = new Toolkit();
-
     @Getter
     private GUIManager guiManager;
-
     @Getter
     private PaperCommandManager<CommandSender> commandManager;
-
 
     @Override
     public void onEnable() {
         LOGGER = getComponentLogger();
 
         // create a data folder
-        if (getDataFolder().mkdirs()) {
+        if (getDataFolder().mkdir()) {
             LOGGER.warn("Created main plugin folder {}", getDataFolder().getAbsoluteFile());
         }
 

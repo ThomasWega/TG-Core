@@ -19,10 +19,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Handles the priority sorting of groups and players in the player-list
@@ -69,16 +66,17 @@ public final class TablistTeams {
          also register a new team with (i + name). The lower "i", the highest order priority.
          Example: 1prime is lower then 0admin
         */
-        for (Group group : groupWeight.entrySet()
-                .stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .map(Map.Entry::getKey).toList()) {
-            groupOrder.put(group, i);
-
+        List<Group> orderedGroups = groupWeight.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .map(Map.Entry::getKey)
+                .toList();
+        for (Group group : orderedGroups) {
             if (group == null) return;
 
+            groupOrder.put(group, i);
             String teamName = i + group.getName();
             if (tablist.getTeam(teamName) == null) {
-                Team team = tablist.registerNewTeam(i + "" + group.getName());
+                Team team = tablist.registerNewTeam(teamName);
                 Component prefix = ColorUtils.color(LuckPermsManager.getGroupPrefix(group));
                 if (!group.getName().equals("default"))
                     team.prefix(prefix.appendSpace());
