@@ -16,8 +16,12 @@ import net.trustgames.core.tablist.TablistTeams;
 import net.trustgames.core.tablist.TablistTeamsHandler;
 import net.trustgames.toolkit.Toolkit;
 import net.trustgames.toolkit.database.HikariManager;
+import net.trustgames.toolkit.event.EventBus;
 import net.trustgames.toolkit.file.FileLoader;
 import net.trustgames.toolkit.message_queue.RabbitManager;
+import net.trustgames.toolkit.message_queue.event.RabbitEvent;
+import net.trustgames.toolkit.message_queue.event.RabbitEventBus;
+import net.trustgames.toolkit.message_queue.event.RabbitEventManager;
 import net.trustgames.toolkit.placeholders.PlaceholderManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -46,6 +50,10 @@ public final class Core extends JavaPlugin {
     private GUIManager guiManager;
     @Getter
     private PaperCommandManager<CommandSender> commandManager;
+    @Getter
+    private RabbitEventManager rabbitEventManager;
+    @Getter
+    private RabbitEventBus<RabbitEvent> rabbitEventBus;
 
     @Override
     public void onEnable() {
@@ -81,6 +89,7 @@ public final class Core extends JavaPlugin {
 
         registerCommands();
         registerEvents();
+        registerRabbitEvents();
     }
 
     @Override
@@ -96,6 +105,10 @@ public final class Core extends JavaPlugin {
         new PlayerDataKillsDeathsHandler(this);
         new TablistTeamsHandler(this);
         new JoinLeaveMessageDisabler(this);
+    }
+
+    private void registerRabbitEvents() {
+        this.rabbitEventBus = EventBus.rabbitEventBus(rabbitEventManager, RabbitEvent.class);
     }
 
     private void registerCommands() {
@@ -167,10 +180,13 @@ public final class Core extends JavaPlugin {
                 rabbitConfig.getInt("rabbitmq.port"))
         );
 
-        if (toolkit.getRabbitManager() == null) {
+        RabbitManager rabbitManager = toolkit.getRabbitManager();
+        if (rabbitManager == null) {
             throw new RuntimeException("RabbitManager wasn't initialized");
         }
 
+        this.rabbitEventManager = new RabbitEventManager(rabbitManager.getChannel());
+        toolkit.setRabbitEventManager(rabbitEventManager);
         LOGGER.info("RabbitMQ is enabled");
     }
 
