@@ -75,16 +75,10 @@ public final class Core extends JavaPlugin {
         new TablistTeams(this);
         
         /* ADD
-        - admin system (vanish, menus, spectate ...)
+        - admin system (spectate, ...)
         - cosmetics (spawn particles, spawn sounds, balloons)
-        - nick and skin changer - test skin classes - add redis cache
-        - image maps
         - party and friends system
-        - maintenance
-        - playtime bonus
         - boosters
-        - autorestart (only if no one is online)
-        - npcs
         */
 
         registerCommands();
