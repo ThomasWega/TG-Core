@@ -76,7 +76,7 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             groupId = "net.trustgames"
-            artifactId = "core"
+            artifactId = rootProject.name
             version = version
             from(components["java"])
         }
