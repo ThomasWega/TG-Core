@@ -85,6 +85,7 @@ public class InventoryGUI implements InventoryHandler, Cloneable {
      * @see InventoryGUI#addAll(Collection)
      * @deprecated This method is currently untested and may not function correctly.
      */
+    @Deprecated
     public boolean addButton(GUIButton button) {
         for (int i = 0; i < inventory.getSize(); i++) {
             if (buttonMap.get(i) == null) {
@@ -103,6 +104,7 @@ public class InventoryGUI implements InventoryHandler, Cloneable {
      * @see InventoryGUI#addButton(GUIButton)
      * @deprecated This method is currently untested and may not function correctly.
      */
+    @Deprecated
     public List<GUIButton> addAll(Collection<GUIButton> buttons) {
         List<GUIButton> unAdded = new ArrayList<>();
         buttons.forEach(button -> {
