@@ -46,7 +46,7 @@ repositories {
 }
 
 dependencies {
-    implementation("net.trustgames:toolkit:0.1-SNAPSHOT")
+    api("net.trustgames:toolkit:0.1-SNAPSHOT")
     api("cloud.commandframework:cloud-paper:1.8.3")
     api("cloud.commandframework:cloud-minecraft-extras:1.8.3")
     compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
