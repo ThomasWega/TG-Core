@@ -21,15 +21,12 @@ Core for TrustGames.net
 - /activity player <name>
 
 ###### How to get Toolkit:
-TG-Toolkit is self-hosted on a server. To be able to reach that server you need to set the server up in your maven settings.xml. Insert the following lines in the server section
+TG-Toolkit is self-hosted on a server. To be able to reach that server you need to set the server up credentials first.
+Open (or create) gradle.properties in your local ~/.gradle/gradle.properties
 
-**_settings.xml_**
+**_gradle.properties_**
 ```
-<servers>
-    <server>
-      <id>trustgames-repo</id>
-      <username>{username}</username>
-      <password>{secret}</password>
-    </server>
-</servers>
+trustgamesRepoPrivateUsername={username}
+trustgamesRepoPrivatePassword={secret}
 ```
+
