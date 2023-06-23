@@ -113,7 +113,7 @@ public final class TablistTeams {
         team.addPlayer(player);
 
         if (!stringTeam.contains("default"))
-            team.prefix(MiniMessage.miniMessage().deserialize("tg_player_prefix_spaced",
+            team.prefix(MiniMessage.miniMessage().deserialize("<tg_player_prefix_spaced>",
                     MiniPlaceholders.getAudiencePlaceholders(player))
             );
 
