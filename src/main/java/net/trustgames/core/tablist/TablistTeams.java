@@ -1,6 +1,8 @@
 package net.trustgames.core.tablist;
 
+import io.github.miniplaceholders.api.MiniPlaceholders;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.EventBus;
 import net.luckperms.api.event.group.GroupCreateEvent;
@@ -111,9 +113,8 @@ public final class TablistTeams {
         team.addPlayer(player);
 
         if (!stringTeam.contains("default"))
-            team.prefix(
-                    ColorUtils.color(LuckPermsManager.getOnlinePlayerPrefix(user))
-                    .appendSpace()
+            team.prefix(MiniMessage.miniMessage().deserialize("tg_player_prefix_spaced",
+                    MiniPlaceholders.getAudiencePlaceholders(player))
             );
 
         player.setScoreboard(tablist);

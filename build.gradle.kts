@@ -16,7 +16,6 @@ java {
 }
 
 repositories {
-    mavenLocal()
     maven {
         url = uri("https://repo.papermc.io/repository/maven-public/")
     }
@@ -29,6 +28,10 @@ repositories {
         name = "trustgamesRepoPrivate"
         url = uri("http://81.201.49.240:8080/private")
         isAllowInsecureProtocol = true
+        credentials(PasswordCredentials::class)
+        authentication {
+            create<BasicAuthentication>("basic")
+        }
     }
 
     maven {
@@ -50,6 +53,7 @@ repositories {
     maven {
         url = uri("https://repo.maven.apache.org/maven2/")
     }
+    mavenLocal()
 }
 
 dependencies {
