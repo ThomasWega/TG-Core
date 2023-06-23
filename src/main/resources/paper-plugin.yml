@@ -4,23 +4,29 @@ main: net.trustgames.core.Core
 description: Core plugin for TrustGames.net
 api-version: '1.19'
 dependencies:
-  - name: LuckPerms
-    required: true
-    bootstrap: false
+  server:
+    LuckPerms:
+      load: BEFORE
+      required: true
+      join-classpath: true
 
-  - name: MiniPlaceholders
-    required: true
-    bootstrap: false
+    MiniPlaceholders:
+      load: BEFORE
+      required: true
+      join-classpath: true
 
-  - name: MiniPlaceholders-Player-Expansion
-    required: true
-    bootstrap: false
+    MiniPlaceholders-Player-Expansion:
+      load: BEFORE
+      required: true
+      join-classpath: true
 
-  - name: LuckPerms-Expansion
-    required: true
-    bootstrap: false
+    LuckPerms-Expansion:
+      load: BEFORE
+      required: true
+      join-classpath: true
 
-  - name: ProtocolLib
-    required: true
-    bootstrap: false
+    ProtocolLib:
+      load: BEFORE
+      required: true
+      join-classpath: true
 

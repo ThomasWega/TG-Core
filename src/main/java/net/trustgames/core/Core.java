@@ -44,6 +44,7 @@ import java.util.Objects;
 public final class Core extends JavaPlugin {
 
     public static ComponentLogger LOGGER;
+
     @Getter
     private final Toolkit toolkit = new Toolkit();
     @Getter
@@ -59,6 +60,7 @@ public final class Core extends JavaPlugin {
     public void onEnable() {
         LOGGER = getComponentLogger();
 
+
         // create a data folder
         if (getDataFolder().mkdir()) {
             LOGGER.warn("Created main plugin folder {}", getDataFolder().getAbsoluteFile());
@@ -73,7 +75,7 @@ public final class Core extends JavaPlugin {
         guiManager = new GUIManager(this);
         new CoreGamerulesHandler();
         new TablistTeams(this);
-        
+
         /* ADD
         - admin system (spectate, ...)
         - cosmetics (spawn particles, spawn sounds, balloons)

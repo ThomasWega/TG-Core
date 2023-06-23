@@ -5,7 +5,14 @@
 plugins {
     `java-library`
     `maven-publish`
+    id ("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.freefair.lombok") version "8.0.1"
+    id("io.papermc.paperweight.userdev") version "1.5.5"
+}
+
+java {
+    // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
 
 repositories {
@@ -46,11 +53,11 @@ repositories {
 }
 
 dependencies {
+    paperweight.paperDevBundle("1.19.4-R0.1-SNAPSHOT")
     api("net.trustgames:toolkit:0.1-SNAPSHOT")
     api("cloud.commandframework:cloud-paper:1.8.3")
     api("cloud.commandframework:cloud-minecraft-extras:1.8.3")
     compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
-    compileOnly("org.spigotmc:spigot:1.19.4-R0.1-SNAPSHOT")
     compileOnly("net.luckperms:api:5.4")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.0.0")
     compileOnly("io.github.miniplaceholders:miniplaceholders-api:2.1.0")
@@ -83,10 +90,34 @@ publishing {
     }
 }
 
-tasks.withType<JavaCompile>() {
-    options.encoding = "UTF-8"
-}
+tasks {
+    // Configure reobfJar to run when invoking the build task
+    assemble {
+        dependsOn(shadowJar)
+        dependsOn(reobfJar)
+    }
 
-tasks.withType<Javadoc>() {
-    options.encoding = "UTF-8"
+    compileJava {
+        options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
+
+        // Set the release flag. This configures what version bytecode the compiler will emit, as well as what JDK APIs are usable.
+        // See https://openjdk.java.net/jeps/247 for more information.
+        options.release.set(17)
+    }
+    javadoc {
+        options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
+    }
+    processResources {
+        filteringCharset = Charsets.UTF_8.name() // We want UTF-8 for everything
+        val props = mapOf(
+                "name" to project.name,
+                "version" to project.version,
+                "description" to project.description,
+                "apiVersion" to "1.19"
+        )
+        inputs.properties(props)
+        filesMatching("plugin.yml") {
+            expand(props)
+        }
+    }
 }
