@@ -1,5 +1,6 @@
 package net.trustgames.core.gui.type;
 
+import io.netty.util.internal.UnstableApi;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.trustgames.core.gui.buttons.GUIButton;
@@ -83,9 +84,8 @@ public class InventoryGUI implements InventoryHandler, Cloneable {
      * @return true - if button was added
      * <p>false - if the button couldn't be added (inventory is full)
      * @see InventoryGUI#addAll(Collection)
-     * @deprecated This method is currently untested and may not function correctly.
      */
-    @Deprecated
+    @UnstableApi
     public boolean addButton(GUIButton button) {
         for (int i = 0; i < inventory.getSize(); i++) {
             if (buttonMap.get(i) == null) {
@@ -102,9 +102,8 @@ public class InventoryGUI implements InventoryHandler, Cloneable {
      * @param buttons Buttons to be added to the inventory
      * @return List of buttons which weren't added
      * @see InventoryGUI#addButton(GUIButton)
-     * @deprecated This method is currently untested and may not function correctly.
      */
-    @Deprecated
+    @UnstableApi
     public List<GUIButton> addAll(Collection<GUIButton> buttons) {
         List<GUIButton> unAdded = new ArrayList<>();
         buttons.forEach(button -> {
