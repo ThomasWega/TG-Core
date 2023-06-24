@@ -23,11 +23,6 @@ public class GUIButton implements Cloneable {
     @Setter
     private Consumer<InventoryClickEvent> eventConsumer;
 
-    @Getter
-    @Setter
-    private long updateIntervalTick = -1;
-
-
     /**
      * Set the ItemStack or the Meta for the Item
      *

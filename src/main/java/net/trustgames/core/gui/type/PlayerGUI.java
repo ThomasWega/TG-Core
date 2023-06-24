@@ -71,6 +71,16 @@ public class PlayerGUI implements PlayerInventoryHandler {
         playerInventory.setItem(slot, guiButton.getIconCreator().apply(player).build());
     }
 
+    /**
+     * Sets all the buttons to their index.
+     * This will override any existing buttons!
+     *
+     * @param buttons Map of Buttons with index
+     */
+    public void setAll(Map<Integer, GUIButton> buttons) {
+        buttons.forEach((this::setButton));
+    }
+
     @Override
     public void onClick(InventoryClickEvent event) {
         event.setCancelled(true);

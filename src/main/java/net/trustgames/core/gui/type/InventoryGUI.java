@@ -127,6 +127,16 @@ public class InventoryGUI implements InventoryHandler, Cloneable {
     }
 
     /**
+     * Sets all the button at the specified slot in the inventory.
+     * Will override any existing buttons
+     *
+     * @param buttons Map of buttons with index
+     */
+    public void setAll(Map<Integer, GUIButton> buttons) {
+        buttonMap.putAll(buttons);
+    }
+
+    /**
      * Gets the button at the specified slot
      *
      * @param slot Slot to get the button at
