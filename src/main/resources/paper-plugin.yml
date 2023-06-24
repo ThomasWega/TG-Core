@@ -20,7 +20,7 @@ dependencies:
       required: true
       join-classpath: true
 
-    LuckPerms-Expansion:
+    MiniPlaceholders-LuckPerms-Expansion:
       load: BEFORE
       required: true
       join-classpath: true
