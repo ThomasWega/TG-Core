@@ -42,7 +42,7 @@ public class SkullBuilder extends ItemBuilder {
     }
 
     @Override
-    public SkullBuilder lore(@NotNull List<Component> lore) {
+    public SkullBuilder lore(@NotNull List<? extends Component> lore) {
         super.lore(lore);
         return this;
     }

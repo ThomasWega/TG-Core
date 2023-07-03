@@ -160,7 +160,7 @@ public class ItemBuilder {
      * @param lore A collection of lines to set as lore
      * @return The ItemBuilder
      */
-    public ItemBuilder lore(@NotNull List<Component> lore) {
+    public ItemBuilder lore(@NotNull List<? extends Component> lore) {
         // handle if the list is immutable
         List<Component> newLore = new ArrayList<>(lore);
         // in vanilla minecraft italic may be set on some items
