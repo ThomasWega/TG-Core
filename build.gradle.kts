@@ -67,6 +67,10 @@ dependencies {
     compileOnly("io.github.miniplaceholders:miniplaceholders-api:2.1.0")
 }
 
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
+}
+
 group = "net.trustgames"
 version = "0.2-SNAPSHOT"
 description = "Core"
